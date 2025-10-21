@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -15,6 +16,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+
+import UserProfile from "./components/layout/UserProfile"; // Added import
 
 const navigationItems = [
   {
@@ -53,7 +56,7 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </SidebarHeader>
           
-          <SidebarContent className="p-3">
+          <SidebarContent className="p-3 flex flex-col h-full"> {/* Modified: Added flex flex-col h-full */}
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
                 Navegação
@@ -109,6 +112,11 @@ export default function Layout({ children, currentPageName }) {
                 </div>
               </SidebarGroupContent>
             </SidebarGroup>
+
+            {/* Added UserProfile component */}
+            <div className="mt-auto"> 
+              <UserProfile />
+            </div>
           </SidebarContent>
         </Sidebar>
 
