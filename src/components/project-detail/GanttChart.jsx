@@ -1,7 +1,10 @@
 import React from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Calendar } from "lucide-react";
+import { Calendar, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const statusColors = {
   pending: "#EAB308",
@@ -16,6 +19,12 @@ const statusLabels = {
 };
 
 export default function GanttChart({ tasks, projectColor }) {
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-slate-500">
@@ -97,7 +106,7 @@ export default function GanttChart({ tasks, projectColor }) {
       <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
         {/* Timeline Header */}
         <div className="flex border-b border-slate-200">
-          <div className="w-64 p-4 bg-slate-50 font-semibold text-slate-900 border-r border-slate-200">
+          <div className="w-72 p-4 bg-slate-50 font-semibold text-slate-900 border-r border-slate-200">
             Tarefa
           </div>
           <div className="flex-1 relative h-12 bg-slate-50">
@@ -124,15 +133,28 @@ export default function GanttChart({ tasks, projectColor }) {
             const leftPosition = getTaskPosition(task.start_date);
             const width = getTaskWidth(task.start_date, task.end_date);
             const duration = differenceInDays(new Date(task.end_date), new Date(task.start_date)) + 1;
+            const assignedUser = users.find(u => u.email === task.assigned_to);
 
             return (
               <div key={task.id} className="flex hover:bg-slate-50 transition-colors">
-                <div className="w-64 p-4 border-r border-slate-200">
+                <div className="w-72 p-4 border-r border-slate-200">
                   <div className="font-medium text-slate-900 line-clamp-1 mb-1">
                     {task.title}
                   </div>
-                  <div className="text-xs text-slate-500">
-                    {format(parseISO(task.start_date), 'dd/MM', { locale: ptBR })} - {format(parseISO(task.end_date), 'dd/MM', { locale: ptBR })}
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span>
+                      {format(parseISO(task.start_date), 'dd/MM', { locale: ptBR })} - {format(parseISO(task.end_date), 'dd/MM', { locale: ptBR })}
+                    </span>
+                    {assignedUser && (
+                      <div className="flex items-center gap-1">
+                        <Avatar className="w-4 h-4">
+                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                            {assignedUser.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="truncate max-w-[80px]">{assignedUser.full_name?.split(' ')[0]}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex-1 relative p-4">
@@ -155,6 +177,7 @@ export default function GanttChart({ tasks, projectColor }) {
                         <div className="font-semibold mb-1">{task.title}</div>
                         <div>Status: {statusLabels[task.status]}</div>
                         <div>Duração: {duration} {duration === 1 ? 'dia' : 'dias'}</div>
+                        {assignedUser && <div>Responsável: {assignedUser.full_name}</div>}
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
                       </div>
                     </div>

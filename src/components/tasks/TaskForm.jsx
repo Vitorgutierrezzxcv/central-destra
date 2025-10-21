@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Save, AlertCircle } from "lucide-react";
+import { X, Save, AlertCircle, User } from "lucide-react";
 
 export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading }) {
   const urlParams = new URLSearchParams(window.location.search);
@@ -16,10 +18,17 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     title: "",
     description: "",
     project_id: currentProjectId || (projects.length > 0 ? projects[0].id : ""),
+    assigned_to: "",
     start_date: "",
     end_date: "",
     status: "pending",
     priority: "medium"
+  });
+
+  const { data: users, isLoading: loadingUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
   });
 
   const handleSubmit = (e) => {
@@ -104,29 +113,72 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               />
             </div>
 
-            {!currentProjectId && (
+            <div className="grid md:grid-cols-2 gap-4">
+              {!currentProjectId && (
+                <div className="space-y-2">
+                  <Label htmlFor="project" className="text-slate-900 font-medium">
+                    Projeto *
+                  </Label>
+                  <Select
+                    value={formData.project_id}
+                    onValueChange={(value) => setFormData({...formData, project_id: value})}
+                    required
+                  >
+                    <SelectTrigger className="border-slate-200">
+                      <SelectValue placeholder="Selecione um projeto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map(project => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="project" className="text-slate-900 font-medium">
-                  Projeto *
+                <Label htmlFor="assigned_to" className="text-slate-900 font-medium">
+                  Responsável
                 </Label>
                 <Select
-                  value={formData.project_id}
-                  onValueChange={(value) => setFormData({...formData, project_id: value})}
-                  required
+                  value={formData.assigned_to}
+                  onValueChange={(value) => setFormData({...formData, assigned_to: value})}
                 >
                   <SelectTrigger className="border-slate-200">
-                    <SelectValue placeholder="Selecione um projeto" />
+                    <SelectValue placeholder="Selecione um responsável">
+                      {formData.assigned_to ? (
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4" />
+                          {users.find(u => u.email === formData.assigned_to)?.full_name || formData.assigned_to}
+                        </div>
+                      ) : (
+                        "Selecione um responsável"
+                      )}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value={null}>Nenhum</SelectItem>
+                    {loadingUsers ? (
+                      <SelectItem value={null} disabled>Carregando...</SelectItem>
+                    ) : (
+                      users.map(user => (
+                        <SelectItem key={user.id} value={user.email}>
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            <div>
+                              <div className="font-medium">{user.full_name}</div>
+                              <div className="text-xs text-slate-500">{user.email}</div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
-            )}
+            </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">

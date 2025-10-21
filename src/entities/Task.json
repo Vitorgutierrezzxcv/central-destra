@@ -14,6 +14,10 @@
       "type": "string",
       "description": "ID do projeto ao qual a tarefa pertence"
     },
+    "assigned_to": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio respons\u00e1vel pela tarefa"
+    },
     "start_date": {
       "type": "string",
       "format": "date",

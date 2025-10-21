@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +16,7 @@ export default function Tasks() {
     status: "all", 
     priority: "all", 
     project: "all",
+    assignedTo: "all", // Added new filter for assignedTo
     search: "" 
   });
   
@@ -87,10 +89,13 @@ export default function Tasks() {
     const statusMatch = filters.status === "all" || task.status === filters.status;
     const priorityMatch = filters.priority === "all" || task.priority === filters.priority;
     const projectMatch = filters.project === "all" || task.project_id === filters.project;
+    const assignedToMatch = filters.assignedTo === "all" || 
+      (filters.assignedTo === "unassigned" && !task.assigned_to) || // Check for unassigned tasks
+      task.assigned_to === filters.assignedTo; // Check for specific assignee
     const searchMatch = !filters.search || 
       task.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
       task.description?.toLowerCase().includes(filters.search.toLowerCase());
-    return statusMatch && priorityMatch && projectMatch && searchMatch;
+    return statusMatch && priorityMatch && projectMatch && assignedToMatch && searchMatch;
   });
 
   return (
@@ -164,16 +169,16 @@ export default function Tasks() {
               <Plus className="w-12 h-12 text-slate-400" />
             </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.search
+              {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
             <p className="text-slate-600 mb-6">
-              {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.search
+              {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
             </p>
-            {!(filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.search) && (
+            {!(filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search) && (
               <Button 
                 onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"

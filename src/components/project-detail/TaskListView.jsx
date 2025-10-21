@@ -1,7 +1,10 @@
 import React from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Pencil, 
   Trash2, 
@@ -50,6 +53,12 @@ const priorityConfig = {
 };
 
 export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }) {
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-16 text-slate-500">
@@ -67,6 +76,7 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
           const status = statusConfig[task.status];
           const StatusIcon = status.icon;
           const priority = priorityConfig[task.priority];
+          const assignedUser = users.find(u => u.email === task.assigned_to);
 
           return (
             <motion.div
@@ -104,9 +114,21 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                   </DropdownMenu>
 
                   <div className="flex-1">
-                    <h4 className={`font-semibold mb-1 ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
-                      {task.title}
-                    </h4>
+                    <div className="flex items-start justify-between gap-3 mb-1">
+                      <h4 className={`font-semibold ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                        {task.title}
+                      </h4>
+                      {assignedUser && (
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded-full border border-slate-200">
+                          <Avatar className="w-5 h-5">
+                            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                              {assignedUser.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs font-medium text-slate-700">{assignedUser.full_name}</span>
+                        </div>
+                      )}
+                    </div>
                     
                     {task.description && (
                       <p className="text-sm text-slate-600 mb-2">{task.description}</p>

@@ -1,7 +1,9 @@
 import React from "react";
+import { base44 } from "@/api/base44Client";
+import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function TaskFilters({ onFilterChange, projects, taskCount }) {
@@ -9,7 +11,14 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
     status: "all",
     priority: "all",
     project: "all",
+    assignedTo: "all",
     search: ""
+  });
+
+  const { data: users, isLoading: loadingUsers } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
   });
 
   const handleFilterChange = (key, value) => {
@@ -30,7 +39,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
           <Input
@@ -85,6 +94,42 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
                 {project.name}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={filters.assignedTo}
+          onValueChange={(value) => handleFilterChange("assignedTo", value)}
+        >
+          <SelectTrigger className="border-slate-200">
+            <SelectValue placeholder="Responsável">
+              {filters.assignedTo === "all" ? (
+                "Todos Responsáveis"
+              ) : filters.assignedTo === "unassigned" ? (
+                "Sem responsável"
+              ) : (
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {users.find(u => u.email === filters.assignedTo)?.full_name || "Responsável"}
+                </div>
+              )}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos Responsáveis</SelectItem>
+            <SelectItem value="unassigned">Sem responsável</SelectItem>
+            {loadingUsers ? (
+              <SelectItem value={null} disabled>Carregando...</SelectItem>
+            ) : (
+              users.map(user => (
+                <SelectItem key={user.id} value={user.email}>
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    {user.full_name}
+                  </div>
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
       </div>
