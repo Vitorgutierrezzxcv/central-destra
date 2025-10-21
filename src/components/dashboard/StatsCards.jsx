@@ -1,60 +1,66 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, AlertCircle, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function StatsCards({ pendingTasks, inProgressTasks, completedTasks, overdueTasks }) {
   const cards = [
     {
-      title: "Tarefas Pendentes",
+      title: "Pendentes",
       value: pendingTasks,
       icon: Clock,
-      gradient: "from-yellow-500 to-orange-600",
+      bgColor: "bg-gradient-to-br from-yellow-100 to-yellow-200",
+      iconColor: "text-yellow-600",
       delay: 0
     },
     {
       title: "Em Andamento",
       value: inProgressTasks,
       icon: TrendingUp,
-      gradient: "from-blue-500 to-blue-600",
+      bgColor: "bg-gradient-to-br from-blue-100 to-blue-200",
+      iconColor: "text-blue-600",
       delay: 0.1
     },
     {
       title: "Concluídas",
       value: completedTasks,
       icon: CheckCircle2,
-      gradient: "from-green-500 to-green-600",
+      bgColor: "bg-gradient-to-br from-green-100 to-green-200",
+      iconColor: "text-green-600",
       delay: 0.2
     },
     {
       title: "Atrasadas",
       value: overdueTasks,
       icon: AlertCircle,
-      gradient: "from-red-500 to-red-600",
+      bgColor: "bg-gradient-to-br from-red-100 to-red-200",
+      iconColor: "text-red-600",
       delay: 0.3
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {cards.map((card, index) => (
+      {cards.map((card) => (
         <motion.div
           key={card.title}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: card.delay }}
         >
-          <Card className={`bg-gradient-to-br ${card.gradient} text-white border-none shadow-lg hover:shadow-xl transition-shadow`}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium opacity-90">
-                  {card.title}
-                </CardTitle>
-                <card.icon className="w-5 h-5 opacity-80" />
+          <Card className={`${card.bgColor} border-none shadow-lg hover:shadow-xl transition-all rounded-3xl overflow-hidden`}>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="bg-white/80 rounded-2xl p-3 shadow-md">
+                  <card.icon className={`w-6 h-6 ${card.iconColor}`} />
+                </div>
+                <div className="text-right">
+                  <div className={`text-4xl font-bold ${card.iconColor}`}>
+                    {card.value}
+                  </div>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{card.value}</div>
+              <p className="text-slate-700 font-medium text-sm">{card.title}</p>
             </CardContent>
           </Card>
         </motion.div>

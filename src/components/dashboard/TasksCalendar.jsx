@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
@@ -36,16 +37,16 @@ export default function TasksCalendar({ tasks, selectedDate, onDateChange }) {
         locale={ptBR}
         modifiers={modifiers}
         modifiersStyles={modifiersStyles}
-        className="rounded-md border border-slate-200"
+        className="rounded-2xl border border-slate-200"
       />
       
       <div className="mt-4 w-full">
         <div className="flex items-center gap-2 mb-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
           <span className="text-sm text-slate-600">Dias com tarefas</span>
         </div>
         {selectedDate && (
-          <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+          <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200">
             <p className="text-sm font-semibold text-slate-900 mb-2">
               {selectedDate.toLocaleDateString('pt-BR', { 
                 weekday: 'long', 
@@ -55,7 +56,7 @@ export default function TasksCalendar({ tasks, selectedDate, onDateChange }) {
               })}
             </p>
             <div className="flex gap-2">
-              <Badge variant="outline" className="text-xs">
+              <Badge className="bg-white text-purple-700 rounded-full text-xs">
                 {getTasksForDate(selectedDate).length} tarefa(s)
               </Badge>
             </div>

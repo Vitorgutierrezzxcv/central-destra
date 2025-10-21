@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -62,11 +63,11 @@ export default function NotesBlock({ userEmail }) {
   };
 
   return (
-    <Card className="shadow-lg border-slate-200 h-fit sticky top-6">
-      <CardHeader className="border-b border-slate-200">
+    <Card className="shadow-xl border-none rounded-3xl bg-white/80 backdrop-blur-sm h-fit sticky top-6">
+      <CardHeader className="border-b border-slate-100">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            <StickyNote className="w-5 h-5" />
+            <StickyNote className="w-5 h-5 text-pink-500" />
             Anotações
           </CardTitle>
           {!isEditing && (
@@ -74,7 +75,7 @@ export default function NotesBlock({ userEmail }) {
               variant="ghost"
               size="icon"
               onClick={handleEdit}
-              className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+              className="h-8 w-8 text-slate-600 hover:text-pink-600 hover:bg-pink-50 rounded-full"
             >
               <Pencil className="w-4 h-4" />
             </Button>
@@ -102,14 +103,14 @@ export default function NotesBlock({ userEmail }) {
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
                   placeholder="Digite suas anotações aqui..."
-                  className="min-h-[300px] resize-none"
+                  className="min-h-[300px] resize-none rounded-2xl border-slate-200"
                   autoFocus
                 />
                 <div className="flex gap-2">
                   <Button
                     onClick={handleSave}
                     disabled={createNoteMutation.isPending || updateNoteMutation.isPending}
-                    className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 rounded-2xl"
                   >
                     {(createNoteMutation.isPending || updateNoteMutation.isPending) ? (
                       <>
@@ -127,6 +128,7 @@ export default function NotesBlock({ userEmail }) {
                     variant="outline"
                     onClick={handleCancel}
                     disabled={createNoteMutation.isPending || updateNoteMutation.isPending}
+                    className="rounded-2xl"
                   >
                     Cancelar
                   </Button>
@@ -147,13 +149,15 @@ export default function NotesBlock({ userEmail }) {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <StickyNote className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                      <StickyNote className="w-8 h-8 text-pink-500" />
+                    </div>
                     <p className="text-slate-600 text-sm mb-4">
                       Nenhuma anotação ainda
                     </p>
                     <Button
                       onClick={handleEdit}
-                      variant="outline"
+                      className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 rounded-full"
                       size="sm"
                     >
                       <Pencil className="w-4 h-4 mr-2" />
