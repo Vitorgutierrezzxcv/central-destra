@@ -6,13 +6,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Save } from "lucide-react";
+import { X, Save, AlertCircle } from "lucide-react";
 
 export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading }) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentProjectId = urlParams.get('id');
+  
   const [formData, setFormData] = useState(task || {
     title: "",
     description: "",
-    project_id: projects.length > 0 ? projects[0].id : "",
+    project_id: currentProjectId || (projects.length > 0 ? projects[0].id : ""),
     scheduled_date: "",
     status: "pending",
     priority: "medium"
@@ -25,12 +28,30 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     }
   };
 
+  if (projects.length === 0) {
+    return (
+      <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm">
+        <CardContent className="pt-8 pb-6">
+          <div className="text-center py-8">
+            <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Nenhum projeto disponível
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Você precisa criar um projeto antes de adicionar tarefas
+            </p>
+            <Button onClick={onCancel}>Entendi</Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="mb-8"
     >
       <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm">
         <CardHeader className="border-b border-slate-200">
@@ -78,27 +99,29 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="project" className="text-slate-900 font-medium">
-                  Projeto *
-                </Label>
-                <Select
-                  value={formData.project_id}
-                  onValueChange={(value) => setFormData({...formData, project_id: value})}
-                  required
-                >
-                  <SelectTrigger className="border-slate-200">
-                    <SelectValue placeholder="Selecione um projeto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projects.map(project => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {!currentProjectId && (
+                <div className="space-y-2">
+                  <Label htmlFor="project" className="text-slate-900 font-medium">
+                    Projeto *
+                  </Label>
+                  <Select
+                    value={formData.project_id}
+                    onValueChange={(value) => setFormData({...formData, project_id: value})}
+                    required
+                  >
+                    <SelectTrigger className="border-slate-200">
+                      <SelectValue placeholder="Selecione um projeto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map(project => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="scheduled_date" className="text-slate-900 font-medium">
@@ -165,7 +188,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || projects.length === 0}
+              disabled={isLoading}
               className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
             >
               <Save className="w-4 h-4 mr-2" />

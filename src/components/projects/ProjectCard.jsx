@@ -2,8 +2,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FolderOpen } from "lucide-react";
+import { Pencil, Trash2, FolderOpen, ArrowRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 const colorClasses = {
   blue: "from-blue-400 to-blue-600",
@@ -42,7 +44,10 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
-                onClick={() => onEdit(project)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onEdit(project);
+                }}
               >
                 <Pencil className="w-4 h-4" />
               </Button>
@@ -50,7 +55,10 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-slate-600 hover:text-red-600 hover:bg-red-50"
-                onClick={() => onDelete(project.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onDelete(project.id);
+                }}
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
@@ -77,13 +85,13 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
               <span className="text-xs text-slate-500">
                 Criado em {new Date(project.created_date).toLocaleDateString('pt-BR')}
               </span>
-              <span className={`text-sm font-semibold ${
-                stats.percentage === 100 ? 'text-green-600' :
-                stats.percentage > 50 ? 'text-blue-600' :
-                'text-orange-600'
-              }`}>
-                {stats.percentage}%
-              </span>
+              <Link 
+                to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
+                className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              >
+                Ver detalhes
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </CardContent>
