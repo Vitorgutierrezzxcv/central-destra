@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -48,7 +49,7 @@ export default function ProjectDetail() {
 
   const { data: tasks, isLoading: loadingTasks } = useQuery({
     queryKey: ['project-tasks', projectId],
-    queryFn: () => base44.entities.Task.filter({ project_id: projectId }, '-scheduled_date'),
+    queryFn: () => base44.entities.Task.filter({ project_id: projectId }, '-start_date'), // Changed sorting from -scheduled_date to -start_date
     initialData: [],
     enabled: !!projectId,
   });

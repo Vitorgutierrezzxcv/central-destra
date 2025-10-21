@@ -7,6 +7,7 @@ import { FolderKanban, ListTodo, CheckCircle2, Clock, TrendingUp, ArrowRight } f
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { differenceInDays } from "date-fns";
 
 export default function Dashboard() {
   const { data: projects, isLoading: loadingProjects } = useQuery({
@@ -27,9 +28,15 @@ export default function Dashboard() {
   const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
 
   const recentProjects = projects.slice(0, 3);
+  
+  // Sort tasks by start_date, then end_date
   const upcomingTasks = tasks
     .filter(t => t.status !== 'completed')
-    .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date))
+    .sort((a, b) => {
+      const dateA = new Date(a.start_date || a.end_date || a.created_date);
+      const dateB = new Date(b.start_date || b.end_date || b.created_date);
+      return dateA - dateB;
+    })
     .slice(0, 5);
 
   return (
@@ -134,7 +141,7 @@ export default function Dashboard() {
                   {recentProjects.map(project => (
                     <Link 
                       key={project.id}
-                      to={createPageUrl("Projects")}
+                      to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
                       className="block p-4 rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all"
                     >
                       <div className="flex items-center gap-3">
@@ -185,9 +192,11 @@ export default function Dashboard() {
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
                           <h3 className="font-medium text-slate-900">{task.title}</h3>
-                          {task.scheduled_date && (
+                          {(task.start_date || task.end_date) && (
                             <p className="text-sm text-slate-500 mt-1">
-                              {new Date(task.scheduled_date).toLocaleDateString('pt-BR')}
+                              {task.start_date && `Início: ${new Date(task.start_date).toLocaleDateString('pt-BR')}`}
+                              {task.start_date && task.end_date && ' • '}
+                              {task.end_date && `Fim: ${new Date(task.end_date).toLocaleDateString('pt-BR')}`}
                             </p>
                           )}
                         </div>

@@ -14,10 +14,15 @@
       "type": "string",
       "description": "ID do projeto ao qual a tarefa pertence"
     },
-    "scheduled_date": {
+    "start_date": {
       "type": "string",
       "format": "date",
-      "description": "Data de agendamento da tarefa"
+      "description": "Data de in\u00edcio da tarefa"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de t\u00e9rmino da tarefa"
     },
     "status": {
       "type": "string",

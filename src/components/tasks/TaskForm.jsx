@@ -16,7 +16,8 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     title: "",
     description: "",
     project_id: currentProjectId || (projects.length > 0 ? projects[0].id : ""),
-    scheduled_date: "",
+    start_date: "",
+    end_date: "",
     status: "pending",
     priority: "medium"
   });
@@ -24,6 +25,11 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.title.trim() && formData.project_id) {
+      // Validar que a data de fim não seja anterior à data de início
+      if (formData.start_date && formData.end_date && formData.end_date < formData.start_date) {
+        alert('A data de término não pode ser anterior à data de início');
+        return;
+      }
       onSubmit(formData);
     }
   };
@@ -98,41 +104,55 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-              {!currentProjectId && (
-                <div className="space-y-2">
-                  <Label htmlFor="project" className="text-slate-900 font-medium">
-                    Projeto *
-                  </Label>
-                  <Select
-                    value={formData.project_id}
-                    onValueChange={(value) => setFormData({...formData, project_id: value})}
-                    required
-                  >
-                    <SelectTrigger className="border-slate-200">
-                      <SelectValue placeholder="Selecione um projeto" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projects.map(project => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
+            {!currentProjectId && (
               <div className="space-y-2">
-                <Label htmlFor="scheduled_date" className="text-slate-900 font-medium">
-                  Data de Agendamento
+                <Label htmlFor="project" className="text-slate-900 font-medium">
+                  Projeto *
+                </Label>
+                <Select
+                  value={formData.project_id}
+                  onValueChange={(value) => setFormData({...formData, project_id: value})}
+                  required
+                >
+                  <SelectTrigger className="border-slate-200">
+                    <SelectValue placeholder="Selecione um projeto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map(project => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="start_date" className="text-slate-900 font-medium">
+                  Data de Início
                 </Label>
                 <Input
-                  id="scheduled_date"
+                  id="start_date"
                   type="date"
-                  value={formData.scheduled_date}
-                  onChange={(e) => setFormData({...formData, scheduled_date: e.target.value})}
+                  value={formData.start_date}
+                  onChange={(e) => setFormData({...formData, start_date: e.target.value})}
                   className="border-slate-200 focus:border-purple-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="end_date" className="text-slate-900 font-medium">
+                  Data de Término
+                </Label>
+                <Input
+                  id="end_date"
+                  type="date"
+                  value={formData.end_date}
+                  onChange={(e) => setFormData({...formData, end_date: e.target.value})}
+                  className="border-slate-200 focus:border-purple-500"
+                  min={formData.start_date}
                 />
               </div>
             </div>

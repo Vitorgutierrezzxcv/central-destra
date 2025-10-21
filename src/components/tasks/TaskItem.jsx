@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag } from "lucide-react";
+import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,10 +105,17 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                     {priority.label}
                   </Badge>
                   
-                  {task.scheduled_date && (
+                  {task.start_date && (
                     <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(task.scheduled_date).toLocaleDateString('pt-BR')}
+                      Início: {new Date(task.start_date).toLocaleDateString('pt-BR')}
+                    </Badge>
+                  )}
+
+                  {task.end_date && (
+                    <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      Fim: {new Date(task.end_date).toLocaleDateString('pt-BR')}
                     </Badge>
                   )}
                 </div>

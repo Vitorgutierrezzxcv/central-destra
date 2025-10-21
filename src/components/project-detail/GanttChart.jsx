@@ -1,6 +1,5 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "lucide-react";
 
@@ -22,55 +21,44 @@ export default function GanttChart({ tasks, projectColor }) {
       <div className="flex flex-col items-center justify-center py-16 text-slate-500">
         <Calendar className="w-16 h-16 mb-4 opacity-50" />
         <h3 className="text-xl font-semibold mb-2">Nenhuma tarefa para exibir</h3>
-        <p>Adicione tarefas com datas de agendamento para visualizar o cronograma</p>
+        <p>Adicione tarefas com datas de início e término para visualizar o cronograma</p>
       </div>
     );
   }
 
-  const tasksWithDates = tasks.filter(t => t.scheduled_date);
+  const tasksWithDates = tasks.filter(t => t.start_date && t.end_date);
 
   if (tasksWithDates.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-slate-500">
         <Calendar className="w-16 h-16 mb-4 opacity-50" />
         <h3 className="text-xl font-semibold mb-2">Adicione datas às tarefas</h3>
-        <p>Para visualizar o gráfico de Gantt, as tarefas precisam ter datas de agendamento</p>
+        <p>Para visualizar o gráfico de Gantt, as tarefas precisam ter datas de início e término</p>
       </div>
     );
   }
 
   // Get date range
-  const dates = tasksWithDates.map(t => new Date(t.scheduled_date));
-  const minDate = new Date(Math.min(...dates));
-  const maxDate = new Date(Math.max(...dates));
+  const startDates = tasksWithDates.map(t => new Date(t.start_date));
+  const endDates = tasksWithDates.map(t => new Date(t.end_date));
+  const minDate = new Date(Math.min(...startDates));
+  const maxDate = new Date(Math.max(...endDates));
+  
+  const totalDays = differenceInDays(maxDate, minDate) + 1;
 
-  // Prepare data for Gantt chart
-  const chartData = tasksWithDates
-    .sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date))
-    .map(task => ({
-      name: task.title.length > 30 ? task.title.substring(0, 30) + '...' : task.title,
-      fullName: task.title,
-      date: new Date(task.scheduled_date).getTime(),
-      dateLabel: format(parseISO(task.scheduled_date), 'dd/MM/yyyy', { locale: ptBR }),
-      status: task.status,
-      statusLabel: statusLabels[task.status],
-      priority: task.priority,
-      value: 1
-    }));
+  // Sort tasks by start date
+  const sortedTasks = [...tasksWithDates].sort((a, b) => 
+    new Date(a.start_date) - new Date(b.start_date)
+  );
 
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-white p-4 rounded-lg shadow-xl border border-slate-200">
-          <p className="font-semibold text-slate-900 mb-2">{data.fullName}</p>
-          <p className="text-sm text-slate-600">Data: {data.dateLabel}</p>
-          <p className="text-sm text-slate-600">Status: {data.statusLabel}</p>
-          <p className="text-sm text-slate-600 capitalize">Prioridade: {data.priority}</p>
-        </div>
-      );
-    }
-    return null;
+  const getTaskPosition = (startDate) => {
+    const daysDiff = differenceInDays(new Date(startDate), minDate);
+    return (daysDiff / totalDays) * 100;
+  };
+
+  const getTaskWidth = (startDate, endDate) => {
+    const duration = differenceInDays(new Date(endDate), new Date(startDate)) + 1;
+    return (duration / totalDays) * 100;
   };
 
   return (
@@ -80,6 +68,16 @@ export default function GanttChart({ tasks, projectColor }) {
           <Calendar className="w-5 h-5" />
           Cronograma do Projeto
         </h3>
+        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+          <div>
+            <span className="text-slate-600">Data de início: </span>
+            <span className="font-semibold">{format(minDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
+          </div>
+          <div>
+            <span className="text-slate-600">Data de término: </span>
+            <span className="font-semibold">{format(maxDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
+          </div>
+        </div>
         <div className="flex gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded" style={{ backgroundColor: statusColors.pending }} />
@@ -96,38 +94,82 @@ export default function GanttChart({ tasks, projectColor }) {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={Math.max(400, chartData.length * 60)}>
-        <BarChart
-          data={chartData}
-          layout="vertical"
-          margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-          <XAxis 
-            type="number" 
-            domain={[minDate.getTime(), maxDate.getTime()]}
-            tickFormatter={(timestamp) => format(new Date(timestamp), 'dd/MM', { locale: ptBR })}
-            stroke="#64748B"
-          />
-          <YAxis 
-            dataKey="name" 
-            type="category" 
-            width={150}
-            stroke="#64748B"
-          />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="date" radius={[8, 8, 8, 8]}>
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={statusColors[entry.status]} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        {/* Timeline Header */}
+        <div className="flex border-b border-slate-200">
+          <div className="w-64 p-4 bg-slate-50 font-semibold text-slate-900 border-r border-slate-200">
+            Tarefa
+          </div>
+          <div className="flex-1 relative h-12 bg-slate-50">
+            <div className="absolute inset-0 flex">
+              {Array.from({ length: Math.min(totalDays, 30) }, (_, i) => {
+                const date = new Date(minDate);
+                date.setDate(date.getDate() + Math.floor((i / 30) * totalDays));
+                return (
+                  <div 
+                    key={i}
+                    className="flex-1 border-r border-slate-200 px-2 py-3 text-xs text-slate-600 text-center"
+                  >
+                    {format(date, 'dd/MM', { locale: ptBR })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Tasks */}
+        <div className="divide-y divide-slate-200">
+          {sortedTasks.map((task) => {
+            const leftPosition = getTaskPosition(task.start_date);
+            const width = getTaskWidth(task.start_date, task.end_date);
+            const duration = differenceInDays(new Date(task.end_date), new Date(task.start_date)) + 1;
+
+            return (
+              <div key={task.id} className="flex hover:bg-slate-50 transition-colors">
+                <div className="w-64 p-4 border-r border-slate-200">
+                  <div className="font-medium text-slate-900 line-clamp-1 mb-1">
+                    {task.title}
+                  </div>
+                  <div className="text-xs text-slate-500">
+                    {format(parseISO(task.start_date), 'dd/MM', { locale: ptBR })} - {format(parseISO(task.end_date), 'dd/MM', { locale: ptBR })}
+                  </div>
+                </div>
+                <div className="flex-1 relative p-4">
+                  <div className="relative h-8">
+                    <div
+                      className="absolute h-full rounded-lg flex items-center px-3 shadow-md hover:shadow-lg transition-shadow cursor-pointer group"
+                      style={{
+                        left: `${leftPosition}%`,
+                        width: `${width}%`,
+                        backgroundColor: statusColors[task.status],
+                        minWidth: '60px'
+                      }}
+                    >
+                      <span className="text-xs font-medium text-white truncate">
+                        {duration} {duration === 1 ? 'dia' : 'dias'}
+                      </span>
+                      
+                      {/* Tooltip on hover */}
+                      <div className="invisible group-hover:visible absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900 text-white text-xs rounded-lg shadow-xl whitespace-nowrap z-10">
+                        <div className="font-semibold mb-1">{task.title}</div>
+                        <div>Status: {statusLabels[task.status]}</div>
+                        <div>Duração: {duration} {duration === 1 ? 'dia' : 'dias'}</div>
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
         <p className="text-sm text-blue-800">
-          <strong>Dica:</strong> O gráfico de Gantt mostra a linha do tempo das tarefas. 
-          Cada barra representa uma tarefa e sua cor indica o status atual.
+          <strong>Dica:</strong> O gráfico de Gantt mostra a linha do tempo e duração de cada tarefa. 
+          Passe o mouse sobre as barras para ver mais detalhes.
         </p>
       </div>
     </div>

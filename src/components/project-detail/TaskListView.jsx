@@ -9,7 +9,8 @@ import {
   Circle, 
   CheckCircle2, 
   ArrowUpCircle,
-  Flag 
+  Flag,
+  Clock
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -121,10 +122,17 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                         {priority.label}
                       </Badge>
                       
-                      {task.scheduled_date && (
+                      {task.start_date && (
                         <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(task.scheduled_date).toLocaleDateString('pt-BR')}
+                          {new Date(task.start_date).toLocaleDateString('pt-BR')}
+                        </Badge>
+                      )}
+
+                      {task.end_date && (
+                        <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(task.end_date).toLocaleDateString('pt-BR')}
                         </Badge>
                       )}
                     </div>
