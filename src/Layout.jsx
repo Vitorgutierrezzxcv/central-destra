@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -11,10 +12,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
@@ -57,11 +62,12 @@ const crmNav = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
   // Determine which module is active based on current page
   const getCurrentModule = () => {
     const path = location.pathname;
-    if (path.includes('Companies')) {
+    if (path.includes('companies')) {
       return 'crm';
     }
     // Default to taskflow if not in CRM paths
@@ -70,14 +76,23 @@ export default function Layout({ children, currentPageName }) {
 
   const currentModule = getCurrentModule();
 
+  // Auto-open TaskFlow when in TaskFlow pages
+  React.useEffect(() => {
+    if (currentModule === 'taskflow') {
+      const taskFlowPages = ['dashboard', 'projects', 'tasks', 'backlog', 'projectdetail'];
+      const isInTaskFlowPage = taskFlowPages.some(page => 
+        location.pathname.toLowerCase().includes(page)
+      );
+      if (isInTaskFlowPage && !isTaskFlowOpen) {
+        setIsTaskFlowOpen(true);
+      }
+    }
+  }, [location.pathname, currentModule, isTaskFlowOpen]);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
         <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm hidden md:flex">
-          <SidebarHeader className="border-b border-slate-200 p-4">
-            <AppSwitcher />
-          </SidebarHeader>
-
           <SidebarContent className="p-3 flex flex-col h-full">
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
@@ -86,32 +101,74 @@ export default function Layout({ children, currentPageName }) {
               <SidebarGroupContent>
                 <SidebarMenu>
                   {currentModule === 'taskflow' ? (
-                    <>
-                      {taskFlowNav.map((item) => {
-                        const isActive = location.pathname === item.url;
-                        return (
-                          <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton 
-                              asChild 
-                              className={`
-                                rounded-lg mb-1 transition-all duration-200
-                                ${isActive 
-                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
-                                  : 'hover:bg-slate-100 text-slate-700'
-                                }
-                              `}
+                    <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
+                          <div className="flex items-center gap-3">
+                            <FolderKanban className="w-5 h-5 text-blue-600" />
+                            <span className="font-semibold text-slate-900">TaskFlow</span>
+                          </div>
+                          {isTaskFlowOpen ? (
+                            <ChevronDown className="w-4 h-4 text-slate-500 transition-transform" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-slate-500 transition-transform" />
+                          )}
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="ml-3 mt-1 space-y-1">
+                        {taskFlowNav.map((item) => {
+                          const isActive = location.pathname === item.url;
+                          return (
+                            <SidebarMenuItem key={item.title}>
+                              <SidebarMenuButton 
+                                asChild 
+                                className={`
+                                  rounded-lg transition-all duration-200
+                                  ${isActive 
+                                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                    : 'hover:bg-slate-100 text-slate-700'
+                                  }
+                                `}
+                              >
+                                <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                                  <item.icon className="w-4 h-4" />
+                                  <span className="text-sm font-medium">{item.title}</span>
+                                </Link>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          );
+                        })}
+                        
+                        {/* Quick Actions inside TaskFlow */}
+                        <div className="mt-3 pt-3 border-t border-slate-200">
+                          <div className="px-3 pb-2">
+                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                              Ações Rápidas
+                            </span>
+                          </div>
+                          {taskFlowQuickActions.map(action => (
+                            <Link 
+                              key={action.title}
+                              to={action.url}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
                             >
-                              <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
-                                <item.icon className="w-5 h-5" />
-                                <span className="font-medium">{item.title}</span>
-                              </Link>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        );
-                      })}
-                    </>
+                              <action.icon className="w-4 h-4" />
+                              {action.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ) : (
                     <>
+                      <div className="px-3 py-2 mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                            <Building2 className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="font-bold text-slate-900">CRM</span>
+                        </div>
+                      </div>
                       {crmNav.map((item) => {
                         const isActive = location.pathname === item.url;
                         return (
@@ -140,29 +197,10 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupContent>
             </SidebarGroup>
 
-            {currentModule === 'taskflow' && (
-              <SidebarGroup className="mt-6">
-                <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
-                  Ações Rápidas
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <div className="px-3 space-y-2">
-                    {taskFlowQuickActions.map(action => (
-                      <Link 
-                        key={action.title}
-                        to={action.url}
-                        className={`flex items-center gap-2 p-2.5 rounded-lg ${action.color} transition-colors`}
-                      >
-                        <action.icon className="w-4 h-4" />
-                        <span className="text-sm font-medium">{action.title}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            )}
-
-            <div className="mt-auto"> 
+            <div className="mt-auto space-y-3"> 
+              <div className="px-3">
+                <AppSwitcher />
+              </div>
               <UserProfile />
             </div>
           </SidebarContent>

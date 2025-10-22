@@ -46,19 +46,22 @@ export default function AppSwitcher({ isMobile = false }) {
 
   // Determine active module based on current page
   const getCurrentModule = () => {
-    const currentPath = location.pathname;
-    if (currentPath.includes('Companies')) {
-      return modules[1]; // CRM
-    }
-    return modules[0]; // TaskFlow (default)
+    const currentPath = location.pathname.split('/').pop();
+    return modules.find(m => m.pages.some(page => 
+      createPageUrl(page).includes(currentPath)
+    )) || modules[0];
   };
 
   const activeModule = getCurrentModule();
   const ActiveIcon = activeModule.icon;
 
   const handleModuleClick = (module) => {
-    navigate(createPageUrl(module.defaultPage));
-    setShowDialog(false);
+    if (module.id !== activeModule.id) {
+      navigate(createPageUrl(module.defaultPage));
+      setShowDialog(false);
+    } else {
+      setShowDialog(false);
+    }
   };
 
   const ModuleCard = ({ module }) => {
