@@ -1,36 +1,42 @@
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { X, Save } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Loader2, X } from "lucide-react"; // X was already there, now add Loader2
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; // New imports for Select components
 
 const colorOptions = [
-  { value: "blue", label: "Azul", class: "bg-blue-500" },
-  { value: "purple", label: "Roxo", class: "bg-purple-500" },
-  { value: "green", label: "Verde", class: "bg-green-500" },
-  { value: "orange", label: "Laranja", class: "bg-orange-500" },
-  { value: "pink", label: "Rosa", class: "bg-pink-500" },
-  { value: "red", label: "Vermelho", class: "bg-red-500" },
-  { value: "indigo", label: "Índigo", class: "bg-indigo-500" },
-  { value: "teal", label: "Azul-petróleo", class: "bg-teal-500" },
+  { value: "blue", label: "Blue", gradient: "from-blue-500 to-blue-600" },
+  { value: "purple", label: "Purple", gradient: "from-purple-500 to-purple-600" },
+  { value: "green", label: "Green", gradient: "from-green-500 to-green-600" },
+  { value: "orange", label: "Orange", gradient: "from-orange-500 to-orange-600" },
+  { value: "pink", label: "Pink", gradient: "from-pink-500 to-pink-600" },
+  { value: "red", label: "Red", gradient: "from-red-500 to-red-600" },
+  { value: "indigo", label: "Indigo", gradient: "from-indigo-500 to-indigo-600" },
+  { value: "teal", label: "Teal", gradient: "from-teal-500 to-teal-600" },
 ];
 
 export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) {
-  const [formData, setFormData] = useState(project || {
+  const [currentProject, setCurrentProject] = useState(project || {
     name: "",
     description: "",
-    color: "blue",
-    status: "active"
+    color: "blue", // Default color
+    status: "active" // Default status
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formData.name.trim()) {
-      onSubmit(formData);
+    if (currentProject.name.trim()) {
+      onSubmit(currentProject);
     }
   };
 
@@ -39,104 +45,115 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="mb-8"
+      className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200"
     >
-      <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm">
-        <CardHeader className="border-b border-slate-200">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold text-slate-900">
-              {project ? 'Editar Projeto' : 'Novo Projeto'}
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onCancel}
-              className="hover:bg-slate-100"
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <h3 className="text-lg md:text-xl font-bold text-slate-900">
+          {project ? 'Editar Projeto' : 'Novo Projeto'}
+        </h3>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onCancel}
+          className="hover:bg-slate-100"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium">Nome do Projeto *</Label>
+          <Input
+            id="name"
+            placeholder="Ex: Sistema de Vendas"
+            value={currentProject.name}
+            onChange={(e) => setCurrentProject({...currentProject, name: e.target.value})}
+            required
+            className="h-10 md:h-11 border-slate-200 focus:border-blue-500"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="description" className="text-sm font-medium">Descrição</Label>
+          <Textarea
+            id="description"
+            placeholder="Descreva o projeto..."
+            value={currentProject.description}
+            onChange={(e) => setCurrentProject({...currentProject, description: e.target.value})}
+            className="min-h-[80px] md:min-h-[100px] resize-none border-slate-200 focus:border-blue-500"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="color" className="text-sm font-medium">Cor</Label>
+            <Select
+              value={currentProject.color}
+              onValueChange={(value) => setCurrentProject({...currentProject, color: value})}
             >
-              <X className="w-5 h-5" />
-            </Button>
-          </div>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="pt-6 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-slate-900 font-medium">
-                Nome do Projeto *
-              </Label>
-              <Input
-                id="name"
-                placeholder="Ex: Website da Empresa"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="border-slate-200 focus:border-blue-500"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-slate-900 font-medium">
-                Descrição
-              </Label>
-              <Textarea
-                id="description"
-                placeholder="Descreva o projeto..."
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="h-24 border-slate-200 focus:border-blue-500 resize-none"
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-slate-900 font-medium">Cor do Projeto</Label>
-              <RadioGroup
-                value={formData.color}
-                onValueChange={(value) => setFormData({...formData, color: value})}
-                className="grid grid-cols-4 md:grid-cols-8 gap-3"
-              >
-                {colorOptions.map((color) => (
-                  <div key={color.value} className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value={color.value}
-                      id={color.value}
-                      className="sr-only"
-                    />
-                    <Label
-                      htmlFor={color.value}
-                      className={`
-                        w-10 h-10 rounded-lg cursor-pointer border-2 transition-all
-                        ${color.class}
-                        ${formData.color === color.value 
-                          ? 'border-slate-900 scale-110 shadow-lg' 
-                          : 'border-transparent hover:scale-105'
-                        }
-                      `}
-                      title={color.label}
-                    />
-                  </div>
+              <SelectTrigger id="color" className="h-10 md:h-11 border-slate-200 focus:border-blue-500">
+                <SelectValue placeholder="Escolha uma cor" />
+              </SelectTrigger>
+              <SelectContent>
+                {colorOptions.map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-4 h-4 rounded bg-gradient-to-br ${option.gradient}`} />
+                      <span>{option.label}</span>
+                    </div>
+                  </SelectItem>
                 ))}
-              </RadioGroup>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t border-slate-200 flex justify-end gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="status" className="text-sm font-medium">Status</Label>
+            <Select
+              value={currentProject.status}
+              onValueChange={(value) => setCurrentProject({...currentProject, status: value})}
             >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {project ? 'Atualizar' : 'Criar Projeto'}
-            </Button>
-          </CardFooter>
-        </form>
-      </Card>
+              <SelectTrigger id="status" className="h-10 md:h-11 border-slate-200 focus:border-blue-500">
+                <SelectValue placeholder="Status do projeto" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Ativo</SelectItem>
+                <SelectItem value="completed">Concluído</SelectItem>
+                <SelectItem value="archived">Arquivado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+            className="w-full sm:w-auto h-10 md:h-11"
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 h-10 md:h-11"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {project ? 'Salvando...' : 'Criando...'}
+              </>
+            ) : (
+              <>
+                {project ? 'Salvar' : 'Criar Projeto'}
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </motion.div>
   );
 }

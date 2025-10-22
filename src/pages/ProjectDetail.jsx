@@ -157,11 +157,11 @@ export default function ProjectDetail() {
 
   if (!projectId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Projeto não encontrado</h2>
-          <Button onClick={() => navigate(createPageUrl("Projects"))}>
+          <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">Projeto não encontrado</h2>
+          <Button onClick={() => navigate(createPageUrl("Projects"))} className="mt-4">
             Voltar para Projetos
           </Button>
         </div>
@@ -171,11 +171,11 @@ export default function ProjectDetail() {
 
   if (loadingProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <Skeleton className="h-16 w-full rounded-3xl" />
-          <Skeleton className="h-32 w-full rounded-3xl" />
-          <Skeleton className="h-96 w-full rounded-3xl" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
+          <Skeleton className="h-12 md:h-16 w-full rounded-2xl md:rounded-3xl" />
+          <Skeleton className="h-24 md:h-32 w-full rounded-2xl md:rounded-3xl" />
+          <Skeleton className="h-64 md:h-96 w-full rounded-2xl md:rounded-3xl" />
         </div>
       </div>
     );
@@ -224,21 +224,21 @@ export default function ProjectDetail() {
           >
             <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
-          <div className="flex-1 flex items-center gap-3 md:gap-4">
-            <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-gradient-to-br ${colorClasses[project.color]} flex items-center justify-center shadow-lg`}>
+          <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full">
+            <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-gradient-to-br ${colorClasses[project.color]} flex items-center justify-center shadow-lg flex-shrink-0`}>
               <span className="text-xl md:text-3xl text-white font-bold">{project.name[0]}</span>
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">{project.name}</h1>
-              <p className="text-sm md:text-base text-slate-600">{project.description || "Sem descrição"}</p>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 truncate">{project.name}</h1>
+              <p className="text-xs sm:text-sm md:text-base text-slate-600 line-clamp-2">{project.description || "Sem descrição"}</p>
             </div>
           </div>
-          <div className="flex gap-2 ml-auto">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="icon"
               onClick={() => setShowProjectForm(true)}
-              className="bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10"
+              className="flex-1 sm:flex-initial bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10"
             >
               <Pencil className="w-4 h-4" />
             </Button>
@@ -246,7 +246,7 @@ export default function ProjectDetail() {
               variant="outline"
               size="icon"
               onClick={handleProjectDelete}
-              className="bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10 text-red-600 hover:text-red-700 hover:border-red-300"
+              className="flex-1 sm:flex-initial bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10 text-red-600 hover:text-red-700 hover:border-red-300"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -355,7 +355,7 @@ export default function ProjectDetail() {
                 <Button
                   onClick={() => setShowModuleDialog(true)}
                   variant="outline"
-                  className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full h-10 md:h-11"
+                  className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full h-10 md:h-11 text-sm"
                 >
                   <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   <span className="text-sm md:text-base">Adicionar Módulo</span>
@@ -376,13 +376,13 @@ export default function ProjectDetail() {
           <CardContent className="p-0">
             <Tabs defaultValue="list" className="w-full">
               <div className="border-b border-slate-200 px-4 md:px-6">
-                <TabsList className="bg-transparent">
-                  <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm">
+                <TabsList className="bg-transparent w-full sm:w-auto grid grid-cols-2 sm:flex">
+                  <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
                     <List className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">Lista de Tarefas</span>
                     <span className="sm:hidden">Lista</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gantt" className="flex items-center gap-2 text-xs md:text-sm">
+                  <TabsTrigger value="gantt" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
                     <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">Gráfico de Gantt</span>
                     <span className="sm:hidden">Gantt</span>

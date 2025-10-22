@@ -44,13 +44,13 @@ export default function Dashboard() {
 
   if (loadingUser || loadingTasks || loadingProjects) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6 md:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <Skeleton className="h-12 w-64 mb-8 rounded-full" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-3xl" />)}
+          <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-full" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 md:h-32 rounded-2xl md:rounded-3xl" />)}
           </div>
-          <Skeleton className="h-96 rounded-3xl" />
+          <Skeleton className="h-64 md:h-96 rounded-2xl md:rounded-3xl" />
         </div>
       </div>
     );

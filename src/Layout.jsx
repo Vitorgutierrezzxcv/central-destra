@@ -48,7 +48,7 @@ export default function Layout({ children, currentPageName }) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
-        <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm">
+        <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm hidden md:flex">
           <SidebarHeader className="border-b border-slate-200 p-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -126,10 +126,16 @@ export default function Layout({ children, currentPageName }) {
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-6 py-4 md:hidden sticky top-0 z-10">
-            <div className="flex items-center gap-4">
+          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
+            <div className="flex items-center justify-between gap-4">
               <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
-              <h1 className="text-xl font-bold text-slate-900">TaskFlow</h1>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                  <FolderKanban className="w-4 h-4 text-white" />
+                </div>
+                <h1 className="text-lg font-bold text-slate-900">TaskFlow</h1>
+              </div>
+              <div className="w-10" /> {/* Spacer for centering */}
             </div>
           </header>
 

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -73,11 +74,11 @@ export default function GanttChart({ tasks, projectColor }) {
   return (
     <div className="space-y-6">
       <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-        <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-          <Calendar className="w-5 h-5" />
+        <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2 text-sm md:text-base">
+          <Calendar className="w-4 h-4 md:w-5 md:h-5" />
           Cronograma do Projeto
         </h3>
-        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm mb-4">
           <div>
             <span className="text-slate-600">Data de início: </span>
             <span className="font-semibold">{format(minDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
@@ -87,26 +88,26 @@ export default function GanttChart({ tasks, projectColor }) {
             <span className="font-semibold">{format(maxDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
           </div>
         </div>
-        <div className="flex gap-4 text-sm">
+        <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: statusColors.pending }} />
+            <div className="w-3 h-3 md:w-4 md:h-4 rounded" style={{ backgroundColor: statusColors.pending }} />
             <span className="text-slate-600">Pendente</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: statusColors.in_progress }} />
+            <div className="w-3 h-3 md:w-4 md:h-4 rounded" style={{ backgroundColor: statusColors.in_progress }} />
             <span className="text-slate-600">Em Andamento</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{ backgroundColor: statusColors.completed }} />
+            <div className="w-3 h-3 md:w-4 md:h-4 rounded" style={{ backgroundColor: statusColors.completed }} />
             <span className="text-slate-600">Concluída</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-lg border border-slate-200 overflow-x-auto">
         {/* Timeline Header */}
-        <div className="flex border-b border-slate-200">
-          <div className="w-72 p-4 bg-slate-50 font-semibold text-slate-900 border-r border-slate-200">
+        <div className="flex border-b border-slate-200 min-w-[800px]">
+          <div className="w-60 md:w-72 p-3 md:p-4 bg-slate-50 font-semibold text-slate-900 border-r border-slate-200 text-sm md:text-base">
             Tarefa
           </div>
           <div className="flex-1 relative h-12 bg-slate-50">
@@ -128,7 +129,7 @@ export default function GanttChart({ tasks, projectColor }) {
         </div>
 
         {/* Tasks */}
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-slate-200 min-w-[800px]">
           {sortedTasks.map((task) => {
             const leftPosition = getTaskPosition(task.start_date);
             const width = getTaskWidth(task.start_date, task.end_date);
@@ -137,27 +138,27 @@ export default function GanttChart({ tasks, projectColor }) {
 
             return (
               <div key={task.id} className="flex hover:bg-slate-50 transition-colors">
-                <div className="w-72 p-4 border-r border-slate-200">
-                  <div className="font-medium text-slate-900 line-clamp-1 mb-1">
+                <div className="w-60 md:w-72 p-3 md:p-4 border-r border-slate-200">
+                  <div className="font-medium text-slate-900 line-clamp-1 mb-1 text-sm md:text-base">
                     {task.title}
                   </div>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="flex items-center justify-between text-[10px] md:text-xs text-slate-500">
                     <span>
                       {format(parseISO(task.start_date), 'dd/MM', { locale: ptBR })} - {format(parseISO(task.end_date), 'dd/MM', { locale: ptBR })}
                     </span>
                     {assignedUser && (
                       <div className="flex items-center gap-1">
-                        <Avatar className="w-4 h-4">
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        <Avatar className="w-3 h-3 md:w-4 md:h-4">
+                          <AvatarFallback className="text-[8px] md:text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                             {assignedUser.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="truncate max-w-[80px]">{assignedUser.full_name?.split(' ')[0]}</span>
+                        <span className="truncate max-w-[60px] md:max-w-[80px]">{assignedUser.full_name?.split(' ')[0]}</span>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex-1 relative p-4">
+                <div className="flex-1 relative p-3 md:p-4">
                   <div className="relative h-8">
                     <div
                       className="absolute h-full rounded-lg flex items-center px-3 shadow-md hover:shadow-lg transition-shadow cursor-pointer group"
@@ -189,8 +190,8 @@ export default function GanttChart({ tasks, projectColor }) {
         </div>
       </div>
 
-      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-        <p className="text-sm text-blue-800">
+      <div className="bg-blue-50 rounded-lg p-3 md:p-4 border border-blue-200">
+        <p className="text-xs md:text-sm text-blue-800">
           <strong>Dica:</strong> O gráfico de Gantt mostra a linha do tempo e duração de cada tarefa. 
           Passe o mouse sobre as barras para ver mais detalhes.
         </p>
