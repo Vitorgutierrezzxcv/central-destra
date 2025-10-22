@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,7 +15,7 @@ export default function Tasks() {
     status: "all", 
     priority: "all", 
     project: "all",
-    assignedTo: "all", // Added new filter for assignedTo
+    assignedTo: "all",
     search: "" 
   });
   
@@ -90,8 +89,8 @@ export default function Tasks() {
     const priorityMatch = filters.priority === "all" || task.priority === filters.priority;
     const projectMatch = filters.project === "all" || task.project_id === filters.project;
     const assignedToMatch = filters.assignedTo === "all" || 
-      (filters.assignedTo === "unassigned" && !task.assigned_to) || // Check for unassigned tasks
-      task.assigned_to === filters.assignedTo; // Check for specific assignee
+      (filters.assignedTo === "unassigned" && !task.assigned_to) ||
+      task.assigned_to === filters.assignedTo;
     const searchMatch = !filters.search || 
       task.title?.toLowerCase().includes(filters.search.toLowerCase()) ||
       task.description?.toLowerCase().includes(filters.search.toLowerCase());
@@ -99,7 +98,7 @@ export default function Tasks() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 mb-6 md:mb-8">
           <div>
@@ -111,10 +110,10 @@ export default function Tasks() {
               setEditingTask(null);
               setShowForm(true);
             }}
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-10 md:h-11"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-11 md:h-12"
           >
-            <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-            <span className="text-sm md:text-base">Nova Tarefa</span>
+            <Plus className="w-5 h-5 mr-2" />
+            <span className="font-medium">Nova Tarefa</span>
           </Button>
         </div>
 
@@ -142,7 +141,7 @@ export default function Tasks() {
         {loadingTasks || loadingProjects ? (
           <div className="space-y-3 md:space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-24 md:h-32 bg-white/50 rounded-xl md:rounded-2xl animate-pulse" />
+              <div key={i} className="h-32 md:h-36 bg-white/50 rounded-xl md:rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : filteredTasks.length > 0 ? (
@@ -173,7 +172,7 @@ export default function Tasks() {
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
-            <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6">
+            <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6 px-4">
               {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
@@ -181,9 +180,9 @@ export default function Tasks() {
             {!(filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search) && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-full h-10 md:h-11 text-sm md:text-base"
+                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-full h-11 md:h-12"
               >
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-2" />
                 Criar Primeira Tarefa
               </Button>
             )}

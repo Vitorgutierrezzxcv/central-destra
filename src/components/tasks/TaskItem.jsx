@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag, Clock, User } from "lucide-react";
+import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +56,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
   });
 
   const assignedUser = users.find(u => u.email === task.assigned_to);
+  const displayName = assignedUser ? (assignedUser.display_name || assignedUser.full_name) : null;
 
   return (
     <motion.div
@@ -64,93 +65,93 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
       exit={{ opacity: 0, y: -20 }}
     >
       <Card className={`border-l-4 ${status.borderColor} shadow-md hover:shadow-lg transition-all bg-white/80 backdrop-blur-sm`}>
-        <CardContent className="p-4 md:p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-4 flex-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className={`mt-1 ${status.color} hover:opacity-70 transition-opacity`}>
-                    <StatusIcon className="w-6 h-6" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => onStatusChange(task, "pending")}>
-                    <Circle className="w-4 h-4 mr-2 text-yellow-600" />
-                    Marcar como Pendente
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(task, "in_progress")}>
-                    <ArrowUpCircle className="w-4 h-4 mr-2 text-blue-600" />
-                    Marcar como Em Andamento
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(task, "completed")}>
-                    <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
-                    Marcar como Concluída
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+        <CardContent className="p-4 md:p-5">
+          <div className="flex items-start gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className={`mt-1 ${status.color} hover:opacity-70 transition-opacity flex-shrink-0`}>
+                  <StatusIcon className="w-5 h-5 md:w-6 md:h-6" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => onStatusChange(task, "pending")}>
+                  <Circle className="w-4 h-4 mr-2 text-yellow-600" />
+                  Marcar como Pendente
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onStatusChange(task, "in_progress")}>
+                  <ArrowUpCircle className="w-4 h-4 mr-2 text-blue-600" />
+                  Marcar como Em Andamento
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onStatusChange(task, "completed")}>
+                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
+                  Marcar como Concluída
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              <div className="flex-1">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className={`text-lg font-semibold ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
-                    {task.title}
-                  </h3>
-                  {assignedUser && (
-                    <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-                      <Avatar className="w-6 h-6">
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {assignedUser.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium text-slate-700">{assignedUser.full_name}</span>
-                    </div>
-                  )}
-                </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
+                <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
+                  {task.title}
+                </h3>
+                {displayName && (
+                  <div className="flex items-center gap-2 bg-slate-100 px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
+                    <Avatar className="w-5 h-5">
+                      <AvatarFallback className="text-[10px] bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                        {displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-xs font-medium text-slate-700">{displayName}</span>
+                  </div>
+                )}
+              </div>
+              
+              {task.description && (
+                <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                  {task.description}
+                </p>
+              )}
+
+              <div className="flex flex-wrap gap-2 items-center">
+                {project && (
+                  <Badge variant="outline" className="bg-white border-slate-200 text-xs">
+                    {project.name}
+                  </Badge>
+                )}
                 
-                {task.description && (
-                  <p className="text-slate-600 text-sm mb-3 line-clamp-2">
-                    {task.description}
-                  </p>
+                <Badge className={`${status.bg} ${status.color} border ${status.borderColor} text-xs`}>
+                  {status.label}
+                </Badge>
+                
+                <Badge variant="outline" className={`border ${priority.color} text-xs`}>
+                  <Flag className="w-3 h-3 mr-1" />
+                  {priority.label}
+                </Badge>
+                
+                {task.start_date && (
+                  <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1 text-xs">
+                    <Calendar className="w-3 h-3" />
+                    <span className="hidden sm:inline">Início: </span>
+                    {new Date(task.start_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                  </Badge>
                 )}
 
-                <div className="flex flex-wrap gap-2 items-center">
-                  {project && (
-                    <Badge variant="outline" className="bg-white border-slate-200">
-                      {project.name}
-                    </Badge>
-                  )}
-                  
-                  <Badge className={`${status.bg} ${status.color} border ${status.borderColor}`}>
-                    {status.label}
+                {task.end_date && (
+                  <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1 text-xs">
+                    <Clock className="w-3 h-3" />
+                    <span className="hidden sm:inline">Fim: </span>
+                    {new Date(task.end_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
                   </Badge>
-                  
-                  <Badge variant="outline" className={`border ${priority.color}`}>
-                    <Flag className="w-3 h-3 mr-1" />
-                    {priority.label}
-                  </Badge>
-                  
-                  {task.start_date && (
-                    <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      Início: {new Date(task.start_date).toLocaleDateString('pt-BR')}
-                    </Badge>
-                  )}
-
-                  {task.end_date && (
-                    <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      Fim: {new Date(task.end_date).toLocaleDateString('pt-BR')}
-                    </Badge>
-                  )}
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="flex gap-1">
+            <div className="flex md:flex-col gap-1 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(task)}
-                className="text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
               >
                 <Pencil className="w-4 h-4" />
               </Button>
@@ -158,7 +159,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(task.id)}
-                className="text-slate-600 hover:text-red-600 hover:bg-red-50"
+                className="h-8 w-8 text-slate-600 hover:text-red-600 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>

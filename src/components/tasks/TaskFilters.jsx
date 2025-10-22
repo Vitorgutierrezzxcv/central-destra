@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -27,26 +28,30 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
     onFilterChange(newFilters);
   };
 
+  const getUserDisplayName = (user) => {
+    return user.display_name || user.full_name || user.email;
+  };
+
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 md:p-6 mb-6 border border-slate-200">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Filter className="w-5 h-5 text-slate-600" />
-          <h3 className="font-semibold text-slate-900">Filtros</h3>
+          <h3 className="font-semibold text-slate-900 text-sm md:text-base">Filtros</h3>
         </div>
-        <Badge variant="secondary" className="bg-slate-100 text-slate-700">
+        <Badge variant="secondary" className="bg-slate-100 text-slate-700 text-xs md:text-sm">
           {taskCount} {taskCount === 1 ? 'tarefa' : 'tarefas'}
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-5 md:gap-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
           <Input
             placeholder="Buscar tarefas..."
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="pl-9 border-slate-200"
+            className="pl-9 border-slate-200 h-10"
           />
         </div>
 
@@ -54,7 +59,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.status}
           onValueChange={(value) => handleFilterChange("status", value)}
         >
-          <SelectTrigger className="border-slate-200">
+          <SelectTrigger className="border-slate-200 h-10">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -69,7 +74,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.priority}
           onValueChange={(value) => handleFilterChange("priority", value)}
         >
-          <SelectTrigger className="border-slate-200">
+          <SelectTrigger className="border-slate-200 h-10">
             <SelectValue placeholder="Prioridade" />
           </SelectTrigger>
           <SelectContent>
@@ -84,7 +89,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.project}
           onValueChange={(value) => handleFilterChange("project", value)}
         >
-          <SelectTrigger className="border-slate-200">
+          <SelectTrigger className="border-slate-200 h-10">
             <SelectValue placeholder="Projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -101,7 +106,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.assignedTo}
           onValueChange={(value) => handleFilterChange("assignedTo", value)}
         >
-          <SelectTrigger className="border-slate-200">
+          <SelectTrigger className="border-slate-200 h-10">
             <SelectValue placeholder="Responsável">
               {filters.assignedTo === "all" ? (
                 "Todos Responsáveis"
@@ -110,7 +115,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
               ) : (
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
-                  {users.find(u => u.email === filters.assignedTo)?.full_name || "Responsável"}
+                  <span className="truncate">{getUserDisplayName(users.find(u => u.email === filters.assignedTo) || {})}</span>
                 </div>
               )}
             </SelectValue>
@@ -125,7 +130,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
                 <SelectItem key={user.id} value={user.email}>
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4" />
-                    {user.full_name}
+                    <span className="truncate">{getUserDisplayName(user)}</span>
                   </div>
                 </SelectItem>
               ))

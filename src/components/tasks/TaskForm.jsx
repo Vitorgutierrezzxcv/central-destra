@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -34,7 +35,6 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.title.trim() && formData.project_id) {
-      // Validar que a data de fim não seja anterior à data de início
       if (formData.start_date && formData.end_date && formData.end_date < formData.start_date) {
         alert('A data de término não pode ser anterior à data de início');
         return;
@@ -43,9 +43,14 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     }
   };
 
+  // Helper function to get user display name
+  const getUserDisplayName = (user) => {
+    return user.display_name || user.full_name || user.email;
+  };
+
   if (projects.length === 0) {
     return (
-      <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm">
+      <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm mb-6">
         <CardContent className="pt-8 pb-6">
           <div className="text-center py-8">
             <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -67,11 +72,12 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
+      className="mb-6"
     >
       <Card className="shadow-xl border-none bg-white/90 backdrop-blur-sm">
-        <CardHeader className="border-b border-slate-200">
+        <CardHeader className="border-b border-slate-200 p-4 md:p-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold text-slate-900">
+            <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">
               {task ? 'Editar Tarefa' : 'Nova Tarefa'}
             </CardTitle>
             <Button
@@ -85,7 +91,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           </div>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="pt-6 space-y-6">
+          <CardContent className="pt-4 md:pt-6 space-y-4 md:space-y-6 p-4 md:p-6">
             <div className="space-y-2">
               <Label htmlFor="title" className="text-slate-900 font-medium">
                 Título da Tarefa *
@@ -109,11 +115,11 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                 placeholder="Descreva a tarefa..."
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="h-24 border-slate-200 focus:border-purple-500 resize-none"
+                className="h-20 md:h-24 border-slate-200 focus:border-purple-500 resize-none"
               />
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!currentProjectId && (
                 <div className="space-y-2">
                   <Label htmlFor="project" className="text-slate-900 font-medium">
@@ -151,7 +157,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                       {formData.assigned_to ? (
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4" />
-                          {users.find(u => u.email === formData.assigned_to)?.full_name || formData.assigned_to}
+                          {getUserDisplayName(users.find(u => u.email === formData.assigned_to) || {})}
                         </div>
                       ) : (
                         "Selecione um responsável"
@@ -168,7 +174,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
                             <div>
-                              <div className="font-medium">{user.full_name}</div>
+                              <div className="font-medium">{getUserDisplayName(user)}</div>
                               <div className="text-xs text-slate-500">{user.email}</div>
                             </div>
                           </div>
@@ -180,7 +186,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="start_date" className="text-slate-900 font-medium">
                   Data de Início
@@ -209,7 +215,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="status" className="text-slate-900 font-medium">
                   Status
@@ -249,19 +255,20 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               </div>
             </div>
           </CardContent>
-          <CardFooter className="border-t border-slate-200 flex justify-end gap-3">
+          <CardFooter className="border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-3 p-4 md:p-6">
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
               disabled={isLoading}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
             >
               <Save className="w-4 h-4 mr-2" />
               {task ? 'Atualizar' : 'Criar Tarefa'}
