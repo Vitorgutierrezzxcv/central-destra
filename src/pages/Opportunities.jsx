@@ -5,8 +5,32 @@ import { Button } from "@/components/ui/button";
 import { Plus, Search, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { AnimatePresence } from "framer-motion";
+
+import OpportunityForm from "../components/opportunities/OpportunityForm";
+
+const stageLabels = {
+  prospecting: "Prospecção",
+  qualification: "Qualificação",
+  presentation: "Apresentação",
+  negotiation: "Negociação",
+  closing: "Fechamento",
+  post_sale: "Pós-venda"
+};
+
+const stageColors = {
+  prospecting: "bg-slate-100 text-slate-700",
+  qualification: "bg-blue-100 text-blue-700",
+  presentation: "bg-purple-100 text-purple-700",
+  negotiation: "bg-orange-100 text-orange-700",
+  closing: "bg-green-100 text-green-700",
+  post_sale: "bg-teal-100 text-teal-700"
+};
 
 export default function Opportunities() {
+  const [showForm, setShowForm] = useState(false);
+  const [editingOpportunity, setEditingOpportunity] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
@@ -22,8 +46,53 @@ export default function Opportunities() {
     initialData: [],
   });
 
+  const createOpportunityMutation = useMutation({
+    mutationFn: (opportunityData) => base44.entities.Opportunity.create(opportunityData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+      setShowForm(false);
+      setEditingOpportunity(null);
+    },
+  });
+
+  const updateOpportunityMutation = useMutation({
+    mutationFn: ({ id, opportunityData }) => base44.entities.Opportunity.update(id, opportunityData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+      setShowForm(false);
+      setEditingOpportunity(null);
+    },
+  });
+
+  const deleteOpportunityMutation = useMutation({
+    mutationFn: (id) => base44.entities.Opportunity.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+    },
+  });
+
+  const handleSubmit = (opportunityData) => {
+    if (editingOpportunity) {
+      updateOpportunityMutation.mutate({ id: editingOpportunity.id, opportunityData });
+    } else {
+      createOpportunityMutation.mutate(opportunityData);
+    }
+  };
+
+  const handleEdit = (opportunity) => {
+    setEditingOpportunity(opportunity);
+    setShowForm(true);
+  };
+
+  const handleDelete = (opportunityId) => {
+    if (window.confirm('Tem certeza que deseja excluir esta oportunidade?')) {
+      deleteOpportunityMutation.mutate(opportunityId);
+    }
+  };
+
   const filteredOpportunities = opportunities.filter(opp =>
-    opp.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    opp.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    companies.find(c => c.id === opp.company_id)?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -54,7 +123,10 @@ export default function Opportunities() {
               />
             </div>
             <Button 
-              onClick={() => alert('Formulário em breve!')}
+              onClick={() => {
+                setEditingOpportunity(null);
+                setShowForm(true);
+              }}
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full h-10 md:h-11 px-6"
             >
               <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
@@ -62,6 +134,22 @@ export default function Opportunities() {
             </Button>
           </div>
         </div>
+
+        {/* Form */}
+        <AnimatePresence>
+          {showForm && (
+            <OpportunityForm
+              opportunity={editingOpportunity}
+              companies={companies}
+              onSubmit={handleSubmit}
+              onCancel={() => {
+                setShowForm(false);
+                setEditingOpportunity(null);
+              }}
+              isLoading={createOpportunityMutation.isPending || updateOpportunityMutation.isPending}
+            />
+          )}
+        </AnimatePresence>
 
         {/* Content */}
         {isLoading ? (
@@ -73,17 +161,54 @@ export default function Opportunities() {
             {filteredOpportunities.map((opp) => {
               const company = companies.find(c => c.id === opp.company_id);
               return (
-                <Card key={opp.id} className="bg-white shadow-md">
+                <Card key={opp.id} className="bg-white shadow-md hover:shadow-lg transition-all">
                   <CardContent className="p-4">
-                    <h3 className="font-bold text-lg text-slate-900 mb-2">{opp.title}</h3>
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-bold text-lg text-slate-900 flex-1">{opp.title}</h3>
+                      <Badge className={stageColors[opp.stage]}>
+                        {stageLabels[opp.stage]}
+                      </Badge>
+                    </div>
                     {company && (
                       <p className="text-sm text-slate-600 mb-2">{company.name}</p>
                     )}
                     {opp.value && (
-                      <p className="text-emerald-600 font-semibold">
+                      <p className="text-emerald-600 font-semibold text-lg mb-3">
                         R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </p>
                     )}
+                    {opp.probability && (
+                      <div className="mb-3">
+                        <div className="flex justify-between text-xs text-slate-600 mb-1">
+                          <span>Probabilidade</span>
+                          <span>{opp.probability}%</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2">
+                          <div 
+                            className="bg-emerald-500 h-2 rounded-full" 
+                            style={{ width: `${opp.probability}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEdit(opp)}
+                        className="flex-1"
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(opp.id)}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Excluir
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -102,7 +227,7 @@ export default function Opportunities() {
             </p>
             {!searchTerm && (
               <Button 
-                onClick={() => alert('Formulário em breve!')}
+                onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full"
               >
                 <Plus className="w-5 h-5 mr-2" />
