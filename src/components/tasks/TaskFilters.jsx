@@ -4,24 +4,15 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, User, CalendarDays, ChevronDown } from "lucide-react"; // Added CalendarDays, ChevronDown
+import { Search, Filter, User, CalendarDays, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // New
-import { Calendar } from "@/components/ui/calendar"; // New
-import { format } from "date-fns"; // New
-import { ptBR } from "date-fns/locale"; // New for Portuguese locale
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-export default function TaskFilters({ onFilterChange, projects, taskCount }) {
-  const [filters, setFilters] = React.useState({
-    status: "all",
-    priority: "all",
-    project: "all",
-    assignedTo: "all",
-    search: "",
-    dateRange: "all", // New: shortcut for date filters
-    dateFrom: undefined, // New: specific start date for custom range
-    dateTo: undefined, // New: specific end date for custom range
-  });
+export default function TaskFilters({ onFilterChange, filters, projects, taskCount }) {
+  // Removed internal useState for filters, it is now passed as a prop.
 
   const { data: users, isLoading: loadingUsers } = useQuery({
     queryKey: ['users'],
@@ -64,8 +55,9 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
     return { dateFrom: from, dateTo: to };
   };
 
+  // Modified handleFilterChange to use filters from props and call onFilterChange
   const handleFilterChange = (key, value) => {
-    let newFilters = { ...filters };
+    let newFilters = { ...filters }; // Use filters from props
 
     if (key === "dateRange") {
       newFilters.dateRange = value;
@@ -89,8 +81,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
       newFilters[key] = value;
     }
 
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange(newFilters); // Call prop callback
   };
 
   const getUserDisplayName = (user) => {
@@ -130,10 +121,10 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
         </Badge>
       </div>
 
-      {/* Flexible container for filters, adapting to screen size */}
-      <div className="flex flex-wrap gap-3 md:gap-4 items-end">
+      {/* Flexible container for filters, adapted to new grid layout */}
+      <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-5 md:gap-4">
         {/* Search Input - takes more space on larger screens */}
-        <div className="relative flex-grow min-w-[200px]">
+        <div className="relative lg:col-span-2">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
           <Input
             placeholder="Buscar tarefas..."
@@ -148,7 +139,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.dateRange}
           onValueChange={(value) => handleFilterChange("dateRange", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0">
+          <SelectTrigger className="border-slate-200 h-10 w-full">
             <CalendarDays className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Prazo">
                 {selectedDateRangeLabel}
@@ -169,7 +160,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
                 <Popover>
                     <PopoverTrigger asChild>
                         <button
-                            className="flex h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0 items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         >
                             <CalendarDays className="mr-2 h-4 w-4" />
                             {filters.dateFrom ? (
@@ -194,7 +185,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
                 <Popover>
                     <PopoverTrigger asChild>
                         <button
-                            className="flex h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0 items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         >
                             <CalendarDays className="mr-2 h-4 w-4" />
                             {filters.dateTo ? (
@@ -223,7 +214,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.status}
           onValueChange={(value) => handleFilterChange("status", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0">
+          <SelectTrigger className="border-slate-200 h-10 w-full">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -231,6 +222,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
             <SelectItem value="pending">Pendente</SelectItem>
             <SelectItem value="in_progress">Em Andamento</SelectItem>
             <SelectItem value="completed">Concluída</SelectItem>
+            <SelectItem value="overdue">Atrasadas</SelectItem> {/* Added new item */}
           </SelectContent>
         </Select>
 
@@ -239,7 +231,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.priority}
           onValueChange={(value) => handleFilterChange("priority", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0">
+          <SelectTrigger className="border-slate-200 h-10 w-full">
             <SelectValue placeholder="Prioridade" />
           </SelectTrigger>
           <SelectContent>
@@ -255,7 +247,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.project}
           onValueChange={(value) => handleFilterChange("project", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0">
+          <SelectTrigger className="border-slate-200 h-10 w-full">
             <SelectValue placeholder="Projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -273,7 +265,7 @@ export default function TaskFilters({ onFilterChange, projects, taskCount }) {
           value={filters.assignedTo}
           onValueChange={(value) => handleFilterChange("assignedTo", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full sm:w-auto min-w-[150px] flex-shrink-0">
+          <SelectTrigger className="border-slate-200 h-10 w-full">
             <SelectValue placeholder="Responsável">
               {filters.assignedTo === "all" ? (
                 "Todos Responsáveis"

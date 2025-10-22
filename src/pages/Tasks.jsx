@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import TaskItem from "../components/tasks/TaskItem";
 import TaskKanbanView from "../components/tasks/TaskKanbanView";
 import TaskTableView from "../components/tasks/TaskTableView";
 import DateRangeFilter from "../components/tasks/DateRangeFilter";
-import { parseISO, isWithinInterval } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isSameDay } from "date-fns";
 
 export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
@@ -26,6 +27,21 @@ export default function Tasks() {
   const [dateRange, setDateRange] = useState({ start: null, end: null });
   
   const queryClient = useQueryClient();
+
+  // Read URL parameters and apply filters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const statusParam = urlParams.get('status');
+    const assignedToParam = urlParams.get('assignedTo');
+    
+    if (statusParam || assignedToParam) {
+      setFilters(prev => ({
+        ...prev,
+        status: statusParam || prev.status,
+        assignedTo: assignedToParam || prev.assignedTo
+      }));
+    }
+  }, []);
 
   const { data: tasks, isLoading: loadingTasks } = useQuery({
     queryKey: ['tasks'],
@@ -95,7 +111,20 @@ export default function Tasks() {
   };
 
   const filteredTasks = tasks.filter(task => {
-    const statusMatch = filters.status === "all" || task.status === filters.status;
+    // Handle overdue status filter
+    const now = new Date();
+    const isOverdue = task.status !== 'completed' && 
+                      task.end_date && 
+                      isBefore(new Date(task.end_date), now) && 
+                      !isSameDay(new Date(task.end_date), now);
+    
+    let statusMatch;
+    if (filters.status === "overdue") {
+      statusMatch = isOverdue;
+    } else {
+      statusMatch = filters.status === "all" || task.status === filters.status;
+    }
+
     const priorityMatch = filters.priority === "all" || task.priority === filters.priority;
     const projectMatch = filters.project === "all" || task.project_id === filters.project;
     const assignedToMatch = filters.assignedTo === "all" || 
@@ -163,6 +192,7 @@ export default function Tasks() {
 
         <TaskFilters 
           onFilterChange={setFilters} 
+          filters={filters}
           projects={projects}
           taskCount={filteredTasks.length}
         />
