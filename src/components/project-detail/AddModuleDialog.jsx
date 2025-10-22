@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -58,12 +59,13 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
 
   const handleModuleSelect = (moduleId) => {
     setSelectedModuleId(moduleId);
-    const templates = templates.filter(t => t.module_id === moduleId);
+    // Corrected variable name from 'templates' to 'moduleTemplatesList' to avoid shadowing
+    const moduleTemplatesList = templates.filter(t => t.module_id === moduleId);
     
     const today = new Date();
     let currentDate = today;
     
-    const initialTaskData = templates.map((template, index) => {
+    const initialTaskData = moduleTemplatesList.map((template, index) => {
       const startDate = format(currentDate, 'yyyy-MM-dd');
       const endDate = format(addDays(currentDate, template.estimated_days || 1), 'yyyy-MM-dd');
       currentDate = addDays(currentDate, (template.estimated_days || 1) + 1);
