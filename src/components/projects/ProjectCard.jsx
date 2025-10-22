@@ -1,101 +1,114 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, FolderOpen, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Pencil, Trash2, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 const colorClasses = {
-  blue: "from-blue-400 to-blue-600",
-  purple: "from-purple-400 to-purple-600",
-  green: "from-green-400 to-green-600",
-  orange: "from-orange-400 to-orange-600",
-  pink: "from-pink-400 to-pink-600",
-  red: "from-red-400 to-red-600",
-  indigo: "from-indigo-400 to-indigo-600",
-  teal: "from-teal-400 to-teal-600",
+  blue: "from-blue-400 to-blue-500",
+  purple: "from-purple-400 to-purple-500",
+  green: "from-green-400 to-green-500",
+  orange: "from-orange-400 to-orange-500",
+  pink: "from-pink-400 to-pink-500",
+  red: "from-red-400 to-red-500",
+  indigo: "from-indigo-400 to-indigo-500",
+  teal: "from-teal-400 to-teal-500",
 };
 
 export default function ProjectCard({ project, stats, onEdit, onDelete }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -4 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow border-none">
-        <div className={`h-2 bg-gradient-to-r ${colorClasses[project.color] || colorClasses.blue}`} />
-        <CardHeader className="pb-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-3 flex-1">
-              <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} flex items-center justify-center shadow-md`}>
-                <FolderOpen className="w-5 h-5 text-white" />
+      <Link to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}>
+        <Card className="relative overflow-hidden shadow-lg hover:shadow-2xl transition-all border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm h-full">
+          {/* Colored Header */}
+          <div className={`h-24 md:h-28 bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} p-4 md:p-5`}>
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h3 className="text-white font-bold text-lg md:text-xl mb-1 line-clamp-2">
+                  {project.name}
+                </h3>
+                <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                  {stats.total} tarefa{stats.total !== 1 ? 's' : ''}
+                </Badge>
               </div>
-              <CardTitle className="text-lg font-bold text-slate-900 line-clamp-1">
-                {project.name}
-              </CardTitle>
-            </div>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onEdit(project);
-                }}
-              >
-                <Pencil className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-slate-600 hover:text-red-600 hover:bg-red-50"
-                onClick={(e) => {
-                  e.preventDefault();
-                  onDelete(project.id);
-                }}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-1" onClick={(e) => e.preventDefault()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(project);
+                  }}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(project.id);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[40px]">
-            {project.description || "Sem descrição"}
-          </p>
-          
-          <div className="space-y-3">
-            <div>
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-slate-600">Progresso</span>
-                <span className="font-semibold text-slate-900">
-                  {stats.completed} / {stats.total} tarefas
-                </span>
+
+          <CardContent className="p-4 md:p-5">
+            {project.description && (
+              <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[40px]">
+                {project.description}
+              </p>
+            )}
+            
+            {/* Progress Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">Progresso</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-slate-900">{stats.percentage}%</span>
+                  {stats.percentage === 100 && (
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  )}
+                </div>
               </div>
               <Progress value={stats.percentage} className="h-2" />
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span>{stats.completed} concluída{stats.completed !== 1 ? 's' : ''}</span>
+                <span>{stats.total - stats.completed} pendente{(stats.total - stats.completed) !== 1 ? 's' : ''}</span>
+              </div>
             </div>
-            
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+
+            {/* Footer */}
+            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
               <span className="text-xs text-slate-500">
-                Criado em {new Date(project.created_date).toLocaleDateString('pt-BR')}
+                {new Date(project.created_date).toLocaleDateString('pt-BR', { 
+                  day: '2-digit', 
+                  month: 'short' 
+                })}
               </span>
-              <Link 
-                to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
-                className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1"
-              >
+              <div className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700">
                 Ver detalhes
                 <ArrowRight className="w-4 h-4" />
-              </Link>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Link>
     </motion.div>
   );
 }

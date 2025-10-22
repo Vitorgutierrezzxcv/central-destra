@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, FolderKanban } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence } from "framer-motion";
 import ProjectCard from "../components/projects/ProjectCard";
@@ -67,10 +67,8 @@ export default function Projects() {
 
   const handleDelete = async (projectId) => {
     if (window.confirm('Tem certeza que deseja excluir este projeto? Todas as tarefas associadas também serão removidas.')) {
-      // Delete all tasks associated with this project
       const projectTasks = tasks.filter(t => t.project_id === projectId);
       await Promise.all(projectTasks.map(task => base44.entities.Task.delete(task.id)));
-      // Delete the project
       deleteProjectMutation.mutate(projectId);
     }
   };
@@ -90,35 +88,46 @@ export default function Projects() {
     project.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col gap-4 mb-6 md:mb-8">
-          <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">Projetos</h1>
-            <p className="text-sm md:text-base text-slate-600">Gerencie todos os seus projetos em um só lugar</p>
-          </div>
-          <Button 
-            onClick={() => {
-              setEditingProject(null);
-              setShowForm(true);
-            }}
-            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg rounded-full h-10 md:h-11"
-          >
-            <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-            <span className="text-sm md:text-base">Novo Projeto</span>
-          </Button>
-        </div>
+  const activeProjects = filteredProjects.filter(p => p.status === 'active').length;
+  const completedProjects = filteredProjects.filter(p => p.status === 'completed').length;
 
-        <div className="mb-4 md:mb-6">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
-            <Input
-              placeholder="Buscar projetos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 md:pl-10 bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 text-sm md:text-base rounded-xl md:rounded-2xl"
-            />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header with Gradient Style */}
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg">
+              <FolderKanban className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">Projetos</h1>
+              <p className="text-sm md:text-base text-slate-600">
+                {activeProjects} ativo{activeProjects !== 1 ? 's' : ''} • {completedProjects} concluído{completedProjects !== 1 ? 's' : ''}
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
+              <Input
+                placeholder="Buscar projetos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 md:pl-10 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm h-10 md:h-11 text-sm md:text-base rounded-full"
+              />
+            </div>
+            <Button 
+              onClick={() => {
+                setEditingProject(null);
+                setShowForm(true);
+              }}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg rounded-full h-10 md:h-11 px-6"
+            >
+              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              <span className="text-sm md:text-base font-medium">Novo Projeto</span>
+            </Button>
           </div>
         </div>
 
@@ -139,7 +148,7 @@ export default function Projects() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-48 bg-white/50 rounded-xl md:rounded-2xl animate-pulse" />
+              <div key={i} className="h-56 bg-white/50 rounded-2xl md:rounded-3xl animate-pulse" />
             ))}
           </div>
         ) : filteredProjects.length > 0 ? (
@@ -157,22 +166,24 @@ export default function Projects() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="text-center py-12 md:py-16">
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 md:w-12 md:h-12 text-slate-400" />
+          <div className="flex flex-col items-center justify-center py-16 md:py-24">
+            <div className="w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl md:rounded-[2rem] flex items-center justify-center mb-6 shadow-lg">
+              <FolderKanban className="w-10 h-10 md:w-16 md:h-16 text-purple-500" />
             </div>
-            <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-2">
+            <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
               {searchTerm ? 'Nenhum projeto encontrado' : 'Nenhum projeto ainda'}
             </h3>
-            <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6">
-              {searchTerm ? 'Tente buscar com outros termos' : 'Crie seu primeiro projeto para começar'}
+            <p className="text-sm md:text-base text-slate-600 mb-6 md:mb-8 text-center max-w-md px-4">
+              {searchTerm 
+                ? 'Tente buscar com outros termos ou crie um novo projeto' 
+                : 'Crie seu primeiro projeto e comece a organizar suas tarefas'}
             </p>
             {!searchTerm && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-full h-10 md:h-11 text-sm md:text-base"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg rounded-full h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
               >
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <Plus className="w-5 h-5 mr-2" />
                 Criar Primeiro Projeto
               </Button>
             )}
