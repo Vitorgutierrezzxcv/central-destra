@@ -18,6 +18,7 @@ import NotesBlock from "../components/dashboard/NotesBlock";
 import StatsCards from "../components/dashboard/StatsCards";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
 import UpcomingTasks from "../components/dashboard/UpcomingTasks";
+import UserPerformanceRanking from "../components/dashboard/UserPerformanceRanking";
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState("week");
@@ -177,6 +178,9 @@ export default function Dashboard() {
                 <ProjectProgress projects={projects} tasks={tasks} />
               </CardContent>
             </Card>
+
+            {/* User Performance Ranking */}
+            <UserPerformanceRanking />
           </div>
 
           {/* Right Column - Calendar & Notes */}
