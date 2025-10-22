@@ -14,6 +14,10 @@
       "type": "string",
       "description": "ID do projeto ao qual a tarefa pertence"
     },
+    "module_id": {
+      "type": "string",
+      "description": "ID do m\u00f3dulo de origem (se aplic\u00e1vel)"
+    },
     "assigned_to": {
       "type": "string",
       "description": "Email do usu\u00e1rio respons\u00e1vel pela tarefa"

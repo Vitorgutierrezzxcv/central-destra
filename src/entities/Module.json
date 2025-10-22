@@ -1,0 +1,36 @@
+{
+  "name": "Module",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do m\u00f3dulo"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do m\u00f3dulo"
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "blue",
+        "purple",
+        "green",
+        "orange",
+        "pink",
+        "red",
+        "indigo",
+        "teal"
+      ],
+      "default": "blue",
+      "description": "Cor do m\u00f3dulo"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categoria do m\u00f3dulo"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}
