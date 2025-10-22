@@ -4,7 +4,8 @@ import {
   FolderKanban, 
   Users, 
   ChevronDown,
-  Grid3x3
+  Grid3x3,
+  Wallet
 } from "lucide-react";
 import {
   Dialog,
@@ -36,6 +37,15 @@ const modules = [
     color: "from-green-500 to-teal-600",
     defaultPage: "Companies",
     pages: ["Companies", "Opportunities"]
+  },
+  {
+    id: "finance",
+    name: "Finanças",
+    description: "Controle Financeiro",
+    icon: Wallet,
+    color: "from-amber-500 to-orange-600",
+    defaultPage: "Lancamentos",
+    pages: ["Lancamentos"]
   }
 ];
 
@@ -51,6 +61,11 @@ export default function AppSwitcher({ isMobile = false }) {
     // Check if in CRM pages
     if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
       return modules.find(m => m.id === 'crm');
+    }
+    
+    // Check if in Finance pages
+    if (currentPath.includes('lancamentos')) {
+      return modules.find(m => m.id === 'finance');
     }
     
     // Default to TaskFlow

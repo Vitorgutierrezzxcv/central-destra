@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -67,6 +67,19 @@ const crmNav = [
   },
 ];
 
+const financeNav = [
+  {
+    title: "Lançamentos",
+    url: createPageUrl("Lancamentos"),
+    icon: Wallet,
+  },
+];
+
+const financeQuickActions = [
+  { title: "Nova Entrada", url: createPageUrl("Lancamentos"), icon: ArrowUpCircle, color: "bg-green-50 hover:bg-green-100 text-green-700" },
+  { title: "Nova Saída", url: createPageUrl("Lancamentos"), icon: ArrowDownCircle, color: "bg-red-50 hover:bg-red-100 text-red-700" }
+];
+
 function LayoutContent({ children }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
@@ -77,6 +90,9 @@ function LayoutContent({ children }) {
     const path = location.pathname;
     if (path.includes('companies') || path.includes('opportunities')) {
       return 'crm';
+    }
+    if (path.includes('lancamentos')) {
+      return 'finance';
     }
     return 'taskflow';
   };
@@ -163,7 +179,7 @@ function LayoutContent({ children }) {
                       </div>
                     </CollapsibleContent>
                   </Collapsible>
-                ) : (
+                ) : currentModule === 'crm' ? (
                   <>
                     <div className="px-3 py-2 mb-2">
                       <div className="flex items-center gap-3">
@@ -195,6 +211,57 @@ function LayoutContent({ children }) {
                         </SidebarMenuItem>
                       );
                     })}
+                  </>
+                ) : ( // This block is for the new 'Finanças' module
+                  <>
+                    <div className="px-3 py-2 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+                          <Wallet className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-bold text-slate-900">Finanças</span>
+                      </div>
+                    </div>
+                    {financeNav.map((item) => {
+                      const isActive = location.pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton 
+                            asChild 
+                            className={`
+                              rounded-lg mb-1 transition-all duration-200
+                              ${isActive 
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg' 
+                                : 'hover:bg-slate-100 text-slate-700'
+                              }
+                            `}
+                          >
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                              <item.icon className="w-5 h-5" />
+                              <span className="font-medium">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                    
+                    <div className="mt-3 pt-3 border-t border-slate-200">
+                      <div className="px-3 pb-2">
+                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                          Ações Rápidas
+                        </span>
+                      </div>
+                      {financeQuickActions.map(action => (
+                        <Link 
+                          key={action.title}
+                          to={action.url}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium mb-1`}
+                        >
+                          <action.icon className="w-4 h-4" />
+                          {action.title}
+                        </Link>
+                      ))}
+                    </div>
                   </>
                 )}
               </SidebarMenu>
