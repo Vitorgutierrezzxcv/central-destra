@@ -1,30 +1,27 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"; // Added Avatar imports
-import { AlertCircle, Loader2 } from "lucide-react"; // Added Loader2 import, removed X, Save, User
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AlertCircle, Loader2 } from "lucide-react";
+import RichTextEditor from "./RichTextEditor";
 
 export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading }) {
   const urlParams = new URLSearchParams(window.location.search);
   const currentProjectId = urlParams.get('id');
 
-  // Renamed formData to currentTask
   const [currentTask, setCurrentTask] = useState(task || {
     title: "",
     description: "",
-    // Project ID logic changed slightly by outline - always show select, but default to currentProjectId if available
     project_id: currentProjectId || (projects.length > 0 ? projects[0].id : ""),
-    assigned_to: null, // Changed from "" to null for Select component compatibility
+    assigned_to: null,
     start_date: "",
     end_date: "",
-    status: "pending", // Status field removed from form, but kept in initial state for existing tasks
+    status: "pending",
     priority: "medium"
   });
 
@@ -36,22 +33,19 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Use currentTask instead of formData
     if (currentTask.title.trim() && currentTask.project_id) {
       if (currentTask.start_date && currentTask.end_date && currentTask.end_date < currentTask.start_date) {
         alert('A data de término não pode ser anterior à data de início');
         return;
       }
-      onSubmit(currentTask); // Pass currentTask
+      onSubmit(currentTask);
     }
   };
 
-  // Helper function to get user display name - still useful for AvatarFallback
   const getUserDisplayName = (user) => {
     return user.display_name || user.full_name || user.email;
   };
 
-  // Original Card component for no projects message, preserving functionality
   if (projects.length === 0) {
     return (
       <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200">
@@ -95,12 +89,10 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
 
         <div className="space-y-2">
           <Label htmlFor="description" className="text-sm font-medium">Descrição</Label>
-          <Textarea
-            id="description"
-            placeholder="Adicione detalhes sobre a tarefa..."
+          <RichTextEditor
             value={currentTask.description}
-            onChange={(e) => setCurrentTask({...currentTask, description: e.target.value})}
-            className="min-h-[80px] md:min-h-[100px] resize-none text-sm md:text-base"
+            onChange={(value) => setCurrentTask({...currentTask, description: value})}
+            placeholder="Adicione detalhes, use texto ou crie uma checklist..."
           />
         </div>
 
@@ -197,7 +189,6 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
               className="h-10 md:h-11 text-sm"
             />
           </div>
-          {/* Original Status Select component has been removed as per outline */}
         </div>
 
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">

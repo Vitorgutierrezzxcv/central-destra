@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
+
 const statusConfig = {
   pending: {
     icon: Circle,
@@ -122,9 +124,9 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
               </div>
               
               {task.description && (
-                <p className="text-sm text-slate-600 mb-3 line-clamp-2">
-                  {task.description}
-                </p>
+                <div className="mb-3">
+                  <TaskDescriptionDisplay description={task.description} />
+                </div>
               )}
 
               <div className="flex flex-wrap gap-2 items-center">

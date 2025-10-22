@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -21,6 +22,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import TaskDescriptionDisplay from "../tasks/TaskDescriptionDisplay";
 
 const statusConfig = {
   pending: {
@@ -146,7 +149,9 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                     </div>
                     
                     {task.description && (
-                      <p className="text-sm text-slate-600 mb-2">{task.description}</p>
+                      <div className="mb-2">
+                        <TaskDescriptionDisplay description={task.description} />
+                      </div>
                     )}
 
                     <div className="flex flex-wrap gap-2">
