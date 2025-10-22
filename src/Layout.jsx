@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -63,8 +64,30 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
-  // Determine which navigation to show based on current page
-  const isInCRM = location.pathname.includes('Companies');
+  // Determine which module is active based on current page
+  const getCurrentModule = () => {
+    const path = location.pathname;
+    if (path.includes('companies')) {
+      return 'crm';
+    }
+    // Default to taskflow if not in CRM paths
+    return 'taskflow';
+  };
+
+  const currentModule = getCurrentModule();
+
+  // Auto-open TaskFlow when in TaskFlow pages
+  React.useEffect(() => {
+    if (currentModule === 'taskflow') {
+      const taskFlowPages = ['dashboard', 'projects', 'tasks', 'backlog', 'projectdetail'];
+      const isInTaskFlowPage = taskFlowPages.some(page => 
+        location.pathname.toLowerCase().includes(page)
+      );
+      if (isInTaskFlowPage && !isTaskFlowOpen) {
+        setIsTaskFlowOpen(true);
+      }
+    }
+  }, [location.pathname, currentModule, isTaskFlowOpen]);
 
   return (
     <SidebarProvider>
@@ -77,7 +100,7 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {!isInCRM ? (
+                  {currentModule === 'taskflow' ? (
                     <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
@@ -137,28 +160,38 @@ export default function Layout({ children, currentPageName }) {
                       </CollapsibleContent>
                     </Collapsible>
                   ) : (
-                    crmNav.map((item) => {
-                      const isActive = location.pathname === item.url;
-                      return (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton 
-                            asChild 
-                            className={`
-                              rounded-lg mb-1 transition-all duration-200
-                              ${isActive 
-                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
-                                : 'hover:bg-slate-100 text-slate-700'
-                              }
-                            `}
-                          >
-                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
-                              <item.icon className="w-5 h-5" />
-                              <span className="font-medium">{item.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })
+                    <>
+                      <div className="px-3 py-2 mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                            <Building2 className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="font-bold text-slate-900">CRM</span>
+                        </div>
+                      </div>
+                      {crmNav.map((item) => {
+                        const isActive = location.pathname === item.url;
+                        return (
+                          <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton 
+                              asChild 
+                              className={`
+                                rounded-lg mb-1 transition-all duration-200
+                                ${isActive 
+                                  ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
+                                  : 'hover:bg-slate-100 text-slate-700'
+                                }
+                              `}
+                            >
+                              <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                                <item.icon className="w-5 h-5" />
+                                <span className="font-medium">{item.title}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>
+                        );
+                      })}
+                    </>
                   )}
                 </SidebarMenu>
               </SidebarGroupContent>
