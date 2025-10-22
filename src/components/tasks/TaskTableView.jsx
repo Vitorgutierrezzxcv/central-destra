@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -52,8 +53,17 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
   });
 
   const getUserDisplayName = (email) => {
+    if (!email) return null;
     const user = users.find(u => u.email === email);
-    return user ? (user.display_name || user.full_name) : null;
+    if (!user) return email.split('@')[0];
+    return user.display_name || user.full_name || email.split('@')[0];
+  };
+
+  const getUserInitials = (email) => {
+    if (!email) return '?';
+    const user = users.find(u => u.email === email);
+    const name = user ? (user.display_name || user.full_name || email) : email;
+    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   };
 
   if (tasks.length === 0) {
@@ -89,6 +99,7 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
               const StatusIcon = status.icon;
               const priority = priorityConfig[task.priority];
               const assignedUserName = getUserDisplayName(task.assigned_to);
+              const userInitials = getUserInitials(task.assigned_to);
 
               return (
                 <TableRow key={task.id} className="hover:bg-slate-50 transition-colors">
@@ -138,11 +149,11 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
                   </TableCell>
 
                   <TableCell className="hidden lg:table-cell">
-                    {assignedUserName ? (
+                    {task.assigned_to && assignedUserName ? (
                       <div className="flex items-center gap-2">
                         <Avatar className="w-6 h-6">
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {assignedUserName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                            {userInitials}
                           </AvatarFallback>
                         </Avatar>
                         <span className="text-sm text-slate-700">{assignedUserName}</span>

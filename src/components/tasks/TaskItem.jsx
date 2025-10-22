@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -55,8 +56,22 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
     initialData: [],
   });
 
-  const assignedUser = users.find(u => u.email === task.assigned_to);
-  const displayName = assignedUser ? (assignedUser.display_name || assignedUser.full_name) : null;
+  const getUserDisplayName = (email) => {
+    if (!email) return null;
+    const user = users.find(u => u.email === email);
+    if (!user) return email.split('@')[0]; // Fallback to username from email
+    return user.display_name || user.full_name || email.split('@')[0];
+  };
+
+  const getUserInitials = (email) => {
+    if (!email) return '?';
+    const user = users.find(u => u.email === email);
+    const name = user ? (user.display_name || user.full_name || email) : email;
+    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  };
+
+  const assignedUserName = getUserDisplayName(task.assigned_to);
+  const userInitials = getUserInitials(task.assigned_to);
 
   return (
     <motion.div
@@ -94,14 +109,14 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
                   {task.title}
                 </h3>
-                {displayName && (
+                {task.assigned_to && assignedUserName && (
                   <div className="flex items-center gap-2 bg-slate-100 px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
                     <Avatar className="w-5 h-5">
                       <AvatarFallback className="text-[10px] bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                        {displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                        {userInitials}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-xs font-medium text-slate-700">{displayName}</span>
+                    <span className="text-xs font-medium text-slate-700">{assignedUserName}</span>
                   </div>
                 )}
               </div>

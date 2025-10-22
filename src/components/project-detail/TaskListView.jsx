@@ -59,6 +59,20 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
     initialData: [],
   });
 
+  const getUserDisplayName = (email) => {
+    if (!email) return null;
+    const user = users.find(u => u.email === email);
+    if (!user) return email.split('@')[0]; // Fallback para parte do email
+    return user.display_name || user.full_name || email.split('@')[0];
+  };
+
+  const getUserInitials = (email) => {
+    if (!email) return '?';
+    const user = users.find(u => u.email === email);
+    const name = user ? (user.display_name || user.full_name || email) : email;
+    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-16 text-slate-500">
@@ -76,7 +90,8 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
           const status = statusConfig[task.status];
           const StatusIcon = status.icon;
           const priority = priorityConfig[task.priority];
-          const assignedUser = users.find(u => u.email === task.assigned_to);
+          const assignedUserName = getUserDisplayName(task.assigned_to);
+          const userInitials = getUserInitials(task.assigned_to);
 
           return (
             <motion.div
@@ -118,14 +133,14 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                       <h4 className={`font-semibold ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-slate-900'}`}>
                         {task.title}
                       </h4>
-                      {assignedUser && (
-                        <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded-full border border-slate-200">
+                      {task.assigned_to && assignedUserName && (
+                        <div className="flex items-center gap-2 bg-white px-2.5 py-1 rounded-full border border-slate-200 flex-shrink-0">
                           <Avatar className="w-5 h-5">
                             <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                              {assignedUser.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                              {userInitials}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-xs font-medium text-slate-700">{assignedUser.full_name}</span>
+                          <span className="text-xs font-medium text-slate-700 whitespace-nowrap">{assignedUserName}</span>
                         </div>
                       )}
                     </div>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -62,8 +63,17 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
   };
 
   const getUserDisplayName = (email) => {
+    if (!email) return null;
     const user = users.find(u => u.email === email);
-    return user ? (user.display_name || user.full_name) : null;
+    if (!user) return email.split('@')[0];
+    return user.display_name || user.full_name || email.split('@')[0];
+  };
+
+  const getUserInitials = (email) => {
+    if (!email) return '?';
+    const user = users.find(u => u.email === email);
+    const name = user ? (user.display_name || user.full_name || email) : email;
+    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   };
 
   return (
@@ -100,6 +110,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                       const project = projects.find(p => p.id === task.project_id);
                       const priority = priorityConfig[task.priority];
                       const assignedUserName = getUserDisplayName(task.assigned_to);
+                      const userInitials = getUserInitials(task.assigned_to);
 
                       return (
                         <Draggable key={task.id} draggableId={task.id} index={index}>
@@ -179,11 +190,11 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                                     </div>
                                   )}
 
-                                  {assignedUserName && (
+                                  {task.assigned_to && assignedUserName && (
                                     <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 rounded-full w-fit">
                                       <Avatar className="w-4 h-4">
                                         <AvatarFallback className="text-[8px] bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                          {assignedUserName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                          {userInitials}
                                         </AvatarFallback>
                                       </Avatar>
                                       <span className="text-xs font-medium text-slate-700">{assignedUserName}</span>
