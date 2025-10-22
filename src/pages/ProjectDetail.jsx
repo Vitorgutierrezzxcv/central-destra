@@ -4,9 +4,9 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { 
-  ArrowLeft, 
-  Plus, 
+import {
+  ArrowLeft,
+  Plus,
   Calendar,
   CheckCircle2,
   Clock,
@@ -15,7 +15,8 @@ import {
   List,
   Pencil,
   Trash2,
-  ListTodo // Added ListTodo icon
+  ListTodo,
+  Package // Added Package icon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,11 +29,13 @@ import GanttChart from "../components/project-detail/GanttChart";
 import TaskListView from "../components/project-detail/TaskListView";
 import TaskForm from "../components/tasks/TaskForm";
 import ProjectForm from "../components/projects/ProjectForm";
+import AddModuleDialog from "../components/project-detail/AddModuleDialog";
 
 export default function ProjectDetail() {
   const navigate = useNavigate();
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showProjectForm, setShowProjectForm] = useState(false);
+  const [showModuleDialog, setShowModuleDialog] = useState(false); // New state for AddModuleDialog
   const [editingTask, setEditingTask] = useState(null);
   const queryClient = useQueryClient();
 
@@ -133,9 +136,9 @@ export default function ProjectDetail() {
   };
 
   const handleTaskStatusChange = (task, newStatus) => {
-    updateTaskMutation.mutate({ 
-      id: task.id, 
-      taskData: { ...task, status: newStatus } 
+    updateTaskMutation.mutate({
+      id: task.id,
+      taskData: { ...task, status: newStatus }
     });
   };
 
@@ -143,6 +146,13 @@ export default function ProjectDetail() {
     if (window.confirm('Tem certeza que deseja excluir este projeto? Todas as tarefas serão removidas.')) {
       deleteProjectMutation.mutate(projectId);
     }
+  };
+
+  // New function for module success
+  const handleModuleSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['project-tasks', projectId] });
+    queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    setShowModuleDialog(false); // Close dialog on success
   };
 
   if (!projectId) {
@@ -337,20 +347,30 @@ export default function ProjectDetail() {
         </Card>
 
         {/* Tabs with Gantt and List View */}
-        <Card className="bg-white/80 backdrop-blur-sm shadow-xl border-none rounded-2xl md:rounded-3xl">
+        <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="border-b border-slate-200 p-4 md:p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Tarefas do Projeto</CardTitle>
-              <Button 
-                onClick={() => {
-                  setEditingTask(null);
-                  setShowTaskForm(true);
-                }}
-                className="w-full md:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-10 md:h-11"
-              >
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base">Nova Tarefa</span>
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                <Button
+                  onClick={() => setShowModuleDialog(true)}
+                  variant="outline"
+                  className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full h-10 md:h-11"
+                >
+                  <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                  <span className="text-sm md:text-base">Adicionar Módulo</span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    setEditingTask(null);
+                    setShowTaskForm(true);
+                  }}
+                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-10 md:h-11"
+                >
+                  <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                  <span className="text-sm md:text-base">Nova Tarefa</span>
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-0">
@@ -414,6 +434,14 @@ export default function ProjectDetail() {
             </Tabs>
           </CardContent>
         </Card>
+
+        {/* Add Module Dialog */}
+        <AddModuleDialog
+          isOpen={showModuleDialog}
+          onClose={() => setShowModuleDialog(false)}
+          projectId={projectId}
+          onSuccess={handleModuleSuccess}
+        />
       </div>
     </div>
   );

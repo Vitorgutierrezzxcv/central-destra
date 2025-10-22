@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package } from "lucide-react"; // Added Package import
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +34,11 @@ const navigationItems = [
     title: "Tarefas",
     url: createPageUrl("Tasks"),
     icon: ListTodo,
+  },
+  {
+    title: "Backlog",
+    url: createPageUrl("Backlog"),
+    icon: Package, // Added Backlog item with Package icon
   },
 ];
 
