@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2 } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -11,10 +11,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
@@ -42,6 +42,11 @@ const taskFlowNav = [
   },
 ];
 
+const taskFlowQuickActions = [
+  { title: "Novo Projeto", url: createPageUrl("Projects"), icon: Plus, color: "bg-blue-50 hover:bg-blue-100 text-blue-700" },
+  { title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }
+];
+
 const crmNav = [
   {
     title: "Cadastro",
@@ -52,23 +57,10 @@ const crmNav = [
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
   // Determine which navigation to show based on current page
-  const getCurrentNav = () => {
-    const currentPath = location.pathname;
-    if (currentPath.includes('Companies')) {
-      return { items: crmNav, quickActions: [] };
-    }
-    return { 
-      items: taskFlowNav, 
-      quickActions: [
-        { title: "Novo Projeto", url: createPageUrl("Projects"), icon: Plus, color: "bg-blue-50 hover:bg-blue-100 text-blue-700" },
-        { title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }
-      ] 
-    };
-  };
-
-  const { items: navigationItems, quickActions } = getCurrentNav();
+  const isInCRM = location.pathname.includes('Companies');
 
   return (
     <SidebarProvider>
@@ -81,53 +73,94 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {navigationItems.map((item) => {
-                    const isActive = location.pathname === item.url;
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          className={`
-                            rounded-lg mb-1 transition-all duration-200
-                            ${isActive 
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
-                              : 'hover:bg-slate-100 text-slate-700'
-                            }
-                          `}
-                        >
-                          <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
-                            <item.icon className="w-5 h-5" />
-                            <span className="font-medium">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
+                  {isInCRM ? (
+                    // CRM Navigation
+                    crmNav.map((item) => {
+                      const isActive = location.pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton 
+                            asChild 
+                            className={`
+                              rounded-lg mb-1 transition-all duration-200
+                              ${isActive 
+                                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                : 'hover:bg-slate-100 text-slate-700'
+                              }
+                            `}
+                          >
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                              <item.icon className="w-5 h-5" />
+                              <span className="font-medium">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })
+                  ) : (
+                    // TaskFlow Collapsible Navigation
+                    <div className="space-y-1">
+                      <button
+                        onClick={() => setIsTaskFlowOpen(!isTaskFlowOpen)}
+                        className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg hover:bg-slate-100 text-slate-700 transition-all duration-200 font-medium"
+                      >
+                        <FolderKanban className="w-5 h-5" />
+                        <span className="flex-1 text-left">TaskFlow</span>
+                        {isTaskFlowOpen ? (
+                          <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4" />
+                        )}
+                      </button>
+
+                      {isTaskFlowOpen && (
+                        <div className="ml-4 pl-3 border-l-2 border-slate-200 space-y-1">
+                          {taskFlowNav.map((item) => {
+                            const isActive = location.pathname === item.url;
+                            return (
+                              <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton 
+                                  asChild 
+                                  className={`
+                                    rounded-lg transition-all duration-200
+                                    ${isActive 
+                                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                      : 'hover:bg-slate-100 text-slate-700'
+                                    }
+                                  `}
+                                >
+                                  <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                                    <item.icon className="w-4 h-4" />
+                                    <span className="text-sm font-medium">{item.title}</span>
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            );
+                          })}
+
+                          {/* Quick Actions inside TaskFlow */}
+                          <div className="pt-2 space-y-1">
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-1">
+                              Ações Rápidas
+                            </div>
+                            {taskFlowQuickActions.map(action => (
+                              <Link 
+                                key={action.title}
+                                to={action.url}
+                                className={`flex items-center gap-2 p-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
+                              >
+                                <action.icon className="w-4 h-4" />
+                                {action.title}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
-
-            {quickActions.length > 0 && (
-              <SidebarGroup className="mt-6">
-                <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
-                  Ações Rápidas
-                </SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <div className="px-3 space-y-2">
-                    {quickActions.map(action => (
-                      <Link 
-                        key={action.title}
-                        to={action.url}
-                        className={`flex items-center gap-2 p-2.5 rounded-lg ${action.color} transition-colors`}
-                      >
-                        <action.icon className="w-4 h-4" />
-                        <span className="text-sm font-medium">{action.title}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            )}
 
             <div className="mt-auto space-y-3"> 
               <div className="px-3">
