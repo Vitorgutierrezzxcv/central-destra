@@ -95,6 +95,8 @@ export default function Dashboard() {
     return "Boa noite";
   };
 
+  const displayName = user?.display_name || user?.full_name?.split(' ')[0] || 'Usuário';
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -102,7 +104,7 @@ export default function Dashboard() {
         <div className="mb-6 md:mb-8">
           <p className="text-slate-600 text-sm md:text-lg mb-1">{greeting()},</p>
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-3 md:mb-4">
-            {user?.full_name?.split(' ')[0] || 'Usuário'}!
+            {displayName}!
           </h1>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
             <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">

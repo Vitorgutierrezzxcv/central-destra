@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,13 +14,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Pencil, Upload, User, LogOut, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { Pencil, Upload, LogOut, Loader2 } from "lucide-react";
 
 export default function UserProfile() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: "",
+    display_name: "",
     bio: "",
     profile_photo_url: ""
   });
@@ -45,7 +43,7 @@ export default function UserProfile() {
   const handleEditClick = () => {
     if (user) {
       setFormData({
-        full_name: user.full_name || "",
+        display_name: user.display_name || user.full_name || "",
         bio: user.bio || "",
         profile_photo_url: user.profile_photo_url || ""
       });
@@ -70,21 +68,11 @@ export default function UserProfile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Enviar apenas os campos que foram modificados ou que existem
-    const dataToUpdate = {};
-    if (formData.full_name && formData.full_name.trim()) {
-      dataToUpdate.full_name = formData.full_name.trim();
-    }
-    // Allow sending an empty string for bio if user clears it
-    if (formData.bio !== undefined) {
-      dataToUpdate.bio = formData.bio;
-    }
-    // Only send profile_photo_url if it has a value (can be an empty string to clear)
-    if (formData.profile_photo_url !== undefined) { // Check for undefined to allow empty string to be sent
-        dataToUpdate.profile_photo_url = formData.profile_photo_url;
-    }
-    
-    updateUserMutation.mutate(dataToUpdate);
+    updateUserMutation.mutate({
+      display_name: formData.display_name.trim(),
+      bio: formData.bio || "",
+      profile_photo_url: formData.profile_photo_url || ""
+    });
   };
 
   const handleLogout = () => {
@@ -107,12 +95,13 @@ export default function UserProfile() {
 
   if (!user) return null;
 
-  const initials = user.full_name
-    ?.split(' ')
+  const displayName = user.display_name || user.full_name || "Usuário";
+  const initials = displayName
+    .split(' ')
     .map(n => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase() || 'U';
+    .toUpperCase();
 
   return (
     <>
@@ -121,7 +110,7 @@ export default function UserProfile() {
           <div className="relative">
             <Avatar className="w-10 h-10 border-2 border-slate-200">
               {user.profile_photo_url ? (
-                <AvatarImage src={user.profile_photo_url} alt={user.full_name} />
+                <AvatarImage src={user.profile_photo_url} alt={displayName} />
               ) : null}
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                 {initials}
@@ -130,7 +119,7 @@ export default function UserProfile() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-slate-900 truncate text-sm">
-              {user.full_name}
+              {displayName}
             </p>
             <p className="text-xs text-slate-500 truncate">
               {user.email}
@@ -162,7 +151,7 @@ export default function UserProfile() {
           <DialogHeader>
             <DialogTitle>Editar Perfil</DialogTitle>
             <DialogDescription>
-              Atualize suas informações pessoais e foto de perfil
+              Personalize seu nome de exibição, foto e biografia
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
@@ -209,14 +198,17 @@ export default function UserProfile() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="full_name">Nome Completo *</Label>
+                <Label htmlFor="display_name">Nome de Exibição *</Label>
                 <Input
-                  id="full_name"
-                  value={formData.full_name}
-                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  placeholder="Seu nome completo"
+                  id="display_name"
+                  value={formData.display_name}
+                  onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                  placeholder="Como você quer ser chamado"
                   required
                 />
+                <p className="text-xs text-slate-500">
+                  Este é o nome que aparecerá no sistema
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -235,8 +227,11 @@ export default function UserProfile() {
                 <p className="text-sm text-slate-600">
                   <strong>Email:</strong> {user.email}
                 </p>
+                <p className="text-sm text-slate-600 mt-1">
+                  <strong>Nome Real:</strong> {user.full_name}
+                </p>
                 <p className="text-xs text-slate-500 mt-1">
-                  O email não pode ser alterado
+                  Email e nome real não podem ser alterados
                 </p>
               </div>
             </div>
@@ -252,7 +247,7 @@ export default function UserProfile() {
               </Button>
               <Button
                 type="submit"
-                disabled={updateUserMutation.isPending || uploadingPhoto}
+                disabled={updateUserMutation.isPending || uploadingPhoto || !formData.display_name.trim()}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
               >
                 {updateUserMutation.isPending ? (

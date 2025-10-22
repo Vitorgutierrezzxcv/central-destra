@@ -1,6 +1,10 @@
 {
   "type": "object",
   "properties": {
+    "display_name": {
+      "type": "string",
+      "description": "Nome de exibi\u00e7\u00e3o personalizado do usu\u00e1rio"
+    },
     "profile_photo_url": {
       "type": "string",
       "description": "URL da foto de perfil do usu\u00e1rio"
