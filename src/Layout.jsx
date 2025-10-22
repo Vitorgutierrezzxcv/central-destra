@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -212,7 +211,7 @@ function LayoutContent({ children }) {
                       );
                     })}
                   </>
-                ) : ( // This block is for the new 'Finanças' module
+                ) : (
                   <>
                     <div className="px-3 py-2 mb-2">
                       <div className="flex items-center gap-3">

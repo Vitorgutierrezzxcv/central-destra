@@ -13,7 +13,6 @@ import { ptBR } from "date-fns/locale";
 
 import TransactionForm from "../components/finance/TransactionForm";
 import TransactionCard from "../components/finance/TransactionCard";
-import TransactionSummary from "../components/finance/TransactionSummary";
 
 export default function Lancamentos() {
   const [showForm, setShowForm] = useState(false);
