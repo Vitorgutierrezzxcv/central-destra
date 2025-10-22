@@ -2,19 +2,11 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, TrendingUp, LayoutGrid, BarChart3 } from "lucide-react";
+import { Plus, Search, TrendingUp } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AnimatePresence } from "framer-motion";
-
-import OpportunityForm from "../components/opportunities/OpportunityForm";
-import OpportunityPipeline from "../components/opportunities/OpportunityPipeline";
-import OpportunityList from "../components/opportunities/OpportunityList";
-import OpportunityMetrics from "../components/opportunities/OpportunityMetrics";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Opportunities() {
-  const [showForm, setShowForm] = useState(false);
-  const [editingOpportunity, setEditingOpportunity] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
@@ -30,70 +22,9 @@ export default function Opportunities() {
     initialData: [],
   });
 
-  const { data: activities } = useQuery({
-    queryKey: ['opportunity-activities'],
-    queryFn: () => base44.entities.OpportunityActivity.list('-created_date'),
-    initialData: [],
-  });
-
-  const createOpportunityMutation = useMutation({
-    mutationFn: (opportunityData) => base44.entities.Opportunity.create(opportunityData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      setShowForm(false);
-      setEditingOpportunity(null);
-    },
-  });
-
-  const updateOpportunityMutation = useMutation({
-    mutationFn: ({ id, opportunityData }) => base44.entities.Opportunity.update(id, opportunityData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      setShowForm(false);
-      setEditingOpportunity(null);
-    },
-  });
-
-  const deleteOpportunityMutation = useMutation({
-    mutationFn: async (id) => {
-      const oppActivities = activities.filter(a => a.opportunity_id === id);
-      await Promise.all(oppActivities.map(a => base44.entities.OpportunityActivity.delete(a.id)));
-      await base44.entities.Opportunity.delete(id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-      queryClient.invalidateQueries({ queryKey: ['opportunity-activities'] });
-    },
-  });
-
-  const handleSubmit = (opportunityData) => {
-    if (editingOpportunity) {
-      updateOpportunityMutation.mutate({ id: editingOpportunity.id, opportunityData });
-    } else {
-      createOpportunityMutation.mutate(opportunityData);
-    }
-  };
-
-  const handleEdit = (opportunity) => {
-    setEditingOpportunity(opportunity);
-    setShowForm(true);
-  };
-
-  const handleDelete = async (opportunityId) => {
-    if (window.confirm('Tem certeza que deseja excluir esta oportunidade?')) {
-      deleteOpportunityMutation.mutate(opportunityId);
-    }
-  };
-
   const filteredOpportunities = opportunities.filter(opp =>
-    opp.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    opp.contact_name?.toLowerCase().includes(searchTerm.toLowerCase())
+    opp.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const openOpportunities = filteredOpportunities.filter(o => o.status === 'open').length;
-  const totalValue = filteredOpportunities
-    .filter(o => o.status === 'open')
-    .reduce((sum, o) => sum + (o.value || 0), 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
@@ -107,7 +38,7 @@ export default function Opportunities() {
             <div>
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">Oportunidades</h1>
               <p className="text-sm md:text-base text-slate-600">
-                {openOpportunities} aberta{openOpportunities !== 1 ? 's' : ''} • R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                {opportunities.length} oportunidade{opportunities.length !== 1 ? 's' : ''}
               </p>
             </div>
           </div>
@@ -123,10 +54,7 @@ export default function Opportunities() {
               />
             </div>
             <Button 
-              onClick={() => {
-                setEditingOpportunity(null);
-                setShowForm(true);
-              }}
+              onClick={() => alert('Formulário em breve!')}
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full h-10 md:h-11 px-6"
             >
               <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
@@ -135,57 +63,54 @@ export default function Opportunities() {
           </div>
         </div>
 
-        {/* Metrics */}
-        <OpportunityMetrics opportunities={filteredOpportunities} />
-
-        {/* Form */}
-        <AnimatePresence>
-          {showForm && (
-            <OpportunityForm
-              opportunity={editingOpportunity}
-              companies={companies}
-              onSubmit={handleSubmit}
-              onCancel={() => {
-                setShowForm(false);
-                setEditingOpportunity(null);
-              }}
-              isLoading={createOpportunityMutation.isPending || updateOpportunityMutation.isPending}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Tabs View */}
-        <Tabs defaultValue="pipeline" className="w-full">
-          <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto">
-            <TabsTrigger value="pipeline" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Pipeline</span>
-            </TabsTrigger>
-            <TabsTrigger value="list" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
-              <LayoutGrid className="w-4 h-4" />
-              <span className="hidden sm:inline">Lista</span>
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="pipeline">
-            <OpportunityPipeline
-              opportunities={filteredOpportunities}
-              companies={companies}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              updateMutation={updateOpportunityMutation}
-            />
-          </TabsContent>
-
-          <TabsContent value="list">
-            <OpportunityList
-              opportunities={filteredOpportunities}
-              companies={companies}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </TabsContent>
-        </Tabs>
+        {/* Content */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-slate-600">Carregando oportunidades...</p>
+          </div>
+        ) : filteredOpportunities.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredOpportunities.map((opp) => {
+              const company = companies.find(c => c.id === opp.company_id);
+              return (
+                <Card key={opp.id} className="bg-white shadow-md">
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-lg text-slate-900 mb-2">{opp.title}</h3>
+                    {company && (
+                      <p className="text-sm text-slate-600 mb-2">{company.name}</p>
+                    )}
+                    {opp.value && (
+                      <p className="text-emerald-600 font-semibold">
+                        R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <TrendingUp className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-slate-900 mb-2">
+              {searchTerm ? 'Nenhuma oportunidade encontrada' : 'Nenhuma oportunidade cadastrada'}
+            </h3>
+            <p className="text-slate-600 mb-6">
+              {searchTerm 
+                ? 'Tente buscar com outros termos' 
+                : 'Cadastre sua primeira oportunidade e comece a gerenciar seu funil de vendas'}
+            </p>
+            {!searchTerm && (
+              <Button 
+                onClick={() => alert('Formulário em breve!')}
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Cadastrar Primeira Oportunidade
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

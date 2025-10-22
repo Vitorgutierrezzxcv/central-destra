@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -72,7 +71,7 @@ export default function Layout({ children, currentPageName }) {
   // Determine which module is active based on current page
   const getCurrentModule = () => {
     const path = location.pathname;
-    if (path.includes('companies') || path.includes('opportunities')) { // Keep lowercase for path matching consistency
+    if (path.includes('companies') || path.includes('opportunities')) {
       return 'crm';
     }
     return 'taskflow';
@@ -80,12 +79,12 @@ export default function Layout({ children, currentPageName }) {
 
   const currentModule = getCurrentModule();
 
-  // Auto-open TaskFlow when in TaskFlow module and keep it open
+  // Auto-open TaskFlow when in TaskFlow pages and keep it open
   React.useEffect(() => {
     if (currentModule === 'taskflow') {
       setIsTaskFlowOpen(true);
     }
-  }, [location.pathname, currentModule]); // Dependency array updated
+  }, [location.pathname, currentModule]);
 
   return (
     <SidebarProvider>
@@ -142,7 +141,6 @@ export default function Layout({ children, currentPageName }) {
                           );
                         })}
                         
-                        {/* Quick Actions inside TaskFlow */}
                         <div className="mt-3 pt-3 border-t border-slate-200">
                           <div className="px-3 pb-2">
                             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
