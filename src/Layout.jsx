@@ -1,8 +1,7 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package } from "lucide-react"; // Added Package import
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,14 +11,19 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
-import UserProfile from "./components/layout/UserProfile"; // Added import
+import UserProfile from "./components/layout/UserProfile";
+import AppSwitcher from "./components/layout/AppSwitcher";
 
-const navigationItems = [
+const taskFlowNav = [
   {
     title: "Visão Geral",
     url: createPageUrl("Dashboard"),
@@ -38,88 +42,132 @@ const navigationItems = [
   {
     title: "Backlog",
     url: createPageUrl("Backlog"),
-    icon: Package, // Added Backlog item with Package icon
+    icon: Package,
+  },
+];
+
+const taskFlowQuickActions = [
+  { title: "Novo Projeto", url: createPageUrl("Projects"), icon: Plus, color: "bg-blue-50 hover:bg-blue-100 text-blue-700" },
+  { title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }
+];
+
+const crmNav = [
+  {
+    title: "Cadastro",
+    url: createPageUrl("Companies"),
+    icon: Building2,
   },
 ];
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+  const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
+
+  // Determine which navigation to show based on current page
+  const isInCRM = location.pathname.includes('Companies');
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
         <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm hidden md:flex">
-          <SidebarHeader className="border-b border-slate-200 p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <FolderKanban className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="font-bold text-slate-900 text-lg">TaskFlow</h2>
-                <p className="text-xs text-slate-500">Gestão de Projetos</p>
-              </div>
-            </div>
-          </SidebarHeader>
-          
-          <SidebarContent className="p-3 flex flex-col h-full"> {/* Modified: Added flex flex-col h-full */}
+          <SidebarContent className="p-3 flex flex-col h-full">
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
                 Navegação
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {navigationItems.map((item) => {
-                    const isActive = location.pathname === item.url;
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
-                          className={`
-                            rounded-lg mb-1 transition-all duration-200
-                            ${isActive 
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
-                              : 'hover:bg-slate-100 text-slate-700'
-                            }
-                          `}
-                        >
-                          <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
-                            <item.icon className="w-5 h-5" />
-                            <span className="font-medium">{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
+                  {!isInCRM ? (
+                    <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
+                          <div className="flex items-center gap-3">
+                            <FolderKanban className="w-5 h-5 text-blue-600" />
+                            <span className="font-semibold text-slate-900">TaskFlow</span>
+                          </div>
+                          {isTaskFlowOpen ? (
+                            <ChevronDown className="w-4 h-4 text-slate-500 transition-transform" />
+                          ) : (
+                            <ChevronRight className="w-4 h-4 text-slate-500 transition-transform" />
+                          )}
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="ml-3 mt-1 space-y-1">
+                        {taskFlowNav.map((item) => {
+                          const isActive = location.pathname === item.url;
+                          return (
+                            <SidebarMenuItem key={item.title}>
+                              <SidebarMenuButton 
+                                asChild 
+                                className={`
+                                  rounded-lg transition-all duration-200
+                                  ${isActive 
+                                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                    : 'hover:bg-slate-100 text-slate-700'
+                                  }
+                                `}
+                              >
+                                <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                                  <item.icon className="w-4 h-4" />
+                                  <span className="text-sm font-medium">{item.title}</span>
+                                </Link>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          );
+                        })}
+                        
+                        {/* Quick Actions inside TaskFlow */}
+                        <div className="mt-3 pt-3 border-t border-slate-200">
+                          <div className="px-3 pb-2">
+                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                              Ações Rápidas
+                            </span>
+                          </div>
+                          {taskFlowQuickActions.map(action => (
+                            <Link 
+                              key={action.title}
+                              to={action.url}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
+                            >
+                              <action.icon className="w-4 h-4" />
+                              {action.title}
+                            </Link>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    crmNav.map((item) => {
+                      const isActive = location.pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton 
+                            asChild 
+                            className={`
+                              rounded-lg mb-1 transition-all duration-200
+                              ${isActive 
+                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
+                                : 'hover:bg-slate-100 text-slate-700'
+                              }
+                            `}
+                          >
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                              <item.icon className="w-5 h-5" />
+                              <span className="font-medium">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })
+                  )}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
 
-            <SidebarGroup className="mt-6">
-              <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
-                Ações Rápidas
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <div className="px-3 space-y-2">
-                  <Link 
-                    to={createPageUrl("Projects")}
-                    className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium">Novo Projeto</span>
-                  </Link>
-                  <Link 
-                    to={createPageUrl("Tasks")}
-                    className="flex items-center gap-2 p-2.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium">Nova Tarefa</span>
-                  </Link>
-                </div>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            {/* Added UserProfile component */}
-            <div className="mt-auto"> 
+            <div className="mt-auto space-y-3"> 
+              <div className="px-3">
+                <AppSwitcher />
+              </div>
               <UserProfile />
             </div>
           </SidebarContent>
@@ -129,13 +177,8 @@ export default function Layout({ children, currentPageName }) {
           <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
             <div className="flex items-center justify-between gap-4">
               <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-                  <FolderKanban className="w-4 h-4 text-white" />
-                </div>
-                <h1 className="text-lg font-bold text-slate-900">TaskFlow</h1>
-              </div>
-              <div className="w-10" /> {/* Spacer for centering */}
+              <AppSwitcher isMobile={true} />
+              <div className="w-10" />
             </div>
           </header>
 
