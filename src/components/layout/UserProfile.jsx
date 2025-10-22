@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,7 +70,21 @@ export default function UserProfile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUserMutation.mutate(formData);
+    // Enviar apenas os campos que foram modificados ou que existem
+    const dataToUpdate = {};
+    if (formData.full_name && formData.full_name.trim()) {
+      dataToUpdate.full_name = formData.full_name.trim();
+    }
+    // Allow sending an empty string for bio if user clears it
+    if (formData.bio !== undefined) {
+      dataToUpdate.bio = formData.bio;
+    }
+    // Only send profile_photo_url if it has a value (can be an empty string to clear)
+    if (formData.profile_photo_url !== undefined) { // Check for undefined to allow empty string to be sent
+        dataToUpdate.profile_photo_url = formData.profile_photo_url;
+    }
+    
+    updateUserMutation.mutate(dataToUpdate);
   };
 
   const handleLogout = () => {
@@ -194,7 +209,7 @@ export default function UserProfile() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="full_name">Nome Completo</Label>
+                <Label htmlFor="full_name">Nome Completo *</Label>
                 <Input
                   id="full_name"
                   value={formData.full_name}
