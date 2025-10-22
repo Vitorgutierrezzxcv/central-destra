@@ -3,8 +3,7 @@ import {
   Check, 
   FolderKanban, 
   Users, 
-  ChevronDown,
-  Sparkles
+  ChevronDown
 } from "lucide-react";
 import {
   Dialog,
@@ -140,32 +139,30 @@ export default function AppSwitcher({ isMobile = false }) {
   }
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-3 w-full hover:bg-slate-50 p-2 rounded-lg transition-colors">
-            <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
-              <ActiveIcon className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1 text-left">
-              <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
-              <p className="text-xs text-slate-500">{activeModule.description.split(' ').slice(0, 3).join(' ')}</p>
-            </div>
-            <ChevronDown className="w-4 h-4 text-slate-400" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-80">
-          <DropdownMenuLabel className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-            Módulos Disponíveis
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <div className="p-2 space-y-2">
-            {modules.map(module => (
-              <ModuleCard key={module.id} module={module} />
-            ))}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="flex items-center gap-3 w-full hover:bg-slate-50 p-2 rounded-lg transition-colors">
+          <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
+            <ActiveIcon className="w-5 h-5 text-white" />
           </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
+          <div className="flex-1 text-left">
+            <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
+            <p className="text-xs text-slate-500">{activeModule.description.split(' ').slice(0, 3).join(' ')}</p>
+          </div>
+          <ChevronDown className="w-4 h-4 text-slate-400" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-80">
+        <DropdownMenuLabel className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+          Módulos Disponíveis
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <div className="p-2 space-y-2">
+          {modules.map(module => (
+            <ModuleCard key={module.id} module={module} />
+          ))}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
