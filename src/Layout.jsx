@@ -87,6 +87,11 @@ export default function Layout({ children, currentPageName }) {
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
         <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm hidden md:flex">
           <SidebarContent className="p-3 flex flex-col h-full">
+            {/* AppSwitcher moved to top */}
+            <div className="mb-6 px-3">
+              <AppSwitcher />
+            </div>
+
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
                 Navegação
@@ -190,10 +195,8 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupContent>
             </SidebarGroup>
 
-            <div className="mt-auto space-y-3"> 
-              <div className="px-3">
-                <AppSwitcher />
-              </div>
+            {/* UserProfile stays at bottom */}
+            <div className="mt-auto"> 
               <UserProfile />
             </div>
           </SidebarContent>
