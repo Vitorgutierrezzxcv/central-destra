@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,6 +8,10 @@ import { AnimatePresence } from "framer-motion";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskFilters from "../components/tasks/TaskFilters";
 import TaskItem from "../components/tasks/TaskItem";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LayoutGrid, Table as TableIcon, Kanban } from "lucide-react";
+import TaskKanbanView from "../components/tasks/TaskKanbanView";
+import TaskTableView from "../components/tasks/TaskTableView";
 
 export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
@@ -145,23 +150,61 @@ export default function Tasks() {
             ))}
           </div>
         ) : filteredTasks.length > 0 ? (
-          <div className="space-y-3 md:space-y-4">
-            <AnimatePresence>
-              {filteredTasks.map(task => {
-                const project = projects.find(p => p.id === task.project_id);
-                return (
-                  <TaskItem
-                    key={task.id}
-                    task={task}
-                    project={project}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onStatusChange={handleStatusChange}
-                  />
-                );
-              })}
-            </AnimatePresence>
-          </div>
+          <Tabs defaultValue="grid" className="w-full">
+            <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1 h-auto">
+              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-4 py-2">
+                <LayoutGrid className="w-4 h-4" />
+                <span className="hidden sm:inline">Grade</span>
+              </TabsTrigger>
+              <TabsTrigger value="kanban" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-4 py-2">
+                <Kanban className="w-4 h-4" />
+                <span className="hidden sm:inline">Kanban</span>
+              </TabsTrigger>
+              <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-4 py-2">
+                <TableIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">Tabela</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="grid" className="space-y-3 md:space-y-4">
+              <AnimatePresence>
+                {filteredTasks.map(task => {
+                  const project = projects.find(p => p.id === task.project_id);
+                  return (
+                    <TaskItem
+                      key={task.id}
+                      task={task}
+                      project={project}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      onStatusChange={handleStatusChange}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+            </TabsContent>
+
+            <TabsContent value="kanban">
+              <TaskKanbanView
+                tasks={filteredTasks}
+                projects={projects}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                updateTaskMutation={updateTaskMutation} // Pass mutation for drag-and-drop
+              />
+            </TabsContent>
+
+            <TabsContent value="table">
+              <TaskTableView
+                tasks={filteredTasks}
+                projects={projects}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+              />
+            </TabsContent>
+          </Tabs>
         ) : (
           <div className="text-center py-12 md:py-16 bg-white/50 rounded-xl md:rounded-2xl">
             <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
