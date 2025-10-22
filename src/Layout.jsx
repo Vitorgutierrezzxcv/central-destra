@@ -208,22 +208,31 @@ function LayoutContent({ children }) {
         </SidebarContent>
       </Sidebar>
 
-      <main className="flex-1 flex flex-col relative">
-        {/* Toggle button fixed on main content */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setOpen(!open)}
-          className="hidden md:flex fixed top-4 z-50 bg-white/90 backdrop-blur-sm hover:bg-white border-slate-300 shadow-lg rounded-full h-10 w-10 items-center justify-center transition-all hover:scale-110"
-          style={{ left: open ? '270px' : '16px' }}
-        >
-          {open ? (
-            <PanelLeftClose className="w-5 h-5 text-slate-700" />
-          ) : (
-            <PanelLeft className="w-5 h-5 text-slate-700" />
-          )}
-        </Button>
+      <main className="flex-1 flex flex-col">
+        {/* Toggle button in header bar - desktop only */}
+        <div className="hidden md:flex items-center justify-between bg-white/60 backdrop-blur-sm border-b border-slate-200/50 px-4 py-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setOpen(!open)}
+            className="hover:bg-slate-100 rounded-lg h-9 px-3"
+          >
+            {open ? (
+              <>
+                <PanelLeftClose className="w-4 h-4 mr-2 text-slate-700" />
+                <span className="text-sm text-slate-700">Ocultar Menu</span>
+              </>
+            ) : (
+              <>
+                <PanelLeft className="w-4 h-4 mr-2 text-slate-700" />
+                <span className="text-sm text-slate-700">Mostrar Menu</span>
+              </>
+            )}
+          </Button>
+          <div className="flex-1" />
+        </div>
 
+        {/* Mobile header */}
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
           <div className="flex items-center justify-between gap-4">
             <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
