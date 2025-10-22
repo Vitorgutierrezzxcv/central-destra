@@ -1,0 +1,47 @@
+{
+  "name": "OpportunityActivity",
+  "type": "object",
+  "properties": {
+    "opportunity_id": {
+      "type": "string",
+      "description": "ID da oportunidade"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "call",
+        "email",
+        "meeting",
+        "proposal",
+        "note",
+        "stage_change"
+      ],
+      "description": "Tipo de atividade"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da atividade"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada"
+    },
+    "outcome": {
+      "type": "string",
+      "description": "Resultado da atividade"
+    },
+    "previous_stage": {
+      "type": "string",
+      "description": "Etapa anterior (para mudan\u00e7as de etapa)"
+    },
+    "new_stage": {
+      "type": "string",
+      "description": "Nova etapa (para mudan\u00e7as de etapa)"
+    }
+  },
+  "required": [
+    "opportunity_id",
+    "activity_type",
+    "title"
+  ]
+}

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -58,6 +58,11 @@ const crmNav = [
     url: createPageUrl("Companies"),
     icon: Building2,
   },
+  {
+    title: "Oportunidades",
+    url: createPageUrl("Opportunities"),
+    icon: TrendingUp,
+  },
 ];
 
 export default function Layout({ children, currentPageName }) {
@@ -67,7 +72,7 @@ export default function Layout({ children, currentPageName }) {
   // Determine which module is active based on current page
   const getCurrentModule = () => {
     const path = location.pathname;
-    if (path.includes('companies')) { // Keep lowercase for path matching consistency
+    if (path.includes('companies') || path.includes('opportunities')) { // Keep lowercase for path matching consistency
       return 'crm';
     }
     return 'taskflow';

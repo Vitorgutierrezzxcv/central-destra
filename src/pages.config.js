@@ -4,6 +4,7 @@ import Tasks from './pages/Tasks';
 import ProjectDetail from './pages/ProjectDetail';
 import Backlog from './pages/Backlog';
 import Companies from './pages/Companies';
+import Opportunities from './pages/Opportunities';
 import Layout from './Layout.jsx';
 
 
@@ -14,6 +15,7 @@ export const PAGES = {
     "ProjectDetail": ProjectDetail,
     "Backlog": Backlog,
     "Companies": Companies,
+    "Opportunities": Opportunities,
 }
 
 export const pagesConfig = {
