@@ -74,10 +74,6 @@ export default function Layout({ children, currentPageName }) {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
         <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm hidden md:flex">
-          <SidebarHeader className="border-b border-slate-200 p-6">
-            <AppSwitcher />
-          </SidebarHeader>
-          
           <SidebarContent className="p-3 flex flex-col h-full">
             <SidebarGroup>
               <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
@@ -133,7 +129,10 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroup>
             )}
 
-            <div className="mt-auto"> 
+            <div className="mt-auto space-y-3"> 
+              <div className="px-3">
+                <AppSwitcher />
+              </div>
               <UserProfile />
             </div>
           </SidebarContent>

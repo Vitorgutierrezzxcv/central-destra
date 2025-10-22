@@ -146,13 +146,13 @@ export default function AppSwitcher({ isMobile = false }) {
     <div className="w-full">
       <button 
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-3 w-full hover:bg-slate-50 p-3 rounded-xl transition-all group border border-transparent hover:border-slate-200"
+        className="flex items-center gap-3 w-full hover:bg-slate-50 p-3 rounded-xl transition-all group border border-slate-200 hover:border-slate-300 bg-white shadow-sm hover:shadow-md"
       >
-        <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
+        <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
           <ActiveIcon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-slate-900 text-base leading-tight">{activeModule.name}</h2>
+          <h2 className="font-bold text-slate-900 text-sm leading-tight">{activeModule.name}</h2>
           <p className="text-xs text-slate-500 truncate">{activeModule.description}</p>
         </div>
         <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors flex-shrink-0" />
