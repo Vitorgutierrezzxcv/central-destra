@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Target } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { motion } from "framer-motion";
 
 const colors = [
@@ -50,17 +49,11 @@ export default function UserPerformanceRanking() {
       totalTasks,
       completionRate
     };
-  }).filter(stat => stat.totalTasks > 0); // Only show users with tasks
+  }).filter(stat => stat.totalTasks > 0);
 
-  // Sort by completed tasks
   const rankedUsers = [...userStats].sort((a, b) => b.completedTasks - a.completedTasks);
-
-  // Prepare data for chart
-  const chartData = rankedUsers.slice(0, 5).map(stat => ({
-    name: stat.user.display_name || stat.user.full_name?.split(' ')[0] || 'Usuário',
-    completedTasks: stat.completedTasks,
-    inProgressTasks: stat.inProgressTasks
-  }));
+  const chartData = rankedUsers.slice(0, 7);
+  const maxTasks = Math.max(...chartData.map(s => s.completedTasks), 10);
 
   if (rankedUsers.length === 0) {
     return (
@@ -87,54 +80,106 @@ export default function UserPerformanceRanking() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-500" />
-            Ranking de Desempenho
+            Produtividade
           </CardTitle>
           <Badge variant="outline" className="bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700 border-orange-200">
             Top {rankedUsers.length}
           </Badge>
         </div>
+        <div className="flex items-center gap-4 mt-2 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-2xl text-slate-900">{rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)}</span>
+            <span className="text-slate-600">Tarefas Totais</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-slate-300"></div>
+            <span className="text-slate-600 text-xs">Pendente</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+            <span className="text-slate-600 text-xs">Concluído</span>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-4 md:p-6 space-y-6">
-        {/* Chart */}
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4">
-          <h4 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" />
-            Tarefas Concluídas
-          </h4>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis 
-                dataKey="name" 
-                tick={{ fill: '#64748b', fontSize: 12 }}
-                tickLine={false}
-              />
-              <YAxis 
-                tick={{ fill: '#64748b', fontSize: 12 }}
-                tickLine={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                }}
-              />
-              <Bar dataKey="completedTasks" radius={[8, 8, 0, 0]}>
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Modern Chart */}
+        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-6">
+          <div className="flex items-end justify-around gap-2 h-48">
+            {chartData.map((stat, index) => {
+              const displayName = stat.user.display_name || stat.user.full_name?.split(' ')[0] || 'User';
+              const heightPercentage = (stat.completedTasks / maxTasks) * 100;
+              const isLeader = index === 0;
+              
+              return (
+                <motion.div
+                  key={stat.user.id}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className="flex flex-col items-center gap-2 flex-1 max-w-[80px]"
+                >
+                  {/* Badge for leader */}
+                  {isLeader && stat.completedTasks > 0 && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="relative mb-1"
+                    >
+                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap">
+                        {stat.completionRate}% Feito
+                      </div>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-500"></div>
+                    </motion.div>
+                  )}
+                  
+                  {/* Bar */}
+                  <motion.div
+                    initial={{ scaleY: 0 }}
+                    animate={{ scaleY: 1 }}
+                    transition={{ delay: index * 0.1 + 0.2, duration: 0.6, type: "spring" }}
+                    className="w-full relative"
+                    style={{ 
+                      height: `${Math.max(heightPercentage, 10)}%`,
+                      originY: 1
+                    }}
+                  >
+                    <div
+                      className={`w-full h-full rounded-t-xl shadow-lg transition-all hover:scale-105 ${
+                        isLeader
+                          ? 'bg-gradient-to-t from-orange-400 to-amber-300'
+                          : index % 2 === 0
+                          ? 'bg-gradient-to-t from-emerald-500 to-teal-400'
+                          : 'bg-gradient-to-t from-slate-300 to-slate-200'
+                      }`}
+                    >
+                      {stat.completedTasks > 0 && (
+                        <div className="absolute inset-x-0 -top-6 text-center">
+                          <span className="text-xs font-bold text-slate-700">
+                            {stat.completedTasks}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                  
+                  {/* User name */}
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-slate-700 truncate w-full">
+                      {displayName.length > 8 ? displayName.substring(0, 7) + '.' : displayName}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Ranking List */}
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
             <Target className="w-4 h-4" />
-            Classificação
+            Classificação Detalhada
           </h4>
           {rankedUsers.map((stat, index) => {
             const displayName = stat.user.display_name || stat.user.full_name || "Usuário";
