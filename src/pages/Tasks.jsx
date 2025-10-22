@@ -99,22 +99,22 @@ export default function Tasks() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex flex-col gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Tarefas</h1>
-            <p className="text-slate-600">Organize e acompanhe todas as suas tarefas</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">Tarefas</h1>
+            <p className="text-sm md:text-base text-slate-600">Organize e acompanhe todas as suas tarefas</p>
           </div>
           <Button 
             onClick={() => {
               setEditingTask(null);
               setShowForm(true);
             }}
-            className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-10 md:h-11"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Nova Tarefa
+            <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+            <span className="text-sm md:text-base">Nova Tarefa</span>
           </Button>
         </div>
 
@@ -140,13 +140,13 @@ export default function Tasks() {
         />
 
         {loadingTasks || loadingProjects ? (
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-32 bg-white/50 rounded-xl animate-pulse" />
+              <div key={i} className="h-24 md:h-32 bg-white/50 rounded-xl md:rounded-2xl animate-pulse" />
             ))}
           </div>
         ) : filteredTasks.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-3 md:space-y-4">
             <AnimatePresence>
               {filteredTasks.map(task => {
                 const project = projects.find(p => p.id === task.project_id);
@@ -164,16 +164,16 @@ export default function Tasks() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="text-center py-16 bg-white/50 rounded-xl">
-            <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-12 h-12 text-slate-400" />
+          <div className="text-center py-12 md:py-16 bg-white/50 rounded-xl md:rounded-2xl">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 md:w-12 md:h-12 text-slate-400" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+            <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-2">
               {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
-            <p className="text-slate-600 mb-6">
+            <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6">
               {filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
@@ -181,9 +181,9 @@ export default function Tasks() {
             {!(filters.status !== "all" || filters.priority !== "all" || filters.project !== "all" || filters.assignedTo !== "all" || filters.search) && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-full h-10 md:h-11 text-sm md:text-base"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Criar Primeira Tarefa
               </Button>
             )}

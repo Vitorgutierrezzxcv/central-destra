@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, AlertCircle, TrendingUp } from "lucide-react";
@@ -40,7 +41,7 @@ export default function StatsCards({ pendingTasks, inProgressTasks, completedTas
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
       {cards.map((card) => (
         <motion.div
           key={card.title}
@@ -48,19 +49,19 @@ export default function StatsCards({ pendingTasks, inProgressTasks, completedTas
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: card.delay }}
         >
-          <Card className={`${card.bgColor} border-none shadow-lg hover:shadow-xl transition-all rounded-3xl overflow-hidden`}>
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="bg-white/80 rounded-2xl p-3 shadow-md">
-                  <card.icon className={`w-6 h-6 ${card.iconColor}`} />
+          <Card className={`${card.bgColor} border-none shadow-lg hover:shadow-xl transition-all rounded-2xl md:rounded-3xl overflow-hidden`}>
+            <CardContent className="p-3 md:p-6">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
+                <div className="bg-white/80 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md mb-2 md:mb-0 w-fit">
+                  <card.icon className={`w-4 h-4 md:w-6 md:h-6 ${card.iconColor}`} />
                 </div>
-                <div className="text-right">
-                  <div className={`text-4xl font-bold ${card.iconColor}`}>
+                <div className="md:text-right">
+                  <div className={`text-2xl md:text-4xl font-bold ${card.iconColor}`}>
                     {card.value}
                   </div>
                 </div>
               </div>
-              <p className="text-slate-700 font-medium text-sm">{card.title}</p>
+              <p className="text-slate-700 font-medium text-xs md:text-sm">{card.title}</p>
             </CardContent>
           </Card>
         </motion.div>

@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -28,15 +29,15 @@ export default function ProjectProgress({ projects, tasks }) {
 
   if (activeProjects.length === 0) {
     return (
-      <div className="text-center py-8">
-        <FolderKanban className="w-16 h-16 text-slate-300 mx-auto mb-3" />
-        <p className="text-slate-600">Nenhum projeto ativo</p>
+      <div className="text-center py-6 md:py-8">
+        <FolderKanban className="w-12 h-12 md:w-16 md:h-16 text-slate-300 mx-auto mb-3" />
+        <p className="text-sm md:text-base text-slate-600">Nenhum projeto ativo</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {activeProjects.map((project) => {
         const { completed, total, percentage } = getProjectProgress(project.id);
         
@@ -46,22 +47,22 @@ export default function ProjectProgress({ projects, tasks }) {
             to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
             className="block"
           >
-            <div className="bg-gradient-to-r from-slate-50 to-white p-4 rounded-2xl border border-slate-200 hover:shadow-lg transition-all">
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} flex items-center justify-center shadow-md`}>
-                  <span className="text-white font-bold text-lg">
+            <div className="bg-gradient-to-r from-slate-50 to-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-200 hover:shadow-lg transition-all">
+              <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} flex items-center justify-center shadow-md`}>
+                  <span className="text-white font-bold text-base md:text-lg">
                     {project.name[0]}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-slate-900 truncate">{project.name}</h4>
+                  <h4 className="font-semibold text-sm md:text-base text-slate-900 truncate">{project.name}</h4>
                   <p className="text-xs text-slate-500">{completed}/{total} tarefas</p>
                 </div>
-                <Badge className="bg-slate-100 text-slate-700 rounded-full">
+                <Badge className="bg-slate-100 text-slate-700 rounded-full text-xs md:text-sm px-2 md:px-3">
                   {percentage}%
                 </Badge>
               </div>
-              <Progress value={percentage} className="h-2" />
+              <Progress value={percentage} className="h-1.5 md:h-2" />
             </div>
           </Link>
         );

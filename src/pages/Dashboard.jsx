@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -95,27 +96,25 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <p className="text-slate-600 text-lg mb-1">{greeting()},</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-              {user?.full_name?.split(' ')[0] || 'Usuário'}!
-            </h1>
-          </div>
-          <div className="flex gap-3">
-            <Link to={createPageUrl("Projects")}>
-              <Button className="bg-white text-slate-700 hover:bg-slate-50 shadow-lg rounded-full px-6">
-                <Plus className="w-5 h-5 mr-2" />
-                Novo Projeto
+        <div className="mb-6 md:mb-8">
+          <p className="text-slate-600 text-sm md:text-lg mb-1">{greeting()},</p>
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-3 md:mb-4">
+            {user?.full_name?.split(' ')[0] || 'Usuário'}!
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+            <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">
+              <Button className="w-full sm:w-auto bg-white text-slate-700 hover:bg-slate-50 shadow-lg rounded-full px-4 md:px-6 h-10 md:h-11">
+                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <span className="text-sm md:text-base">Novo Projeto</span>
               </Button>
             </Link>
-            <Link to={createPageUrl("Tasks")}>
-              <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg rounded-full px-6">
-                <Plus className="w-5 h-5 mr-2" />
-                Nova Tarefa
+            <Link to={createPageUrl("Tasks")} className="flex-1 sm:flex-initial">
+              <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg rounded-full px-4 md:px-6 h-10 md:h-11">
+                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <span className="text-sm md:text-base">Nova Tarefa</span>
               </Button>
             </Link>
           </div>
@@ -130,65 +129,65 @@ export default function Dashboard() {
         />
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6">
           {/* Left Column - Today's Tasks & Projects */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Today's Schedule */}
-            <Card className="shadow-xl border-none rounded-3xl bg-white/80 backdrop-blur-sm overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-yellow-100 to-orange-100 border-none pb-4">
+            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-yellow-100 to-orange-100 border-none p-4 md:pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-2xl font-bold text-slate-900 mb-1">
+                    <CardTitle className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
                       Hoje
                     </CardTitle>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-xs md:text-sm text-slate-600">
                       {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
                     </p>
                   </div>
-                  <div className="bg-white rounded-2xl p-3 shadow-md">
-                    <CalendarIcon className="w-6 h-6 text-orange-500" />
+                  <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md">
+                    <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="p-4 md:pt-6">
                 <UpcomingTasks tasks={tasks} projects={projects} />
               </CardContent>
             </Card>
 
             {/* Projects Overview */}
-            <Card className="shadow-xl border-none rounded-3xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-100">
+            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="border-b border-slate-100 p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-2xl font-bold text-slate-900">Projetos</CardTitle>
-                    <p className="text-sm text-slate-600 mt-1">
-                      Você tem {projects.filter(p => p.status === 'active').length} projeto(s) ativo(s)
+                    <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Projetos</CardTitle>
+                    <p className="text-xs md:text-sm text-slate-600 mt-1">
+                      {projects.filter(p => p.status === 'active').length} ativo(s)
                     </p>
                   </div>
                   <Link to={createPageUrl("Projects")}>
-                    <Button variant="ghost" size="sm" className="rounded-full">
+                    <Button variant="ghost" size="sm" className="rounded-full text-xs md:text-sm h-8 md:h-9">
                       Ver todos
                     </Button>
                   </Link>
                 </div>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="p-4 md:pt-6">
                 <ProjectProgress projects={projects} tasks={tasks} />
               </CardContent>
             </Card>
           </div>
 
           {/* Right Column - Calendar & Notes */}
-          <div className="space-y-6">
+          <div className="space-y-4 md:space-y-6">
             {/* Calendar */}
-            <Card className="shadow-xl border-none rounded-3xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-100">
-                <CardTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-purple-500" />
+            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="border-b border-slate-100 p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-purple-500" />
                   Calendário
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="p-4 md:pt-6">
                 <TasksCalendar
                   tasks={tasks}
                   selectedDate={selectedDate}
