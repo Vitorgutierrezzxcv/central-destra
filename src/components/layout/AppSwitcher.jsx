@@ -3,7 +3,8 @@ import {
   Check, 
   FolderKanban, 
   Users, 
-  ChevronDown
+  ChevronDown,
+  Grid3x3
 } from "lucide-react";
 import {
   Dialog,
@@ -12,14 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
@@ -64,6 +59,8 @@ export default function AppSwitcher({ isMobile = false }) {
     if (module.id !== activeModule.id) {
       navigate(createPageUrl(module.defaultPage));
       setShowDialog(false);
+    } else {
+      setShowDialog(false);
     }
   };
 
@@ -105,7 +102,7 @@ export default function AppSwitcher({ isMobile = false }) {
 
   if (isMobile) {
     return (
-      <>
+      <div className="flex items-center gap-2">
         <button
           onClick={() => setShowDialog(true)}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
@@ -115,9 +112,16 @@ export default function AppSwitcher({ isMobile = false }) {
           </div>
           <div className="text-left">
             <h1 className="text-lg font-bold text-slate-900 leading-tight">{activeModule.name}</h1>
-            <ChevronDown className="w-3 h-3 text-slate-500 inline" />
           </div>
         </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setShowDialog(true)}
+          className="h-8 w-8 hover:bg-slate-100"
+        >
+          <Grid3x3 className="w-4 h-4" />
+        </Button>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="sm:max-w-md">
@@ -134,35 +138,49 @@ export default function AppSwitcher({ isMobile = false }) {
             </div>
           </DialogContent>
         </Dialog>
-      </>
+      </div>
     );
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-3 w-full hover:bg-slate-50 p-2 rounded-lg transition-colors">
-          <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
-            <ActiveIcon className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1 text-left">
-            <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
-            <p className="text-xs text-slate-500">{activeModule.description.split(' ').slice(0, 3).join(' ')}</p>
-          </div>
-          <ChevronDown className="w-4 h-4 text-slate-400" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-80">
-        <DropdownMenuLabel className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-          Módulos Disponíveis
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <div className="p-2 space-y-2">
-          {modules.map(module => (
-            <ModuleCard key={module.id} module={module} />
-          ))}
+    <div className="flex items-center gap-2 w-full">
+      <button 
+        onClick={() => setShowDialog(true)}
+        className="flex items-center gap-3 flex-1 hover:bg-slate-50 p-2 rounded-lg transition-colors"
+      >
+        <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
+          <ActiveIcon className="w-5 h-5 text-white" />
         </div>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <div className="flex-1 text-left min-w-0">
+          <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
+          <p className="text-xs text-slate-500 truncate">{activeModule.description}</p>
+        </div>
+      </button>
+      
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setShowDialog(true)}
+        className="h-9 w-9 hover:bg-slate-100 flex-shrink-0"
+      >
+        <Grid3x3 className="w-5 h-5 text-slate-600" />
+      </Button>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Escolha um Módulo</DialogTitle>
+            <DialogDescription>
+              Alterne entre diferentes áreas do sistema
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {modules.map(module => (
+              <ModuleCard key={module.id} module={module} />
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
