@@ -67,27 +67,20 @@ export default function Layout({ children, currentPageName }) {
   // Determine which module is active based on current page
   const getCurrentModule = () => {
     const path = location.pathname;
-    if (path.includes('companies')) {
+    if (path.includes('companies')) { // Keep lowercase for path matching consistency
       return 'crm';
     }
-    // Default to taskflow if not in CRM paths
     return 'taskflow';
   };
 
   const currentModule = getCurrentModule();
 
-  // Auto-open TaskFlow when in TaskFlow pages
+  // Auto-open TaskFlow when in TaskFlow module and keep it open
   React.useEffect(() => {
     if (currentModule === 'taskflow') {
-      const taskFlowPages = ['dashboard', 'projects', 'tasks', 'backlog', 'projectdetail'];
-      const isInTaskFlowPage = taskFlowPages.some(page => 
-        location.pathname.toLowerCase().includes(page)
-      );
-      if (isInTaskFlowPage && !isTaskFlowOpen) {
-        setIsTaskFlowOpen(true);
-      }
+      setIsTaskFlowOpen(true);
     }
-  }, [location.pathname, currentModule, isTaskFlowOpen]);
+  }, [location.pathname, currentModule]); // Dependency array updated
 
   return (
     <SidebarProvider>
