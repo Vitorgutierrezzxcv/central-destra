@@ -1,5 +1,6 @@
-
 import React from "react";
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Flag, CheckCircle2 } from "lucide-react";
 import { format, isToday, parseISO } from "date-fns";
@@ -43,28 +44,31 @@ export default function UpcomingTasks({ tasks, projects }) {
         const time = task.start_date ? format(parseISO(task.start_date), "HH:mm") : format(parseISO(task.end_date), "HH:mm");
 
         return (
-          <div
+          <Link 
             key={task.id}
-            className="bg-gradient-to-r from-slate-50 to-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-200 hover:shadow-md transition-all"
+            to={`${createPageUrl("ProjectDetail")}?id=${task.project_id}`}
+            className="block"
           >
-            <div className="flex items-start gap-2 md:gap-3">
-              <div className="bg-white rounded-lg md:rounded-xl p-1.5 md:p-2 shadow-sm">
-                <Clock className="w-3 h-3 md:w-4 md:h-4 text-slate-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 md:gap-2 mb-1">
-                  <span className="text-xs md:text-sm font-semibold text-slate-500">{time}</span>
-                  <Badge className={`${priority.color} rounded-full text-xs px-1.5 md:px-2 py-0.5`}>
-                    {priority.label}
-                  </Badge>
+            <div className="bg-gradient-to-r from-slate-50 to-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all cursor-pointer">
+              <div className="flex items-start gap-2 md:gap-3">
+                <div className="bg-white rounded-lg md:rounded-xl p-1.5 md:p-2 shadow-sm">
+                  <Clock className="w-3 h-3 md:w-4 md:h-4 text-slate-600" />
                 </div>
-                <h4 className="font-semibold text-sm md:text-base text-slate-900 mb-0.5 md:mb-1 line-clamp-1">{task.title}</h4>
-                {project && (
-                  <p className="text-xs text-slate-500 line-clamp-1">{project.name}</p>
-                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 md:gap-2 mb-1">
+                    <span className="text-xs md:text-sm font-semibold text-slate-500">{time}</span>
+                    <Badge className={`${priority.color} rounded-full text-xs px-1.5 md:px-2 py-0.5`}>
+                      {priority.label}
+                    </Badge>
+                  </div>
+                  <h4 className="font-semibold text-sm md:text-base text-slate-900 mb-0.5 md:mb-1 line-clamp-1">{task.title}</h4>
+                  {project && (
+                    <p className="text-xs text-slate-500 line-clamp-1">{project.name}</p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
         );
       })}
     </div>
