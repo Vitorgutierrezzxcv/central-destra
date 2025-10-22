@@ -118,9 +118,9 @@ export default function AppSwitcher({ isMobile = false }) {
           variant="ghost"
           size="icon"
           onClick={() => setShowDialog(true)}
-          className="h-8 w-8 hover:bg-slate-100"
+          className="h-8 w-8 hover:bg-slate-100 rounded-lg bg-slate-50 border border-slate-200"
         >
-          <Grid3x3 className="w-4 h-4" />
+          <Grid3x3 className="w-4 h-4 text-slate-700" />
         </Button>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -143,28 +143,20 @@ export default function AppSwitcher({ isMobile = false }) {
   }
 
   return (
-    <div className="flex items-center gap-2 w-full">
+    <div className="w-full">
       <button 
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-3 flex-1 hover:bg-slate-50 p-2 rounded-lg transition-colors"
+        className="flex items-center gap-3 w-full hover:bg-slate-50 p-3 rounded-xl transition-all group border border-transparent hover:border-slate-200"
       >
         <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg`}>
           <ActiveIcon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
+          <h2 className="font-bold text-slate-900 text-base leading-tight">{activeModule.name}</h2>
           <p className="text-xs text-slate-500 truncate">{activeModule.description}</p>
         </div>
+        <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors flex-shrink-0" />
       </button>
-      
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setShowDialog(true)}
-        className="h-9 w-9 hover:bg-slate-100 flex-shrink-0"
-      >
-        <Grid3x3 className="w-5 h-5 text-slate-600" />
-      </Button>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md">
