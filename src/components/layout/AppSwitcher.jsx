@@ -35,7 +35,7 @@ const modules = [
     icon: Users,
     color: "from-green-500 to-teal-600",
     defaultPage: "Companies",
-    pages: ["Companies"]
+    pages: ["Companies", "Opportunities"]
   }
 ];
 
@@ -46,10 +46,15 @@ export default function AppSwitcher({ isMobile = false }) {
 
   // Determine active module based on current page
   const getCurrentModule = () => {
-    const currentPath = location.pathname.split('/').pop();
-    return modules.find(m => m.pages.some(page => 
-      createPageUrl(page).includes(currentPath)
-    )) || modules[0];
+    const currentPath = location.pathname.toLowerCase();
+    
+    // Check if in CRM pages
+    if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
+      return modules.find(m => m.id === 'crm');
+    }
+    
+    // Default to TaskFlow
+    return modules.find(m => m.id === 'taskflow') || modules[0];
   };
 
   const activeModule = getCurrentModule();

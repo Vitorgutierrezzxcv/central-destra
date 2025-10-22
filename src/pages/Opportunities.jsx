@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, TrendingUp } from "lucide-react";
+import { Plus, Search, TrendingUp, Kanban, LayoutGrid } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatePresence } from "framer-motion";
 
 import OpportunityForm from "../components/opportunities/OpportunityForm";
+import OpportunityPipeline from "../components/opportunities/OpportunityPipeline";
 
 const stageLabels = {
   prospecting: "Prospecção",
@@ -97,7 +99,7 @@ export default function Opportunities() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-3 mb-3">
@@ -156,85 +158,110 @@ export default function Opportunities() {
           <div className="text-center py-12">
             <p className="text-slate-600">Carregando oportunidades...</p>
           </div>
-        ) : filteredOpportunities.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredOpportunities.map((opp) => {
-              const company = companies.find(c => c.id === opp.company_id);
-              return (
-                <Card key={opp.id} className="bg-white shadow-md hover:shadow-lg transition-all">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="font-bold text-lg text-slate-900 flex-1">{opp.title}</h3>
-                      <Badge className={stageColors[opp.stage]}>
-                        {stageLabels[opp.stage]}
-                      </Badge>
-                    </div>
-                    {company && (
-                      <p className="text-sm text-slate-600 mb-2">{company.name}</p>
-                    )}
-                    {opp.value && (
-                      <p className="text-emerald-600 font-semibold text-lg mb-3">
-                        R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </p>
-                    )}
-                    {opp.probability && (
-                      <div className="mb-3">
-                        <div className="flex justify-between text-xs text-slate-600 mb-1">
-                          <span>Probabilidade</span>
-                          <span>{opp.probability}%</span>
-                        </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2">
-                          <div 
-                            className="bg-emerald-500 h-2 rounded-full" 
-                            style={{ width: `${opp.probability}%` }}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(opp)}
-                        className="flex-1"
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(opp.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Excluir
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ) : (
+        ) : opportunities.length === 0 ? (
           <div className="text-center py-12">
             <TrendingUp className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-900 mb-2">
-              {searchTerm ? 'Nenhuma oportunidade encontrada' : 'Nenhuma oportunidade cadastrada'}
-            </h3>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Nenhuma oportunidade cadastrada</h3>
             <p className="text-slate-600 mb-6">
-              {searchTerm 
-                ? 'Tente buscar com outros termos' 
-                : 'Cadastre sua primeira oportunidade e comece a gerenciar seu funil de vendas'}
+              Cadastre sua primeira oportunidade e comece a gerenciar seu funil de vendas
             </p>
-            {!searchTerm && (
-              <Button 
-                onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Cadastrar Primeira Oportunidade
-              </Button>
-            )}
+            <Button 
+              onClick={() => setShowForm(true)}
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Cadastrar Primeira Oportunidade
+            </Button>
           </div>
+        ) : (
+          <Tabs defaultValue="pipeline" className="w-full">
+            <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1">
+              <TabsTrigger value="pipeline" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
+                <Kanban className="w-4 h-4" />
+                Funil de Vendas
+              </TabsTrigger>
+              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
+                <LayoutGrid className="w-4 h-4" />
+                Grade
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="pipeline">
+              <OpportunityPipeline
+                opportunities={filteredOpportunities}
+                companies={companies}
+                onEdit={handleEdit}
+              />
+            </TabsContent>
+
+            <TabsContent value="grid">
+              {filteredOpportunities.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredOpportunities.map((opp) => {
+                    const company = companies.find(c => c.id === opp.company_id);
+                    return (
+                      <Card key={opp.id} className="bg-white shadow-md hover:shadow-lg transition-all">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="font-bold text-lg text-slate-900 flex-1">{opp.title}</h3>
+                            <Badge className={stageColors[opp.stage]}>
+                              {stageLabels[opp.stage]}
+                            </Badge>
+                          </div>
+                          {company && (
+                            <p className="text-sm text-slate-600 mb-2">{company.name}</p>
+                          )}
+                          {opp.value && (
+                            <p className="text-emerald-600 font-semibold text-lg mb-3">
+                              R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </p>
+                          )}
+                          {opp.probability && (
+                            <div className="mb-3">
+                              <div className="flex justify-between text-xs text-slate-600 mb-1">
+                                <span>Probabilidade</span>
+                                <span>{opp.probability}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 rounded-full h-2">
+                                <div 
+                                  className="bg-emerald-500 h-2 rounded-full" 
+                                  style={{ width: `${opp.probability}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(opp)}
+                              className="flex-1"
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(opp.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              Excluir
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <TrendingUp className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Nenhuma oportunidade encontrada</h3>
+                  <p className="text-slate-600">Tente buscar com outros termos</p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </div>
