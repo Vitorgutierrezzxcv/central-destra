@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,7 +19,7 @@ import {
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
 
-const navigationItems = [
+const taskFlowNav = [
   {
     title: "Visão Geral",
     url: createPageUrl("Dashboard"),
@@ -42,8 +42,33 @@ const navigationItems = [
   },
 ];
 
+const crmNav = [
+  {
+    title: "Cadastro",
+    url: createPageUrl("Companies"),
+    icon: Building2,
+  },
+];
+
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
+
+  // Determine which navigation to show based on current page
+  const getCurrentNav = () => {
+    const currentPath = location.pathname;
+    if (currentPath.includes('Companies')) {
+      return { items: crmNav, quickActions: [] };
+    }
+    return { 
+      items: taskFlowNav, 
+      quickActions: [
+        { title: "Novo Projeto", url: createPageUrl("Projects"), icon: Plus, color: "bg-blue-50 hover:bg-blue-100 text-blue-700" },
+        { title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }
+      ] 
+    };
+  };
+
+  const { items: navigationItems, quickActions } = getCurrentNav();
 
   return (
     <SidebarProvider>
@@ -86,29 +111,27 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupContent>
             </SidebarGroup>
 
-            <SidebarGroup className="mt-6">
-              <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
-                Ações Rápidas
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <div className="px-3 space-y-2">
-                  <Link 
-                    to={createPageUrl("Projects")}
-                    className="flex items-center gap-2 p-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium">Novo Projeto</span>
-                  </Link>
-                  <Link 
-                    to={createPageUrl("Tasks")}
-                    className="flex items-center gap-2 p-2.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-purple-700 transition-colors"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span className="text-sm font-medium">Nova Tarefa</span>
-                  </Link>
-                </div>
-              </SidebarGroupContent>
-            </SidebarGroup>
+            {quickActions.length > 0 && (
+              <SidebarGroup className="mt-6">
+                <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
+                  Ações Rápidas
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <div className="px-3 space-y-2">
+                    {quickActions.map(action => (
+                      <Link 
+                        key={action.title}
+                        to={action.url}
+                        className={`flex items-center gap-2 p-2.5 rounded-lg ${action.color} transition-colors`}
+                      >
+                        <action.icon className="w-4 h-4" />
+                        <span className="text-sm font-medium">{action.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            )}
 
             <div className="mt-auto"> 
               <UserProfile />

@@ -4,7 +4,6 @@ import {
   FolderKanban, 
   Users, 
   ChevronDown,
-  Lock,
   Sparkles
 } from "lucide-react";
 import {
@@ -17,13 +16,13 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useNavigate, useLocation } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 const modules = [
   {
@@ -32,8 +31,8 @@ const modules = [
     description: "Gestão de Projetos e Tarefas",
     icon: FolderKanban,
     color: "from-blue-500 to-purple-600",
-    active: true,
-    available: true
+    defaultPage: "Dashboard",
+    pages: ["Dashboard", "Projects", "Tasks", "Backlog", "ProjectDetail"]
   },
   {
     id: "crm",
@@ -41,35 +40,46 @@ const modules = [
     description: "Gestão de Clientes e Vendas",
     icon: Users,
     color: "from-green-500 to-teal-600",
-    active: false,
-    available: false,
-    comingSoon: true
+    defaultPage: "Companies",
+    pages: ["Companies"]
   }
 ];
 
 export default function AppSwitcher({ isMobile = false }) {
   const [showDialog, setShowDialog] = useState(false);
-  const activeModule = modules.find(m => m.active);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine active module based on current page
+  const getCurrentModule = () => {
+    const currentPath = location.pathname.split('/').pop();
+    return modules.find(m => m.pages.some(page => 
+      createPageUrl(page).includes(currentPath)
+    )) || modules[0];
+  };
+
+  const activeModule = getCurrentModule();
   const ActiveIcon = activeModule.icon;
+
+  const handleModuleClick = (module) => {
+    if (module.id !== activeModule.id) {
+      navigate(createPageUrl(module.defaultPage));
+      setShowDialog(false);
+    }
+  };
 
   const ModuleCard = ({ module }) => {
     const Icon = module.icon;
+    const isActive = module.id === activeModule.id;
     
     return (
       <button
-        onClick={() => {
-          if (module.available) {
-            setShowDialog(false);
-          }
-        }}
-        disabled={!module.available}
+        onClick={() => handleModuleClick(module)}
         className={`
           relative w-full p-4 rounded-xl border-2 transition-all text-left
-          ${module.active 
+          ${isActive 
             ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50' 
-            : module.available
-              ? 'border-slate-200 hover:border-slate-300 hover:shadow-md bg-white'
-              : 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed'
+            : 'border-slate-200 hover:border-slate-300 hover:shadow-md bg-white'
           }
         `}
       >
@@ -80,24 +90,15 @@ export default function AppSwitcher({ isMobile = false }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="font-bold text-slate-900">{module.name}</h3>
-              {module.active && (
+              {isActive && (
                 <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-none text-xs">
                   <Check className="w-3 h-3 mr-1" />
                   Ativo
                 </Badge>
               )}
-              {module.comingSoon && (
-                <Badge variant="outline" className="bg-gradient-to-r from-amber-100 to-orange-100 text-orange-700 border-orange-200 text-xs">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Em Breve
-                </Badge>
-              )}
             </div>
             <p className="text-sm text-slate-600">{module.description}</p>
           </div>
-          {!module.available && (
-            <Lock className="w-5 h-5 text-slate-400 flex-shrink-0" />
-          )}
         </div>
       </button>
     );
@@ -110,7 +111,7 @@ export default function AppSwitcher({ isMobile = false }) {
           onClick={() => setShowDialog(true)}
           className="flex items-center gap-2 hover:opacity-80 transition-opacity"
         >
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+          <div className={`w-8 h-8 bg-gradient-to-br ${activeModule.color} rounded-lg flex items-center justify-center shadow-md`}>
             <ActiveIcon className="w-4 h-4 text-white" />
           </div>
           <div className="text-left">
@@ -148,7 +149,7 @@ export default function AppSwitcher({ isMobile = false }) {
             </div>
             <div className="flex-1 text-left">
               <h2 className="font-bold text-slate-900 text-lg leading-tight">{activeModule.name}</h2>
-              <p className="text-xs text-slate-500">Gestão de Projetos</p>
+              <p className="text-xs text-slate-500">{activeModule.description.split(' ').slice(0, 3).join(' ')}</p>
             </div>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </button>
