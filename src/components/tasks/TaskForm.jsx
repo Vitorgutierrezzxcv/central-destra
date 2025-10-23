@@ -1,19 +1,19 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
 import RichTextEditor from "./RichTextEditor";
 
 export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading }) {
   const urlParams = new URLSearchParams(window.location.search);
   const currentProjectId = urlParams.get('id');
+  const queryClient = useQueryClient();
 
   const [currentTask, setCurrentTask] = useState(task || {
     title: "",
@@ -26,12 +26,58 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     priority: "medium"
   });
 
-  // Use UserProfile instead of User entity - accessible by all users
-  const { data: userProfiles, isLoading: loadingUsers } = useQuery({
+  const [syncing, setSyncing] = useState(false);
+
+  // Fetch all users from the system
+  const { data: allUsers, isLoading: loadingAllUsers } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: async () => {
+      try {
+        return await base44.entities.User.list();
+      } catch (error) {
+        console.error('Error loading users:', error);
+        return [];
+      }
+    },
+    initialData: [],
+  });
+
+  // Fetch UserProfiles
+  const { data: userProfiles, isLoading: loadingProfiles } = useQuery({
     queryKey: ['userProfiles'],
     queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
+
+  // Auto-sync users to UserProfile if needed
+  useEffect(() => {
+    const syncUsers = async () => {
+      if (allUsers.length > 0 && userProfiles.length < allUsers.length && !syncing) {
+        setSyncing(true);
+        try {
+          for (const user of allUsers) {
+            const existingProfile = userProfiles.find(p => p.user_email === user.email);
+            if (!existingProfile) {
+              await base44.entities.UserProfile.create({
+                user_email: user.email,
+                display_name: user.display_name || user.full_name || user.email.split('@')[0],
+                full_name: user.full_name || user.email.split('@')[0],
+                profile_photo_url: user.profile_photo_url || "",
+                bio: user.bio || ""
+              });
+            }
+          }
+          queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
+        } catch (error) {
+          console.error('Error syncing users:', error);
+        } finally {
+          setSyncing(false);
+        }
+      }
+    };
+
+    syncUsers();
+  }, [allUsers, userProfiles, syncing, queryClient]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,6 +87,29 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
         return;
       }
       onSubmit(currentTask);
+    }
+  };
+
+  const handleSyncUsers = async () => {
+    setSyncing(true);
+    try {
+      for (const user of allUsers) {
+        const existingProfile = userProfiles.find(p => p.user_email === user.email);
+        if (!existingProfile) {
+          await base44.entities.UserProfile.create({
+            user_email: user.email,
+            display_name: user.display_name || user.full_name || user.email.split('@')[0],
+            full_name: user.full_name || user.email.split('@')[0],
+            profile_photo_url: user.profile_photo_url || "",
+            bio: user.bio || ""
+          });
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
+    } catch (error) {
+      alert('Erro ao sincronizar usuários: ' + error.message);
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -64,6 +133,14 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       </div>
     );
   }
+
+  const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
+  const availableUsers = userProfiles.length > 0 ? userProfiles : allUsers.map(u => ({
+    id: u.id,
+    user_email: u.email,
+    display_name: u.display_name || u.full_name || u.email.split('@')[0],
+    full_name: u.full_name || u.email.split('@')[0]
+  }));
 
   return (
     <motion.div
@@ -120,21 +197,47 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="assigned_to" className="text-sm font-medium">Responsável</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="assigned_to" className="text-sm font-medium">Responsável</Label>
+              {availableUsers.length === 0 && !loadingUsers && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSyncUsers}
+                  className="h-7 text-xs text-blue-600 hover:text-blue-700"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Carregar usuários
+                </Button>
+              )}
+            </div>
             <Select
               value={currentTask.assigned_to || ""}
-              onValueChange={(value) => setCurrentTask({...currentTask, assigned_to: value})}
+              onValueChange={(value) => setCurrentTask({...currentTask, assigned_to: value === "none" ? null : value})}
+              disabled={loadingUsers}
             >
               <SelectTrigger id="assigned_to" className="h-10 md:h-11">
-                <SelectValue placeholder="Atribuir a alguém" />
+                <SelectValue placeholder={loadingUsers ? "Carregando..." : "Atribuir a alguém"} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>Nenhum</SelectItem>
+                <SelectItem value="none">Nenhum</SelectItem>
                 {loadingUsers ? (
-                  <SelectItem value={null} disabled>Carregando...</SelectItem>
+                  <SelectItem value={null} disabled>
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Carregando usuários...
+                    </div>
+                  </SelectItem>
+                ) : availableUsers.length === 0 ? (
+                  <SelectItem value={null} disabled>
+                    <div className="text-xs text-slate-500">
+                      Nenhum usuário disponível
+                    </div>
+                  </SelectItem>
                 ) : (
-                  userProfiles.map(userProfile => (
-                    <SelectItem key={userProfile.id} value={userProfile.user_email}>
+                  availableUsers.map(userProfile => (
+                    <SelectItem key={userProfile.user_email || userProfile.id} value={userProfile.user_email}>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-5 h-5">
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
