@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -25,9 +26,10 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     priority: "medium"
   });
 
-  const { data: users, isLoading: loadingUsers } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+  // Use UserProfile instead of User entity - accessible by all users
+  const { data: userProfiles, isLoading: loadingUsers } = useQuery({
+    queryKey: ['userProfiles'],
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
 
@@ -42,8 +44,8 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     }
   };
 
-  const getUserDisplayName = (user) => {
-    return user.display_name || user.full_name || user.email;
+  const getUserDisplayName = (userProfile) => {
+    return userProfile.display_name || userProfile.full_name || userProfile.user_email;
   };
 
   if (projects.length === 0) {
@@ -131,15 +133,15 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                 {loadingUsers ? (
                   <SelectItem value={null} disabled>Carregando...</SelectItem>
                 ) : (
-                  users.map(user => (
-                    <SelectItem key={user.id} value={user.email}>
+                  userProfiles.map(userProfile => (
+                    <SelectItem key={userProfile.id} value={userProfile.user_email}>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-5 h-5">
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                            {getUserDisplayName(user).split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                            {getUserDisplayName(userProfile).split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="truncate">{getUserDisplayName(user)}</span>
+                        <span className="truncate">{getUserDisplayName(userProfile)}</span>
                       </div>
                     </SelectItem>
                   ))

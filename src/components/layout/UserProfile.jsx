@@ -32,10 +32,29 @@ export default function UserProfile() {
   });
 
   const updateUserMutation = useMutation({
-    mutationFn: (userData) => base44.auth.updateMe(userData),
+    mutationFn: async (userData) => {
+      // Update user data
+      await base44.auth.updateMe(userData);
+      
+      // Sync to UserProfile entity for public access
+      const userProfiles = await base44.entities.UserProfile.filter({ user_email: user.email });
+      const profileData = {
+        user_email: user.email,
+        display_name: userData.display_name,
+        full_name: user.full_name,
+        profile_photo_url: userData.profile_photo_url || "",
+        bio: userData.bio || ""
+      };
+      
+      if (userProfiles.length > 0) {
+        await base44.entities.UserProfile.update(userProfiles[0].id, profileData);
+      } else {
+        await base44.entities.UserProfile.create(profileData);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
       setIsEditDialogOpen(false);
     },
   });

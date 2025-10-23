@@ -48,9 +48,10 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
     initialData: [],
   });
 
-  const { data: users } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+  // Use UserProfile instead of User - accessible by all users
+  const { data: userProfiles } = useQuery({
+    queryKey: ['userProfiles'],
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
 
@@ -86,7 +87,7 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
 
   const updateTaskField = (index, field, value) => {
     const newTaskData = [...taskData];
-    newTaskData[index] = { ...newTaskData[index], [field]: value };
+    newTaskData[index] = { ...newTaskData[index], [field]: value === undefined ? null : value }; // Ensure value is not undefined
     setTaskData(newTaskData);
   };
 
@@ -243,14 +244,14 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
                               >
                                 <SelectTrigger id={`assigned-${index}`} className="h-9">
                                   <SelectValue placeholder="Selecionar">
-                                    {task.assigned_to && users.find(u => u.email === task.assigned_to) ? (
+                                    {task.assigned_to && userProfiles.find(u => u.user_email === task.assigned_to) ? (
                                       <div className="flex items-center gap-2">
                                         <Avatar className="w-5 h-5">
                                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                            {users.find(u => u.email === task.assigned_to)?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                            {(userProfiles.find(u => u.user_email === task.assigned_to)?.display_name || userProfiles.find(u => u.user_email === task.assigned_to)?.full_name || '')?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
-                                        <span className="text-xs">{users.find(u => u.email === task.assigned_to)?.full_name}</span>
+                                        <span className="text-xs">{userProfiles.find(u => u.user_email === task.assigned_to)?.display_name || userProfiles.find(u => u.user_email === task.assigned_to)?.full_name}</span>
                                       </div>
                                     ) : (
                                       "Nenhum"
@@ -259,17 +260,17 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value={null}>Nenhum</SelectItem>
-                                  {users.map(user => (
-                                    <SelectItem key={user.id} value={user.email}>
+                                  {userProfiles.map(userProfile => (
+                                    <SelectItem key={userProfile.id} value={userProfile.user_email}>
                                       <div className="flex items-center gap-2">
                                         <Avatar className="w-5 h-5">
                                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                            {user.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                                            {(userProfile.display_name || userProfile.full_name || '')?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                                           </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                          <div className="font-medium text-xs">{user.full_name}</div>
-                                          <div className="text-xs text-slate-500">{user.email}</div>
+                                          <div className="font-medium text-xs">{userProfile.display_name || userProfile.full_name}</div>
+                                          <div className="text-xs text-slate-500">{userProfile.user_email}</div>
                                         </div>
                                       </div>
                                     </SelectItem>
