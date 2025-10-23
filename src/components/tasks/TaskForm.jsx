@@ -49,6 +49,40 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     initialData: [],
   });
 
+  const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
+  
+  // Criar lista única de usuários, removendo duplicatas por email
+  // IMPORTANTE: useMemo deve estar antes de qualquer early return
+  const uniqueUsers = React.useMemo(() => {
+    const userMap = new Map();
+    
+    // Primeiro adicionar UserProfiles
+    userProfiles.forEach(profile => {
+      if (profile.user_email) {
+        userMap.set(profile.user_email, {
+          id: profile.id,
+          user_email: profile.user_email,
+          display_name: profile.display_name || profile.full_name || profile.user_email.split('@')[0],
+          full_name: profile.full_name || profile.user_email.split('@')[0]
+        });
+      }
+    });
+    
+    // Depois adicionar Users que não estão no UserProfile
+    allUsers.forEach(user => {
+      if (user.email && !userMap.has(user.email)) {
+        userMap.set(user.email, {
+          id: user.id,
+          user_email: user.email,
+          display_name: user.display_name || user.full_name || user.email.split('@')[0],
+          full_name: user.full_name || user.email.split('@')[0]
+        });
+      }
+    });
+    
+    return Array.from(userMap.values());
+  }, [allUsers, userProfiles]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (currentTask.title.trim() && currentTask.project_id) {
@@ -95,6 +129,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     return userProfile.display_name || userProfile.full_name || userProfile.user_email;
   };
 
+  // Early return DEPOIS de todos os hooks
   if (projects.length === 0) {
     return (
       <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200">
@@ -111,39 +146,6 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       </div>
     );
   }
-
-  const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
-  
-  // Criar lista única de usuários, removendo duplicatas por email
-  const uniqueUsers = React.useMemo(() => {
-    const userMap = new Map();
-    
-    // Primeiro adicionar UserProfiles
-    userProfiles.forEach(profile => {
-      if (profile.user_email) {
-        userMap.set(profile.user_email, {
-          id: profile.id,
-          user_email: profile.user_email,
-          display_name: profile.display_name || profile.full_name || profile.user_email.split('@')[0],
-          full_name: profile.full_name || profile.user_email.split('@')[0]
-        });
-      }
-    });
-    
-    // Depois adicionar Users que não estão no UserProfile
-    allUsers.forEach(user => {
-      if (user.email && !userMap.has(user.email)) {
-        userMap.set(user.email, {
-          id: user.id,
-          user_email: user.email,
-          display_name: user.display_name || user.full_name || user.email.split('@')[0],
-          full_name: user.full_name || user.email.split('@')[0]
-        });
-      }
-    });
-    
-    return Array.from(userMap.values());
-  }, [allUsers, userProfiles]);
 
   return (
     <motion.div
