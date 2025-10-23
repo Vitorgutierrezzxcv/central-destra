@@ -49,36 +49,6 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     initialData: [],
   });
 
-  // Auto-sync users to UserProfile if needed
-  useEffect(() => {
-    const syncUsers = async () => {
-      if (allUsers.length > 0 && userProfiles.length < allUsers.length && !syncing) {
-        setSyncing(true);
-        try {
-          for (const user of allUsers) {
-            const existingProfile = userProfiles.find(p => p.user_email === user.email);
-            if (!existingProfile) {
-              await base44.entities.UserProfile.create({
-                user_email: user.email,
-                display_name: user.display_name || user.full_name || user.email.split('@')[0],
-                full_name: user.full_name || user.email.split('@')[0],
-                profile_photo_url: user.profile_photo_url || "",
-                bio: user.bio || ""
-              });
-            }
-          }
-          queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
-        } catch (error) {
-          console.error('Error syncing users:', error);
-        } finally {
-          setSyncing(false);
-        }
-      }
-    };
-
-    syncUsers();
-  }, [allUsers, userProfiles, syncing, queryClient]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (currentTask.title.trim() && currentTask.project_id) {
@@ -93,20 +63,28 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   const handleSyncUsers = async () => {
     setSyncing(true);
     try {
-      for (const user of allUsers) {
-        const existingProfile = userProfiles.find(p => p.user_email === user.email);
-        if (!existingProfile) {
-          await base44.entities.UserProfile.create({
+      // Recarregar a lista atual de UserProfiles para evitar duplicatas
+      const currentProfiles = await base44.entities.UserProfile.list();
+      const existingEmails = new Set(currentProfiles.map(p => p.user_email));
+      
+      // Criar apenas os perfis que não existem
+      const profilesToCreate = allUsers.filter(user => !existingEmails.has(user.email));
+      
+      if (profilesToCreate.length > 0) {
+        await base44.entities.UserProfile.bulkCreate(
+          profilesToCreate.map(user => ({
             user_email: user.email,
             display_name: user.display_name || user.full_name || user.email.split('@')[0],
             full_name: user.full_name || user.email.split('@')[0],
             profile_photo_url: user.profile_photo_url || "",
             bio: user.bio || ""
-          });
-        }
+          }))
+        );
+        
+        queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
       }
-      queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
     } catch (error) {
+      console.error('Error syncing users:', error);
       alert('Erro ao sincronizar usuários: ' + error.message);
     } finally {
       setSyncing(false);
@@ -135,12 +113,37 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   }
 
   const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
-  const availableUsers = userProfiles.length > 0 ? userProfiles : allUsers.map(u => ({
-    id: u.id,
-    user_email: u.email,
-    display_name: u.display_name || u.full_name || u.email.split('@')[0],
-    full_name: u.full_name || u.email.split('@')[0]
-  }));
+  
+  // Criar lista única de usuários, removendo duplicatas por email
+  const uniqueUsers = React.useMemo(() => {
+    const userMap = new Map();
+    
+    // Primeiro adicionar UserProfiles
+    userProfiles.forEach(profile => {
+      if (profile.user_email) {
+        userMap.set(profile.user_email, {
+          id: profile.id,
+          user_email: profile.user_email,
+          display_name: profile.display_name || profile.full_name || profile.user_email.split('@')[0],
+          full_name: profile.full_name || profile.user_email.split('@')[0]
+        });
+      }
+    });
+    
+    // Depois adicionar Users que não estão no UserProfile
+    allUsers.forEach(user => {
+      if (user.email && !userMap.has(user.email)) {
+        userMap.set(user.email, {
+          id: user.id,
+          user_email: user.email,
+          display_name: user.display_name || user.full_name || user.email.split('@')[0],
+          full_name: user.full_name || user.email.split('@')[0]
+        });
+      }
+    });
+    
+    return Array.from(userMap.values());
+  }, [allUsers, userProfiles]);
 
   return (
     <motion.div
@@ -199,7 +202,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="assigned_to" className="text-sm font-medium">Responsável</Label>
-              {availableUsers.length === 0 && !loadingUsers && (
+              {uniqueUsers.length === 0 && !loadingUsers && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -229,15 +232,15 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                       Carregando usuários...
                     </div>
                   </SelectItem>
-                ) : availableUsers.length === 0 ? (
+                ) : uniqueUsers.length === 0 ? (
                   <SelectItem value={null} disabled>
                     <div className="text-xs text-slate-500">
                       Nenhum usuário disponível
                     </div>
                   </SelectItem>
                 ) : (
-                  availableUsers.map(userProfile => (
-                    <SelectItem key={userProfile.user_email || userProfile.id} value={userProfile.user_email}>
+                  uniqueUsers.map(userProfile => (
+                    <SelectItem key={userProfile.user_email} value={userProfile.user_email}>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-5 h-5">
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
