@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, Package } from "lucide-react";
+import { Plus, Search, Package, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AnimatePresence } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 import ModuleFormDialog from "../components/backlog/ModuleFormDialog";
 import ModuleCard from "../components/backlog/ModuleCard";
@@ -13,6 +15,7 @@ export default function Backlog() {
   const [showModuleDialog, setShowModuleDialog] = useState(false);
   const [editingModule, setEditingModule] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [expandedModules, setExpandedModules] = useState([]);
   const queryClient = useQueryClient();
 
@@ -89,11 +92,22 @@ export default function Backlog() {
     return templates.filter(t => t.module_id === moduleId);
   };
 
-  const filteredModules = modules.filter(module =>
-    module.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    module.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    module.category?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get unique categories
+  const categories = React.useMemo(() => {
+    const uniqueCategories = [...new Set(modules.filter(m => m.category).map(m => m.category))];
+    return uniqueCategories.sort();
+  }, [modules]);
+
+  const filteredModules = modules.filter(module => {
+    const searchMatch = 
+      module.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      module.category?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const categoryMatch = categoryFilter === "all" || module.category === categoryFilter;
+    
+    return searchMatch && categoryMatch;
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
@@ -107,31 +121,76 @@ export default function Backlog() {
             <div>
               <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">Backlog</h1>
               <p className="text-sm md:text-base text-slate-600">
-                {modules.length} módulo{modules.length !== 1 ? 's' : ''} disponíve{modules.length !== 1 ? 'is' : 'l'}
+                {filteredModules.length} módulo{filteredModules.length !== 1 ? 's' : ''} 
+                {categoryFilter !== "all" && ` na categoria ${categoryFilter}`}
               </p>
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
-              <Input
-                placeholder="Buscar módulos..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm h-10 md:h-11 text-sm md:text-base rounded-full"
-              />
+          <div className="flex flex-col gap-3 mt-4">
+            {/* Search and Filters Row */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
+                <Input
+                  placeholder="Buscar módulos..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 md:pl-10 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm h-10 md:h-11 text-sm md:text-base rounded-full"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full px-3 h-10 md:h-11 shadow-sm">
+                  <Filter className="w-4 h-4 text-slate-500" />
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="border-0 h-auto p-0 focus:ring-0 text-sm md:text-base">
+                      <SelectValue placeholder="Categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as Categorias</SelectItem>
+                      {categories.length > 0 ? (
+                        categories.map(category => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="none" disabled>
+                          Nenhuma categoria encontrada
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button 
+                  onClick={() => {
+                    setEditingModule(null);
+                    setShowModuleDialog(true);
+                  }}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg rounded-full h-10 md:h-11 px-6"
+                >
+                  <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                  <span className="text-sm md:text-base font-medium">Novo Módulo</span>
+                </Button>
+              </div>
             </div>
-            <Button 
-              onClick={() => {
-                setEditingModule(null);
-                setShowModuleDialog(true);
-              }}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg rounded-full h-10 md:h-11 px-6"
-            >
-              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              <span className="text-sm md:text-base font-medium">Novo Módulo</span>
-            </Button>
+
+            {/* Active Filters */}
+            {categoryFilter !== "all" && (
+              <div className="flex flex-wrap gap-2 items-center">
+                <span className="text-sm text-slate-600">Filtros ativos:</span>
+                <Badge 
+                  variant="secondary" 
+                  className="cursor-pointer hover:bg-slate-200"
+                  onClick={() => setCategoryFilter("all")}
+                >
+                  {categoryFilter}
+                  <button className="ml-1 hover:text-slate-900">×</button>
+                </Badge>
+              </div>
+            )}
           </div>
         </div>
 
@@ -181,14 +240,14 @@ export default function Backlog() {
               <Package className="w-10 h-10 md:w-16 md:h-16 text-indigo-500" />
             </div>
             <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
-              {searchTerm ? 'Nenhum módulo encontrado' : 'Nenhum módulo ainda'}
+              {searchTerm || categoryFilter !== "all" ? 'Nenhum módulo encontrado' : 'Nenhum módulo ainda'}
             </h3>
             <p className="text-sm md:text-base text-slate-600 mb-6 md:mb-8 text-center max-w-md px-4">
-              {searchTerm 
-                ? 'Tente buscar com outros termos ou crie um novo módulo' 
+              {searchTerm || categoryFilter !== "all"
+                ? 'Tente ajustar os filtros ou crie um novo módulo' 
                 : 'Crie seu primeiro módulo e adicione templates de tarefas reutilizáveis'}
             </p>
-            {!searchTerm && (
+            {!(searchTerm || categoryFilter !== "all") && (
               <Button 
                 onClick={() => setShowModuleDialog(true)}
                 className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg rounded-full h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
