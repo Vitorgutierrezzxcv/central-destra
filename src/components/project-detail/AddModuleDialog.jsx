@@ -94,19 +94,57 @@ export default function AddModuleDialog({ isOpen, onClose, projectId, onSuccess 
   const handleCreateTasks = async () => {
     setIsCreating(true);
     try {
-      const tasksToCreate = taskData.map(task => ({
-        title: task.title,
-        description: task.description || "",
-        priority: task.priority,
-        assigned_to: task.assigned_to || null,
-        start_date: task.start_date,
-        end_date: task.end_date,
-        project_id: projectId,
-        module_id: selectedModuleId,
-        status: "pending"
-      }));
-
-      await base44.entities.Task.bulkCreate(tasksToCreate);
+      // Get subtemplates for each template
+      const allSubtemplates = await base44.entities.TaskTemplateSubTask.list();
+      
+      // Create main tasks
+      const createdTasks = [];
+      for (const task of taskData) {
+        const template = moduleTemplates.find(t => t.id === task.template_id);
+        const mainTask = await base44.entities.Task.create({
+          title: task.title,
+          description: task.description || "",
+          priority: task.priority,
+          assigned_to: task.assigned_to || null,
+          start_date: task.start_date,
+          end_date: task.end_date,
+          project_id: projectId,
+          module_id: selectedModuleId,
+          status: "pending"
+        });
+        
+        createdTasks.push(mainTask);
+        
+        // Create subtasks from subtemplates
+        const templateSubtasks = allSubtemplates.filter(st => st.template_id === template?.id);
+        if (templateSubtasks.length > 0) {
+          const subtasksToCreate = templateSubtasks.map(subtemplate => {
+            // Calculate dates based on main task dates
+            let subtaskStartDate = task.start_date;
+            let subtaskEndDate = task.start_date;
+            
+            if (task.start_date && subtemplate.estimated_days) {
+              const startDate = new Date(task.start_date);
+              const endDate = new Date(startDate);
+              endDate.setDate(endDate.getDate() + subtemplate.estimated_days);
+              subtaskEndDate = endDate.toISOString().split('T')[0];
+            }
+            
+            return {
+              title: subtemplate.title,
+              priority: subtemplate.priority,
+              assigned_to: task.assigned_to || null,
+              start_date: subtaskStartDate,
+              end_date: subtaskEndDate,
+              project_id: projectId,
+              parent_task_id: mainTask.id,
+              status: "pending"
+            };
+          });
+          
+          await base44.entities.Task.bulkCreate(subtasksToCreate);
+        }
+      }
       
       onSuccess();
       handleClose();

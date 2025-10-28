@@ -83,61 +83,51 @@ export default function Tasks() {
         await updateTaskMutation.mutateAsync({ id: editingTask.id, taskData });
         savedTask = { ...editingTask, ...taskData };
         
-        // Atualizar/Criar subtarefas
-        // Fetch existing subtasks for comparison
-        const existingSubtasksFromDB = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
-        const existingSubtaskIdsInDB = new Set(existingSubtasksFromDB.map(st => st.id));
+        // Fetch existing subtasks
+        const existingSubtasks = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
+        const existingIds = new Set(existingSubtasks.map(st => st.id));
         
-        const subtaskOperations = []; // To hold promises for parallel execution
-
-        const subtaskIdsInForm = new Set(); // Track subtask IDs that are in the current form
+        // Delete removed subtasks
+        const currentIds = new Set(subtasks.filter(st => st.id && !st.id.startsWith('temp-')).map(st => st.id));
+        const toDelete = existingSubtasks.filter(st => !currentIds.has(st.id));
+        await Promise.all(toDelete.map(st => base44.entities.Task.delete(st.id)));
         
-        for (const subtask of subtasks) {
-          const subtaskPayload = {
+        // Update or create subtasks
+        const operations = subtasks.map(subtask => {
+          const subtaskData = {
             title: subtask.title,
-            status: subtask.completed ? 'completed' : 'pending',
-            project_id: taskData.project_id, // Inherit from parent
-            parent_task_id: editingTask.id,
-            priority: taskData.priority, // Inherit from parent
-            assigned_to: taskData.assigned_to // Inherit from parent
+            status: subtask.status || 'pending',
+            priority: subtask.priority,
+            assigned_to: subtask.assigned_to,
+            start_date: subtask.start_date,
+            end_date: subtask.end_date,
+            project_id: taskData.project_id, // Inherit project from parent
+            parent_task_id: editingTask.id
           };
           
-          if (subtask.id && !subtask.id.startsWith('temp-') && existingSubtaskIdsInDB.has(subtask.id)) {
-            // This is an existing subtask from the DB that is also in the form, so update it.
-            subtaskOperations.push(base44.entities.Task.update(subtask.id, subtaskPayload));
-            subtaskIdsInForm.add(subtask.id);
-          } else if (subtask.id.startsWith('temp-')) {
-            // This is a new subtask added in the form, so create it.
-            subtaskOperations.push(base44.entities.Task.create(subtaskPayload));
+          if (subtask.id && !subtask.id.startsWith('temp-') && existingIds.has(subtask.id)) {
+            return base44.entities.Task.update(subtask.id, subtaskData);
+          } else {
+            return base44.entities.Task.create(subtaskData);
           }
-          // Subtasks that were in DB but not in form (and not temp-) are implicitly deleted by this logic,
-          // as they are not updated or re-created. The outline specifically doesn't include explicit deletion logic,
-          // so we rely on the implicit behavior of only touching subtasks present in the form.
-        }
-
-        // Identify subtasks to delete: those existing in the DB but not present in the current form's subtasks array
-        for (const existingSubtask of existingSubtasksFromDB) {
-          if (!subtaskIdsInForm.has(existingSubtask.id)) {
-            subtaskOperations.push(base44.entities.Task.delete(existingSubtask.id));
-          }
-        }
+        });
         
-        // Execute all subtask creation and update operations in parallel
-        await Promise.all(subtaskOperations);
-
+        await Promise.all(operations);
       } else {
         savedTask = await createTaskMutation.mutateAsync(taskData);
         
-        // Criar subtarefas
+        // Create subtasks
         if (subtasks.length > 0) {
           await base44.entities.Task.bulkCreate(
             subtasks.map(subtask => ({
               title: subtask.title,
-              status: subtask.completed ? 'completed' : 'pending',
+              status: subtask.status || 'pending',
+              priority: subtask.priority,
+              assigned_to: subtask.assigned_to,
+              start_date: subtask.start_date,
+              end_date: subtask.end_date,
               project_id: taskData.project_id,
-              parent_task_id: savedTask.id,
-              priority: taskData.priority,
-              assigned_to: taskData.assigned_to
+              parent_task_id: savedTask.id
             }))
           );
         }

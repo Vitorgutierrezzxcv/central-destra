@@ -1,0 +1,36 @@
+{
+  "name": "TaskTemplateSubTask",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string",
+      "description": "ID do template de tarefa pai"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da subtarefa"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Prioridade da subtarefa"
+    },
+    "estimated_days": {
+      "type": "number",
+      "description": "Dias estimados para conclus\u00e3o"
+    },
+    "order": {
+      "type": "number",
+      "description": "Ordem da subtarefa"
+    }
+  },
+  "required": [
+    "template_id",
+    "title"
+  ]
+}

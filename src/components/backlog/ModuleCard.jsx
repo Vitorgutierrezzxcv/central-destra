@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -27,36 +28,91 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
   const queryClient = useQueryClient();
 
   const createTemplateMutation = useMutation({
-    mutationFn: (templateData) => base44.entities.TaskTemplate.create(templateData),
+    mutationFn: async ({ templateData, subtemplates }) => {
+      const createdTemplate = await base44.entities.TaskTemplate.create(templateData);
+      
+      // Create subtemplates if any
+      if (subtemplates && subtemplates.length > 0) {
+        await base44.entities.TaskTemplateSubTask.bulkCreate(
+          subtemplates.map((sub, index) => ({
+            template_id: createdTemplate.id,
+            title: sub.title,
+            priority: sub.priority,
+            estimated_days: sub.estimated_days,
+            order: index
+          }))
+        );
+      }
+      
+      return createdTemplate;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['template-subtasks'] });
       setShowTemplateDialog(false);
       setEditingTemplate(null);
     },
   });
 
   const updateTemplateMutation = useMutation({
-    mutationFn: ({ id, templateData }) => base44.entities.TaskTemplate.update(id, templateData),
+    mutationFn: async ({ id, templateData, subtemplates }) => {
+      await base44.entities.TaskTemplate.update(id, templateData);
+      
+      // Handle subtemplates
+      const existingSubtemplates = await base44.entities.TaskTemplateSubTask.filter({ template_id: id });
+      const existingIds = new Set(existingSubtemplates.map(st => st.id));
+      
+      // Delete removed subtemplates
+      const currentIds = new Set(subtemplates.filter(st => st.id && !String(st.id).startsWith('temp-')).map(st => st.id));
+      const toDelete = existingSubtemplates.filter(st => !currentIds.has(st.id));
+      await Promise.all(toDelete.map(st => base44.entities.TaskTemplateSubTask.delete(st.id)));
+      
+      // Update or create subtemplates
+      const operations = subtemplates.map((sub, index) => {
+        const subtemplateData = {
+          template_id: id,
+          title: sub.title,
+          priority: sub.priority,
+          estimated_days: sub.estimated_days,
+          order: index
+        };
+        
+        if (sub.id && !String(sub.id).startsWith('temp-') && existingIds.has(sub.id)) {
+          return base44.entities.TaskTemplateSubTask.update(sub.id, subtemplateData);
+        } else {
+          return base44.entities.TaskTemplateSubTask.create(subtemplateData);
+        }
+      });
+      
+      await Promise.all(operations);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['template-subtasks'] });
       setShowTemplateDialog(false);
       setEditingTemplate(null);
     },
   });
 
   const deleteTemplateMutation = useMutation({
-    mutationFn: (id) => base44.entities.TaskTemplate.delete(id),
+    mutationFn: async (id) => {
+      // Delete subtemplates first
+      const subtemplates = await base44.entities.TaskTemplateSubTask.filter({ template_id: id });
+      await Promise.all(subtemplates.map(st => base44.entities.TaskTemplateSubTask.delete(st.id)));
+      await base44.entities.TaskTemplate.delete(id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['task-templates'] });
+      queryClient.invalidateQueries({ queryKey: ['template-subtasks'] });
     },
   });
 
-  const handleTemplateSubmit = (templateData) => {
+  const handleTemplateSubmit = (templateData, subtemplates = []) => {
     const dataWithModule = { ...templateData, module_id: module.id, order: templates.length };
     if (editingTemplate) {
-      updateTemplateMutation.mutate({ id: editingTemplate.id, templateData: dataWithModule });
+      updateTemplateMutation.mutate({ id: editingTemplate.id, templateData: dataWithModule, subtemplates });
     } else {
-      createTemplateMutation.mutate(dataWithModule);
+      createTemplateMutation.mutate({ templateData: dataWithModule, subtemplates });
     }
   };
 

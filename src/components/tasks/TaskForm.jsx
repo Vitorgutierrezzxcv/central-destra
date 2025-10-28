@@ -73,7 +73,11 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       setSubtasks(existingSubtasks.map(st => ({
         id: st.id,
         title: st.title,
-        completed: st.status === 'completed'
+        status: st.status,
+        priority: st.priority,
+        assigned_to: st.assigned_to,
+        start_date: st.start_date || "",
+        end_date: st.end_date || ""
       })));
     }
   }, [existingSubtasks]);
@@ -227,6 +231,12 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
         <SubTaskManager
           subtasks={subtasks}
           onChange={setSubtasks}
+          inheritedData={{
+            priority: currentTask.priority,
+            assigned_to: currentTask.assigned_to,
+            start_date: currentTask.start_date,
+            end_date: currentTask.end_date
+          }}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
