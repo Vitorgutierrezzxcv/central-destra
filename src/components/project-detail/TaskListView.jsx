@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -53,6 +52,13 @@ const priorityConfig = {
   low: { label: "Baixa", color: "bg-slate-100 text-slate-700 border-slate-200" },
   medium: { label: "Média", color: "bg-blue-100 text-blue-700 border-blue-200" },
   high: { label: "Alta", color: "bg-red-100 text-red-700 border-red-200" }
+};
+
+// Função para formatar data sem conversão de timezone
+const formatDateOnly = (dateString) => {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
 };
 
 export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }) {
@@ -167,14 +173,14 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                       {task.start_date && (
                         <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(task.start_date).toLocaleDateString('pt-BR')}
+                          {formatDateOnly(task.start_date)}
                         </Badge>
                       )}
 
                       {task.end_date && (
                         <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {new Date(task.end_date).toLocaleDateString('pt-BR')}
+                          {formatDateOnly(task.end_date)}
                         </Badge>
                       )}
                     </div>
