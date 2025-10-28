@@ -167,7 +167,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200"
+      className="space-y-4"
     >
       <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-4 md:mb-6">
         {task ? 'Editar Tarefa' : 'Nova Tarefa'}
@@ -274,7 +274,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="priority" className="text-sm font-medium">Prioridade</Label>
             <Select

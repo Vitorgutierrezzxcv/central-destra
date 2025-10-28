@@ -27,7 +27,7 @@ import { AnimatePresence } from "framer-motion";
 
 import GanttChart from "../components/project-detail/GanttChart";
 import TaskListView from "../components/project-detail/TaskListView";
-import TaskForm from "../components/tasks/TaskForm";
+import TaskFormDialog from "../components/tasks/TaskFormDialog"; // Changed from TaskForm to TaskFormDialog
 import ProjectForm from "../components/projects/ProjectForm";
 import AddModuleDialog from "../components/project-detail/AddModuleDialog";
 
@@ -391,23 +391,7 @@ export default function ProjectDetail() {
               </div>
 
               <TabsContent value="list" className="p-4 md:p-6 mt-0">
-                <AnimatePresence>
-                  {showTaskForm && (
-                    <div className="mb-6">
-                      <TaskForm
-                        task={editingTask}
-                        projects={allProjects}
-                        onSubmit={handleTaskSubmit}
-                        onCancel={() => {
-                          setShowTaskForm(false);
-                          setEditingTask(null);
-                        }}
-                        isLoading={createTaskMutation.isPending || updateTaskMutation.isPending}
-                      />
-                    </div>
-                  )}
-                </AnimatePresence>
-
+                {/* TaskFormDialog will handle task creation/editing as a modal */}
                 {loadingTasks ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map(i => (
@@ -441,6 +425,19 @@ export default function ProjectDetail() {
           onClose={() => setShowModuleDialog(false)}
           projectId={projectId}
           onSuccess={handleModuleSuccess}
+        />
+
+        {/* Task Form Dialog (for creating/editing tasks) */}
+        <TaskFormDialog
+          isOpen={showTaskForm}
+          onClose={() => {
+            setShowTaskForm(false);
+            setEditingTask(null);
+          }}
+          task={editingTask}
+          projects={allProjects}
+          onSubmit={handleTaskSubmit}
+          isLoading={createTaskMutation.isPending || updateTaskMutation.isPending}
         />
       </div>
     </div>
