@@ -68,22 +68,13 @@ export default function ProjectDetail() {
 
   const createTaskMutation = useMutation({
     mutationFn: (taskData) => base44.entities.Task.create(taskData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-tasks', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setShowTaskForm(false);
-      setEditingTask(null);
-    },
+    // onSuccess is handled manually in handleTaskSubmit now, so remove from here.
+    // The query invalidation will be done after subtasks are also handled.
   });
 
   const updateTaskMutation = useMutation({
     mutationFn: ({ id, taskData }) => base44.entities.Task.update(id, taskData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-tasks', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setShowTaskForm(false);
-      setEditingTask(null);
-    },
+    // onSuccess is handled manually in handleTaskSubmit now.
   });
 
   const updateProjectMutation = useMutation({
@@ -113,12 +104,75 @@ export default function ProjectDetail() {
     },
   });
 
-  const handleTaskSubmit = (taskData) => {
+  const handleTaskSubmit = async (taskData, subtasks = []) => {
     const dataWithProject = { ...taskData, project_id: projectId };
-    if (editingTask) {
-      updateTaskMutation.mutate({ id: editingTask.id, taskData: dataWithProject });
-    } else {
-      createTaskMutation.mutate(dataWithProject);
+    
+    try {
+      let savedTask;
+      if (editingTask) {
+        await updateTaskMutation.mutateAsync({ id: editingTask.id, taskData: dataWithProject });
+        // It's important to use the potentially updated task data for further operations
+        savedTask = { ...editingTask, ...dataWithProject };
+        
+        // Atualizar subtarefas existentes
+        const existingSubtasks = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
+        const existingSubtaskIds = new Set(existingSubtasks.map(st => st.id));
+        
+        // Process updates and new subtasks
+        const subtaskPromises = subtasks.map(subtask => {
+          const subtaskData = {
+            title: subtask.title,
+            status: subtask.completed ? 'completed' : 'pending',
+            project_id: projectId,
+            parent_task_id: editingTask.id,
+            priority: dataWithProject.priority,
+            assigned_to: dataWithProject.assigned_to
+          };
+          
+          if (subtask.id && !subtask.id.startsWith('temp-') && existingSubtaskIds.has(subtask.id)) {
+            // Update existing subtask
+            return base44.entities.Task.update(subtask.id, subtaskData);
+          } else if (subtask.id && subtask.id.startsWith('temp-')) {
+            // Create new subtask (added in the form during edit)
+            return base44.entities.Task.create(subtaskData);
+          } else if (!subtask.id) { // New subtask without temp-id, implying it's new
+            return base44.entities.Task.create(subtaskData);
+          }
+          return Promise.resolve(); // Should not happen, but for safety
+        }).filter(Boolean); // Filter out any undefined/null entries if any return Promise.resolve() was missed
+        
+        // Handle deleted subtasks (those that were in existingSubtaskIds but not in current subtasks list)
+        const currentSubtaskIds = new Set(subtasks.filter(st => st.id && !st.id.startsWith('temp-')).map(st => st.id));
+        const subtasksToDelete = existingSubtasks.filter(st => !currentSubtaskIds.has(st.id));
+        subtasksToDelete.forEach(st => subtaskPromises.push(base44.entities.Task.delete(st.id)));
+
+        await Promise.all(subtaskPromises);
+
+      } else {
+        savedTask = await createTaskMutation.mutateAsync(dataWithProject);
+        
+        // Criar subtarefas
+        if (subtasks.length > 0) {
+          const subtaskCreationPromises = subtasks.map(subtask => ({
+            title: subtask.title,
+            status: subtask.completed ? 'completed' : 'pending',
+            project_id: projectId,
+            parent_task_id: savedTask.id,
+            priority: dataWithProject.priority,
+            assigned_to: dataWithProject.assigned_to
+          })).map(subtaskData => base44.entities.Task.create(subtaskData));
+          
+          await Promise.all(subtaskCreationPromises);
+        }
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ['project-tasks', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setShowTaskForm(false);
+      setEditingTask(null);
+    } catch (error) {
+      console.error('Error saving task:', error);
+      // Optionally provide user feedback about the error
     }
   };
 
@@ -126,13 +180,15 @@ export default function ProjectDetail() {
     updateProjectMutation.mutate({ id: projectId, projectData });
   };
 
-  const handleTaskEdit = (task) => {
-    setEditingTask(task);
+  const handleTaskEdit = async (task) => {
+    // Fetch subtasks for the task being edited
+    const subtasks = await base44.entities.Task.filter({ parent_task_id: task.id });
+    setEditingTask({ ...task, subtasks });
     setShowTaskForm(true);
   };
 
   const handleTaskDelete = (taskId) => {
-    if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
+    if (window.confirm('Tem certeza que deseja excluir esta tarefa? Todas as subtarefas também serão excluídas.')) {
       deleteTaskMutation.mutate(taskId);
     }
   };
@@ -197,10 +253,12 @@ export default function ProjectDetail() {
     );
   }
 
-  const completedTasks = tasks.filter(t => t.status === 'completed').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
-  const pendingTasks = tasks.filter(t => t.status === 'pending').length;
-  const progressPercentage = tasks.length > 0 ? Math.round((completedTasks / tasks.length) * 100) : 0;
+  // Filter out subtasks from the main task list for display purposes in stats and main views
+  const mainTasks = tasks.filter(t => !t.parent_task_id);
+  const completedTasks = mainTasks.filter(t => t.status === 'completed').length;
+  const inProgressTasks = mainTasks.filter(t => t.status === 'in_progress').length;
+  const pendingTasks = mainTasks.filter(t => t.status === 'pending').length;
+  const progressPercentage = mainTasks.length > 0 ? Math.round((completedTasks / mainTasks.length) * 100) : 0;
 
   const colorClasses = {
     blue: "from-blue-400 to-blue-600",
@@ -277,7 +335,7 @@ export default function ProjectDetail() {
                 </div>
                 <div className="md:text-right">
                   <div className="text-2xl md:text-4xl font-bold text-blue-600">
-                    {tasks.length}
+                    {mainTasks.length}
                   </div>
                 </div>
               </div>
@@ -343,7 +401,7 @@ export default function ProjectDetail() {
             </div>
             <Progress value={progressPercentage} className="h-2 md:h-3" />
             <p className="text-xs md:text-sm text-slate-600 mt-2">
-              {completedTasks} de {tasks.length} tarefas concluídas
+              {completedTasks} de {mainTasks.length} tarefas concluídas
             </p>
           </CardContent>
         </Card>
@@ -404,7 +462,8 @@ export default function ProjectDetail() {
                   </div>
                 ) : (
                   <TaskListView
-                    tasks={tasks}
+                    tasks={tasks.filter(t => !t.parent_task_id)} // Pass only main tasks to list view
+                    subtasks={tasks.filter(t => t.parent_task_id)} // Pass subtasks separately
                     onEdit={handleTaskEdit}
                     onDelete={handleTaskDelete}
                     onStatusChange={handleTaskStatusChange}
@@ -418,7 +477,8 @@ export default function ProjectDetail() {
                   <Skeleton className="h-96 w-full rounded-2xl" />
                 ) : (
                   <TaskTableView
-                    tasks={tasks}
+                    tasks={tasks.filter(t => !t.parent_task_id)} // Pass only main tasks to table view
+                    subtasks={tasks.filter(t => t.parent_task_id)} // Pass subtasks separately
                     onEdit={handleTaskEdit}
                     onDelete={handleTaskDelete}
                     onStatusChange={handleTaskStatusChange}
@@ -430,7 +490,7 @@ export default function ProjectDetail() {
                 {loadingTasks ? (
                   <Skeleton className="h-96 w-full rounded-2xl" />
                 ) : (
-                  <GanttChart tasks={tasks} projectColor={project.color} />
+                  <GanttChart tasks={tasks.filter(t => !t.parent_task_id)} projectColor={project.color} /> {/* Gantt chart shows main tasks */}
                 )}
               </TabsContent>
             </Tabs>

@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
 import RichTextEditor from "./RichTextEditor";
+import SubTaskManager from "./SubTaskManager";
 
 export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading }) {
   const urlParams = new URLSearchParams(window.location.search);
@@ -25,7 +26,8 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     end_date: "",
     status: "pending",
     priority: "medium",
-    time_estimate: 0
+    time_estimate: 0,
+    parent_task_id: null
   });
 
   const [syncing, setSyncing] = useState(false);
@@ -35,6 +37,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   const [estimateMinutes, setEstimateMinutes] = useState(
     task?.time_estimate ? Math.floor((task.time_estimate % 3600) / 60) : 0
   );
+  const [subtasks, setSubtasks] = useState([]);
 
   // Fetch all users from the system
   const { data: allUsers, isLoading: loadingAllUsers } = useQuery({
@@ -56,6 +59,24 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
+
+  // Fetch existing subtasks if editing
+  const { data: existingSubtasks } = useQuery({
+    queryKey: ['subtasks', task?.id],
+    queryFn: () => task?.id ? base44.entities.Task.filter({ parent_task_id: task.id }) : Promise.resolve([]),
+    enabled: !!task?.id,
+    initialData: [],
+  });
+
+  React.useEffect(() => {
+    if (existingSubtasks && existingSubtasks.length > 0) {
+      setSubtasks(existingSubtasks.map(st => ({
+        id: st.id,
+        title: st.title,
+        completed: st.status === 'completed'
+      })));
+    }
+  }, [existingSubtasks]);
 
   const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
   
@@ -91,7 +112,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     return Array.from(userMap.values());
   }, [allUsers, userProfiles]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (currentTask.title.trim() && currentTask.project_id) {
       if (currentTask.start_date && currentTask.end_date && currentTask.end_date < currentTask.start_date) {
@@ -102,10 +123,17 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       // Calcular time_estimate em segundos
       const timeEstimateInSeconds = (estimateHours * 3600) + (estimateMinutes * 60);
       
-      onSubmit({
+      const taskData = {
         ...currentTask,
         time_estimate: timeEstimateInSeconds
-      });
+      };
+
+      // Se tiver callback de onSubmit customizado que retorna a tarefa criada
+      try {
+        await onSubmit(taskData, subtasks);
+      } catch (error) {
+        console.error('Error submitting task:', error);
+      }
     }
   };
 
@@ -194,6 +222,12 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
             placeholder="Adicione detalhes, use texto ou crie uma checklist..."
           />
         </div>
+
+        {/* Subtasks Manager */}
+        <SubTaskManager
+          subtasks={subtasks}
+          onChange={setSubtasks}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">

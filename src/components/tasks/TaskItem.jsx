@@ -17,6 +17,7 @@ import {
 
 import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
 import TimeTracker from "./TimeTracker";
+import SubTaskDisplay from "./SubTaskDisplay";
 
 const statusConfig = {
   pending: {
@@ -206,6 +207,9 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   </Badge>
                 )}
               </div>
+
+              {/* SubTask Display */}
+              <SubTaskDisplay taskId={task.id} />
 
               {/* Time Tracker */}
               <div className="mt-3">

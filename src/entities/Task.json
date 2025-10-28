@@ -18,6 +18,10 @@
       "type": "string",
       "description": "ID do m\u00f3dulo de origem (se aplic\u00e1vel)"
     },
+    "parent_task_id": {
+      "type": "string",
+      "description": "ID da tarefa pai (para subtarefas)"
+    },
     "assigned_to": {
       "type": "string",
       "description": "Email do usu\u00e1rio respons\u00e1vel pela tarefa"

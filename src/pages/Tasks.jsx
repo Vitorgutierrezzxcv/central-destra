@@ -58,18 +58,14 @@ export default function Tasks() {
   const createTaskMutation = useMutation({
     mutationFn: (taskData) => base44.entities.Task.create(taskData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setShowForm(false);
-      setEditingTask(null);
+      // Invalidation handled by handleSubmit for all related tasks
     },
   });
 
   const updateTaskMutation = useMutation({
     mutationFn: ({ id, taskData }) => base44.entities.Task.update(id, taskData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      setShowForm(false);
-      setEditingTask(null);
+      // Invalidation handled by handleSubmit for all related tasks
     },
   });
 
@@ -80,11 +76,79 @@ export default function Tasks() {
     },
   });
 
-  const handleSubmit = (taskData) => {
-    if (editingTask) {
-      updateTaskMutation.mutate({ id: editingTask.id, taskData });
-    } else {
-      createTaskMutation.mutate(taskData);
+  const handleSubmit = async (taskData, subtasks = []) => {
+    try {
+      let savedTask;
+      if (editingTask) {
+        await updateTaskMutation.mutateAsync({ id: editingTask.id, taskData });
+        savedTask = { ...editingTask, ...taskData };
+        
+        // Atualizar/Criar subtarefas
+        // Fetch existing subtasks for comparison
+        const existingSubtasksFromDB = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
+        const existingSubtaskIdsInDB = new Set(existingSubtasksFromDB.map(st => st.id));
+        
+        const subtaskOperations = []; // To hold promises for parallel execution
+
+        const subtaskIdsInForm = new Set(); // Track subtask IDs that are in the current form
+        
+        for (const subtask of subtasks) {
+          const subtaskPayload = {
+            title: subtask.title,
+            status: subtask.completed ? 'completed' : 'pending',
+            project_id: taskData.project_id, // Inherit from parent
+            parent_task_id: editingTask.id,
+            priority: taskData.priority, // Inherit from parent
+            assigned_to: taskData.assigned_to // Inherit from parent
+          };
+          
+          if (subtask.id && !subtask.id.startsWith('temp-') && existingSubtaskIdsInDB.has(subtask.id)) {
+            // This is an existing subtask from the DB that is also in the form, so update it.
+            subtaskOperations.push(base44.entities.Task.update(subtask.id, subtaskPayload));
+            subtaskIdsInForm.add(subtask.id);
+          } else if (subtask.id.startsWith('temp-')) {
+            // This is a new subtask added in the form, so create it.
+            subtaskOperations.push(base44.entities.Task.create(subtaskPayload));
+          }
+          // Subtasks that were in DB but not in form (and not temp-) are implicitly deleted by this logic,
+          // as they are not updated or re-created. The outline specifically doesn't include explicit deletion logic,
+          // so we rely on the implicit behavior of only touching subtasks present in the form.
+        }
+
+        // Identify subtasks to delete: those existing in the DB but not present in the current form's subtasks array
+        for (const existingSubtask of existingSubtasksFromDB) {
+          if (!subtaskIdsInForm.has(existingSubtask.id)) {
+            subtaskOperations.push(base44.entities.Task.delete(existingSubtask.id));
+          }
+        }
+        
+        // Execute all subtask creation and update operations in parallel
+        await Promise.all(subtaskOperations);
+
+      } else {
+        savedTask = await createTaskMutation.mutateAsync(taskData);
+        
+        // Criar subtarefas
+        if (subtasks.length > 0) {
+          await base44.entities.Task.bulkCreate(
+            subtasks.map(subtask => ({
+              title: subtask.title,
+              status: subtask.completed ? 'completed' : 'pending',
+              project_id: taskData.project_id,
+              parent_task_id: savedTask.id,
+              priority: taskData.priority,
+              assigned_to: taskData.assigned_to
+            }))
+          );
+        }
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      setShowForm(false);
+      setEditingTask(null);
+    } catch (error) {
+      console.error('Error saving task:', error);
+      // Depending on UI requirements, you might want to show a toast or message here
     }
   };
 
@@ -111,6 +175,11 @@ export default function Tasks() {
   };
 
   const filteredTasks = tasks.filter(task => {
+    // Exclude subtasks from the main list view. Subtasks will be handled within their parent task's form/display.
+    if (task.parent_task_id) {
+      return false;
+    }
+
     // Handle overdue status filter
     const now = new Date();
     const isOverdue = task.status !== 'completed' && 
