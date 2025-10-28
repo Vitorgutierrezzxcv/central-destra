@@ -16,7 +16,8 @@ import {
   Pencil,
   Trash2,
   ListTodo,
-  Package // Added Package icon
+  Package, // Added Package icon
+  Table as TableIcon // Added Table icon for the new view
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +28,7 @@ import { AnimatePresence } from "framer-motion";
 
 import GanttChart from "../components/project-detail/GanttChart";
 import TaskListView from "../components/project-detail/TaskListView";
+import TaskTableView from "../components/project-detail/TaskTableView"; // New import for Table View
 import TaskFormDialog from "../components/tasks/TaskFormDialog"; // Changed from TaskForm to TaskFormDialog
 import ProjectForm from "../components/projects/ProjectForm";
 import AddModuleDialog from "../components/project-detail/AddModuleDialog";
@@ -346,7 +348,7 @@ export default function ProjectDetail() {
           </CardContent>
         </Card>
 
-        {/* Tabs with Gantt and List View */}
+        {/* Tabs with Gantt, List and Table View */}
         <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
           <CardHeader className="border-b border-slate-200 p-4 md:p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -376,16 +378,18 @@ export default function ProjectDetail() {
           <CardContent className="p-0">
             <Tabs defaultValue="list" className="w-full">
               <div className="border-b border-slate-200 px-4 md:px-6">
-                <TabsList className="bg-transparent w-full sm:w-auto grid grid-cols-2 sm:flex">
+                <TabsList className="bg-transparent w-full sm:w-auto grid grid-cols-3 sm:flex">
                   <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
                     <List className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">Lista de Tarefas</span>
-                    <span className="sm:hidden">Lista</span>
+                    <span className="hidden sm:inline">Lista</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="table" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
+                    <TableIcon className="w-3 h-3 md:w-4 md:h-4" />
+                    <span className="hidden sm:inline">Tabela</span>
                   </TabsTrigger>
                   <TabsTrigger value="gantt" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
                     <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
-                    <span className="hidden sm:inline">Gráfico de Gantt</span>
-                    <span className="sm:hidden">Gantt</span>
+                    <span className="hidden sm:inline">Gantt</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -400,6 +404,20 @@ export default function ProjectDetail() {
                   </div>
                 ) : (
                   <TaskListView
+                    tasks={tasks}
+                    onEdit={handleTaskEdit}
+                    onDelete={handleTaskDelete}
+                    onStatusChange={handleTaskStatusChange}
+                  />
+                )}
+              </TabsContent>
+
+              {/* New TabsContent for Table View */}
+              <TabsContent value="table" className="p-4 md:p-6 mt-0">
+                {loadingTasks ? (
+                  <Skeleton className="h-96 w-full rounded-2xl" />
+                ) : (
+                  <TaskTableView
                     tasks={tasks}
                     onEdit={handleTaskEdit}
                     onDelete={handleTaskDelete}
