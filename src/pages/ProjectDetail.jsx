@@ -114,55 +114,62 @@ export default function ProjectDetail() {
         // It's important to use the potentially updated task data for further operations
         savedTask = { ...editingTask, ...dataWithProject };
         
-        // Atualizar subtarefas existentes
-        const existingSubtasks = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
-        const existingSubtaskIds = new Set(existingSubtasks.map(st => st.id));
+        // Atualizar/Criar subtarefas
+        // Fetch existing subtasks for comparison
+        const existingSubtasksFromDB = await base44.entities.Task.filter({ parent_task_id: editingTask.id });
+        const existingSubtaskIdsInDB = new Set(existingSubtasksFromDB.map(st => st.id));
         
-        // Process updates and new subtasks
-        const subtaskPromises = subtasks.map(subtask => {
-          const subtaskData = {
+        const subtaskOperations = []; // To hold promises for parallel execution
+
+        const subtaskIdsInForm = new Set(); // Track subtask IDs that are in the current form
+        
+        for (const subtask of subtasks) {
+          const subtaskPayload = {
             title: subtask.title,
             status: subtask.completed ? 'completed' : 'pending',
-            project_id: projectId,
+            project_id: taskData.project_id, // Inherit from parent
             parent_task_id: editingTask.id,
-            priority: dataWithProject.priority,
-            assigned_to: dataWithProject.assigned_to
+            priority: dataWithProject.priority, // Inherit from parent
+            assigned_to: dataWithProject.assigned_to // Inherit from parent
           };
           
-          if (subtask.id && !subtask.id.startsWith('temp-') && existingSubtaskIds.has(subtask.id)) {
-            // Update existing subtask
-            return base44.entities.Task.update(subtask.id, subtaskData);
+          if (subtask.id && !subtask.id.startsWith('temp-') && existingSubtaskIdsInDB.has(subtask.id)) {
+            // This is an existing subtask from the DB that is also in the form, so update it.
+            subtaskOperations.push(base44.entities.Task.update(subtask.id, subtaskPayload));
+            subtaskIdsInForm.add(subtask.id);
           } else if (subtask.id && subtask.id.startsWith('temp-')) {
-            // Create new subtask (added in the form during edit)
-            return base44.entities.Task.create(subtaskData);
+            // This is a new subtask added in the form, so create it.
+            subtaskOperations.push(base44.entities.Task.create(subtaskPayload));
           } else if (!subtask.id) { // New subtask without temp-id, implying it's new
-            return base44.entities.Task.create(subtaskData);
+            subtaskOperations.push(base44.entities.Task.create(subtaskPayload));
           }
-          return Promise.resolve(); // Should not happen, but for safety
-        }).filter(Boolean); // Filter out any undefined/null entries if any return Promise.resolve() was missed
-        
-        // Handle deleted subtasks (those that were in existingSubtaskIds but not in current subtasks list)
-        const currentSubtaskIds = new Set(subtasks.filter(st => st.id && !st.id.startsWith('temp-')).map(st => st.id));
-        const subtasksToDelete = existingSubtasks.filter(st => !currentSubtaskIds.has(st.id));
-        subtasksToDelete.forEach(st => subtaskPromises.push(base44.entities.Task.delete(st.id)));
+        }
 
-        await Promise.all(subtaskPromises);
+        // Identify subtasks to delete: those existing in the DB but not present in the current form's subtasks array
+        for (const existingSubtask of existingSubtasksFromDB) {
+          if (!subtaskIdsInForm.has(existingSubtask.id)) {
+            subtaskOperations.push(base44.entities.Task.delete(existingSubtask.id));
+          }
+        }
+        
+        // Execute all subtask creation and update operations in parallel
+        await Promise.all(subtaskOperations);
 
       } else {
         savedTask = await createTaskMutation.mutateAsync(dataWithProject);
         
         // Criar subtarefas
         if (subtasks.length > 0) {
-          const subtaskCreationPromises = subtasks.map(subtask => ({
-            title: subtask.title,
-            status: subtask.completed ? 'completed' : 'pending',
-            project_id: projectId,
-            parent_task_id: savedTask.id,
-            priority: dataWithProject.priority,
-            assigned_to: dataWithProject.assigned_to
-          })).map(subtaskData => base44.entities.Task.create(subtaskData));
-          
-          await Promise.all(subtaskCreationPromises);
+          await base44.entities.Task.bulkCreate(
+            subtasks.map(subtask => ({
+              title: subtask.title,
+              status: subtask.completed ? 'completed' : 'pending',
+              project_id: taskData.project_id,
+              parent_task_id: savedTask.id,
+              priority: dataWithProject.priority,
+              assigned_to: dataWithProject.assigned_to
+            }))
+          );
         }
       }
       
@@ -172,7 +179,7 @@ export default function ProjectDetail() {
       setEditingTask(null);
     } catch (error) {
       console.error('Error saving task:', error);
-      // Optionally provide user feedback about the error
+      // Depending on UI requirements, you might want to show a toast or message here
     }
   };
 
@@ -490,7 +497,7 @@ export default function ProjectDetail() {
                 {loadingTasks ? (
                   <Skeleton className="h-96 w-full rounded-2xl" />
                 ) : (
-                  <GanttChart tasks={tasks.filter(t => !t.parent_task_id)} projectColor={project.color} /> {/* Gantt chart shows main tasks */}
+                  <GanttChart tasks={tasks.filter(t => !t.parent_task_id)} projectColor={project.color} />
                 )}
               </TabsContent>
             </Tabs>
