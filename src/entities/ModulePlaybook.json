@@ -1,0 +1,27 @@
+{
+  "name": "ModulePlaybook",
+  "type": "object",
+  "properties": {
+    "module_id": {
+      "type": "string",
+      "description": "ID do m\u00f3dulo"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do playbook"
+    },
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado do playbook em HTML/Markdown"
+    },
+    "order": {
+      "type": "number",
+      "description": "Ordem de exibi\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "module_id",
+    "title",
+    "content"
+  ]
+}

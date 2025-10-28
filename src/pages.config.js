@@ -6,6 +6,7 @@ import Backlog from './pages/Backlog';
 import Companies from './pages/Companies';
 import Opportunities from './pages/Opportunities';
 import Lancamentos from './pages/Lancamentos';
+import ModuleDetail from './pages/ModuleDetail';
 import Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Companies": Companies,
     "Opportunities": Opportunities,
     "Lancamentos": Lancamentos,
+    "ModuleDetail": ModuleDetail,
 }
 
 export const pagesConfig = {

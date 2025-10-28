@@ -1,0 +1,31 @@
+{
+  "name": "ModuleAttachment",
+  "type": "object",
+  "properties": {
+    "module_id": {
+      "type": "string",
+      "description": "ID do m\u00f3dulo"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Nome do arquivo"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL do arquivo anexado"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "Tamanho do arquivo em bytes"
+    },
+    "uploaded_by": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que fez o upload"
+    }
+  },
+  "required": [
+    "module_id",
+    "file_name",
+    "file_url"
+  ]
+}
