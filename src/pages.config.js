@@ -20,4 +20,5 @@ const pages = [
   { name: "ModuleDetail", component: ModuleDetail },
 ];
 
+export const pagesConfig = pages;
 export default pages;
