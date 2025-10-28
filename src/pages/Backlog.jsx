@@ -8,12 +8,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import ModuleForm from "../components/backlog/ModuleForm";
+import ModuleFormDialog from "../components/backlog/ModuleFormDialog";
 import ModuleCard from "../components/backlog/ModuleCard";
-import TaskTemplateForm from "../components/backlog/TaskTemplateForm";
 
 export default function Backlog() {
-  const [showModuleForm, setShowModuleForm] = useState(false);
+  const [showModuleDialog, setShowModuleDialog] = useState(false);
   const [editingModule, setEditingModule] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedModules, setExpandedModules] = useState([]);
@@ -35,7 +34,7 @@ export default function Backlog() {
     mutationFn: (moduleData) => base44.entities.Module.create(moduleData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modules'] });
-      setShowModuleForm(false);
+      setShowModuleDialog(false);
       setEditingModule(null);
     },
   });
@@ -44,7 +43,7 @@ export default function Backlog() {
     mutationFn: ({ id, moduleData }) => base44.entities.Module.update(id, moduleData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['modules'] });
-      setShowModuleForm(false);
+      setShowModuleDialog(false);
       setEditingModule(null);
     },
   });
@@ -71,7 +70,7 @@ export default function Backlog() {
 
   const handleEdit = (module) => {
     setEditingModule(module);
-    setShowModuleForm(true);
+    setShowModuleDialog(true);
   };
 
   const handleDelete = async (moduleId) => {
@@ -128,7 +127,7 @@ export default function Backlog() {
             <Button 
               onClick={() => {
                 setEditingModule(null);
-                setShowModuleForm(true);
+                setShowModuleDialog(true);
               }}
               className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg rounded-full h-10 md:h-11 px-6"
             >
@@ -138,20 +137,17 @@ export default function Backlog() {
           </div>
         </div>
 
-        {/* Module Form */}
-        <AnimatePresence>
-          {showModuleForm && (
-            <ModuleForm
-              module={editingModule}
-              onSubmit={handleSubmit}
-              onCancel={() => {
-                setShowModuleForm(false);
-                setEditingModule(null);
-              }}
-              isLoading={createModuleMutation.isPending || updateModuleMutation.isPending}
-            />
-          )}
-        </AnimatePresence>
+        {/* Module Form Dialog */}
+        <ModuleFormDialog
+          isOpen={showModuleDialog}
+          onClose={() => {
+            setShowModuleDialog(false);
+            setEditingModule(null);
+          }}
+          module={editingModule}
+          onSubmit={handleSubmit}
+          isLoading={createModuleMutation.isPending || updateModuleMutation.isPending}
+        />
 
         {/* Modules Grid */}
         {isLoading ? (
@@ -196,7 +192,7 @@ export default function Backlog() {
             </p>
             {!searchTerm && (
               <Button 
-                onClick={() => setShowModuleForm(true)}
+                onClick={() => setShowModuleDialog(true)}
                 className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg rounded-full h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
               >
                 <Plus className="w-5 h-5 mr-2" />
