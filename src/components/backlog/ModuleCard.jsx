@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,8 +6,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, ChevronDown, ChevronRight, Plus, ListTodo } from "lucide-react";
-import { Link } from "react-router-dom"; // Assuming react-router-dom for Link
-import { createPageUrl } from "@/utils/navigation"; // Assuming this utility function exists
+import { Link } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 import TaskTemplateFormDialog from "./TaskTemplateFormDialog";
 import TaskTemplateItem from "./TaskTemplateItem";
@@ -93,8 +92,8 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                     size="icon"
                     className="text-white/80 hover:text-white hover:bg-white/20 rounded-full h-8 w-8"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent Link navigation
-                      e.stopPropagation(); // Stop event from bubbling up to CardHeader/Link
+                      e.preventDefault();
+                      e.stopPropagation();
                       onToggle();
                     }}
                   >
@@ -117,16 +116,16 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                   </div>
                 </div>
                 <div className="flex gap-1" onClick={(e) => {
-                  e.preventDefault(); // Prevent Link navigation
-                  e.stopPropagation(); // Stop event from bubbling up to CardHeader/Link
+                  e.preventDefault();
+                  e.stopPropagation();
                 }}>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent Link navigation
-                      e.stopPropagation(); // Stop event from bubbling up to CardHeader/Link
+                      e.preventDefault();
+                      e.stopPropagation();
                       onEdit(module);
                     }}
                   >
@@ -137,8 +136,8 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                     size="icon"
                     className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
                     onClick={(e) => {
-                      e.preventDefault(); // Prevent Link navigation
-                      e.stopPropagation(); // Stop event from bubbling up to CardHeader/Link
+                      e.preventDefault();
+                      e.stopPropagation();
                       onDelete(module.id);
                     }}
                   >
