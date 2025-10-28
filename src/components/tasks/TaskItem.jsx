@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
+import TimeTracker from "./TimeTracker";
 
 const statusConfig = {
   pending: {
@@ -48,6 +49,8 @@ const priorityConfig = {
 };
 
 export default function TaskItem({ task, project, onEdit, onDelete, onStatusChange }) {
+  const [showFullTracker, setShowFullTracker] = React.useState(false);
+
   const status = statusConfig[task.status];
   const StatusIcon = status.icon;
   const priority = priorityConfig[task.priority];
@@ -129,7 +132,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 </div>
               )}
 
-              <div className="flex flex-wrap gap-2 items-center">
+              <div className="flex flex-wrap gap-2 items-center mb-3">
                 {project && (
                   <Badge variant="outline" className="bg-white border-slate-200 text-xs">
                     {project.name}
@@ -159,6 +162,30 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                     <span className="hidden sm:inline">Fim: </span>
                     {new Date(task.end_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
                   </Badge>
+                )}
+              </div>
+
+              {/* Time Tracker */}
+              <div className="mt-3">
+                {showFullTracker ? (
+                  <div>
+                    <TimeTracker task={task} />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowFullTracker(false)}
+                      className="mt-2 text-xs"
+                    >
+                      Ocultar rastreador
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowFullTracker(true)}
+                    className="w-full hover:bg-slate-50 p-2 rounded-lg transition-colors"
+                  >
+                    <TimeTracker task={task} compact />
+                  </button>
                 )}
               </div>
             </div>

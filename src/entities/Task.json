@@ -51,6 +51,28 @@
       ],
       "default": "medium",
       "description": "Prioridade da tarefa"
+    },
+    "time_estimate": {
+      "type": "number",
+      "description": "Tempo estimado em segundos para conclus\u00e3o da tarefa"
+    },
+    "time_tracked": {
+      "type": "number",
+      "default": 0,
+      "description": "Tempo total rastreado em segundos"
+    },
+    "is_tracking": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o tempo est\u00e1 sendo rastreado no momento"
+    },
+    "last_track_start": {
+      "type": "string",
+      "description": "Timestamp do in\u00edcio do tracking atual"
+    },
+    "tracking_user": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que est\u00e1 rastreando no momento"
     }
   },
   "required": [

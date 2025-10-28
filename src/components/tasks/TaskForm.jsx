@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,10 +24,17 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     start_date: "",
     end_date: "",
     status: "pending",
-    priority: "medium"
+    priority: "medium",
+    time_estimate: 0
   });
 
   const [syncing, setSyncing] = useState(false);
+  const [estimateHours, setEstimateHours] = useState(
+    task?.time_estimate ? Math.floor(task.time_estimate / 3600) : 0
+  );
+  const [estimateMinutes, setEstimateMinutes] = useState(
+    task?.time_estimate ? Math.floor((task.time_estimate % 3600) / 60) : 0
+  );
 
   // Fetch all users from the system
   const { data: allUsers, isLoading: loadingAllUsers } = useQuery({
@@ -90,7 +98,14 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
         alert('A data de término não pode ser anterior à data de início');
         return;
       }
-      onSubmit(currentTask);
+      
+      // Calcular time_estimate em segundos
+      const timeEstimateInSeconds = (estimateHours * 3600) + (estimateMinutes * 60);
+      
+      onSubmit({
+        ...currentTask,
+        time_estimate: timeEstimateInSeconds
+      });
     }
   };
 
@@ -259,7 +274,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="space-y-2">
             <Label htmlFor="priority" className="text-sm font-medium">Prioridade</Label>
             <Select
@@ -277,6 +292,35 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="estimate_hours" className="text-sm font-medium">Estimativa (h)</Label>
+            <Input
+              id="estimate_hours"
+              type="number"
+              min="0"
+              value={estimateHours}
+              onChange={(e) => setEstimateHours(parseInt(e.target.value) || 0)}
+              className="h-10 md:h-11 text-sm"
+              placeholder="Horas"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="estimate_minutes" className="text-sm font-medium">Estimativa (m)</Label>
+            <Input
+              id="estimate_minutes"
+              type="number"
+              min="0"
+              max="59"
+              value={estimateMinutes}
+              onChange={(e) => setEstimateMinutes(parseInt(e.target.value) || 0)}
+              className="h-10 md:h-11 text-sm"
+              placeholder="Minutos"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="start_date" className="text-sm font-medium">Data de Início</Label>
             <Input

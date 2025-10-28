@@ -1,3 +1,4 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import TaskDescriptionDisplay from "../tasks/TaskDescriptionDisplay";
+import TimeTracker from "../tasks/TimeTracker"; // Added import
 
 const statusConfig = {
   pending: {
@@ -62,6 +64,8 @@ const formatDateOnly = (dateString) => {
 };
 
 export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }) {
+  const [expandedTasks, setExpandedTasks] = React.useState(new Set()); // Added state for expanded tasks
+
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list(),
@@ -80,6 +84,17 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
     const user = users.find(u => u.email === email);
     const name = user ? (user.display_name || user.full_name || email) : email;
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  };
+
+  // Function to toggle expanded state for a task
+  const toggleTaskExpanded = (taskId) => {
+    const newExpanded = new Set(expandedTasks);
+    if (newExpanded.has(taskId)) {
+      newExpanded.delete(taskId);
+    } else {
+      newExpanded.add(taskId);
+    }
+    setExpandedTasks(newExpanded);
   };
 
   if (tasks.length === 0) {
@@ -101,6 +116,7 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
           const priority = priorityConfig[task.priority];
           const assignedUserName = getUserDisplayName(task.assigned_to);
           const userInitials = getUserInitials(task.assigned_to);
+          const isExpanded = expandedTasks.has(task.id); // Check if task is expanded
 
           return (
             <motion.div
@@ -182,6 +198,30 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                           <Clock className="w-3 h-3" />
                           {formatDateOnly(task.end_date)}
                         </Badge>
+                      )}
+                    </div>
+
+                    {/* Time Tracker */}
+                    <div className="mt-3">
+                      {isExpanded ? (
+                        <div>
+                          <TimeTracker task={task} />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleTaskExpanded(task.id)}
+                            className="mt-2 text-xs"
+                          >
+                            Ocultar rastreador
+                          </Button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => toggleTaskExpanded(task.id)}
+                          className="w-full hover:bg-white p-2 rounded-lg transition-colors"
+                        >
+                          <TimeTracker task={task} compact />
+                        </button>
                       )}
                     </div>
                   </div>
