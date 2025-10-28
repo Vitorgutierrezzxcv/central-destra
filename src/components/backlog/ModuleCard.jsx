@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,8 +6,6 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, ChevronDown, ChevronRight, Plus, ListTodo } from "lucide-react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 
 import TaskTemplateFormDialog from "./TaskTemplateFormDialog";
 import TaskTemplateItem from "./TaskTemplateItem";
@@ -82,75 +79,68 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
         exit={{ opacity: 0, y: -20 }}
       >
         <Card className="shadow-lg hover:shadow-xl transition-all border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm overflow-hidden">
-          <Link to={`${createPageUrl("ModuleDetail")}?id=${module.id}`}>
-            <CardHeader
-              className={`bg-gradient-to-br ${colorClasses[module.color] || colorClasses.blue} p-4 md:p-6 cursor-pointer`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white/80 hover:text-white hover:bg-white/20 rounded-full h-8 w-8"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onToggle();
-                    }}
-                  >
-                    {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                  </Button>
-                  <div className="flex-1">
-                    <h3 className="text-white font-bold text-lg md:text-xl mb-1">
-                      {module.name}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-2">
+          <CardHeader 
+            className={`bg-gradient-to-br ${colorClasses[module.color] || colorClasses.blue} p-4 md:p-6 cursor-pointer`}
+            onClick={onToggle}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 flex-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white/80 hover:text-white hover:bg-white/20 rounded-full h-8 w-8"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle();
+                  }}
+                >
+                  {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                </Button>
+                <div className="flex-1">
+                  <h3 className="text-white font-bold text-lg md:text-xl mb-1">
+                    {module.name}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge className="bg-white/20 text-white border-white/30 text-xs">
+                      {templates.length} tarefa{templates.length !== 1 ? 's' : ''}
+                    </Badge>
+                    {module.category && (
                       <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                        {templates.length} tarefa{templates.length !== 1 ? 's' : ''}
+                        {module.category}
                       </Badge>
-                      {module.category && (
-                        <Badge className="bg-white/20 text-white border-white/30 text-xs">
-                          {module.category}
-                        </Badge>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-1" onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onEdit(module);
-                    }}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onDelete(module.id);
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
               </div>
-              {module.description && (
-                <p className="text-white/90 text-sm mt-2">{module.description}</p>
-              )}
-            </CardHeader>
-          </Link>
+              <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit(module);
+                  }}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20 rounded-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(module.id);
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            {module.description && (
+              <p className="text-white/90 text-sm mt-2">{module.description}</p>
+            )}
+          </CardHeader>
 
           <AnimatePresence>
             {isExpanded && (
