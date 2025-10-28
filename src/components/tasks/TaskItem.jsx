@@ -1,7 +1,7 @@
 
 import React from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,7 @@ const priorityConfig = {
 
 export default function TaskItem({ task, project, onEdit, onDelete, onStatusChange }) {
   const [showFullTracker, setShowFullTracker] = React.useState(false);
+  const queryClient = useQueryClient();
 
   const status = statusConfig[task.status];
   const StatusIcon = status.icon;
@@ -59,6 +60,15 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list(),
     initialData: [],
+  });
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const createExecutionHistoryMutation = useMutation({
+    mutationFn: (historyData) => base44.entities.TaskExecutionHistory.create(historyData),
   });
 
   const getUserDisplayName = (email) => {
@@ -73,6 +83,38 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
     const user = users.find(u => u.email === email);
     const name = user ? (user.display_name || user.full_name || email) : email;
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    // Se a tarefa está sendo marcada como concluída e tem module_id (veio do backlog)
+    // E se houver tempo rastreado, para evitar criar histórico de tarefas sem tempo
+    if (newStatus === 'completed' && task.module_id && task.time_tracked > 0) {
+      try {
+        // Buscar o template original
+        const templates = await base44.entities.TaskTemplate.filter({ module_id: task.module_id });
+        const template = templates.find(t => t.title === task.title);
+        
+        if (template && project) {
+          // Salvar histórico de execução
+          await createExecutionHistoryMutation.mutateAsync({
+            template_id: template.id,
+            task_id: task.id,
+            project_id: task.project_id,
+            project_name: project.name,
+            time_spent: task.time_tracked,
+            completed_date: new Date().toISOString().split('T')[0],
+            completed_by: currentUser?.email || task.assigned_to || ""
+          });
+
+          // Invalidate history query to reflect new data
+          queryClient.invalidateQueries({ queryKey: ['task-execution-history'] });
+        }
+      } catch (error) {
+        console.error('Error saving execution history:', error);
+      }
+    }
+
+    onStatusChange(task, newStatus);
   };
 
   const assignedUserName = getUserDisplayName(task.assigned_to);
@@ -94,15 +136,15 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => onStatusChange(task, "pending")}>
+                <DropdownMenuItem onClick={() => handleStatusChange("pending")}>
                   <Circle className="w-4 h-4 mr-2 text-yellow-600" />
                   Marcar como Pendente
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onStatusChange(task, "in_progress")}>
+                <DropdownMenuItem onClick={() => handleStatusChange("in_progress")}>
                   <ArrowUpCircle className="w-4 h-4 mr-2 text-blue-600" />
                   Marcar como Em Andamento
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onStatusChange(task, "completed")}>
+                <DropdownMenuItem onClick={() => handleStatusChange("completed")}>
                   <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
                   Marcar como Concluída
                 </DropdownMenuItem>

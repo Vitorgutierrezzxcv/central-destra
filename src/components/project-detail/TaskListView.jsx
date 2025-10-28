@@ -1,6 +1,7 @@
+
 import React from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import TaskDescriptionDisplay from "../tasks/TaskDescriptionDisplay";
-import TimeTracker from "../tasks/TimeTracker"; // Added import
+import TimeTracker from "../tasks/TimeTracker";
 
 const statusConfig = {
   pending: {
@@ -63,12 +64,28 @@ const formatDateOnly = (dateString) => {
 };
 
 export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }) {
-  const [expandedTasks, setExpandedTasks] = React.useState(new Set()); // Added state for expanded tasks
+  const [expandedTasks, setExpandedTasks] = React.useState(new Set());
+  const queryClient = useQueryClient();
 
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list(),
     initialData: [],
+  });
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: projects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => base44.entities.Project.list(),
+    initialData: [],
+  });
+
+  const createExecutionHistoryMutation = useMutation({
+    mutationFn: (historyData) => base44.entities.TaskExecutionHistory.create(historyData),
   });
 
   const getUserDisplayName = (email) => {
@@ -96,6 +113,35 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
     setExpandedTasks(newExpanded);
   };
 
+  const handleStatusChange = async (task, newStatus) => {
+    // Se a tarefa está sendo marcada como concluída e tem module_id (veio do backlog)
+    if (newStatus === 'completed' && task.module_id && task.time_tracked > 0) {
+      try {
+        const templates = await base44.entities.TaskTemplate.filter({ module_id: task.module_id });
+        const template = templates.find(t => t.title === task.title);
+        const project = projects.find(p => p.id === task.project_id);
+        
+        if (template && project) {
+          await createExecutionHistoryMutation.mutateAsync({
+            template_id: template.id,
+            task_id: task.id,
+            project_id: task.project_id,
+            project_name: project.name,
+            time_spent: task.time_tracked,
+            completed_date: new Date().toISOString().split('T')[0],
+            completed_by: currentUser?.email || task.assigned_to || ""
+          });
+
+          queryClient.invalidateQueries({ queryKey: ['task-execution-history'] });
+        }
+      } catch (error) {
+        console.error('Error saving execution history:', error);
+      }
+    }
+
+    onStatusChange(task, newStatus);
+  };
+
   if (tasks.length === 0) {
     return (
       <div className="text-center py-16 text-slate-500">
@@ -115,7 +161,7 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
           const priority = priorityConfig[task.priority];
           const assignedUserName = getUserDisplayName(task.assigned_to);
           const userInitials = getUserInitials(task.assigned_to);
-          const isExpanded = expandedTasks.has(task.id); // Check if task is expanded
+          const isExpanded = expandedTasks.has(task.id);
 
           return (
             <motion.div
@@ -137,15 +183,15 @@ export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => onStatusChange(task, "pending")}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(task, "pending")}>
                         <Circle className="w-4 h-4 mr-2 text-yellow-600" />
                         Pendente
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onStatusChange(task, "in_progress")}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(task, "in_progress")}>
                         <ArrowUpCircle className="w-4 h-4 mr-2 text-blue-600" />
                         Em Andamento
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onStatusChange(task, "completed")}>
+                      <DropdownMenuItem onClick={() => handleStatusChange(task, "completed")}>
                         <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
                         Concluída
                       </DropdownMenuItem>
