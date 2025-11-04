@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle, Target } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +13,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
   useSidebar,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   Collapsible,
@@ -64,6 +65,11 @@ const crmNav = [
     url: createPageUrl("Opportunities"),
     icon: TrendingUp,
   },
+  {
+    title: "Prospecção",
+    url: createPageUrl("Prospecting"),
+    icon: Target,
+  },
 ];
 
 const financeNav = [
@@ -87,7 +93,7 @@ function LayoutContent({ children }) {
   // Determine which module is active based on current page
   const getCurrentModule = () => {
     const path = location.pathname;
-    if (path.includes('companies') || path.includes('opportunities')) {
+    if (path.includes('companies') || path.includes('opportunities') || path.includes('prospecting')) {
       return 'crm';
     }
     if (path.includes('lancamentos')) {
