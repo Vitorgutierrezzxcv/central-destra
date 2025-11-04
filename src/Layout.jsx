@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle, Target } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle, Target, Repeat } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -41,6 +41,11 @@ const taskFlowNav = [
     title: "Tarefas",
     url: createPageUrl("Tasks"),
     icon: ListTodo,
+  },
+  {
+    title: "Tarefas Recorrentes",
+    url: createPageUrl("RecurringTasks"),
+    icon: Repeat,
   },
   {
     title: "Backlog",
@@ -99,7 +104,11 @@ function LayoutContent({ children }) {
     if (path.includes('lancamentos')) {
       return 'finance';
     }
-    return 'taskflow';
+    // Check if any taskFlowNav url is present in the path
+    if (taskFlowNav.some(item => path.includes(item.url.substring(1)))) {
+      return 'taskflow';
+    }
+    return 'taskflow'; // Default to taskflow if no specific module path matches
   };
 
   const currentModule = getCurrentModule();
@@ -146,12 +155,12 @@ function LayoutContent({ children }) {
                         const isActive = location.pathname === item.url;
                         return (
                           <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton 
-                              asChild 
+                            <SidebarMenuButton
+                              asChild
                               className={`
                                 rounded-lg transition-all duration-200
-                                ${isActive 
-                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                ${isActive
+                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg'
                                   : 'hover:bg-slate-100 text-slate-700'
                                 }
                               `}
@@ -164,7 +173,7 @@ function LayoutContent({ children }) {
                           </SidebarMenuItem>
                         );
                       })}
-                      
+
                       <div className="mt-3 pt-3 border-t border-slate-200">
                         <div className="px-3 pb-2">
                           <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -172,7 +181,7 @@ function LayoutContent({ children }) {
                           </span>
                         </div>
                         {taskFlowQuickActions.map(action => (
-                          <Link 
+                          <Link
                             key={action.title}
                             to={action.url}
                             className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
@@ -198,12 +207,12 @@ function LayoutContent({ children }) {
                       const isActive = location.pathname === item.url;
                       return (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton 
-                            asChild 
+                          <SidebarMenuButton
+                            asChild
                             className={`
                               rounded-lg mb-1 transition-all duration-200
-                              ${isActive 
-                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
+                              ${isActive
+                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg'
                                 : 'hover:bg-slate-100 text-slate-700'
                               }
                             `}
@@ -231,12 +240,12 @@ function LayoutContent({ children }) {
                       const isActive = location.pathname === item.url;
                       return (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton 
-                            asChild 
+                          <SidebarMenuButton
+                            asChild
                             className={`
                               rounded-lg mb-1 transition-all duration-200
-                              ${isActive 
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg' 
+                              ${isActive
+                                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg'
                                 : 'hover:bg-slate-100 text-slate-700'
                               }
                             `}
@@ -249,7 +258,7 @@ function LayoutContent({ children }) {
                         </SidebarMenuItem>
                       );
                     })}
-                    
+
                     <div className="mt-3 pt-3 border-t border-slate-200">
                       <div className="px-3 pb-2">
                         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -257,7 +266,7 @@ function LayoutContent({ children }) {
                         </span>
                       </div>
                       {financeQuickActions.map(action => (
-                        <Link 
+                        <Link
                           key={action.title}
                           to={action.url}
                           className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium mb-1`}

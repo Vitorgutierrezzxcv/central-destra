@@ -7,6 +7,7 @@ import Companies from './pages/Companies';
 import Opportunities from './pages/Opportunities';
 import Lancamentos from './pages/Lancamentos';
 import Prospecting from './pages/Prospecting';
+import RecurringTasks from './pages/RecurringTasks';
 import Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "Opportunities": Opportunities,
     "Lancamentos": Lancamentos,
     "Prospecting": Prospecting,
+    "RecurringTasks": RecurringTasks,
 }
 
 export const pagesConfig = {
