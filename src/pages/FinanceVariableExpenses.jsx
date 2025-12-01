@@ -165,14 +165,12 @@ export default function FinanceVariableExpenses() {
 
         {/* Summary Card */}
         <Card className="mb-6 bg-[#EAEAEA]/30 border-[#EAEAEA]">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[#456C8D] mb-1">Total Gastos Variáveis</p>
-                <p className="text-3xl font-bold text-[#131A20]">
-                  R$ {totalVariable.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                </p>
-              </div>
+          <CardContent className="p-4">
+            <div>
+              <p className="text-sm text-[#456C8D] mb-1">Total Gastos Variáveis</p>
+              <p className="text-2xl md:text-3xl font-bold text-[#131A20]">
+                R$ {totalVariable.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -265,37 +263,39 @@ export default function FinanceVariableExpenses() {
           <div className="space-y-3">
             {expenses.map(expense => (
               <Card key={expense.id} className="border-[#EAEAEA] hover:shadow-md transition-shadow">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[#131A20]">{expense.description}</h3>
-                    <p className="text-sm text-[#456C8D]">{expense.category_detail}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-[#131A20]">
-                        R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
-                      {expense.percentage_of_revenue > 0 && (
-                        <p className="text-xs text-[#456C8D]">{expense.percentage_of_revenue}% do fat.</p>
-                      )}
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-[#131A20] text-sm md:text-base truncate">{expense.description}</h3>
+                      <p className="text-xs md:text-sm text-[#456C8D]">{expense.category_detail}</p>
                     </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(expense)}
-                        className="text-[#456C8D] hover:text-[#6FA6FF]"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(expense.id)}
-                        className="text-[#456C8D] hover:text-red-500"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <div className="text-left sm:text-right">
+                        <span className="text-base md:text-lg font-bold text-[#131A20]">
+                          R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                        {expense.percentage_of_revenue > 0 && (
+                          <p className="text-xs text-[#456C8D]">{expense.percentage_of_revenue}% do fat.</p>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(expense)}
+                          className="text-[#456C8D] hover:text-[#6FA6FF] h-8 w-8"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(expense.id)}
+                          className="text-[#456C8D] hover:text-red-500 h-8 w-8"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

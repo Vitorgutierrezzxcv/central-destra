@@ -182,35 +182,35 @@ export default function FinancePayroll() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <p className="text-xs text-[#456C8D] mb-1">Total Folha</p>
-              <p className="text-xl font-bold text-[#131A20]">
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalPayroll.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
           <Card className="bg-white border-[#EAEAEA]">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <p className="text-xs text-[#456C8D] mb-1">Salários</p>
-              <p className="text-xl font-bold text-[#131A20]">
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalGross.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
           <Card className="bg-white border-[#EAEAEA]">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <p className="text-xs text-[#456C8D] mb-1">Encargos</p>
-              <p className="text-xl font-bold text-[#131A20]">
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalCharges.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
           <Card className="bg-white border-[#EAEAEA]">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <p className="text-xs text-[#456C8D] mb-1">Benefícios</p>
-              <p className="text-xl font-bold text-[#131A20]">
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalBenefits.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
@@ -218,18 +218,20 @@ export default function FinancePayroll() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
           <Button
             variant="outline"
             onClick={handleCopyFromPreviousMonth}
-            className="border-[#6FA6FF] text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
+            className="border-[#6FA6FF] text-[#6FA6FF] hover:bg-[#6FA6FF]/10 text-sm h-10"
+            size="sm"
           >
             <Copy className="w-4 h-4 mr-2" />
-            Copiar do Mês Anterior
+            Copiar Mês Anterior
           </Button>
           <Button
             onClick={() => setShowForm(true)}
-            className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white"
+            className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white text-sm h-10"
+            size="sm"
           >
             <Plus className="w-4 h-4 mr-2" />
             Novo Colaborador
@@ -326,40 +328,42 @@ export default function FinancePayroll() {
           <div className="space-y-3">
             {entries.map(entry => (
               <Card key={entry.id} className="border-[#EAEAEA] hover:shadow-md transition-shadow">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-[#131A20]">{entry.employee_name}</h3>
-                    <p className="text-sm text-[#456C8D]">{entry.position}</p>
-                    <div className="flex gap-4 mt-1 text-xs text-[#456C8D]">
-                      <span>Salário: R$ {entry.gross_salary?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                      <span>Encargos: R$ {entry.charges?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                      <span>Benefícios: R$ {entry.benefits?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-[#131A20] text-sm md:text-base truncate">{entry.employee_name}</h3>
+                        <p className="text-xs md:text-sm text-[#456C8D]">{entry.position}</p>
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(entry)}
+                          className="text-[#456C8D] hover:text-[#6FA6FF] h-8 w-8"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(entry.id)}
+                          className="text-[#456C8D] hover:text-red-500 h-8 w-8"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-[#131A20]">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#456C8D]">
+                      <span>Sal: R$ {entry.gross_salary?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
+                      <span>Enc: R$ {entry.charges?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
+                      <span>Ben: R$ {entry.benefits?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA]">
+                      <span className="text-xs text-[#456C8D]">Custo Total</span>
+                      <span className="text-base md:text-lg font-bold text-[#131A20]">
                         R$ {entry.total_cost?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
-                      <p className="text-xs text-[#456C8D]">Custo Total</p>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(entry)}
-                        className="text-[#456C8D] hover:text-[#6FA6FF]"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(entry.id)}
-                        className="text-[#456C8D] hover:text-red-500"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
                   </div>
                 </CardContent>

@@ -271,45 +271,45 @@ export default function FinanceSummary() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-6">
           <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingUp className="w-4 h-4 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Faturamento Anual</span>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-1 mb-1">
+                <TrendingUp className="w-3 h-3 text-[#6FA6FF]" />
+                <span className="text-xs text-[#456C8D]">Faturamento</span>
               </div>
-              <p className="text-xl font-bold text-[#131A20]">{formatCurrency(totals.faturamentoBruto)}</p>
+              <p className="text-sm md:text-lg font-bold text-[#131A20] truncate">{formatCurrency(totals.faturamentoBruto)}</p>
             </CardContent>
           </Card>
           <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <DollarSign className="w-4 h-4 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">EBITDA Anual</span>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-1 mb-1">
+                <DollarSign className="w-3 h-3 text-[#6FA6FF]" />
+                <span className="text-xs text-[#456C8D]">EBITDA</span>
               </div>
-              <p className={`text-xl font-bold ${totals.ebitda >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold truncate ${totals.ebitda >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
                 {formatCurrency(totals.ebitda)}
               </p>
             </CardContent>
           </Card>
           <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <TrendingDown className="w-4 h-4 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Lucro Líquido Anual</span>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-1 mb-1">
+                <TrendingDown className="w-3 h-3 text-[#6FA6FF]" />
+                <span className="text-xs text-[#456C8D]">Lucro Líquido</span>
               </div>
-              <p className={`text-xl font-bold ${totals.lucroLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold truncate ${totals.lucroLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
                 {formatCurrency(totals.lucroLiquido)}
               </p>
             </CardContent>
           </Card>
           <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Percent className="w-4 h-4 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Margem Líquida Média</span>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-1 mb-1">
+                <Percent className="w-3 h-3 text-[#6FA6FF]" />
+                <span className="text-xs text-[#456C8D]">Margem Líq.</span>
               </div>
-              <p className={`text-xl font-bold ${totals.faturamentoLiquido > 0 && totals.lucroLiquido / totals.faturamentoLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold ${totals.faturamentoLiquido > 0 && totals.lucroLiquido / totals.faturamentoLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
                 {formatPercent(totals.faturamentoLiquido > 0 ? totals.lucroLiquido / totals.faturamentoLiquido : 0)}
               </p>
             </CardContent>
@@ -318,19 +318,19 @@ export default function FinanceSummary() {
 
         {/* DRE Table */}
         <Card className="border-[#EAEAEA] overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
+          <div className="overflow-x-auto -mx-4 md:mx-0">
+            <Table className="text-xs md:text-sm">
               <TableHeader>
                 <TableRow className="bg-[#EAEAEA]">
-                  <TableHead className="font-bold text-[#131A20] sticky left-0 bg-[#EAEAEA] min-w-[200px]">
+                  <TableHead className="font-bold text-[#131A20] sticky left-0 bg-[#EAEAEA] min-w-[120px] md:min-w-[180px] text-xs md:text-sm p-2 md:p-4">
                     Indicador
                   </TableHead>
                   {monthlySummary.map(m => (
-                    <TableHead key={m.month} className="font-bold text-[#131A20] text-center capitalize min-w-[100px]">
+                    <TableHead key={m.month} className="font-bold text-[#131A20] text-center capitalize min-w-[70px] md:min-w-[90px] text-xs md:text-sm p-1 md:p-4">
                       {m.monthLabel}
                     </TableHead>
                   ))}
-                  <TableHead className="font-bold text-[#131A20] text-center bg-[#6FA6FF]/10 min-w-[120px]">
+                  <TableHead className="font-bold text-[#131A20] text-center bg-[#6FA6FF]/10 min-w-[80px] md:min-w-[100px] text-xs md:text-sm p-1 md:p-4">
                     Total
                   </TableHead>
                 </TableRow>
@@ -345,13 +345,13 @@ export default function FinanceSummary() {
                     `}
                   >
                     <TableCell className={`
-                      sticky left-0 bg-white
+                      sticky left-0 bg-white text-xs md:text-sm p-2 md:p-4
                       ${row.subtotal ? 'bg-[#EAEAEA]/50 font-semibold' : ''}
                       ${row.highlight ? 'bg-[#6FA6FF]/10 font-semibold' : ''}
                       ${row.negative ? 'text-red-600' : ''}
                       ${row.info ? 'text-[#456C8D]' : 'text-[#131A20]'}
                     `}>
-                      {row.label}
+                      <span className="whitespace-nowrap">{row.label}</span>
                     </TableCell>
                     {monthlySummary.map(m => {
                       const value = m[row.key];
@@ -359,19 +359,19 @@ export default function FinanceSummary() {
                       return (
                         <TableCell 
                           key={m.month} 
-                          className={`text-center text-sm ${isNegative ? 'text-red-500' : ''}`}
+                          className={`text-center text-xs md:text-sm p-1 md:p-4 ${isNegative ? 'text-red-500' : ''}`}
                         >
                           {row.type === 'percent' 
                             ? formatPercent(value)
-                            : formatCurrency(value)
+                            : <span className="whitespace-nowrap">{formatCurrency(value)}</span>
                           }
                         </TableCell>
                       );
                     })}
-                    <TableCell className={`text-center font-semibold bg-[#6FA6FF]/10 ${totals[row.key] < 0 ? 'text-red-500' : ''}`}>
+                    <TableCell className={`text-center font-semibold bg-[#6FA6FF]/10 text-xs md:text-sm p-1 md:p-4 ${totals[row.key] < 0 ? 'text-red-500' : ''}`}>
                       {row.type === 'percent' 
                         ? '-'
-                        : formatCurrency(totals[row.key])
+                        : <span className="whitespace-nowrap">{formatCurrency(totals[row.key])}</span>
                       }
                     </TableCell>
                   </TableRow>

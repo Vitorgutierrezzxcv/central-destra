@@ -181,29 +181,31 @@ export default function FinanceFixedExpenses() {
 
         {/* Summary Card */}
         <Card className="mb-6 bg-[#EAEAEA]/30 border-[#EAEAEA]">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center justify-between">
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-4">
               <div>
                 <p className="text-sm text-[#456C8D] mb-1">Total Gastos Fixos</p>
-                <p className="text-3xl font-bold text-[#131A20]">
+                <p className="text-2xl md:text-3xl font-bold text-[#131A20]">
                   R$ {totalFixed.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button
                   variant="outline"
                   onClick={handleCopyFromPreviousMonth}
-                  className="border-[#6FA6FF] text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
+                  className="border-[#6FA6FF] text-[#6FA6FF] hover:bg-[#6FA6FF]/10 text-sm h-10"
+                  size="sm"
                 >
                   <Copy className="w-4 h-4 mr-2" />
-                  Copiar do Mês Anterior
+                  Copiar Mês Anterior
                 </Button>
                 <Button
                   onClick={() => setShowForm(true)}
-                  className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white"
+                  className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white text-sm h-10"
+                  size="sm"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Novo Gasto Fixo
+                  Novo
                 </Button>
               </div>
             </div>
@@ -293,39 +295,41 @@ export default function FinanceFixedExpenses() {
           <div className="space-y-3">
             {expenses.map(expense => (
               <Card key={expense.id} className="border-[#EAEAEA] hover:shadow-md transition-shadow">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-[#131A20]">{expense.description}</h3>
-                      {expense.is_recurring && (
-                        <span className="text-xs bg-[#6FA6FF]/10 text-[#6FA6FF] px-2 py-0.5 rounded-full">
-                          Recorrente
-                        </span>
-                      )}
+                <CardContent className="p-3 md:p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-semibold text-[#131A20] text-sm md:text-base truncate">{expense.description}</h3>
+                        {expense.is_recurring && (
+                          <span className="text-xs bg-[#6FA6FF]/10 text-[#6FA6FF] px-2 py-0.5 rounded-full whitespace-nowrap">
+                            Recorrente
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs md:text-sm text-[#456C8D]">{expense.category_detail}</p>
                     </div>
-                    <p className="text-sm text-[#456C8D]">{expense.category_detail}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-lg font-bold text-[#131A20]">
-                      R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                    </span>
-                    <div className="flex gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(expense)}
-                        className="text-[#456C8D] hover:text-[#6FA6FF]"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(expense.id)}
-                        className="text-[#456C8D] hover:text-red-500"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center justify-between sm:justify-end gap-3">
+                      <span className="text-base md:text-lg font-bold text-[#131A20]">
+                        R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(expense)}
+                          className="text-[#456C8D] hover:text-[#6FA6FF] h-8 w-8"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(expense.id)}
+                          className="text-[#456C8D] hover:text-red-500 h-8 w-8"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
