@@ -58,16 +58,16 @@ export default function Tasks() {
     mutationFn: (taskData) => base44.entities.Task.create(taskData),
     onSuccess: () => {
 
+
       // Invalidation handled by handleSubmit for all related tasks
     } });
-
   const updateTaskMutation = useMutation({
     mutationFn: ({ id, taskData }) => base44.entities.Task.update(id, taskData),
     onSuccess: () => {
 
+
       // Invalidation handled by handleSubmit for all related tasks
     } });
-
   const deleteTaskMutation = useMutation({
     mutationFn: (id) => base44.entities.Task.delete(id),
     onSuccess: () => {
@@ -287,7 +287,7 @@ export default function Tasks() {
           </div> :
         filteredTasks.length > 0 ?
         <Tabs defaultValue="grid" className="w-full">
-            <TabsList className="bg-gray-800 text-muted-foreground mb-6 p-1 rounded-lg items-center justify-center h-auto grid grid-cols-3 w-full sm:w-auto">
+            <TabsList className="bg-slate-50 text-muted-foreground mb-6 p-1 rounded-lg items-center justify-center h-auto grid grid-cols-3 w-full sm:w-auto">
               <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <LayoutGrid className="w-4 h-4" />
                 <span className="hidden sm:inline">Grade</span>
