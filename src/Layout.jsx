@@ -178,9 +178,9 @@ function LayoutContent({ children }) {
               variant="ghost"
               size="icon"
               onClick={() => setOpen(false)}
-              className="hover:bg-slate-100 rounded-lg"
+              className="hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] rounded-lg"
             >
-              <X className="w-5 h-5 text-slate-700" />
+              <X className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e]" />
             </Button>
           </div>
           
@@ -190,7 +190,7 @@ function LayoutContent({ children }) {
           </div>
 
           <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-medium text-[#456C8D] uppercase tracking-wider px-3 py-2">
+            <SidebarGroupLabel className="text-xs font-medium text-[#456C8D] dark:text-[#8b949e] uppercase tracking-wider px-3 py-2">
               Navegação
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -198,15 +198,15 @@ function LayoutContent({ children }) {
                 {currentModule === 'taskflow' ? (
                   <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                     <CollapsibleTrigger asChild>
-                      <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#EAEAEA] transition-all mb-1 group">
+                      <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] transition-all mb-1 group">
                         <div className="flex items-center gap-3">
                           <FolderKanban className="w-5 h-5 text-[#6FA6FF]" />
-                          <span className="font-medium text-[#131A20]">TaskFlow</span>
+                          <span className="font-medium text-[#131A20] dark:text-[#e6edf3]">TaskFlow</span>
                         </div>
                         {isTaskFlowOpen ? (
-                          <ChevronDown className="w-4 h-4 text-[#456C8D] transition-transform" />
+                          <ChevronDown className="w-4 h-4 text-[#456C8D] dark:text-[#8b949e] transition-transform" />
                         ) : (
-                          <ChevronRight className="w-4 h-4 text-[#456C8D] transition-transform" />
+                          <ChevronRight className="w-4 h-4 text-[#456C8D] dark:text-[#8b949e] transition-transform" />
                         )}
                       </button>
                     </CollapsibleTrigger>
@@ -221,7 +221,7 @@ function LayoutContent({ children }) {
                                 rounded-lg transition-all duration-200
                                 ${isActive
                                   ? 'bg-[#6FA6FF] text-white'
-                                  : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                                  : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                                 }
                               `}
                             >
@@ -234,9 +234,9 @@ function LayoutContent({ children }) {
                         );
                       })}
 
-                      <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
+                      <div className="mt-3 pt-3 border-t border-[#EAEAEA] dark:border-[#30363d]">
                         <div className="px-3 pb-2">
-                          <span className="text-xs font-medium text-[#456C8D] uppercase tracking-wider">
+                          <span className="text-xs font-medium text-[#456C8D] dark:text-[#8b949e] uppercase tracking-wider">
                             Ações Rápidas
                           </span>
                         </div>
@@ -244,7 +244,7 @@ function LayoutContent({ children }) {
                           <Link
                             key={action.title}
                             to={action.url}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] hover:bg-[#6FA6FF] hover:text-white transition-colors text-sm font-medium text-[#131A20] mb-1"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] dark:bg-[#21262d] hover:bg-[#6FA6FF] hover:text-white transition-colors text-sm font-medium text-[#131A20] dark:text-[#e6edf3] mb-1"
                           >
                             <action.icon className="w-4 h-4" />
                             {action.title}
@@ -260,7 +260,7 @@ function LayoutContent({ children }) {
                         <div className="w-10 h-10 bg-[#6FA6FF] rounded-xl flex items-center justify-center">
                           <Building2 className="w-5 h-5 text-white" />
                         </div>
-                        <span className="font-medium text-[#131A20]">CRM</span>
+                        <span className="font-medium text-[#131A20] dark:text-[#e6edf3]">CRM</span>
                       </div>
                     </div>
                     {crmNav.map((item) => {
@@ -273,7 +273,7 @@ function LayoutContent({ children }) {
                               rounded-lg mb-1 transition-all duration-200
                               ${isActive
                                 ? 'bg-[#6FA6FF] text-white'
-                                : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                                : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                               }
                             `}
                           >
@@ -293,7 +293,7 @@ function LayoutContent({ children }) {
                           <div className="w-10 h-10 bg-[#456C8D] rounded-xl flex items-center justify-center">
                           <Wallet className="w-5 h-5 text-white" />
                           </div>
-                          <span className="font-medium text-[#131A20]">Finanças</span>
+                          <span className="font-medium text-[#131A20] dark:text-[#e6edf3]">Finanças</span>
                           </div>
                           </div>
                     {financeNav.map((item) => {
@@ -306,7 +306,7 @@ function LayoutContent({ children }) {
                               rounded-lg mb-1 transition-all duration-200
                               ${isActive
                                 ? 'bg-[#456C8D] text-white'
-                                : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                                : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                               }
                             `}
                           >
@@ -319,9 +319,9 @@ function LayoutContent({ children }) {
                           );
                           })}
 
-                          <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
+                          <div className="mt-3 pt-3 border-t border-[#EAEAEA] dark:border-[#30363d]">
                           <div className="px-3 pb-2">
-                          <span className="text-xs font-medium text-[#456C8D] uppercase tracking-wider">
+                          <span className="text-xs font-medium text-[#456C8D] dark:text-[#8b949e] uppercase tracking-wider">
                             Ações Rápidas
                           </span>
                           </div>
@@ -329,7 +329,7 @@ function LayoutContent({ children }) {
                           <Link
                             key={action.title}
                             to={action.url}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] hover:bg-[#456C8D] hover:text-white transition-colors text-sm font-medium mb-1 text-[#131A20]"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] dark:bg-[#21262d] hover:bg-[#456C8D] hover:text-white transition-colors text-sm font-medium mb-1 text-[#131A20] dark:text-[#e6edf3]"
                           >
                             <action.icon className="w-4 h-4" />
                             {action.title}
@@ -376,17 +376,17 @@ function LayoutContent({ children }) {
             variant="ghost"
             size="sm"
             onClick={() => setOpen(!open)}
-            className="hover:bg-[#EAEAEA] rounded-lg h-9 px-3"
+            className="hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] rounded-lg h-9 px-3"
           >
             {open ? (
               <>
-                <PanelLeftClose className="w-4 h-4 mr-2 text-[#456C8D]" />
-                <span className="text-sm text-[#456C8D]">Ocultar Menu</span>
+                <PanelLeftClose className="w-4 h-4 mr-2 text-[#456C8D] dark:text-[#8b949e]" />
+                <span className="text-sm text-[#456C8D] dark:text-[#8b949e]">Ocultar Menu</span>
               </>
             ) : (
               <>
-                <PanelLeft className="w-4 h-4 mr-2 text-[#456C8D]" />
-                <span className="text-sm text-[#456C8D]">Mostrar Menu</span>
+                <PanelLeft className="w-4 h-4 mr-2 text-[#456C8D] dark:text-[#8b949e]" />
+                <span className="text-sm text-[#456C8D] dark:text-[#8b949e]">Mostrar Menu</span>
               </>
             )}
           </Button>
@@ -409,9 +409,9 @@ function LayoutContent({ children }) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="hover:bg-[#EAEAEA] rounded-lg"
+                    className="hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] rounded-lg"
                   >
-                    <X className="w-5 h-5 text-[#456C8D]" />
+                    <X className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e]" />
                   </Button>
                 </div>
 
@@ -430,7 +430,7 @@ function LayoutContent({ children }) {
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
                             ? 'bg-[#6FA6FF] text-white'
-                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                            : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -448,7 +448,7 @@ function LayoutContent({ children }) {
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
                             ? 'bg-[#6FA6FF] text-white'
-                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                            : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -466,7 +466,7 @@ function LayoutContent({ children }) {
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
                             ? 'bg-[#456C8D] text-white'
-                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
+                            : 'hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] text-[#131A20] dark:text-[#e6edf3]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -510,7 +510,7 @@ function LayoutContent({ children }) {
           <div className="flex items-center gap-2 bg-white dark:bg-[#1a2430] rounded-full px-2 py-2 shadow-lg border border-[#EAEAEA] dark:border-[#2a3441]">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAEAEA] hover:bg-[#6FA6FF] hover:text-white transition-all"
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAEAEA] dark:bg-[#21262d] hover:bg-[#6FA6FF] hover:text-white transition-all text-[#131A20] dark:text-[#e6edf3]"
             >
               <Menu className="w-5 h-5" />
             </button>
