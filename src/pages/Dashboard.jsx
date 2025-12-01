@@ -25,20 +25,20 @@ export default function Dashboard() {
 
   const { data: user, isLoading: loadingUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => base44.auth.me()
   });
 
   const { data: tasks, isLoading: loadingTasks } = useQuery({
     queryKey: ['my-tasks', user?.email],
     queryFn: () => base44.entities.Task.filter({ assigned_to: user.email }),
     initialData: [],
-    enabled: !!user,
+    enabled: !!user
   });
 
   const { data: projects, isLoading: loadingProjects } = useQuery({
     queryKey: ['projects'],
     queryFn: () => base44.entities.Project.list(),
-    initialData: [],
+    initialData: []
   });
 
   if (loadingUser || loadingTasks || loadingProjects) {
@@ -47,12 +47,12 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-lg" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 md:h-32 rounded-xl" />)}
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 md:h-32 rounded-xl" />)}
           </div>
           <Skeleton className="h-64 md:h-96 rounded-xl" />
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   const getDateRange = () => {
@@ -71,18 +71,18 @@ export default function Dashboard() {
 
   const { start, end } = getDateRange();
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = tasks.filter((task) => {
     const taskDate = task.start_date ? new Date(task.start_date) : task.end_date ? new Date(task.end_date) : null;
     if (!taskDate) return false;
     return taskDate >= start && taskDate <= end;
   });
 
   const now = new Date();
-  const pendingTasks = tasks.filter(t => t.status === 'pending').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
-  const completedTasks = tasks.filter(t => t.status === 'completed').length;
-  
-  const overdueTasks = tasks.filter(t => {
+  const pendingTasks = tasks.filter((t) => t.status === 'pending').length;
+  const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
+  const completedTasks = tasks.filter((t) => t.status === 'completed').length;
+
+  const overdueTasks = tasks.filter((t) => {
     if (t.status === 'completed') return false;
     if (!t.end_date) return false;
     return isBefore(new Date(t.end_date), now) && !isSameDay(new Date(t.end_date), now);
@@ -108,7 +108,7 @@ export default function Dashboard() {
           </h1>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
             <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-white text-[#131A20] dark:text-white hover:bg-white/80 shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11 border border-[#EAEAEA] dark:border-[#30363d]">
+              <Button className="bg-slate-700 text-[#131A20] px-4 py-2 text-sm font-medium rounded-lg inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 w-full sm:w-auto dark:text-white hover:bg-white/80 shadow-md md:px-6 h-10 md:h-11 border border-[#EAEAEA] dark:border-[#30363d]">
                 <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 <span className="text-sm md:text-base font-medium">Novo Projeto</span>
               </Button>
@@ -127,8 +127,8 @@ export default function Dashboard() {
           pendingTasks={pendingTasks}
           inProgressTasks={inProgressTasks}
           completedTasks={completedTasks}
-          overdueTasks={overdueTasks}
-        />
+          overdueTasks={overdueTasks} />
+
 
         {/* Main Content Grid */}
         <div className="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6">
@@ -163,7 +163,7 @@ export default function Dashboard() {
                   <div>
                     <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white">Projetos</CardTitle>
                     <p className="text-xs md:text-sm text-[#456C8D] dark:text-[#8b949e] mt-1">
-                      {projects.filter(p => p.status === 'active').length} ativo(s)
+                      {projects.filter((p) => p.status === 'active').length} ativo(s)
                     </p>
                   </div>
                   <Link to={createPageUrl("Projects")}>
@@ -196,8 +196,8 @@ export default function Dashboard() {
                 <TasksCalendar
                   tasks={tasks}
                   selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
+                  onDateChange={setSelectedDate} />
+
               </CardContent>
             </Card>
 
@@ -206,6 +206,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
