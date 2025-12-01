@@ -161,11 +161,11 @@ function ProspectingContent() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <div className="flex gap-2 flex-wrap">
+          <div className="flex flex-col gap-3 mt-4">
+            <div className="grid grid-cols-2 gap-2">
               <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-[140px] bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
-                  <Calendar className="w-4 h-4 mr-2" />
+                <SelectTrigger className="w-full bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
+                  <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -177,8 +177,8 @@ function ProspectingContent() {
               </Select>
 
               <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
-                <SelectTrigger className="w-[160px] bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
-                  <TrendingUp className="w-4 h-4 mr-2" />
+                <SelectTrigger className="w-full bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
+                  <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -189,14 +189,15 @@ function ProspectingContent() {
               </Select>
             </div>
 
-            <div className="flex gap-2 ml-auto">
+            <div className="grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <Button
                 onClick={() => setShowGoalsManager(true)}
                 variant="outline"
-                className="bg-white/80 backdrop-blur-sm shadow-md border-slate-200 rounded-full h-10 md:h-11 px-6"
+                className="bg-white/80 backdrop-blur-sm shadow-md border-slate-200 rounded-full h-10 md:h-11 px-3 md:px-6"
               >
-                <Settings className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base">Gerenciar Metas</span>
+                <Settings className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="hidden md:inline text-sm md:text-base">Gerenciar Metas</span>
+                <span className="md:hidden text-sm">Metas</span>
               </Button>
 
               <Button
@@ -204,11 +205,14 @@ function ProspectingContent() {
                   setEditingMetric(todayMetric || null);
                   setShowForm(true);
                 }}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg rounded-full h-10 md:h-11 px-6"
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg rounded-full h-10 md:h-11 px-3 md:px-6"
               >
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base font-medium">
+                <Plus className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="hidden md:inline text-sm md:text-base font-medium">
                   {todayMetric ? 'Editar Hoje' : 'Registrar Hoje'}
+                </span>
+                <span className="md:hidden text-sm font-medium">
+                  {todayMetric ? 'Editar' : 'Registrar'}
                 </span>
               </Button>
             </div>
