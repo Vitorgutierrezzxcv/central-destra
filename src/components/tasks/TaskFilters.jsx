@@ -13,40 +13,75 @@ import { ptBR } from "date-fns/locale";
 export default function TaskFilters({ onFilterChange, filters, projects, taskCount }) {
   // Removed internal useState for filters, it is now passed as a prop.
 
-  const { data: users, isLoading: loadingUsers } = useQuery({
-    queryKey: ['allUsersForFilter'],
-    queryFn: async () => {
-      try {
-        // Try to get users list (admin only)
-        const usersList = await base44.entities.User.list();
-        if (usersList && usersList.length > 0) {
-          return usersList.map(u => ({
-            id: u.id,
-            email: u.email,
-            display_name: u.display_name || u.full_name || u.email?.split('@')[0],
-            full_name: u.full_name || u.email?.split('@')[0]
-          }));
-        }
-      } catch (error) {
-        console.log('Could not fetch users, trying UserProfile');
-      }
-      
-      // Fallback to UserProfile entity
-      try {
-        const profiles = await base44.entities.UserProfile.list();
-        return profiles.map(p => ({
-          id: p.id,
-          email: p.user_email,
-          display_name: p.display_name || p.full_name || p.user_email?.split('@')[0],
-          full_name: p.full_name || p.user_email?.split('@')[0]
-        }));
-      } catch (error) {
-        console.error('Error loading users:', error);
-        return [];
-      }
-    },
+  // Buscar usuários de múltiplas fontes para garantir que funcione para todos
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUserFilter'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: userProfiles } = useQuery({
+    queryKey: ['userProfilesFilter'],
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
+
+  // Extrair responsáveis únicos das próprias tarefas (sempre funciona)
+  const { data: allTasks } = useQuery({
+    queryKey: ['allTasksForUsers'],
+    queryFn: () => base44.entities.Task.list(),
+    initialData: [],
+  });
+
+  // Combinar todas as fontes de usuários
+  const users = React.useMemo(() => {
+    const userMap = new Map();
+    
+    // Adicionar de UserProfiles
+    userProfiles.forEach(profile => {
+      if (profile.user_email) {
+        userMap.set(profile.user_email, {
+          id: profile.id,
+          email: profile.user_email,
+          display_name: profile.display_name || profile.full_name || profile.user_email.split('@')[0],
+          full_name: profile.full_name || profile.user_email.split('@')[0]
+        });
+      }
+    });
+    
+    // Adicionar usuário atual
+    if (currentUser?.email && !userMap.has(currentUser.email)) {
+      userMap.set(currentUser.email, {
+        id: currentUser.id,
+        email: currentUser.email,
+        display_name: currentUser.display_name || currentUser.full_name || currentUser.email.split('@')[0],
+        full_name: currentUser.full_name || currentUser.email.split('@')[0]
+      });
+    }
+    
+    // Extrair usuários únicos das tarefas existentes
+    allTasks.forEach(task => {
+      if (task.assigned_to && !userMap.has(task.assigned_to)) {
+        userMap.set(task.assigned_to, {
+          id: task.assigned_to,
+          email: task.assigned_to,
+          display_name: task.assigned_to.split('@')[0],
+          full_name: task.assigned_to.split('@')[0]
+        });
+      }
+      if (task.created_by && !userMap.has(task.created_by)) {
+        userMap.set(task.created_by, {
+          id: task.created_by,
+          email: task.created_by,
+          display_name: task.created_by.split('@')[0],
+          full_name: task.created_by.split('@')[0]
+        });
+      }
+    });
+    
+    return Array.from(userMap.values());
+  }, [userProfiles, currentUser, allTasks]);
+
+  const loadingUsers = !currentUser;
 
   // Helper to get date range values based on a shortcut string
   const getDateRangeValues = (range) => {

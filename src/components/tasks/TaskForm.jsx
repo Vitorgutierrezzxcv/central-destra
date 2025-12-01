@@ -38,46 +38,28 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   );
   const [subtasks, setSubtasks] = useState([]);
 
-  // Fetch all users from the system
-  const { data: allUsers, isLoading: loadingAllUsers } = useQuery({
-    queryKey: ['allUsersForTasks'],
-    queryFn: async () => {
-      try {
-        const usersList = await base44.entities.User.list();
-        return usersList || [];
-      } catch (error) {
-        console.log('Could not fetch users (permission denied), will use UserProfile');
-        return [];
-      }
-    },
-    initialData: [],
-  });
-
-  // Fetch UserProfiles - this is the reliable fallback
+  // Fetch UserProfiles - funciona para todos os usuários
   const { data: userProfiles, isLoading: loadingProfiles } = useQuery({
     queryKey: ['userProfiles'],
-    queryFn: async () => {
-      try {
-        return await base44.entities.UserProfile.list();
-      } catch (error) {
-        console.error('Error loading user profiles:', error);
-        return [];
-      }
-    },
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
 
-  // Fetch current user to ensure at least current user is available
-  const { data: currentUser } = useQuery({
+  // Fetch current user - sempre disponível
+  const { data: currentUser, isLoading: loadingCurrentUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: async () => {
-      try {
-        return await base44.auth.me();
-      } catch (error) {
-        return null;
-      }
-    },
+    queryFn: () => base44.auth.me(),
   });
+
+  // Buscar tarefas para extrair usuários existentes
+  const { data: existingTasks } = useQuery({
+    queryKey: ['existingTasksForUsers'],
+    queryFn: () => base44.entities.Task.list(),
+    initialData: [],
+  });
+
+  const allUsers = []; // Não usar User.list() pois falha para não-admins
+  const loadingAllUsers = false;
 
   // Fetch existing subtasks if editing
   const { data: existingSubtasks } = useQuery({
@@ -101,7 +83,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
     }
   }, [existingSubtasks]);
 
-  const loadingUsers = loadingAllUsers || loadingProfiles || syncing;
+  const loadingUsers = loadingProfiles || loadingCurrentUser || syncing;
   
   // Criar lista única de usuários, removendo duplicatas por email
   // IMPORTANTE: useMemo deve estar antes de qualquer early return
@@ -120,19 +102,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       }
     });
     
-    // Depois adicionar Users que não estão no UserProfile
-    allUsers.forEach(user => {
-      if (user.email && !userMap.has(user.email)) {
-        userMap.set(user.email, {
-          id: user.id,
-          user_email: user.email,
-          display_name: user.display_name || user.full_name || user.email.split('@')[0],
-          full_name: user.full_name || user.email.split('@')[0]
-        });
-      }
-    });
-    
-    // Adicionar o usuário atual se não estiver na lista
+    // Adicionar o usuário atual (sempre disponível)
     if (currentUser && currentUser.email && !userMap.has(currentUser.email)) {
       userMap.set(currentUser.email, {
         id: currentUser.id,
@@ -142,8 +112,20 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       });
     }
     
+    // Extrair usuários das tarefas existentes
+    existingTasks.forEach(task => {
+      if (task.assigned_to && !userMap.has(task.assigned_to)) {
+        userMap.set(task.assigned_to, {
+          id: task.assigned_to,
+          user_email: task.assigned_to,
+          display_name: task.assigned_to.split('@')[0],
+          full_name: task.assigned_to.split('@')[0]
+        });
+      }
+    });
+    
     return Array.from(userMap.values());
-  }, [allUsers, userProfiles, currentUser]);
+  }, [userProfiles, currentUser, existingTasks]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
