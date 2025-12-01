@@ -11,16 +11,16 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  SelectValue } from
+"@/components/ui/select";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  TableRow } from
+"@/components/ui/table";
 
 const formatCurrency = (value, compact = false) => {
   const num = value || 0;
@@ -41,25 +41,25 @@ export default function FinanceSummary() {
   const { data: transactions } = useQuery({
     queryKey: ['all-transactions'],
     queryFn: () => base44.entities.FinancialTransaction.list(),
-    initialData: [],
+    initialData: []
   });
 
   const { data: fixedExpenses } = useQuery({
     queryKey: ['all-fixed-expenses'],
     queryFn: () => base44.entities.FixedExpense.list(),
-    initialData: [],
+    initialData: []
   });
 
   const { data: variableExpenses } = useQuery({
     queryKey: ['all-variable-expenses'],
     queryFn: () => base44.entities.VariableExpense.list(),
-    initialData: [],
+    initialData: []
   });
 
   const { data: payrollEntries } = useQuery({
     queryKey: ['all-payroll'],
     queryFn: () => base44.entities.PayrollEntry.list(),
-    initialData: [],
+    initialData: []
   });
 
   // Calculate monthly summary
@@ -67,63 +67,63 @@ export default function FinanceSummary() {
     const months = [];
     for (let i = 0; i < 12; i++) {
       const monthRef = `${selectedYear}-${String(i + 1).padStart(2, '0')}`;
-      
+
       // Filter transactions by month
-      const monthTransactions = transactions.filter(t => t.month_reference === monthRef);
-      
+      const monthTransactions = transactions.filter((t) => t.month_reference === monthRef);
+
       // Calculate each category from transactions
-      const faturamentoBruto = monthTransactions
-        .filter(t => t.category_macro === 'faturamento_bruto')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const faturamentoBruto = monthTransactions.
+      filter((t) => t.category_macro === 'faturamento_bruto').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const impostoFaturamento = monthTransactions
-        .filter(t => t.category_macro === 'imposto_faturamento')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const impostoFaturamento = monthTransactions.
+      filter((t) => t.category_macro === 'imposto_faturamento').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const deducoes = monthTransactions
-        .filter(t => t.category_macro === 'deducoes_cancelamentos')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const deducoes = monthTransactions.
+      filter((t) => t.category_macro === 'deducoes_cancelamentos').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const cmv = monthTransactions
-        .filter(t => t.category_macro === 'cmv')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const cmv = monthTransactions.
+      filter((t) => t.category_macro === 'cmv').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const despesaVariavelTrans = monthTransactions
-        .filter(t => t.category_macro === 'despesa_variavel')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const despesaVariavelTrans = monthTransactions.
+      filter((t) => t.category_macro === 'despesa_variavel').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const despesaFixaTrans = monthTransactions
-        .filter(t => t.category_macro === 'despesa_fixa')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const despesaFixaTrans = monthTransactions.
+      filter((t) => t.category_macro === 'despesa_fixa').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const folhaTrans = monthTransactions
-        .filter(t => t.category_macro === 'folha_pagamento')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const folhaTrans = monthTransactions.
+      filter((t) => t.category_macro === 'folha_pagamento').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
-      const resultadoFinanceiro = monthTransactions
-        .filter(t => t.category_macro === 'resultado_financeiro')
-        .reduce((sum, t) => {
-          if (t.type === 'financial_income') return sum + (t.amount || 0);
-          if (t.type === 'financial_expense') return sum - (t.amount || 0);
-          return sum;
-        }, 0);
+      const resultadoFinanceiro = monthTransactions.
+      filter((t) => t.category_macro === 'resultado_financeiro').
+      reduce((sum, t) => {
+        if (t.type === 'financial_income') return sum + (t.amount || 0);
+        if (t.type === 'financial_expense') return sum - (t.amount || 0);
+        return sum;
+      }, 0);
 
-      const impostoLucro = monthTransactions
-        .filter(t => t.category_macro === 'imposto_lucro')
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const impostoLucro = monthTransactions.
+      filter((t) => t.category_macro === 'imposto_lucro').
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
       // Get from dedicated tables
-      const monthFixed = fixedExpenses
-        .filter(e => e.month_reference === monthRef)
-        .reduce((sum, e) => sum + (e.amount || 0), 0);
+      const monthFixed = fixedExpenses.
+      filter((e) => e.month_reference === monthRef).
+      reduce((sum, e) => sum + (e.amount || 0), 0);
 
-      const monthVariable = variableExpenses
-        .filter(e => e.month_reference === monthRef)
-        .reduce((sum, e) => sum + (e.amount || 0), 0);
+      const monthVariable = variableExpenses.
+      filter((e) => e.month_reference === monthRef).
+      reduce((sum, e) => sum + (e.amount || 0), 0);
 
-      const monthPayroll = payrollEntries
-        .filter(e => e.month_reference === monthRef)
-        .reduce((sum, e) => sum + (e.total_cost || 0), 0);
+      const monthPayroll = payrollEntries.
+      filter((e) => e.month_reference === monthRef).
+      reduce((sum, e) => sum + (e.total_cost || 0), 0);
 
       // Use dedicated tables if available, otherwise use transactions
       const despesaFixa = monthFixed > 0 ? monthFixed : despesaFixaTrans;
@@ -131,24 +131,24 @@ export default function FinanceSummary() {
       const folhaPagamento = monthPayroll > 0 ? monthPayroll : folhaTrans;
 
       // Valores a Receber (receitas pendentes do mês)
-      const valoresReceber = monthTransactions
-        .filter(t => 
-          (t.type === 'income' || t.category_macro === 'faturamento_bruto') && 
-          t.status === 'pending'
-        )
-        .reduce((sum, t) => sum + (t.amount || 0), 0);
+      const valoresReceber = monthTransactions.
+      filter((t) =>
+      (t.type === 'income' || t.category_macro === 'faturamento_bruto') &&
+      t.status === 'pending'
+      ).
+      reduce((sum, t) => sum + (t.amount || 0), 0);
 
       // Calculations
       const faturamentoLiquido = faturamentoBruto - impostoFaturamento - deducoes;
       const lucroBruto = faturamentoLiquido - cmv;
       const margemBruta = faturamentoLiquido > 0 ? lucroBruto / faturamentoLiquido : 0;
-      
+
       const margemContribuicao = lucroBruto - despesaVariavel;
       const margemContribuicaoPct = faturamentoLiquido > 0 ? margemContribuicao / faturamentoLiquido : 0;
-      
+
       const ebitda = margemContribuicao - despesaFixa - folhaPagamento;
       const margemEbitda = faturamentoLiquido > 0 ? ebitda / faturamentoLiquido : 0;
-      
+
       const lucroAntesIR = ebitda + resultadoFinanceiro;
       const lucroLiquido = lucroAntesIR - impostoLucro;
       const margemLiquida = faturamentoLiquido > 0 ? lucroLiquido / faturamentoLiquido : 0;
@@ -199,7 +199,7 @@ export default function FinanceSummary() {
       resultadoFinanceiro: acc.resultadoFinanceiro + month.resultadoFinanceiro,
       lucroAntesIR: acc.lucroAntesIR + month.lucroAntesIR,
       impostoLucro: acc.impostoLucro + month.impostoLucro,
-      lucroLiquido: acc.lucroLiquido + month.lucroLiquido,
+      lucroLiquido: acc.lucroLiquido + month.lucroLiquido
     }), {
       faturamentoBruto: 0,
       impostoFaturamento: 0,
@@ -216,7 +216,7 @@ export default function FinanceSummary() {
       resultadoFinanceiro: 0,
       lucroAntesIR: 0,
       impostoLucro: 0,
-      lucroLiquido: 0,
+      lucroLiquido: 0
     });
   }, [monthlySummary]);
 
@@ -226,27 +226,27 @@ export default function FinanceSummary() {
   }
 
   const rows = [
-    { key: 'faturamentoBruto', label: 'Faturamento Bruto', type: 'currency', section: 'receita', highlight: true },
-    { key: 'impostoFaturamento', label: '(-) Impostos sobre Faturamento', type: 'currency', section: 'receita', negative: true },
-    { key: 'deducoes', label: '(-) Deduções e Cancelamentos', type: 'currency', section: 'receita', negative: true },
-    { key: 'valoresReceber', label: 'Valores a Receber', type: 'currency', section: 'receita', info: true },
-    { key: 'faturamentoLiquido', label: '= Faturamento Líquido', type: 'currency', section: 'receita', subtotal: true },
-    { key: 'cmv', label: '(-) CMV (Custos)', type: 'currency', section: 'custos', negative: true },
-    { key: 'lucroBruto', label: '= Lucro Bruto', type: 'currency', section: 'custos', subtotal: true },
-    { key: 'margemBruta', label: 'Margem Bruta %', type: 'percent', section: 'custos' },
-    { key: 'despesaVariavel', label: '(-) Despesas Variáveis', type: 'currency', section: 'margem', negative: true },
-    { key: 'margemContribuicao', label: '= Margem de Contribuição', type: 'currency', section: 'margem', subtotal: true },
-    { key: 'margemContribuicaoPct', label: 'Margem de Contribuição %', type: 'percent', section: 'margem' },
-    { key: 'despesaFixa', label: '(-) Despesas Fixas', type: 'currency', section: 'operacional', negative: true },
-    { key: 'folhaPagamento', label: '(-) Folha de Pagamento', type: 'currency', section: 'operacional', negative: true },
-    { key: 'ebitda', label: '= EBITDA', type: 'currency', section: 'operacional', subtotal: true },
-    { key: 'margemEbitda', label: 'Margem EBITDA %', type: 'percent', section: 'operacional' },
-    { key: 'resultadoFinanceiro', label: '(+/-) Resultado Financeiro', type: 'currency', section: 'financeiro' },
-    { key: 'lucroAntesIR', label: '= Lucro antes do IR', type: 'currency', section: 'financeiro', subtotal: true },
-    { key: 'impostoLucro', label: '(-) Impostos sobre Lucro', type: 'currency', section: 'financeiro', negative: true },
-    { key: 'lucroLiquido', label: '= Lucro Líquido', type: 'currency', section: 'resultado', subtotal: true, highlight: true },
-    { key: 'margemLiquida', label: 'Margem Líquida %', type: 'percent', section: 'resultado' },
-  ];
+  { key: 'faturamentoBruto', label: 'Faturamento Bruto', type: 'currency', section: 'receita', highlight: true },
+  { key: 'impostoFaturamento', label: '(-) Impostos sobre Faturamento', type: 'currency', section: 'receita', negative: true },
+  { key: 'deducoes', label: '(-) Deduções e Cancelamentos', type: 'currency', section: 'receita', negative: true },
+  { key: 'valoresReceber', label: 'Valores a Receber', type: 'currency', section: 'receita', info: true },
+  { key: 'faturamentoLiquido', label: '= Faturamento Líquido', type: 'currency', section: 'receita', subtotal: true },
+  { key: 'cmv', label: '(-) CMV (Custos)', type: 'currency', section: 'custos', negative: true },
+  { key: 'lucroBruto', label: '= Lucro Bruto', type: 'currency', section: 'custos', subtotal: true },
+  { key: 'margemBruta', label: 'Margem Bruta %', type: 'percent', section: 'custos' },
+  { key: 'despesaVariavel', label: '(-) Despesas Variáveis', type: 'currency', section: 'margem', negative: true },
+  { key: 'margemContribuicao', label: '= Margem de Contribuição', type: 'currency', section: 'margem', subtotal: true },
+  { key: 'margemContribuicaoPct', label: 'Margem de Contribuição %', type: 'percent', section: 'margem' },
+  { key: 'despesaFixa', label: '(-) Despesas Fixas', type: 'currency', section: 'operacional', negative: true },
+  { key: 'folhaPagamento', label: '(-) Folha de Pagamento', type: 'currency', section: 'operacional', negative: true },
+  { key: 'ebitda', label: '= EBITDA', type: 'currency', section: 'operacional', subtotal: true },
+  { key: 'margemEbitda', label: 'Margem EBITDA %', type: 'percent', section: 'operacional' },
+  { key: 'resultadoFinanceiro', label: '(+/-) Resultado Financeiro', type: 'currency', section: 'financeiro' },
+  { key: 'lucroAntesIR', label: '= Lucro antes do IR', type: 'currency', section: 'financeiro', subtotal: true },
+  { key: 'impostoLucro', label: '(-) Impostos sobre Lucro', type: 'currency', section: 'financeiro', negative: true },
+  { key: 'lucroLiquido', label: '= Lucro Líquido', type: 'currency', section: 'resultado', subtotal: true, highlight: true },
+  { key: 'margemLiquida', label: 'Margem Líquida %', type: 'percent', section: 'resultado' }];
+
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
@@ -267,9 +267,9 @@ export default function FinanceSummary() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {years.map(y => (
-                <SelectItem key={y} value={y}>{y}</SelectItem>
-              ))}
+              {years.map((y) =>
+              <SelectItem key={y} value={y}>{y}</SelectItem>
+              )}
             </SelectContent>
           </Select>
         </div>
@@ -322,22 +322,22 @@ export default function FinanceSummary() {
 
         {/* Mobile DRE Cards */}
         <div className="md:hidden space-y-4">
-          {rows.filter(r => r.subtotal || r.highlight).map(row => {
+          {rows.filter((r) => r.subtotal || r.highlight).map((row) => {
             const currentMonth = monthlySummary[new Date().getMonth()];
             const value = currentMonth?.[row.key] || 0;
             const total = totals[row.key] || 0;
             const isNegative = value < 0;
-            
+
             return (
               <Card key={row.key} className={`border-[#EAEAEA] dark:border-[#30363d] ${row.highlight ? 'bg-[#6FA6FF]/5' : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-[#131A20] dark:text-white">{row.label.replace('= ', '')}</span>
-                    {row.type === 'percent' ? (
-                      <Badge variant="outline" className="text-xs">
+                    {row.type === 'percent' ?
+                    <Badge variant="outline" className="text-xs">
                         {formatPercent(value)}
-                      </Badge>
-                    ) : null}
+                      </Badge> :
+                    null}
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
@@ -354,8 +354,8 @@ export default function FinanceSummary() {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            );
+              </Card>);
+
           })}
           
           {/* Monthly breakdown accordion */}
@@ -363,19 +363,19 @@ export default function FinanceSummary() {
             <CardContent className="p-4">
               <p className="text-sm font-medium text-[#131A20] dark:text-white mb-3">Resumo Mensal</p>
               <div className="grid grid-cols-3 gap-2">
-                {monthlySummary.map(m => {
+                {monthlySummary.map((m) => {
                   const hasData = m.faturamentoBruto > 0 || m.lucroLiquido !== 0;
                   return (
-                    <div 
-                      key={m.month} 
-                      className={`p-2 rounded-lg text-center ${hasData ? 'bg-[#EAEAEA]/50' : 'bg-gray-50'}`}
-                    >
+                    <div
+                      key={m.month}
+                      className={`p-2 rounded-lg text-center ${hasData ? 'bg-[#EAEAEA]/50' : 'bg-gray-50'}`}>
+
                       <p className="text-xs font-medium text-[#456C8D] dark:text-[#8b949e] uppercase mb-1">{m.monthLabel}</p>
                       <p className={`text-xs font-bold ${m.lucroLiquido < 0 ? 'text-red-500' : 'text-[#131A20] dark:text-white'}`}>
                         {formatCurrency(m.lucroLiquido, true)}
                       </p>
-                    </div>
-                  );
+                    </div>);
+
                 })}
               </div>
             </CardContent>
@@ -388,60 +388,60 @@ export default function FinanceSummary() {
             <Table className="text-sm">
               <TableHeader>
                 <TableRow className="bg-[#EAEAEA]">
-                  <TableHead className="font-bold text-[#131A20] dark:text-white sticky left-0 bg-[#EAEAEA] min-w-[180px] p-4">
+                  <TableHead className="bg-gray-800 text-[#131A20] p-4 font-bold text-left h-10 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] dark:text-white sticky left-0 min-w-[180px]">
                     Indicador
                   </TableHead>
-                  {monthlySummary.map(m => (
-                    <TableHead key={m.month} className="font-bold text-[#131A20] dark:text-white text-center capitalize min-w-[90px] p-4">
+                  {monthlySummary.map((m) =>
+                  <TableHead key={m.month} className="font-bold text-[#131A20] dark:text-white text-center capitalize min-w-[90px] p-4">
                       {m.monthLabel}
                     </TableHead>
-                  ))}
+                  )}
                   <TableHead className="font-bold text-[#131A20] dark:text-white text-center bg-[#6FA6FF]/10 min-w-[100px] p-4">
                     Total
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map(row => (
-                  <TableRow 
-                    key={row.key} 
-                    className={`
+                {rows.map((row) =>
+                <TableRow
+                  key={row.key}
+                  className={`
                       ${row.subtotal ? 'bg-[#EAEAEA]/50 font-semibold' : ''}
                       ${row.highlight ? 'bg-[#6FA6FF]/10' : ''}
-                    `}
-                  >
-                    <TableCell className={`
-                      sticky left-0 bg-white p-4
-                      ${row.subtotal ? 'bg-[#EAEAEA]/50 font-semibold' : ''}
-                      ${row.highlight ? 'bg-[#6FA6FF]/10 font-semibold' : ''}
-                      ${row.negative ? 'text-red-600' : ''}
-                      ${row.info ? 'text-[#456C8D] dark:text-[#8b949e]' : 'text-[#131A20] dark:text-white'}
                     `}>
+
+                    <TableCell className="bg-gray-800 text-[#131A20] p-4 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] sticky left-0 dark:text-white">
+
+
+
+
+
+
                       <span className="whitespace-nowrap">{row.label}</span>
                     </TableCell>
-                    {monthlySummary.map(m => {
-                      const value = m[row.key];
-                      const isNegative = value < 0;
-                      return (
-                        <TableCell 
-                          key={m.month} 
-                          className={`text-center p-4 ${isNegative ? 'text-red-500' : ''}`}
-                        >
-                          {row.type === 'percent' 
-                            ? formatPercent(value)
-                            : <span className="whitespace-nowrap">{formatCurrency(value)}</span>
-                          }
-                        </TableCell>
-                      );
-                    })}
+                    {monthlySummary.map((m) => {
+                    const value = m[row.key];
+                    const isNegative = value < 0;
+                    return (
+                      <TableCell
+                        key={m.month}
+                        className={`text-center p-4 ${isNegative ? 'text-red-500' : ''}`}>
+
+                          {row.type === 'percent' ?
+                        formatPercent(value) :
+                        <span className="whitespace-nowrap">{formatCurrency(value)}</span>
+                        }
+                        </TableCell>);
+
+                  })}
                     <TableCell className={`text-center font-semibold bg-[#6FA6FF]/10 p-4 ${totals[row.key] < 0 ? 'text-red-500' : ''}`}>
-                      {row.type === 'percent' 
-                        ? '-'
-                        : <span className="whitespace-nowrap">{formatCurrency(totals[row.key])}</span>
-                      }
+                      {row.type === 'percent' ?
+                    '-' :
+                    <span className="whitespace-nowrap">{formatCurrency(totals[row.key])}</span>
+                    }
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
@@ -460,6 +460,6 @@ export default function FinanceSummary() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>);
+
 }
