@@ -22,9 +22,9 @@ const statusConfig = {
   pending: {
     icon: Circle,
     label: "Pendente",
-    color: "text-[#456C8D]",
-    bg: "bg-[#EAEAEA]",
-    borderColor: "border-[#EAEAEA]"
+    color: "text-[#456C8D] dark:text-[#8b949e]",
+    bg: "bg-[#EAEAEA] dark:bg-[#21262d]",
+    borderColor: "border-[#EAEAEA] dark:border-[#30363d]"
   },
   in_progress: {
     icon: ArrowUpCircle,
@@ -36,14 +36,14 @@ const statusConfig = {
   completed: {
     icon: CheckCircle2,
     label: "Concluída",
-    color: "text-[#131A20]",
+    color: "text-[#131A20] dark:text-white",
     bg: "bg-[#131A20]/10",
     borderColor: "border-[#131A20]"
   }
 };
 
 const priorityConfig = {
-  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
+  low: { label: "Baixa", color: "bg-[#EAEAEA] dark:bg-[#21262d] text-[#456C8D] dark:text-[#8b949e] border-[#EAEAEA] dark:border-[#30363d]" },
   medium: { label: "Média", color: "bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30" },
   high: { label: "Alta", color: "bg-red-100 text-red-600 border-red-200" }
 };
@@ -126,7 +126,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <Card className={`border-l-4 ${status.borderColor} shadow-sm hover:shadow-md transition-all bg-white border border-[#EAEAEA]`}>
+      <Card className={`border-l-4 ${status.borderColor} shadow-sm hover:shadow-md transition-all bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] dark:border-[#30363d]`}>
         <CardContent className="p-4 md:p-5">
           <div className="flex items-start gap-3">
             <DropdownMenu>
@@ -153,17 +153,17 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
-                <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-[#456C8D]' : 'text-[#131A20]'}`}>
+                <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-[#456C8D] dark:text-[#8b949e]' : 'text-[#131A20] dark:text-white'}`}>
                   {task.title}
                 </h3>
                 {task.assigned_to && assignedUserName && (
-                  <div className="flex items-center gap-2 bg-[#EAEAEA] px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
+                  <div className="flex items-center gap-2 bg-[#EAEAEA] dark:bg-[#21262d] px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
                     <Avatar className="w-5 h-5">
                       <AvatarFallback className="text-[10px] bg-[#6FA6FF] text-white">
                         {userInitials}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-xs font-medium text-[#131A20]">{assignedUserName}</span>
+                    <span className="text-xs font-medium text-[#131A20] dark:text-white">{assignedUserName}</span>
                   </div>
                 )}
               </div>
@@ -176,7 +176,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
 
               <div className="flex flex-wrap gap-2 items-center mb-3">
                 {project && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] text-xs text-[#456C8D]">
+                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] text-xs text-[#456C8D] dark:text-[#8b949e]">
                     {project.name}
                   </Badge>
                 )}
@@ -191,7 +191,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 </Badge>
                 
                 {task.start_date && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] flex items-center gap-1 text-xs text-[#456C8D]">
+                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
                     <Calendar className="w-3 h-3" />
                     <span className="hidden sm:inline">Início: </span>
                     {task.start_date.split('-').reverse().slice(0, 2).join('/')}
@@ -199,7 +199,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 )}
 
                 {task.end_date && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] flex items-center gap-1 text-xs text-[#456C8D]">
+                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
                     <Clock className="w-3 h-3" />
                     <span className="hidden sm:inline">Fim: </span>
                     {task.end_date.split('-').reverse().slice(0, 2).join('/')}
@@ -227,7 +227,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 ) : (
                   <button
                     onClick={() => setShowFullTracker(true)}
-                    className="w-full hover:bg-[#EAEAEA] p-2 rounded-lg transition-colors"
+                    className="w-full hover:bg-[#EAEAEA] dark:bg-[#21262d] p-2 rounded-lg transition-colors"
                   >
                     <TimeTracker task={task} compact />
                   </button>
@@ -240,7 +240,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(task)}
-                className="h-8 w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
+                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
               >
                 <Pencil className="w-4 h-4" />
               </Button>
@@ -248,7 +248,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(task.id)}
-                className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
+                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-red-500 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>
