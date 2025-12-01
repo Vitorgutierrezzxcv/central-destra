@@ -109,7 +109,7 @@ export default function TimeTracker({ task, compact = false }) {
     return (
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-[#456C8D]" />
-        <span className="text-slate-50 text-sm font-medium">
+        <span className="text-slate-800 text-sm font-medium">
           {formatTime(currentTime)}
         </span>
         {timeEstimate > 0 &&
