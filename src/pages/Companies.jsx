@@ -73,7 +73,7 @@ export default function Companies() {
   const clientCount = filteredCompanies.filter(c => c.status === 'client').length;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
@@ -82,8 +82,8 @@ export default function Companies() {
               <Building2 className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Cadastro de Empresas</h1>
-              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Cadastro de Empresas</h1>
+              <p className="text-sm md:text-base text-[#456C8D]">
                 {leadCount} lead{leadCount !== 1 ? 's' : ''} • {clientCount} cliente{clientCount !== 1 ? 's' : ''}
               </p>
             </div>
@@ -96,7 +96,7 @@ export default function Companies() {
                 placeholder="Buscar empresas..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 
@@ -150,10 +150,10 @@ export default function Companies() {
             <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
               <Building2 className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-2">
+            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
               {searchTerm ? 'Nenhuma empresa encontrada' : 'Nenhuma empresa cadastrada'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] mb-6 md:mb-8 text-center max-w-md px-4">
+            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
               {searchTerm 
                 ? 'Tente buscar com outros termos ou cadastre uma nova empresa' 
                 : 'Cadastre sua primeira empresa e comece a gerenciar seus clientes'}

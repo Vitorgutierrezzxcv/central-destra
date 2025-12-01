@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -62,10 +63,10 @@ export default function NotesBlock({ userEmail }) {
   };
 
   return (
-    <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 dark:bg-[#161b22] backdrop-blur-sm lg:h-fit lg:sticky lg:top-6">
-      <CardHeader className="border-b border-slate-100 dark:border-[#30363d] p-4 md:p-6">
+    <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm lg:h-fit lg:sticky lg:top-6">
+      <CardHeader className="border-b border-slate-100 p-4 md:p-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg md:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
             <StickyNote className="w-4 h-4 md:w-5 md:h-5 text-pink-500" />
             Anotações
           </CardTitle>
@@ -74,7 +75,7 @@ export default function NotesBlock({ userEmail }) {
               variant="ghost"
               size="icon"
               onClick={handleEdit}
-              className="h-7 w-7 md:h-8 md:w-8 text-slate-600 dark:text-[#8b949e] hover:text-pink-600 hover:bg-pink-50 rounded-full"
+              className="h-7 w-7 md:h-8 md:w-8 text-slate-600 hover:text-pink-600 hover:bg-pink-50 rounded-full"
             >
               <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
             </Button>
@@ -102,7 +103,7 @@ export default function NotesBlock({ userEmail }) {
                   value={noteContent}
                   onChange={(e) => setNoteContent(e.target.value)}
                   placeholder="Digite suas anotações aqui..."
-                  className="min-h-[200px] md:min-h-[300px] resize-none rounded-xl md:rounded-2xl border-slate-200 dark:border-[#30363d] text-sm md:text-base"
+                  className="min-h-[200px] md:min-h-[300px] resize-none rounded-xl md:rounded-2xl border-slate-200 text-sm md:text-base"
                   autoFocus
                 />
                 <div className="flex gap-2">
@@ -142,7 +143,7 @@ export default function NotesBlock({ userEmail }) {
               >
                 {userNote?.content ? (
                   <div className="prose prose-sm max-w-none">
-                    <p className="text-sm md:text-base text-slate-700 dark:text-[#e6edf3] whitespace-pre-wrap">
+                    <p className="text-sm md:text-base text-slate-700 whitespace-pre-wrap">
                       {userNote.content}
                     </p>
                   </div>
@@ -151,7 +152,7 @@ export default function NotesBlock({ userEmail }) {
                     <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-pink-100 to-purple-100 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-3 md:mb-4">
                       <StickyNote className="w-6 h-6 md:w-8 md:h-8 text-pink-500" />
                     </div>
-                    <p className="text-slate-600 dark:text-[#8b949e] text-xs md:text-sm mb-3 md:mb-4">
+                    <p className="text-slate-600 text-xs md:text-sm mb-3 md:mb-4">
                       Nenhuma anotação ainda
                     </p>
                     <Button

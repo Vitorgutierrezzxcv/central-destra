@@ -60,7 +60,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
     >
-      <Card className="border-[#EAEAEA] dark:border-[#30363d] dark:bg-[#161b22] hover:shadow-md transition-shadow">
+      <Card className="border-[#EAEAEA] hover:shadow-md transition-shadow">
         <CardContent className="p-3 md:p-4">
           <div className="flex flex-col gap-3">
             {/* Header row */}
@@ -81,10 +81,10 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-[#131A20] dark:text-white text-sm md:text-base truncate">
+                  <h3 className="font-semibold text-[#131A20] text-sm md:text-base truncate">
                     {transaction.description || categoryMacroLabels[transaction.category_macro] || 'Lançamento'}
                   </h3>
-                  <div className="flex items-center gap-2 text-xs text-[#456C8D] dark:text-[#8b949e]">
+                  <div className="flex items-center gap-2 text-xs text-[#456C8D]">
                     <span>{formatDate(transaction.date)}</span>
                     {transaction.month_reference && (
                       <span className="text-[#6FA6FF]">• {transaction.month_reference}</span>
@@ -98,7 +98,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                   variant="ghost"
                   size="icon"
                   onClick={() => onEdit(transaction)}
-                  className="h-7 w-7 md:h-8 md:w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
+                  className="h-7 w-7 md:h-8 md:w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
                 >
                   <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </Button>
@@ -106,7 +106,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(transaction.id)}
-                  className="h-7 w-7 md:h-8 md:w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-red-500 hover:bg-red-50"
+                  className="h-7 w-7 md:h-8 md:w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
                 >
                   <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </Button>
@@ -129,8 +129,8 @@ export default function TransactionCard({ transaction, companies, projects, onEd
             </div>
             
             {/* Value row */}
-            <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA] dark:border-[#30363d] dark:bg-[#161b22]">
-              <div className="flex items-center gap-2 flex-wrap text-xs text-[#456C8D] dark:text-[#8b949e]">
+            <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA]">
+              <div className="flex items-center gap-2 flex-wrap text-xs text-[#456C8D]">
                 {company && (
                   <span className="flex items-center gap-1">
                     <Building2 className="w-3 h-3" />

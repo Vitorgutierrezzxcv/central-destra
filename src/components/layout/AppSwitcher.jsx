@@ -118,8 +118,8 @@ export default function AppSwitcher({ isMobile = false }) {
         className={`
           relative w-full p-3 rounded-xl border transition-all text-left
           ${isActive 
-            ? 'border-[#6FA6FF] bg-[#6FA6FF]/5 dark:bg-[#6FA6FF]/10' 
-            : 'border-[#EAEAEA] dark:border-[#30363d] hover:border-[#6FA6FF]/50 bg-white dark:bg-[#161b22]'
+            ? 'border-[#6FA6FF] bg-[#6FA6FF]/5' 
+            : 'border-[#EAEAEA] hover:border-[#6FA6FF]/50 bg-white'
           }
         `}
       >
@@ -129,7 +129,7 @@ export default function AppSwitcher({ isMobile = false }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-medium text-[#131A20] dark:text-white text-sm">{module.name}</h3>
+              <h3 className="font-medium text-[#131A20] text-sm">{module.name}</h3>
               {isActive && (
                 <Badge className="bg-[#6FA6FF] text-white border-none text-[10px] px-1.5 py-0">
                   <Check className="w-2.5 h-2.5 mr-0.5" />
@@ -137,7 +137,7 @@ export default function AppSwitcher({ isMobile = false }) {
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-[#456C8D] dark:text-[#8b949e] truncate">{module.description}</p>
+            <p className="text-xs text-[#456C8D] truncate">{module.description}</p>
           </div>
         </div>
       </button>
@@ -159,11 +159,11 @@ export default function AppSwitcher({ isMobile = false }) {
                 w-12 h-12 rounded-full flex items-center justify-center transition-all
                 ${isActive 
                   ? `${module.color} shadow-md scale-110` 
-                  : 'bg-[#EAEAEA] dark:bg-[#21262d] hover:bg-[#6FA6FF]/20'
+                  : 'bg-[#EAEAEA] hover:bg-[#6FA6FF]/20'
                 }
               `}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#456C8D] dark:text-[#8b949e]'}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#456C8D]'}`} />
             </button>
           );
         })}
@@ -175,23 +175,23 @@ export default function AppSwitcher({ isMobile = false }) {
     <div className="w-full">
       <button 
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-3 w-full hover:bg-[#EAEAEA] dark:hover:bg-[#21262d] p-3 rounded-xl transition-all group border border-[#EAEAEA] dark:border-[#30363d] bg-white dark:bg-[#161b22]"
+        className="flex items-center gap-3 w-full hover:bg-[#EAEAEA] p-3 rounded-xl transition-all group border border-[#EAEAEA] bg-white"
       >
         <div className={`w-10 h-10 ${activeModule.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
           <ActiveIcon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-medium text-[#131A20] dark:text-white text-sm leading-tight">{activeModule.name}</h2>
-          <p className="text-xs text-[#456C8D] dark:text-[#8b949e] truncate">{activeModule.description}</p>
+          <h2 className="font-medium text-[#131A20] text-sm leading-tight">{activeModule.name}</h2>
+          <p className="text-xs text-[#456C8D] truncate">{activeModule.description}</p>
         </div>
-        <ChevronDown className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e] group-hover:text-[#131A20] dark:group-hover:text-white transition-colors flex-shrink-0" />
+        <ChevronDown className="w-5 h-5 text-[#456C8D] group-hover:text-[#131A20] transition-colors flex-shrink-0" />
       </button>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-md bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d]">
+        <DialogContent className="sm:max-w-md bg-white border border-[#EAEAEA]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#131A20] dark:text-white">Escolha um Módulo</DialogTitle>
-            <DialogDescription className="text-[#456C8D] dark:text-[#8b949e]">
+            <DialogTitle className="text-xl font-semibold text-[#131A20]">Escolha um Módulo</DialogTitle>
+            <DialogDescription className="text-[#456C8D]">
               Alterne entre diferentes áreas do sistema
             </DialogDescription>
           </DialogHeader>

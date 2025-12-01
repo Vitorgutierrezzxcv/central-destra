@@ -221,10 +221,10 @@ export default function ProjectDetail() {
 
   if (!projectId) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-[#456C8D] dark:text-[#8b949e] mx-auto mb-4" />
-          <h2 className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-2">Projeto não encontrado</h2>
+          <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-[#456C8D] mx-auto mb-4" />
+          <h2 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
           <Button onClick={() => navigate(createPageUrl("Projects"))} className="mt-4 bg-[#6FA6FF] hover:bg-[#456C8D] text-white">
             Voltar para Projetos
           </Button>
@@ -235,7 +235,7 @@ export default function ProjectDetail() {
 
   if (loadingProject) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6">
+      <div className="min-h-screen bg-white p-4 md:p-6">
         <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
           <Skeleton className="h-12 md:h-16 w-full rounded-xl" />
           <Skeleton className="h-24 md:h-32 w-full rounded-xl" />
@@ -247,10 +247,10 @@ export default function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white p-6 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-[#456C8D] dark:text-[#8b949e] mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-[#131A20] dark:text-white mb-2">Projeto não encontrado</h2>
+          <AlertCircle className="w-16 h-16 text-[#456C8D] mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
           <Button onClick={() => navigate(createPageUrl("Projects"))} className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white">
             Voltar para Projetos
           </Button>
@@ -278,7 +278,7 @@ export default function ProjectDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 md:mb-8">
@@ -286,17 +286,17 @@ export default function ProjectDetail() {
             variant="outline"
             size="icon"
             onClick={() => navigate(createPageUrl("Projects"))}
-            className="bg-white border-[#EAEAEA] dark:border-[#30363d] hover:bg-[#EAEAEA] rounded-lg h-10 w-10 md:h-12 md:w-12"
+            className="bg-white border-[#EAEAEA] hover:bg-[#EAEAEA] rounded-lg h-10 w-10 md:h-12 md:w-12"
           >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-[#456C8D] dark:text-[#8b949e]" />
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-[#456C8D]" />
           </Button>
           <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full">
             <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl ${colorClasses[project.color]} flex items-center justify-center flex-shrink-0`}>
               <span className="text-xl md:text-3xl text-white font-bold">{project.name[0]}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white truncate">{project.name}</h1>
-              <p className="text-xs sm:text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] line-clamp-2">{project.description || "Sem descrição"}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] truncate">{project.name}</h1>
+              <p className="text-xs sm:text-sm md:text-base text-[#456C8D] line-clamp-2">{project.description || "Sem descrição"}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
@@ -304,15 +304,15 @@ export default function ProjectDetail() {
               variant="outline"
               size="icon"
               onClick={() => setShowProjectForm(true)}
-              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] dark:border-[#30363d] hover:bg-[#EAEAEA] rounded-lg h-9 w-9 md:h-10 md:w-10"
+              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] hover:bg-[#EAEAEA] rounded-lg h-9 w-9 md:h-10 md:w-10"
             >
-              <Pencil className="w-4 h-4 text-[#456C8D] dark:text-[#8b949e]" />
+              <Pencil className="w-4 h-4 text-[#456C8D]" />
             </Button>
             <Button
               variant="outline"
               size="icon"
               onClick={handleProjectDelete}
-              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] dark:border-[#30363d] hover:bg-red-50 hover:border-red-300 rounded-lg h-9 w-9 md:h-10 md:w-10 text-red-500"
+              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] hover:bg-red-50 hover:border-red-300 rounded-lg h-9 w-9 md:h-10 md:w-10 text-red-500"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -345,7 +345,7 @@ export default function ProjectDetail() {
                   </div>
                 </div>
               </div>
-              <p className="text-[#456C8D] dark:text-[#8b949e] font-medium text-xs md:text-sm">Total de Tarefas</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Total de Tarefas</p>
             </CardContent>
           </Card>
 
@@ -353,15 +353,15 @@ export default function ProjectDetail() {
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
                 <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
-                  <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-[#131A20] dark:text-white" />
+                  <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-[#131A20]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-[#131A20] dark:text-white">
+                  <div className="text-2xl md:text-4xl font-bold text-[#131A20]">
                     {completedTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-[#456C8D] dark:text-[#8b949e] font-medium text-xs md:text-sm">Concluídas</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Concluídas</p>
             </CardContent>
           </Card>
 
@@ -369,59 +369,59 @@ export default function ProjectDetail() {
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
                 <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
-                  <Clock className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D] dark:text-[#8b949e]" />
+                  <Clock className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D] dark:text-[#8b949e]">
+                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D]">
                     {inProgressTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-[#456C8D] dark:text-[#8b949e] font-medium text-xs md:text-sm">Em Andamento</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Em Andamento</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-[#EAEAEA] border border-[#EAEAEA] dark:border-[#30363d] shadow-sm hover:shadow-md transition-all rounded-xl">
+          <Card className="bg-[#EAEAEA] border border-[#EAEAEA] shadow-sm hover:shadow-md transition-all rounded-xl">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
                 <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
-                  <AlertCircle className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D] dark:text-[#8b949e]" />
+                  <AlertCircle className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D] dark:text-[#8b949e]">
+                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D]">
                     {pendingTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-[#456C8D] dark:text-[#8b949e] font-medium text-xs md:text-sm">Pendentes</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Pendentes</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Progress Bar */}
-        <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] shadow-sm rounded-xl mb-6 md:mb-8">
+        <Card className="bg-white border border-[#EAEAEA] shadow-sm rounded-xl mb-6 md:mb-8">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-[#131A20] dark:text-white text-sm md:text-base">Progresso do Projeto</h3>
+              <h3 className="font-semibold text-[#131A20] text-sm md:text-base">Progresso do Projeto</h3>
               <span className="text-xl md:text-2xl font-bold text-[#6FA6FF]">{progressPercentage}%</span>
             </div>
             <Progress value={progressPercentage} className="h-2 md:h-3" />
-            <p className="text-xs md:text-sm text-[#456C8D] dark:text-[#8b949e] mt-2">
+            <p className="text-xs md:text-sm text-[#456C8D] mt-2">
               {completedTasks} de {mainTasks.length} tarefas concluídas
             </p>
           </CardContent>
         </Card>
 
         {/* Tabs with Gantt, List and Table View */}
-        <Card className="shadow-sm border border-[#EAEAEA] dark:border-[#30363d] rounded-xl bg-white">
-          <CardHeader className="border-b border-[#EAEAEA] dark:border-[#30363d] p-4 md:p-6">
+        <Card className="shadow-sm border border-[#EAEAEA] rounded-xl bg-white">
+          <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white">Tarefas do Projeto</CardTitle>
+              <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20]">Tarefas do Projeto</CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <Button
                   onClick={() => setShowModuleDialog(true)}
                   variant="outline"
-                  className="w-full sm:w-auto border-[#EAEAEA] dark:border-[#30363d] text-[#456C8D] dark:text-[#8b949e] hover:bg-[#EAEAEA] rounded-lg h-10 md:h-11 text-sm"
+                  className="w-full sm:w-auto border-[#EAEAEA] text-[#456C8D] hover:bg-[#EAEAEA] rounded-lg h-10 md:h-11 text-sm"
                 >
                   <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   <span className="text-sm md:text-base">Adicionar Módulo</span>
@@ -441,7 +441,7 @@ export default function ProjectDetail() {
           </CardHeader>
           <CardContent className="p-0">
             <Tabs defaultValue="list" className="w-full">
-              <div className="border-b border-[#EAEAEA] dark:border-[#30363d] px-4 md:px-6">
+              <div className="border-b border-[#EAEAEA] px-4 md:px-6">
                 <TabsList className="bg-transparent w-full sm:w-auto grid grid-cols-3 sm:flex">
                   <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-[#6FA6FF]">
                     <List className="w-3 h-3 md:w-4 md:h-4" />

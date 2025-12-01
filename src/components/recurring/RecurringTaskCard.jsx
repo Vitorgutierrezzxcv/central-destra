@@ -17,7 +17,7 @@ const recurrenceLabels = {
 };
 
 const priorityConfig = {
-  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D] dark:text-[#8b949e]" },
+  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D]" },
   medium: { label: "Média", color: "bg-[#6FA6FF]/10 text-[#6FA6FF]" },
   high: { label: "Alta", color: "bg-red-100 text-red-600" }
 };
@@ -82,7 +82,7 @@ export default function RecurringTaskCard({ task, projects, onEdit, onDelete, on
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className={`overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] dark:border-[#30363d] ${task.active ? 'bg-white dark:bg-[#161b22]' : 'bg-[#EAEAEA]/30 dark:bg-[#21262d] opacity-75'}`}>
+      <Card className={`overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] ${task.active ? 'bg-white' : 'bg-[#EAEAEA]/30 opacity-75'}`}>
         <CardHeader className="bg-[#6FA6FF] text-white p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
@@ -109,16 +109,16 @@ export default function RecurringTaskCard({ task, projects, onEdit, onDelete, on
 
         <CardContent className="p-4 space-y-3">
           {task.description && (
-            <p className="text-sm text-[#456C8D] dark:text-[#8b949e] line-clamp-2">{task.description}</p>
+            <p className="text-sm text-[#456C8D] line-clamp-2">{task.description}</p>
           )}
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm text-[#131A20] dark:text-white">
+            <div className="flex items-center gap-2 text-sm text-[#131A20]">
               <Repeat className="w-4 h-4 text-[#6FA6FF]" />
               <span className="font-medium">{formatRecurrence()}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-[#131A20] dark:text-white">
+            <div className="flex items-center gap-2 text-sm text-[#131A20]">
               <Avatar className="w-5 h-5">
                 <AvatarFallback className="text-xs bg-[#6FA6FF] text-white">
                   {initials}
@@ -128,20 +128,20 @@ export default function RecurringTaskCard({ task, projects, onEdit, onDelete, on
             </div>
 
             {project && (
-              <div className="flex items-center gap-2 text-sm text-[#131A20] dark:text-white">
+              <div className="flex items-center gap-2 text-sm text-[#131A20]">
                 <Flag className="w-4 h-4 text-[#6FA6FF]" />
                 <span>{project.name}</span>
               </div>
             )}
 
             {formatTimeEstimate(task.time_estimate) && (
-              <div className="flex items-center gap-2 text-sm text-[#131A20] dark:text-white">
+              <div className="flex items-center gap-2 text-sm text-[#131A20]">
                 <Clock className="w-4 h-4 text-[#6FA6FF]" />
                 <span>{formatTimeEstimate(task.time_estimate)}</span>
               </div>
             )}
 
-            <div className="flex items-center gap-2 text-sm text-[#131A20] dark:text-white">
+            <div className="flex items-center gap-2 text-sm text-[#131A20]">
               <Calendar className="w-4 h-4 text-[#6FA6FF]" />
               <span>
                 Início: {format(parseISO(task.start_date), "dd/MM/yyyy", { locale: ptBR })}
@@ -150,14 +150,14 @@ export default function RecurringTaskCard({ task, projects, onEdit, onDelete, on
 
             {task.next_generation_date && (
               <div className="bg-[#6FA6FF]/10 border border-[#6FA6FF]/30 rounded-lg p-2">
-                <p className="text-xs text-[#131A20] dark:text-white font-medium">
+                <p className="text-xs text-[#131A20] font-medium">
                   Próxima geração: {format(parseISO(task.next_generation_date), "dd/MM/yyyy", { locale: ptBR })}
                 </p>
               </div>
             )}
 
             {task.end_date && (
-              <div className="flex items-center gap-2 text-xs text-[#456C8D] dark:text-[#8b949e]">
+              <div className="flex items-center gap-2 text-xs text-[#456C8D]">
                 <Calendar className="w-3 h-3" />
                 <span>Fim: {format(parseISO(task.end_date), "dd/MM/yyyy", { locale: ptBR })}</span>
               </div>

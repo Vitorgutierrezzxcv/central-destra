@@ -152,7 +152,7 @@ export default function FinancePayroll() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
@@ -160,8 +160,8 @@ export default function FinancePayroll() {
               <Users className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-semibold text-[#131A20] dark:text-white">Folha de Pagamento</h1>
-              <p className="text-sm text-[#456C8D] dark:text-[#8b949e]">Custos com pessoal por mês</p>
+              <h1 className="text-2xl md:text-3xl font-semibold text-[#131A20]">Folha de Pagamento</h1>
+              <p className="text-sm text-[#456C8D]">Custos com pessoal por mês</p>
             </div>
           </div>
 
@@ -183,34 +183,34 @@ export default function FinancePayroll() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="bg-[#EAEAEA]/30 dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
+          <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
             <CardContent className="p-3">
-              <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Total Folha</p>
-              <p className="text-lg md:text-xl font-bold text-[#131A20] dark:text-white truncate">
+              <p className="text-xs text-[#456C8D] mb-1">Total Folha</p>
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalPayroll.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
+          <Card className="bg-white border-[#EAEAEA]">
             <CardContent className="p-3">
-              <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Salários</p>
-              <p className="text-lg md:text-xl font-bold text-[#131A20] dark:text-white truncate">
+              <p className="text-xs text-[#456C8D] mb-1">Salários</p>
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalGross.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
+          <Card className="bg-white border-[#EAEAEA]">
             <CardContent className="p-3">
-              <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Encargos</p>
-              <p className="text-lg md:text-xl font-bold text-[#131A20] dark:text-white truncate">
+              <p className="text-xs text-[#456C8D] mb-1">Encargos</p>
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalCharges.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
+          <Card className="bg-white border-[#EAEAEA]">
             <CardContent className="p-3">
-              <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Benefícios</p>
-              <p className="text-lg md:text-xl font-bold text-[#131A20] dark:text-white truncate">
+              <p className="text-xs text-[#456C8D] mb-1">Benefícios</p>
+              <p className="text-lg md:text-xl font-bold text-[#131A20] truncate">
                 R$ {totalBenefits.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
               </p>
             </CardContent>
@@ -327,20 +327,20 @@ export default function FinancePayroll() {
         ) : entries.length > 0 ? (
           <div className="space-y-3">
             {entries.map(entry => (
-              <Card key={entry.id} className="border-[#EAEAEA] dark:border-[#30363d] hover:shadow-md transition-shadow">
+              <Card key={entry.id} className="border-[#EAEAEA] hover:shadow-md transition-shadow">
                 <CardContent className="p-3 md:p-4">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-[#131A20] dark:text-white text-sm md:text-base truncate">{entry.employee_name}</h3>
-                        <p className="text-xs md:text-sm text-[#456C8D] dark:text-[#8b949e]">{entry.position}</p>
+                        <h3 className="font-semibold text-[#131A20] text-sm md:text-base truncate">{entry.employee_name}</h3>
+                        <p className="text-xs md:text-sm text-[#456C8D]">{entry.position}</p>
                       </div>
                       <div className="flex gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleEdit(entry)}
-                          className="text-[#456C8D] dark:text-[#8b949e] hover:text-[#6FA6FF] h-8 w-8"
+                          className="text-[#456C8D] hover:text-[#6FA6FF] h-8 w-8"
                         >
                           <Pencil className="w-4 h-4" />
                         </Button>
@@ -348,20 +348,20 @@ export default function FinancePayroll() {
                           variant="ghost"
                           size="icon"
                           onClick={() => deleteMutation.mutate(entry.id)}
-                          className="text-[#456C8D] dark:text-[#8b949e] hover:text-red-500 h-8 w-8"
+                          className="text-[#456C8D] hover:text-red-500 h-8 w-8"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#456C8D]">
                       <span>Sal: R$ {entry.gross_salary?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
                       <span>Enc: R$ {entry.charges?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
                       <span>Ben: R$ {entry.benefits?.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}</span>
                     </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA] dark:border-[#30363d]">
-                      <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Custo Total</span>
-                      <span className="text-base md:text-lg font-bold text-[#131A20] dark:text-white">
+                    <div className="flex items-center justify-between pt-2 border-t border-[#EAEAEA]">
+                      <span className="text-xs text-[#456C8D]">Custo Total</span>
+                      <span className="text-base md:text-lg font-bold text-[#131A20]">
                         R$ {entry.total_cost?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
@@ -371,10 +371,10 @@ export default function FinancePayroll() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 bg-[#EAEAEA]/30 dark:bg-[#161b22] rounded-xl">
-            <Users className="w-16 h-16 text-[#456C8D] dark:text-[#8b949e] mx-auto mb-4 opacity-50" />
-            <h3 className="text-xl font-semibold text-[#131A20] dark:text-white mb-2">Nenhum colaborador</h3>
-            <p className="text-[#456C8D] dark:text-[#8b949e] mb-4">Adicione os colaboradores da folha de pagamento</p>
+          <div className="text-center py-16 bg-[#EAEAEA]/30 rounded-xl">
+            <Users className="w-16 h-16 text-[#456C8D] mx-auto mb-4 opacity-50" />
+            <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhum colaborador</h3>
+            <p className="text-[#456C8D] mb-4">Adicione os colaboradores da folha de pagamento</p>
             <Button onClick={() => setShowForm(true)} className="bg-[#6FA6FF] hover:bg-[#456C8D]">
               <Plus className="w-4 h-4 mr-2" />
               Adicionar Colaborador

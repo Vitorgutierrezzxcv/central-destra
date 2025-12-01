@@ -20,13 +20,13 @@ export default function RecurringTasks() {
   const { data: recurringTasks, isLoading } = useQuery({
     queryKey: ['recurring-tasks'],
     queryFn: () => base44.entities.RecurringTask.list('-created_date'),
-    initialData: []
+    initialData: [],
   });
 
   const { data: projects } = useQuery({
     queryKey: ['projects'],
     queryFn: () => base44.entities.Project.list(),
-    initialData: []
+    initialData: [],
   });
 
   const createRecurringTaskMutation = useMutation({
@@ -35,7 +35,7 @@ export default function RecurringTasks() {
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       setShowForm(false);
       setEditingTask(null);
-    }
+    },
   });
 
   const updateRecurringTaskMutation = useMutation({
@@ -44,27 +44,27 @@ export default function RecurringTasks() {
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       setShowForm(false);
       setEditingTask(null);
-    }
+    },
   });
 
   const deleteRecurringTaskMutation = useMutation({
     mutationFn: (id) => base44.entities.RecurringTask.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
-    }
+    },
   });
 
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, active }) => base44.entities.RecurringTask.update(id, { active }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
-    }
+    },
   });
 
   const generateTaskMutation = useMutation({
     mutationFn: async (recurringTask) => {
       const today = format(new Date(), 'yyyy-MM-dd');
-
+      
       // Calcular próxima data de geração
       let nextDate = new Date();
       if (recurringTask.recurrence_type === 'daily') {
@@ -98,7 +98,7 @@ export default function RecurringTasks() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recurring-tasks'] });
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    }
+    },
   });
 
   const handleSubmit = (taskData) => {
@@ -145,16 +145,16 @@ export default function RecurringTasks() {
     }
   };
 
-  const filteredTasks = recurringTasks.filter((task) =>
-  task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  task.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTasks = recurringTasks.filter(task =>
+    task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const activeTasks = filteredTasks.filter((t) => t.active).length;
-  const inactiveTasks = filteredTasks.filter((t) => !t.active).length;
+  const activeTasks = filteredTasks.filter(t => t.active).length;
+  const inactiveTasks = filteredTasks.filter(t => !t.active).length;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
@@ -163,8 +163,8 @@ export default function RecurringTasks() {
               <Repeat className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Tarefas Recorrentes</h1>
-              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Tarefas Recorrentes</h1>
+              <p className="text-sm md:text-base text-[#456C8D]">
                 {activeTasks} ativa{activeTasks !== 1 ? 's' : ''} • {inactiveTasks} pausada{inactiveTasks !== 1 ? 's' : ''}
               </p>
             </div>
@@ -172,21 +172,21 @@ export default function RecurringTasks() {
           
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] dark:text-[#8b949e] w-4 h-4 md:w-5 md:h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] w-4 h-4 md:w-5 md:h-5" />
               <Input
                 placeholder="Buscar tarefas recorrentes..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)} className="bg-slate-800 pl-9 px-3 py-1 text-sm rounded-lg flex w-full border shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:pl-10 border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 md:text-base" />
-
-
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+              />
             </div>
-            <Button
+            <Button 
               onClick={() => {
                 setEditingTask(null);
                 setShowForm(true);
               }}
-              className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-6">
-
+              className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-6"
+            >
               <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               <span className="text-sm md:text-base font-medium">Nova Tarefa Recorrente</span>
             </Button>
@@ -195,69 +195,69 @@ export default function RecurringTasks() {
 
         {/* Form */}
         <AnimatePresence>
-          {showForm &&
-          <RecurringTaskForm
-            task={editingTask}
-            projects={projects}
-            onSubmit={handleSubmit}
-            onCancel={() => {
-              setShowForm(false);
-              setEditingTask(null);
-            }}
-            isLoading={createRecurringTaskMutation.isPending || updateRecurringTaskMutation.isPending} />
-
-          }
+          {showForm && (
+            <RecurringTaskForm
+              task={editingTask}
+              projects={projects}
+              onSubmit={handleSubmit}
+              onCancel={() => {
+                setShowForm(false);
+                setEditingTask(null);
+              }}
+              isLoading={createRecurringTaskMutation.isPending || updateRecurringTaskMutation.isPending}
+            />
+          )}
         </AnimatePresence>
 
         {/* Tasks Grid */}
-        {isLoading ?
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {[1, 2, 3].map((i) =>
-          <div key={i} className="h-64 bg-[#EAEAEA] rounded-xl animate-pulse" />
-          )}
-          </div> :
-        filteredTasks.length > 0 ?
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-64 bg-[#EAEAEA] rounded-xl animate-pulse" />
+            ))}
+          </div>
+        ) : filteredTasks.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             <AnimatePresence>
-              {filteredTasks.map((task) =>
-            <RecurringTaskCard
-              key={task.id}
-              task={task}
-              projects={projects}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onToggleActive={handleToggleActive}
-              onGenerateNow={handleGenerateNow}
-              isGenerating={generateTaskMutation.isPending} />
-
-            )}
+              {filteredTasks.map(task => (
+                <RecurringTaskCard
+                  key={task.id}
+                  task={task}
+                  projects={projects}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onToggleActive={handleToggleActive}
+                  onGenerateNow={handleGenerateNow}
+                  isGenerating={generateTaskMutation.isPending}
+                />
+              ))}
             </AnimatePresence>
-          </div> :
-
-        <div className="flex flex-col items-center justify-center py-16 md:py-24">
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 md:py-24">
             <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
-              <Repeat className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D] dark:text-[#8b949e]" />
+              <Repeat className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-2">
+            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
               {searchTerm ? 'Nenhuma tarefa encontrada' : 'Nenhuma tarefa recorrente ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] mb-6 md:mb-8 text-center max-w-md px-4">
-              {searchTerm ?
-            'Tente buscar com outros termos ou crie uma nova tarefa recorrente' :
-            'Crie tarefas que se repetem automaticamente em intervalos regulares'}
+            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
+              {searchTerm 
+                ? 'Tente buscar com outros termos ou crie uma nova tarefa recorrente' 
+                : 'Crie tarefas que se repetem automaticamente em intervalos regulares'}
             </p>
-            {!searchTerm &&
-          <Button
-            onClick={() => setShowForm(true)}
-            className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium">
-
+            {!searchTerm && (
+              <Button 
+                onClick={() => setShowForm(true)}
+                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
+              >
                 <Plus className="w-5 h-5 mr-2" />
                 Criar Primeira Tarefa Recorrente
               </Button>
-          }
+            )}
           </div>
-        }
+        )}
       </div>
-    </div>);
-
+    </div>
+  );
 }

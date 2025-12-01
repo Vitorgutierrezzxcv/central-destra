@@ -135,7 +135,7 @@ export default function Lancamentos() {
     .reduce((sum, t) => sum + (t.amount || 0), 0);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
@@ -144,8 +144,8 @@ export default function Lancamentos() {
               <Wallet className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Lançamentos Financeiros</h1>
-              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Lançamentos Financeiros</h1>
+              <p className="text-sm md:text-base text-[#456C8D]">
                 {transactions.length} lançamento{transactions.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -158,7 +158,7 @@ export default function Lancamentos() {
                   placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 text-sm rounded-lg"
+                  className="pl-9 bg-white border-[#EAEAEA] h-10 text-sm rounded-lg"
                 />
               </div>
               <div className="flex gap-2">
@@ -182,27 +182,27 @@ export default function Lancamentos() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl">
+          <Card className="bg-white border border-[#EAEAEA] rounded-xl">
             <CardContent className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-1">
                 <div className="bg-[#EAEAEA] rounded-lg p-1.5">
-                  <TrendingUp className="w-4 h-4 text-[#131A20] dark:text-white" />
+                  <TrendingUp className="w-4 h-4 text-[#131A20]" />
                 </div>
-                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Entradas</span>
+                <span className="text-xs text-[#456C8D]">Entradas</span>
               </div>
-              <p className="text-lg md:text-2xl font-semibold text-[#131A20] dark:text-white truncate">
+              <p className="text-lg md:text-2xl font-semibold text-[#131A20] truncate">
                 R$ {monthIncome.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
               </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl">
+          <Card className="bg-white border border-[#EAEAEA] rounded-xl">
             <CardContent className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-1">
                 <div className="bg-[#EAEAEA] rounded-lg p-1.5">
                   <TrendingDown className="w-4 h-4 text-red-500" />
                 </div>
-                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Saídas</span>
+                <span className="text-xs text-[#456C8D]">Saídas</span>
               </div>
               <p className="text-lg md:text-2xl font-semibold text-red-500 truncate">
                 R$ {monthExpense.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
@@ -210,13 +210,13 @@ export default function Lancamentos() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl">
+          <Card className="bg-white border border-[#EAEAEA] rounded-xl">
             <CardContent className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-1">
                 <div className="bg-[#EAEAEA] rounded-lg p-1.5">
                   <Wallet className="w-4 h-4 text-[#6FA6FF]" />
                 </div>
-                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Saldo Mês</span>
+                <span className="text-xs text-[#456C8D]">Saldo Mês</span>
               </div>
               <p className="text-lg md:text-2xl font-semibold text-[#6FA6FF] truncate">
                 R$ {(monthIncome - monthExpense).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
@@ -224,15 +224,15 @@ export default function Lancamentos() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl">
+          <Card className="bg-white border border-[#EAEAEA] rounded-xl">
             <CardContent className="p-3 md:p-4">
               <div className="flex items-center gap-2 mb-1">
                 <div className="bg-[#EAEAEA] rounded-lg p-1.5">
-                  <Wallet className={`w-4 h-4 ${balance >= 0 ? 'text-[#456C8D] dark:text-[#8b949e]' : 'text-red-500'}`} />
+                  <Wallet className={`w-4 h-4 ${balance >= 0 ? 'text-[#456C8D]' : 'text-red-500'}`} />
                 </div>
-                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Total</span>
+                <span className="text-xs text-[#456C8D]">Total</span>
               </div>
-              <p className={`text-lg md:text-2xl font-semibold truncate ${balance >= 0 ? 'text-[#456C8D] dark:text-[#8b949e]' : 'text-red-500'}`}>
+              <p className={`text-lg md:text-2xl font-semibold truncate ${balance >= 0 ? 'text-[#456C8D]' : 'text-red-500'}`}>
                 R$ {balance.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
               </p>
             </CardContent>
@@ -259,11 +259,11 @@ export default function Lancamentos() {
         </AnimatePresence>
 
         {/* Filters */}
-        <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl mb-6">
+        <Card className="bg-white border border-[#EAEAEA] rounded-xl mb-6">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
-              <Filter className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e]" />
-              <h3 className="font-medium text-[#131A20] dark:text-white">Filtros</h3>
+              <Filter className="w-5 h-5 text-[#456C8D]" />
+              <h3 className="font-medium text-[#131A20]">Filtros</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Select value={filterType} onValueChange={setFilterType}>
@@ -333,12 +333,12 @@ export default function Lancamentos() {
         ) : (
           <div className="text-center py-16">
             <Wallet className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-[#131A20] dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-[#131A20] mb-2">
               {searchTerm || filterType !== "all" || filterCategory !== "all" || filterStatus !== "all"
                 ? 'Nenhum lançamento encontrado'
                 : 'Nenhum lançamento ainda'}
             </h3>
-            <p className="text-[#456C8D] dark:text-[#8b949e] mb-6">
+            <p className="text-[#456C8D] mb-6">
               {searchTerm || filterType !== "all" || filterCategory !== "all" || filterStatus !== "all"
                 ? 'Tente ajustar os filtros'
                 : 'Registre seu primeiro lançamento financeiro'}

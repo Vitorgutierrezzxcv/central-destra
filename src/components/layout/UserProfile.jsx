@@ -12,8 +12,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle } from
-"@/components/ui/dialog";
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Pencil, Upload, LogOut, Loader2 } from "lucide-react";
 
 export default function UserProfile() {
@@ -28,14 +28,14 @@ export default function UserProfile() {
 
   const { data: user, isLoading } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
   });
 
   const updateUserMutation = useMutation({
     mutationFn: async (userData) => {
       // Update user data
       await base44.auth.updateMe(userData);
-
+      
       // Sync to UserProfile entity for public access
       const userProfiles = await base44.entities.UserProfile.filter({ user_email: user.email });
       const profileData = {
@@ -45,7 +45,7 @@ export default function UserProfile() {
         profile_photo_url: userData.profile_photo_url || "",
         bio: userData.bio || ""
       };
-
+      
       if (userProfiles.length > 0) {
         await base44.entities.UserProfile.update(userProfiles[0].id, profileData);
       } else {
@@ -56,7 +56,7 @@ export default function UserProfile() {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       queryClient.invalidateQueries({ queryKey: ['userProfiles'] });
       setIsEditDialogOpen(false);
-    }
+    },
   });
 
   const handleEditClick = () => {
@@ -108,19 +108,19 @@ export default function UserProfile() {
             <div className="h-3 bg-slate-200 rounded w-32 animate-pulse" />
           </div>
         </div>
-      </div>);
-
+      </div>
+    );
   }
 
   if (!user) return null;
 
   const displayName = user.display_name || user.full_name || "Usuário";
-  const initials = displayName.
-  split(' ').
-  map((n) => n[0]).
-  join('').
-  slice(0, 2).
-  toUpperCase();
+  const initials = displayName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <>
@@ -128,19 +128,19 @@ export default function UserProfile() {
         <div className="flex items-center gap-3 mb-3">
           <div className="relative">
             <Avatar className="w-10 h-10 border-2 border-slate-200">
-              {user.profile_photo_url ?
-              <AvatarImage src={user.profile_photo_url} alt={displayName} /> :
-              null}
+              {user.profile_photo_url ? (
+                <AvatarImage src={user.profile_photo_url} alt={displayName} />
+              ) : null}
               <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-semibold">
                 {initials}
               </AvatarFallback>
             </Avatar>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-slate-50 text-sm font-semibold truncate">
+            <p className="font-semibold text-slate-900 truncate text-sm">
               {displayName}
             </p>
-            <p className="text-slate-300 text-xs truncate">
+            <p className="text-xs text-slate-500 truncate">
               {user.email}
             </p>
           </div>
@@ -148,8 +148,8 @@ export default function UserProfile() {
             variant="ghost"
             size="icon"
             onClick={handleEditClick}
-            className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50">
-
+            className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+          >
             <Pencil className="w-4 h-4" />
           </Button>
         </div>
@@ -158,8 +158,8 @@ export default function UserProfile() {
           variant="outline"
           size="sm"
           onClick={handleLogout}
-          className="w-full text-slate-600 hover:text-red-600 hover:border-red-300">
-
+          className="w-full text-slate-600 hover:text-red-600 hover:border-red-300"
+        >
           <LogOut className="w-4 h-4 mr-2" />
           Sair
         </Button>
@@ -177,9 +177,9 @@ export default function UserProfile() {
             <div className="space-y-6 py-4">
               <div className="flex flex-col items-center gap-4">
                 <Avatar className="w-24 h-24 border-4 border-slate-200">
-                  {formData.profile_photo_url ?
-                  <AvatarImage src={formData.profile_photo_url} alt="Preview" /> :
-                  null}
+                  {formData.profile_photo_url ? (
+                    <AvatarImage src={formData.profile_photo_url} alt="Preview" />
+                  ) : null}
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl font-semibold">
                     {initials}
                   </AvatarFallback>
@@ -188,19 +188,19 @@ export default function UserProfile() {
                 <div className="flex flex-col items-center gap-2">
                   <Label
                     htmlFor="photo-upload"
-                    className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium">
-
-                    {uploadingPhoto ?
-                    <>
+                    className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    {uploadingPhoto ? (
+                      <>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Enviando...
-                      </> :
-
-                    <>
+                      </>
+                    ) : (
+                      <>
                         <Upload className="w-4 h-4" />
                         Alterar Foto
                       </>
-                    }
+                    )}
                   </Label>
                   <input
                     id="photo-upload"
@@ -208,8 +208,8 @@ export default function UserProfile() {
                     accept="image/*"
                     onChange={handlePhotoUpload}
                     className="hidden"
-                    disabled={uploadingPhoto} />
-
+                    disabled={uploadingPhoto}
+                  />
                   <p className="text-xs text-slate-500">
                     JPG, PNG ou GIF (máx. 5MB)
                   </p>
@@ -223,8 +223,8 @@ export default function UserProfile() {
                   value={formData.display_name}
                   onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
                   placeholder="Como você quer ser chamado"
-                  required />
-
+                  required
+                />
                 <p className="text-xs text-slate-500">
                   Este é o nome que aparecerá no sistema
                 </p>
@@ -238,8 +238,8 @@ export default function UserProfile() {
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   placeholder="Conte um pouco sobre você..."
                   rows={3}
-                  className="resize-none" />
-
+                  className="resize-none"
+                />
               </div>
 
               <div className="bg-slate-50 p-3 rounded-lg">
@@ -260,28 +260,28 @@ export default function UserProfile() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsEditDialogOpen(false)}
-                disabled={updateUserMutation.isPending}>
-
+                disabled={updateUserMutation.isPending}
+              >
                 Cancelar
               </Button>
               <Button
                 type="submit"
                 disabled={updateUserMutation.isPending || uploadingPhoto || !formData.display_name.trim()}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
-
-                {updateUserMutation.isPending ?
-                <>
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              >
+                {updateUserMutation.isPending ? (
+                  <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Salvando...
-                  </> :
-
-                'Salvar Alterações'
-                }
+                  </>
+                ) : (
+                  'Salvar Alterações'
+                )}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </>);
-
+    </>
+  );
 }

@@ -9,9 +9,9 @@ import { Progress } from "@/components/ui/progress";
 const formatTime = (seconds) => {
   if (!seconds || seconds < 0) return "0h 0m";
   const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor(seconds % 3600 / 60);
+  const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-
+  
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
   } else if (minutes > 0) {
@@ -28,7 +28,7 @@ export default function TimeTracker({ task, compact = false }) {
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => base44.auth.me(),
   });
 
   const updateTaskMutation = useMutation({
@@ -36,7 +36,7 @@ export default function TimeTracker({ task, compact = false }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['project-tasks'] });
-    }
+    },
   });
 
   // Atualizar tempo em tempo real quando está rastreando
@@ -65,7 +65,7 @@ export default function TimeTracker({ task, compact = false }) {
 
   const handleStartTracking = () => {
     if (!currentUser) return;
-
+    
     updateTaskMutation.mutate({
       id: task.id,
       taskData: {
@@ -98,10 +98,10 @@ export default function TimeTracker({ task, compact = false }) {
   };
 
   const timeEstimate = task.time_estimate || 0;
-  const progressPercentage = timeEstimate > 0 ?
-  Math.min(Math.round(currentTime / timeEstimate * 100), 100) :
-  0;
-
+  const progressPercentage = timeEstimate > 0 
+    ? Math.min(Math.round((currentTime / timeEstimate) * 100), 100)
+    : 0;
+  
   const isOverEstimate = timeEstimate > 0 && currentTime > timeEstimate;
   const isOtherUserTracking = task.is_tracking && currentUser && task.tracking_user !== currentUser.email;
 
@@ -109,14 +109,14 @@ export default function TimeTracker({ task, compact = false }) {
     return (
       <div className="flex items-center gap-2">
         <Clock className="w-4 h-4 text-[#456C8D]" />
-        <span className="text-slate-800 text-sm font-medium">
+        <span className={`text-sm font-medium ${isRunning ? 'text-[#6FA6FF] animate-pulse' : 'text-[#131A20]'}`}>
           {formatTime(currentTime)}
         </span>
-        {timeEstimate > 0 &&
-        <span className="text-xs text-[#456C8D]">/ {formatTime(timeEstimate)}</span>
-        }
-      </div>);
-
+        {timeEstimate > 0 && (
+          <span className="text-xs text-[#456C8D]">/ {formatTime(timeEstimate)}</span>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -129,69 +129,69 @@ export default function TimeTracker({ task, compact = false }) {
               <span className={`text-2xl font-bold ${isRunning ? 'text-[#6FA6FF]' : 'text-[#131A20]'}`}>
                 {formatTime(currentTime)}
               </span>
-              {isRunning &&
-              <Badge className="bg-[#6FA6FF] text-white animate-pulse">
+              {isRunning && (
+                <Badge className="bg-[#6FA6FF] text-white animate-pulse">
                   Rastreando
                 </Badge>
-              }
+              )}
             </div>
-            {timeEstimate > 0 &&
-            <p className="text-sm text-[#456C8D] mt-1">
+            {timeEstimate > 0 && (
+              <p className="text-sm text-[#456C8D] mt-1">
                 Estimativa: {formatTime(timeEstimate)}
               </p>
-            }
+            )}
           </div>
         </div>
 
-        {isOtherUserTracking ?
-        <div className="flex items-center gap-2 bg-[#EAEAEA] px-3 py-2 rounded-lg border border-[#EAEAEA]">
+        {isOtherUserTracking ? (
+          <div className="flex items-center gap-2 bg-[#EAEAEA] px-3 py-2 rounded-lg border border-[#EAEAEA]">
             <AlertCircle className="w-4 h-4 text-[#456C8D]" />
             <span className="text-xs text-[#456C8D]">
               Sendo rastreado por outro usuário
             </span>
-          </div> :
-
-        <Button
-          onClick={isRunning ? handleStopTracking : handleStartTracking}
-          disabled={updateTaskMutation.isPending}
-          className={`${
-          isRunning ?
-          'bg-red-500 hover:bg-red-600' :
-          'bg-[#6FA6FF] hover:bg-[#456C8D]'} rounded-lg text-white`
-          }
-          size="sm">
-
-            {isRunning ?
-          <>
+          </div>
+        ) : (
+          <Button
+            onClick={isRunning ? handleStopTracking : handleStartTracking}
+            disabled={updateTaskMutation.isPending}
+            className={`${
+              isRunning 
+                ? 'bg-red-500 hover:bg-red-600' 
+                : 'bg-[#6FA6FF] hover:bg-[#456C8D]'
+            } rounded-lg text-white`}
+            size="sm"
+          >
+            {isRunning ? (
+              <>
                 <Pause className="w-4 h-4 mr-2" />
                 Pausar
-              </> :
-
-          <>
+              </>
+            ) : (
+              <>
                 <Play className="w-4 h-4 mr-2" />
                 Iniciar
               </>
-          }
+            )}
           </Button>
-        }
+        )}
       </div>
 
-      {timeEstimate > 0 &&
-      <div className="space-y-2">
-          <Progress
-          value={progressPercentage}
-          className={`h-2 ${isOverEstimate ? '[&>div]:bg-red-500' : ''}`} />
-
+      {timeEstimate > 0 && (
+        <div className="space-y-2">
+          <Progress 
+            value={progressPercentage} 
+            className={`h-2 ${isOverEstimate ? '[&>div]:bg-red-500' : ''}`}
+          />
           <div className="flex justify-between text-xs text-[#456C8D]">
             <span>{progressPercentage}% da estimativa</span>
-            {isOverEstimate &&
-          <span className="text-red-600 font-medium">
+            {isOverEstimate && (
+              <span className="text-red-600 font-medium">
                 +{formatTime(currentTime - timeEstimate)} acima
               </span>
-          }
+            )}
           </div>
         </div>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 }
