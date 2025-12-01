@@ -154,8 +154,8 @@ function ProspectingContent() {
               <Target className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">Prospecção</h1>
-              <p className="text-sm md:text-base text-slate-600 dark:text-[#8b949e]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Prospecção</h1>
+              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
                 Acompanhe suas métricas de social selling
               </p>
             </div>
@@ -164,7 +164,7 @@ function ProspectingContent() {
           <div className="flex flex-col gap-3 mt-4">
             <div className="grid grid-cols-2 gap-2">
               <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-full bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 rounded-lg">
+                <SelectTrigger className="w-full bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 md:h-11 rounded-lg">
                   <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
@@ -177,7 +177,7 @@ function ProspectingContent() {
               </Select>
 
               <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
-                <SelectTrigger className="w-full bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 rounded-lg">
+                <SelectTrigger className="w-full bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 md:h-11 rounded-lg">
                   <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
@@ -193,7 +193,7 @@ function ProspectingContent() {
               <Button
                 onClick={() => setShowGoalsManager(true)}
                 variant="outline"
-                className="bg-white border-[#EAEAEA] dark:border-[#30363d] rounded-lg h-10 md:h-11 px-3 md:px-6"
+                className="bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white rounded-lg h-10 md:h-11 px-3 md:px-6"
               >
                 <Settings className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
                 <span className="hidden md:inline text-sm md:text-base">Gerenciar Metas</span>
@@ -246,7 +246,7 @@ function ProspectingContent() {
 
         {/* Dashboard */}
         <Tabs defaultValue="metrics" className="w-full">
-          <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto rounded-lg">
+          <TabsList className="bg-[#EAEAEA] dark:bg-[#21262d] mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto rounded-lg">
             <TabsTrigger
               value="metrics"
               className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"

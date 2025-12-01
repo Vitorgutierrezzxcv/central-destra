@@ -121,7 +121,7 @@ export default function Opportunities() {
                 placeholder="Buscar oportunidades..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 
@@ -175,7 +175,7 @@ export default function Opportunities() {
           </div>
         ) : (
           <Tabs defaultValue="pipeline" className="w-full">
-            <TabsList className="bg-[#EAEAEA] mb-6 p-1 rounded-lg">
+            <TabsList className="bg-[#EAEAEA] dark:bg-[#21262d] mb-6 p-1 rounded-lg">
               <TabsTrigger value="pipeline" className="flex items-center gap-2 data-[state=active]:bg-[#456C8D] data-[state=active]:text-white rounded-lg">
                 <Kanban className="w-4 h-4" />
                 Funil de Vendas
@@ -210,13 +210,13 @@ export default function Opportunities() {
                       <Card key={opp.id} className="bg-white dark:bg-[#161b22] shadow-md hover:shadow-lg transition-all">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between mb-3">
-                            <h3 className="font-bold text-lg text-slate-900 flex-1">{opp.title}</h3>
+                            <h3 className="font-bold text-lg text-slate-900 dark:text-white flex-1">{opp.title}</h3>
                             <Badge className={stageColors[opp.stage]}>
                               {stageLabels[opp.stage]}
                             </Badge>
                           </div>
                           {company && (
-                            <p className="text-sm text-slate-600 mb-2">{company.name}</p>
+                            <p className="text-sm text-slate-600 dark:text-[#8b949e] mb-2">{company.name}</p>
                           )}
                           {opp.value && (
                             <p className="text-[#456C8D] dark:text-[#8b949e] font-semibold text-lg mb-3">
@@ -225,11 +225,11 @@ export default function Opportunities() {
                           )}
                           {opp.probability && (
                             <div className="mb-3">
-                              <div className="flex justify-between text-xs text-slate-600 mb-1">
+                              <div className="flex justify-between text-xs text-slate-600 dark:text-[#8b949e] mb-1">
                                 <span>Probabilidade</span>
                                 <span>{opp.probability}%</span>
                               </div>
-                              <div className="w-full bg-slate-200 rounded-full h-2">
+                              <div className="w-full bg-slate-200 dark:bg-[#30363d] rounded-full h-2">
                                 <div 
                                   className="bg-[#456C8D] h-2 rounded-full" 
                                   style={{ width: `${opp.probability}%` }}
