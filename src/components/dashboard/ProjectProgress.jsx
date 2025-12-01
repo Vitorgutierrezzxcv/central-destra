@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -31,7 +30,7 @@ export default function ProjectProgress({ projects, tasks }) {
     return (
       <div className="text-center py-6 md:py-8">
         <FolderKanban className="w-12 h-12 md:w-16 md:h-16 text-slate-300 mx-auto mb-3" />
-        <p className="text-sm md:text-base text-slate-600">Nenhum projeto ativo</p>
+        <p className="text-sm md:text-base text-slate-600 dark:text-[#8b949e]">Nenhum projeto ativo</p>
       </div>
     );
   }
@@ -47,7 +46,7 @@ export default function ProjectProgress({ projects, tasks }) {
             to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
             className="block"
           >
-            <div className="bg-gradient-to-r from-slate-50 to-white p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-200 hover:shadow-lg transition-all">
+            <div className="bg-gradient-to-r from-slate-50 to-white dark:from-[#161b22] dark:to-[#161b22] p-3 md:p-4 rounded-xl md:rounded-2xl border border-slate-200 dark:border-[#30363d] hover:shadow-lg transition-all">
               <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                 <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} flex items-center justify-center shadow-md`}>
                   <span className="text-white font-bold text-base md:text-lg">
@@ -55,10 +54,10 @@ export default function ProjectProgress({ projects, tasks }) {
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm md:text-base text-slate-900 truncate">{project.name}</h4>
-                  <p className="text-xs text-slate-500">{completed}/{total} tarefas</p>
+                  <h4 className="font-semibold text-sm md:text-base text-slate-900 dark:text-white truncate">{project.name}</h4>
+                  <p className="text-xs text-slate-500 dark:text-[#8b949e]">{completed}/{total} tarefas</p>
                 </div>
-                <Badge className="bg-slate-100 text-slate-700 rounded-full text-xs md:text-sm px-2 md:px-3">
+                <Badge className="bg-slate-100 dark:bg-[#21262d] text-slate-700 dark:text-white rounded-full text-xs md:text-sm px-2 md:px-3">
                   {percentage}%
                 </Badge>
               </div>
