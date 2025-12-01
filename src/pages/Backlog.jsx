@@ -119,8 +119,8 @@ export default function Backlog() {
               <Package className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Backlog</h1>
-              <p className="text-sm md:text-base text-[#456C8D]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Backlog</h1>
+              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
                 {filteredModules.length} módulo{filteredModules.length !== 1 ? 's' : ''} 
                 {categoryFilter !== "all" && ` na categoria ${categoryFilter}`}
               </p>
@@ -131,18 +131,18 @@ export default function Backlog() {
             {/* Search and Filters Row */}
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] w-4 h-4 md:w-5 md:h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] dark:text-[#8b949e] w-4 h-4 md:w-5 md:h-5" />
                 <Input
                   placeholder="Buscar módulos..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                  className="pl-9 md:pl-10 bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 text-sm md:text-base rounded-lg"
                 />
               </div>
               
               <div className="flex gap-2">
-                <div className="flex items-center gap-2 bg-white border border-[#EAEAEA] rounded-lg px-3 h-10 md:h-11">
-                  <Filter className="w-4 h-4 text-[#456C8D]" />
+                <div className="flex items-center gap-2 bg-white border border-[#EAEAEA] dark:border-[#30363d] rounded-lg px-3 h-10 md:h-11">
+                  <Filter className="w-4 h-4 text-[#456C8D] dark:text-[#8b949e]" />
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="border-0 h-auto p-0 focus:ring-0 text-sm md:text-base">
                       <SelectValue placeholder="Categoria" />
@@ -180,14 +180,14 @@ export default function Backlog() {
             {/* Active Filters */}
             {categoryFilter !== "all" && (
               <div className="flex flex-wrap gap-2 items-center">
-                <span className="text-sm text-[#456C8D]">Filtros ativos:</span>
+                <span className="text-sm text-[#456C8D] dark:text-[#8b949e]">Filtros ativos:</span>
                 <Badge 
                   variant="secondary" 
-                  className="cursor-pointer hover:bg-[#EAEAEA] bg-[#EAEAEA] text-[#131A20]"
+                  className="cursor-pointer hover:bg-[#EAEAEA] bg-[#EAEAEA] text-[#131A20] dark:text-white"
                   onClick={() => setCategoryFilter("all")}
                 >
                   {categoryFilter}
-                  <button className="ml-1 hover:text-[#131A20]">×</button>
+                  <button className="ml-1 hover:text-[#131A20] dark:text-white">×</button>
                 </Badge>
               </div>
             )}
@@ -237,12 +237,12 @@ export default function Backlog() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 md:py-24">
             <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
-              <Package className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
+              <Package className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D] dark:text-[#8b949e]" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-2">
               {searchTerm || categoryFilter !== "all" ? 'Nenhum módulo encontrado' : 'Nenhum módulo ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
+            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] mb-6 md:mb-8 text-center max-w-md px-4">
               {searchTerm || categoryFilter !== "all"
                 ? 'Tente ajustar os filtros ou crie um novo módulo' 
                 : 'Crie seu primeiro módulo e adicione templates de tarefas reutilizáveis'}

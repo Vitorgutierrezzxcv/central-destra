@@ -163,8 +163,8 @@ export default function RecurringTasks() {
               <Repeat className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Tarefas Recorrentes</h1>
-              <p className="text-sm md:text-base text-[#456C8D]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Tarefas Recorrentes</h1>
+              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
                 {activeTasks} ativa{activeTasks !== 1 ? 's' : ''} • {inactiveTasks} pausada{inactiveTasks !== 1 ? 's' : ''}
               </p>
             </div>
@@ -172,12 +172,12 @@ export default function RecurringTasks() {
           
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] w-4 h-4 md:w-5 md:h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] dark:text-[#8b949e] w-4 h-4 md:w-5 md:h-5" />
               <Input
                 placeholder="Buscar tarefas recorrentes..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 
@@ -236,12 +236,12 @@ export default function RecurringTasks() {
         ) : (
           <div className="flex flex-col items-center justify-center py-16 md:py-24">
             <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
-              <Repeat className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
+              <Repeat className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D] dark:text-[#8b949e]" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-2">
               {searchTerm ? 'Nenhuma tarefa encontrada' : 'Nenhuma tarefa recorrente ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
+            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] mb-6 md:mb-8 text-center max-w-md px-4">
               {searchTerm 
                 ? 'Tente buscar com outros termos ou crie uma nova tarefa recorrente' 
                 : 'Crie tarefas que se repetem automaticamente em intervalos regulares'}

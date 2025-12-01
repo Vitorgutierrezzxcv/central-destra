@@ -107,8 +107,8 @@ export default function Opportunities() {
               <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Oportunidades</h1>
-              <p className="text-sm md:text-base text-[#456C8D]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white">Oportunidades</h1>
+              <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">
                 {opportunities.length} oportunidade{opportunities.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function Opportunities() {
                 placeholder="Buscar oportunidades..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] dark:border-[#30363d] h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 
@@ -161,8 +161,8 @@ export default function Opportunities() {
         ) : opportunities.length === 0 ? (
           <div className="text-center py-12">
             <TrendingUp className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhuma oportunidade cadastrada</h3>
-            <p className="text-[#456C8D] mb-6">
+            <h3 className="text-xl font-semibold text-[#131A20] dark:text-white mb-2">Nenhuma oportunidade cadastrada</h3>
+            <p className="text-[#456C8D] dark:text-[#8b949e] mb-6">
               Cadastre sua primeira oportunidade e comece a gerenciar seu funil de vendas
             </p>
             <Button 
@@ -207,7 +207,7 @@ export default function Opportunities() {
                   {filteredOpportunities.map((opp) => {
                     const company = companies.find(c => c.id === opp.company_id);
                     return (
-                      <Card key={opp.id} className="bg-white shadow-md hover:shadow-lg transition-all">
+                      <Card key={opp.id} className="bg-white dark:bg-[#161b22] shadow-md hover:shadow-lg transition-all">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between mb-3">
                             <h3 className="font-bold text-lg text-slate-900 flex-1">{opp.title}</h3>
@@ -219,7 +219,7 @@ export default function Opportunities() {
                             <p className="text-sm text-slate-600 mb-2">{company.name}</p>
                           )}
                           {opp.value && (
-                            <p className="text-[#456C8D] font-semibold text-lg mb-3">
+                            <p className="text-[#456C8D] dark:text-[#8b949e] font-semibold text-lg mb-3">
                               R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </p>
                           )}
@@ -263,8 +263,8 @@ export default function Opportunities() {
               ) : (
                 <div className="text-center py-12">
                   <TrendingUp className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhuma oportunidade encontrada</h3>
-                  <p className="text-[#456C8D]">Tente buscar com outros termos</p>
+                  <h3 className="text-xl font-semibold text-[#131A20] dark:text-white mb-2">Nenhuma oportunidade encontrada</h3>
+                  <p className="text-[#456C8D] dark:text-[#8b949e]">Tente buscar com outros termos</p>
                 </div>
               )}
             </TabsContent>
