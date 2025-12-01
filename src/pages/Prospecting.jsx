@@ -145,12 +145,12 @@ function ProspectingContent() {
   const todayMetric = metrics.find(m => m.date === today);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#6FA6FF] rounded-xl md:rounded-2xl flex items-center justify-center">
               <Target className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
@@ -164,7 +164,7 @@ function ProspectingContent() {
           <div className="flex flex-col gap-3 mt-4">
             <div className="grid grid-cols-2 gap-2">
               <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-full bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
+                <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
                   <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
@@ -177,7 +177,7 @@ function ProspectingContent() {
               </Select>
 
               <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
-                <SelectTrigger className="w-full bg-white/80 backdrop-blur-sm border-slate-200 h-10 md:h-11 rounded-full">
+                <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
                   <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
@@ -193,7 +193,7 @@ function ProspectingContent() {
               <Button
                 onClick={() => setShowGoalsManager(true)}
                 variant="outline"
-                className="bg-white/80 backdrop-blur-sm shadow-md border-slate-200 rounded-full h-10 md:h-11 px-3 md:px-6"
+                className="bg-white border-[#EAEAEA] rounded-lg h-10 md:h-11 px-3 md:px-6"
               >
                 <Settings className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
                 <span className="hidden md:inline text-sm md:text-base">Gerenciar Metas</span>
@@ -205,7 +205,7 @@ function ProspectingContent() {
                   setEditingMetric(todayMetric || null);
                   setShowForm(true);
                 }}
-                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg rounded-full h-10 md:h-11 px-3 md:px-6"
+                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-3 md:px-6"
               >
                 <Plus className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
                 <span className="hidden md:inline text-sm md:text-base font-medium">
@@ -246,16 +246,16 @@ function ProspectingContent() {
 
         {/* Dashboard */}
         <Tabs defaultValue="metrics" className="w-full">
-          <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto">
+          <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto rounded-lg">
             <TabsTrigger
               value="metrics"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white rounded-lg px-4 py-2"
+              className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
             >
               Métricas
             </TabsTrigger>
             <TabsTrigger
               value="goals"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-blue-600 data-[state=active]:text-white rounded-lg px-4 py-2"
+              className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
             >
               Metas
             </TabsTrigger>
@@ -280,18 +280,18 @@ function ProspectingContent() {
                 />
               </>
             ) : (
-              <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-none rounded-2xl">
+              <Card className="bg-white border border-[#EAEAEA] rounded-xl">
                 <CardContent className="p-12 text-center">
-                  <Target className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  <Target className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#131A20] mb-2">
                     Nenhuma métrica registrada
                   </h3>
-                  <p className="text-slate-600 mb-6">
+                  <p className="text-[#456C8D] mb-6">
                     Comece registrando suas métricas diárias de prospecção
                   </p>
                   <Button
                     onClick={() => setShowForm(true)}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 shadow-lg rounded-full"
+                    className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg"
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Registrar Primeira Métrica

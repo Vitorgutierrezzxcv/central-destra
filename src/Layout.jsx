@@ -447,7 +447,7 @@ function LayoutContent({ children }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-[#EAEAEA] overflow-x-hidden">
+      <div className="min-h-screen flex w-full bg-white overflow-x-hidden">
         <LayoutContent>{children}</LayoutContent>
       </div>
     </SidebarProvider>
