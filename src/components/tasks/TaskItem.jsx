@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -195,7 +194,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1 text-xs">
                     <Calendar className="w-3 h-3" />
                     <span className="hidden sm:inline">Início: </span>
-                    {new Date(task.start_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                    {task.start_date.split('-').reverse().slice(0, 2).join('/')}
                   </Badge>
                 )}
 
@@ -203,7 +202,7 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1 text-xs">
                     <Clock className="w-3 h-3" />
                     <span className="hidden sm:inline">Fim: </span>
-                    {new Date(task.end_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                    {task.end_date.split('-').reverse().slice(0, 2).join('/')}
                   </Badge>
                 )}
               </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +11,7 @@ import TaskItem from "../components/tasks/TaskItem";
 import TaskKanbanView from "../components/tasks/TaskKanbanView";
 import TaskTableView from "../components/tasks/TaskTableView";
 import DateRangeFilter from "../components/tasks/DateRangeFilter";
-import { parseISO, isWithinInterval, isBefore, isSameDay } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isSameDay, startOfDay } from "date-fns";
 
 export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
@@ -212,6 +211,30 @@ export default function Tasks() {
     return statusMatch && priorityMatch && projectMatch && assignedToMatch && searchMatch && dateMatch;
   });
 
+  // Sort tasks: completed at the end, then by urgency (overdue first, then by end_date)
+  const sortedTasks = [...filteredTasks].sort((a, b) => {
+    // Completed tasks always go to the end
+    if (a.status === 'completed' && b.status !== 'completed') return 1;
+    if (a.status !== 'completed' && b.status === 'completed') return -1;
+    if (a.status === 'completed' && b.status === 'completed') {
+      // Among completed, sort by completion date (most recent first)
+      return new Date(b.updated_date || 0) - new Date(a.updated_date || 0);
+    }
+
+    // For non-completed tasks, sort by end_date (most urgent first)
+    const now = startOfDay(new Date());
+    const aDate = a.end_date ? startOfDay(parseISO(a.end_date)) : null;
+    const bDate = b.end_date ? startOfDay(parseISO(b.end_date)) : null;
+
+    // Tasks without end_date go after tasks with end_date
+    if (!aDate && bDate) return 1;
+    if (aDate && !bDate) return -1;
+    if (!aDate && !bDate) return 0;
+
+    // Sort by date ascending (earliest/overdue first)
+    return aDate - bDate;
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -253,7 +276,7 @@ export default function Tasks() {
           onFilterChange={setFilters} 
           filters={filters}
           projects={projects}
-          taskCount={filteredTasks.length}
+          taskCount={sortedTasks.length}
         />
 
         {loadingTasks || loadingProjects ? (
@@ -281,7 +304,7 @@ export default function Tasks() {
 
             <TabsContent value="grid" className="space-y-3 md:space-y-4">
               <AnimatePresence>
-                {filteredTasks.map(task => {
+                {sortedTasks.map(task => {
                   const project = projects.find(p => p.id === task.project_id);
                   return (
                     <TaskItem
@@ -299,7 +322,7 @@ export default function Tasks() {
 
             <TabsContent value="kanban">
               <TaskKanbanView
-                tasks={filteredTasks}
+                tasks={sortedTasks}
                 projects={projects}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
@@ -310,7 +333,7 @@ export default function Tasks() {
 
             <TabsContent value="table">
               <TaskTableView
-                tasks={filteredTasks}
+                tasks={sortedTasks}
                 projects={projects}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
