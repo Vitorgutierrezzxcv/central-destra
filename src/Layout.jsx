@@ -14,7 +14,6 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Menu, X } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -123,6 +122,18 @@ function LayoutContent({ children }) {
     <>
       <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm">
         <SidebarContent className="p-3 flex flex-col h-full">
+          {/* Close button for mobile */}
+          <div className="md:hidden flex justify-end mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(false)}
+              className="hover:bg-slate-100 rounded-lg"
+            >
+              <X className="w-5 h-5 text-slate-700" />
+            </Button>
+          </div>
+          
           {/* AppSwitcher moved to top */}
           <div className="mb-6 px-3">
             <AppSwitcher />
@@ -315,7 +326,14 @@ function LayoutContent({ children }) {
         {/* Mobile header - simplified */}
         <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-3 py-2 md:hidden sticky top-0 z-10">
           <div className="flex items-center justify-between w-full">
-            <SidebarTrigger />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setOpen(true)}
+              className="hover:bg-slate-100 rounded-lg"
+            >
+              <Menu className="w-5 h-5 text-slate-700" />
+            </Button>
           </div>
         </header>
 
