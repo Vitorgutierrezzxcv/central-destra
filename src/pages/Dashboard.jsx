@@ -43,13 +43,13 @@ export default function Dashboard() {
 
   if (loadingUser || loadingTasks || loadingProjects) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+      <div className="min-h-screen bg-[#EAEAEA] p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-full" />
+          <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-lg" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 md:h-32 rounded-2xl md:rounded-3xl" />)}
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 md:h-32 rounded-xl" />)}
           </div>
-          <Skeleton className="h-64 md:h-96 rounded-2xl md:rounded-3xl" />
+          <Skeleton className="h-64 md:h-96 rounded-xl" />
         </div>
       </div>
     );
@@ -98,25 +98,25 @@ export default function Dashboard() {
   const displayName = user?.display_name || user?.full_name?.split(' ')[0] || 'Usuário';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-3 md:p-6 lg:p-8 overflow-x-hidden">
+    <div className="min-h-screen bg-[#EAEAEA] p-3 md:p-6 lg:p-8 overflow-x-hidden">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="mb-6 md:mb-8">
-          <p className="text-slate-600 text-base md:text-lg mb-1">{greeting()},</p>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 md:mb-4">
+          <p className="text-[#456C8D] text-base md:text-lg mb-1">{greeting()},</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#131A20] mb-4 md:mb-4">
             {displayName}!
           </h1>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
             <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-white text-slate-700 hover:bg-slate-50 shadow-lg rounded-full px-4 md:px-6 h-10 md:h-11">
+              <Button className="w-full sm:w-auto bg-white text-[#131A20] hover:bg-white/80 shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11 border border-[#EAEAEA]">
                 <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base">Novo Projeto</span>
+                <span className="text-sm md:text-base font-medium">Novo Projeto</span>
               </Button>
             </Link>
             <Link to={createPageUrl("Tasks")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg rounded-full px-4 md:px-6 h-10 md:h-11">
+              <Button className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11">
                 <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base">Nova Tarefa</span>
+                <span className="text-sm md:text-base font-medium">Nova Tarefa</span>
               </Button>
             </Link>
           </div>
@@ -135,19 +135,19 @@ export default function Dashboard() {
           {/* Left Column - Today's Tasks & Projects */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Today's Schedule */}
-            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-yellow-100 to-orange-100 border-none p-4 md:pb-4">
+            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white overflow-hidden">
+              <CardHeader className="bg-[#6FA6FF]/10 border-none p-4 md:pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-bold text-slate-900 mb-1">
+                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] mb-1">
                       Hoje
                     </CardTitle>
-                    <p className="text-xs md:text-sm text-slate-600">
+                    <p className="text-xs md:text-sm text-[#456C8D]">
                       {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md">
-                    <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-orange-500" />
+                  <div className="bg-white rounded-xl p-2 md:p-3 shadow-sm">
+                    <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-[#6FA6FF]" />
                   </div>
                 </div>
               </CardHeader>
@@ -157,17 +157,17 @@ export default function Dashboard() {
             </Card>
 
             {/* Projects Overview */}
-            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-100 p-4 md:p-6">
+            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
+              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Projetos</CardTitle>
-                    <p className="text-xs md:text-sm text-slate-600 mt-1">
+                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20]">Projetos</CardTitle>
+                    <p className="text-xs md:text-sm text-[#456C8D] mt-1">
                       {projects.filter(p => p.status === 'active').length} ativo(s)
                     </p>
                   </div>
                   <Link to={createPageUrl("Projects")}>
-                    <Button variant="ghost" size="sm" className="rounded-full text-xs md:text-sm h-8 md:h-9">
+                    <Button variant="ghost" size="sm" className="rounded-lg text-xs md:text-sm h-8 md:h-9 text-[#6FA6FF] hover:bg-[#6FA6FF]/10">
                       Ver todos
                     </Button>
                   </Link>
@@ -185,10 +185,10 @@ export default function Dashboard() {
           {/* Right Column - Calendar & Notes */}
           <div className="space-y-4 md:space-y-6">
             {/* Calendar */}
-            <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-100 p-4 md:p-6">
-                <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-purple-500" />
+            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
+              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl font-semibold text-[#131A20] flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-[#6FA6FF]" />
                   Calendário
                 </CardTitle>
               </CardHeader>

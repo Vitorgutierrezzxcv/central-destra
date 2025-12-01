@@ -27,7 +27,7 @@ const allModules = [
     name: "TaskFlow",
     description: "Gestão de Projetos e Tarefas",
     icon: FolderKanban,
-    color: "from-blue-500 to-purple-600",
+    color: "bg-[#6FA6FF]",
     defaultPage: "Dashboard",
     pages: ["Dashboard", "Projects", "Tasks", "Backlog", "ProjectDetail"]
   },
@@ -36,7 +36,7 @@ const allModules = [
     name: "CRM",
     description: "Gestão de Clientes e Vendas",
     icon: Users,
-    color: "from-green-500 to-teal-600",
+    color: "bg-[#456C8D]",
     defaultPage: "Companies",
     pages: ["Companies", "Opportunities"]
   },
@@ -45,7 +45,7 @@ const allModules = [
     name: "Finanças",
     description: "Controle Financeiro",
     icon: Wallet,
-    color: "from-amber-500 to-orange-600",
+    color: "bg-[#131A20]",
     defaultPage: "Lancamentos",
     pages: ["Lancamentos"]
   },
@@ -54,7 +54,7 @@ const allModules = [
     name: "Prospecção",
     description: "Métricas de Social Selling",
     icon: Target,
-    color: "from-cyan-500 to-blue-600",
+    color: "bg-[#6FA6FF]",
     defaultPage: "Prospecting",
     pages: ["Prospecting"]
   }
@@ -112,28 +112,28 @@ export default function AppSwitcher({ isMobile = false }) {
       <button
         onClick={() => handleModuleClick(module)}
         className={`
-          relative w-full p-3 rounded-xl border-2 transition-all text-left
+          relative w-full p-3 rounded-xl border transition-all text-left
           ${isActive 
-            ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50' 
-            : 'border-slate-200 hover:border-slate-300 hover:shadow-md bg-white'
+            ? 'border-[#6FA6FF] bg-[#6FA6FF]/5' 
+            : 'border-[#EAEAEA] hover:border-[#6FA6FF]/50 bg-white'
           }
         `}
       >
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${module.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
+          <div className={`w-10 h-10 rounded-xl ${module.color} flex items-center justify-center flex-shrink-0`}>
             <Icon className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-slate-900 text-sm">{module.name}</h3>
+              <h3 className="font-medium text-[#131A20] text-sm">{module.name}</h3>
               {isActive && (
-                <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-none text-[10px] px-1.5 py-0">
+                <Badge className="bg-[#6FA6FF] text-white border-none text-[10px] px-1.5 py-0">
                   <Check className="w-2.5 h-2.5 mr-0.5" />
                   Ativo
                 </Badge>
               )}
             </div>
-            <p className="text-xs text-slate-600 truncate">{module.description}</p>
+            <p className="text-xs text-[#456C8D] truncate">{module.description}</p>
           </div>
         </div>
       </button>
@@ -154,12 +154,12 @@ export default function AppSwitcher({ isMobile = false }) {
               className={`
                 w-12 h-12 rounded-full flex items-center justify-center transition-all
                 ${isActive 
-                  ? `bg-gradient-to-br ${module.color} shadow-lg scale-110` 
-                  : 'bg-slate-100 hover:bg-slate-200'
+                  ? `${module.color} shadow-md scale-110` 
+                  : 'bg-[#EAEAEA] hover:bg-[#6FA6FF]/20'
                 }
               `}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-600'}`} />
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#456C8D]'}`} />
             </button>
           );
         })}
@@ -171,23 +171,23 @@ export default function AppSwitcher({ isMobile = false }) {
     <div className="w-full">
       <button 
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-3 w-full hover:bg-slate-50 p-3 rounded-xl transition-all group border border-slate-200 hover:border-slate-300 bg-white shadow-sm hover:shadow-md"
+        className="flex items-center gap-3 w-full hover:bg-[#EAEAEA] p-3 rounded-xl transition-all group border border-[#EAEAEA] bg-white"
       >
-        <div className={`w-10 h-10 bg-gradient-to-br ${activeModule.color} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
+        <div className={`w-10 h-10 ${activeModule.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
           <ActiveIcon className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-bold text-slate-900 text-sm leading-tight">{activeModule.name}</h2>
-          <p className="text-xs text-slate-500 truncate">{activeModule.description}</p>
+          <h2 className="font-medium text-[#131A20] text-sm leading-tight">{activeModule.name}</h2>
+          <p className="text-xs text-[#456C8D] truncate">{activeModule.description}</p>
         </div>
-        <ChevronDown className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors flex-shrink-0" />
+        <ChevronDown className="w-5 h-5 text-[#456C8D] group-hover:text-[#131A20] transition-colors flex-shrink-0" />
       </button>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white border border-[#EAEAEA]">
           <DialogHeader>
-            <DialogTitle className="text-xl">Escolha um Módulo</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-xl font-semibold text-[#131A20]">Escolha um Módulo</DialogTitle>
+            <DialogDescription className="text-[#456C8D]">
               Alterne entre diferentes áreas do sistema
             </DialogDescription>
           </DialogHeader>
