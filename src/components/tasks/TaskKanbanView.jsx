@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -13,30 +12,30 @@ const statusColumns = {
   pending: {
     title: "Pendente",
     icon: Circle,
-    color: "bg-yellow-100",
-    borderColor: "border-yellow-300",
-    iconColor: "text-yellow-600"
+    color: "bg-[#EAEAEA]",
+    borderColor: "border-[#EAEAEA]",
+    iconColor: "text-[#456C8D]"
   },
   in_progress: {
     title: "Em Andamento",
     icon: ArrowUpCircle,
-    color: "bg-blue-100",
-    borderColor: "border-blue-300",
-    iconColor: "text-blue-600"
+    color: "bg-[#6FA6FF]/10",
+    borderColor: "border-[#6FA6FF]",
+    iconColor: "text-[#6FA6FF]"
   },
   completed: {
     title: "Concluída",
     icon: CheckCircle2,
-    color: "bg-green-100",
-    borderColor: "border-green-300",
-    iconColor: "text-green-600"
+    color: "bg-[#131A20]/10",
+    borderColor: "border-[#131A20]",
+    iconColor: "text-[#131A20]"
   }
 };
 
 const priorityConfig = {
-  low: { label: "Baixa", color: "bg-slate-100 text-slate-700" },
-  medium: { label: "Média", color: "bg-blue-100 text-blue-700" },
-  high: { label: "Alta", color: "bg-red-100 text-red-700" }
+  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D]" },
+  medium: { label: "Média", color: "bg-[#6FA6FF]/10 text-[#6FA6FF]" },
+  high: { label: "Alta", color: "bg-red-100 text-red-600" }
 };
 
 export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onStatusChange }) {
@@ -102,8 +101,8 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`flex-1 bg-slate-50/50 rounded-b-xl md:rounded-b-2xl p-3 md:p-4 space-y-3 min-h-[200px] transition-colors ${
-                      snapshot.isDraggingOver ? 'bg-slate-100' : ''
+                    className={`flex-1 bg-white rounded-b-xl p-3 md:p-4 space-y-3 min-h-[200px] transition-colors border border-t-0 border-[#EAEAEA] ${
+                      snapshot.isDraggingOver ? 'bg-[#EAEAEA]/30' : ''
                     }`}
                   >
                     {statusTasks.map((task, index) => {
@@ -125,7 +124,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                             >
                               <CardContent className="p-3 md:p-4">
                                 <div className="flex items-start justify-between gap-2 mb-2">
-                                  <h4 className="font-semibold text-slate-900 text-sm md:text-base line-clamp-2 flex-1">
+                                  <h4 className="font-semibold text-[#131A20] text-sm md:text-base line-clamp-2 flex-1">
                                     {task.title}
                                   </h4>
                                   <div className="flex gap-1 flex-shrink-0">
@@ -136,7 +135,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                                         e.stopPropagation();
                                         onEdit(task);
                                       }}
-                                      className="h-7 w-7 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                                      className="h-7 w-7 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
                                     >
                                       <Pencil className="w-3.5 h-3.5" />
                                     </Button>
@@ -147,7 +146,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                                         e.stopPropagation();
                                         onDelete(task.id);
                                       }}
-                                      className="h-7 w-7 text-slate-600 hover:text-red-600 hover:bg-red-50"
+                                      className="h-7 w-7 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
                                     >
                                       <Trash2 className="w-3.5 h-3.5" />
                                     </Button>
@@ -155,7 +154,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                                 </div>
 
                                 {task.description && (
-                                  <p className="text-xs md:text-sm text-slate-600 mb-3 line-clamp-2">
+                                  <p className="text-xs md:text-sm text-[#456C8D] mb-3 line-clamp-2">
                                     {task.description}
                                   </p>
                                 )}
@@ -174,30 +173,30 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                                   </div>
 
                                   {(task.start_date || task.end_date) && (
-                                    <div className="flex flex-wrap gap-1.5 text-xs text-slate-600">
+                                    <div className="flex flex-wrap gap-1.5 text-xs text-[#456C8D]">
                                       {task.start_date && (
                                         <span className="flex items-center gap-1">
                                           <Calendar className="w-3 h-3" />
-                                          {new Date(task.start_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                                          {task.start_date.split('-').reverse().slice(0, 2).join('/')}
                                         </span>
                                       )}
                                       {task.end_date && (
                                         <span className="flex items-center gap-1">
                                           <Clock className="w-3 h-3" />
-                                          {new Date(task.end_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}
+                                          {task.end_date.split('-').reverse().slice(0, 2).join('/')}
                                         </span>
                                       )}
                                     </div>
                                   )}
 
                                   {task.assigned_to && assignedUserName && (
-                                    <div className="flex items-center gap-2 bg-slate-100 px-2 py-1 rounded-full w-fit">
+                                    <div className="flex items-center gap-2 bg-[#EAEAEA] px-2 py-1 rounded-full w-fit">
                                       <Avatar className="w-4 h-4">
-                                        <AvatarFallback className="text-[8px] bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                        <AvatarFallback className="text-[8px] bg-[#6FA6FF] text-white">
                                           {userInitials}
                                         </AvatarFallback>
                                       </Avatar>
-                                      <span className="text-xs font-medium text-slate-700">{assignedUserName}</span>
+                                      <span className="text-xs font-medium text-[#131A20]">{assignedUserName}</span>
                                     </div>
                                   )}
                                 </div>
@@ -210,7 +209,7 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
                     {provided.placeholder}
 
                     {statusTasks.length === 0 && (
-                      <div className="text-center py-8 text-slate-400">
+                      <div className="text-center py-8 text-[#456C8D]">
                         <StatusIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
                         <p className="text-sm">Nenhuma tarefa</p>
                       </div>

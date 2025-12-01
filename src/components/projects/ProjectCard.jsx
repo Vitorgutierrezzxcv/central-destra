@@ -9,14 +9,14 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 
 const colorClasses = {
-  blue: "from-blue-400 to-blue-500",
-  purple: "from-purple-400 to-purple-500",
-  green: "from-green-400 to-green-500",
-  orange: "from-orange-400 to-orange-500",
-  pink: "from-pink-400 to-pink-500",
-  red: "from-red-400 to-red-500",
-  indigo: "from-indigo-400 to-indigo-500",
-  teal: "from-teal-400 to-teal-500",
+  blue: "bg-[#6FA6FF]",
+  purple: "bg-[#456C8D]",
+  green: "bg-[#6FA6FF]",
+  orange: "bg-[#456C8D]",
+  pink: "bg-[#6FA6FF]",
+  red: "bg-[#456C8D]",
+  indigo: "bg-[#6FA6FF]",
+  teal: "bg-[#456C8D]",
 };
 
 export default function ProjectCard({ project, stats, onEdit, onDelete }) {
@@ -29,9 +29,9 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
       transition={{ duration: 0.2 }}
     >
       <Link to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}>
-        <Card className="relative overflow-hidden shadow-lg hover:shadow-2xl transition-all border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm h-full">
+        <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl h-full bg-white">
           {/* Colored Header */}
-          <div className={`h-24 md:h-28 bg-gradient-to-br ${colorClasses[project.color] || colorClasses.blue} p-4 md:p-5`}>
+          <div className={`h-24 md:h-28 ${colorClasses[project.color] || colorClasses.blue} p-4 md:p-5`}>
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h3 className="text-white font-bold text-lg md:text-xl mb-1 line-clamp-2">
@@ -70,7 +70,7 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
 
           <CardContent className="p-4 md:p-5">
             {project.description && (
-              <p className="text-sm text-slate-600 mb-4 line-clamp-2 min-h-[40px]">
+              <p className="text-sm text-[#456C8D] mb-4 line-clamp-2 min-h-[40px]">
                 {project.description}
               </p>
             )}
@@ -78,30 +78,30 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
             {/* Progress Section */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-600">Progresso</span>
+                <span className="text-sm font-medium text-[#456C8D]">Progresso</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900">{stats.percentage}%</span>
+                  <span className="text-sm font-bold text-[#131A20]">{stats.percentage}%</span>
                   {stats.percentage === 100 && (
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    <CheckCircle2 className="w-4 h-4 text-[#6FA6FF]" />
                   )}
                 </div>
               </div>
               <Progress value={stats.percentage} className="h-2" />
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-xs text-[#456C8D]">
                 <span>{stats.completed} concluída{stats.completed !== 1 ? 's' : ''}</span>
                 <span>{stats.total - stats.completed} pendente{(stats.total - stats.completed) !== 1 ? 's' : ''}</span>
               </div>
             </div>
 
             {/* Footer */}
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
+            <div className="mt-4 pt-4 border-t border-[#EAEAEA] flex items-center justify-between">
+              <span className="text-xs text-[#456C8D]">
                 {new Date(project.created_date).toLocaleDateString('pt-BR', { 
                   day: '2-digit', 
                   month: 'short' 
                 })}
               </span>
-              <div className="flex items-center gap-1 text-sm font-medium text-purple-600 hover:text-purple-700">
+              <div className="flex items-center gap-1 text-sm font-medium text-[#6FA6FF] hover:text-[#456C8D]">
                 Ver detalhes
                 <ArrowRight className="w-4 h-4" />
               </div>

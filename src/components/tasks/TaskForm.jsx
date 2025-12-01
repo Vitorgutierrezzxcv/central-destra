@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -179,16 +178,16 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
   // Early return DEPOIS de todos os hooks
   if (projects.length === 0) {
     return (
-      <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200">
+      <div className="bg-white rounded-xl p-4 md:p-6 mb-6 md:mb-8 border border-[#EAEAEA]">
         <div className="text-center py-8">
-          <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">
+          <AlertCircle className="w-16 h-16 text-[#456C8D] mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-[#131A20] mb-2">
             Nenhum projeto disponível
           </h3>
-          <p className="text-slate-600 mb-6">
+          <p className="text-[#456C8D] mb-6">
             Você precisa criar um projeto antes de adicionar tarefas
           </p>
-          <Button onClick={onCancel}>Entendi</Button>
+          <Button onClick={onCancel} className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white">Entendi</Button>
         </div>
       </div>
     );
@@ -201,7 +200,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       exit={{ opacity: 0, y: -20 }}
       className="space-y-4"
     >
-      <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-4 md:mb-6">
+      <h3 className="text-lg md:text-xl font-semibold text-[#131A20] mb-4 md:mb-6">
         {task ? 'Editar Tarefa' : 'Nova Tarefa'}
       </h3>
 
@@ -269,7 +268,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                   variant="ghost"
                   size="sm"
                   onClick={handleSyncUsers}
-                  className="h-7 text-xs text-blue-600 hover:text-blue-700"
+                  className="h-7 text-xs text-[#6FA6FF] hover:text-[#456C8D]"
                 >
                   <RefreshCw className="w-3 h-3 mr-1" />
                   Carregar usuários
@@ -304,7 +303,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
                     <SelectItem key={userProfile.user_email} value={userProfile.user_email}>
                       <div className="flex items-center gap-2">
                         <Avatar className="w-5 h-5">
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          <AvatarFallback className="text-xs bg-[#6FA6FF] text-white">
                             {getUserDisplayName(userProfile).split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -402,7 +401,7 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 h-10 md:h-11"
+            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white h-10 md:h-11"
           >
             {isLoading ? (
               <>

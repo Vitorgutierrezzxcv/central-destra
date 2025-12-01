@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -25,24 +24,27 @@ const statusConfig = {
   pending: {
     icon: Circle,
     label: "Pendente",
-    color: "bg-yellow-100 text-yellow-700 border-yellow-200"
+    color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]",
+    iconColor: "text-[#456C8D]"
   },
   in_progress: {
     icon: ArrowUpCircle,
     label: "Em Andamento",
-    color: "bg-blue-100 text-blue-700 border-blue-200"
+    color: "bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30",
+    iconColor: "text-[#6FA6FF]"
   },
   completed: {
     icon: CheckCircle2,
     label: "Concluída",
-    color: "bg-green-100 text-green-700 border-green-200"
+    color: "bg-[#131A20]/10 text-[#131A20] border-[#131A20]/30",
+    iconColor: "text-[#131A20]"
   }
 };
 
 const priorityConfig = {
-  low: { label: "Baixa", color: "bg-slate-100 text-slate-700" },
-  medium: { label: "Média", color: "bg-blue-100 text-blue-700" },
-  high: { label: "Alta", color: "bg-red-100 text-red-700" }
+  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D]" },
+  medium: { label: "Média", color: "bg-[#6FA6FF]/10 text-[#6FA6FF]" },
+  high: { label: "Alta", color: "bg-red-100 text-red-600" }
 };
 
 export default function TaskTableView({ tasks, projects, onEdit, onDelete, onStatusChange }) {
@@ -68,28 +70,28 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
 
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-16 text-slate-500 bg-white rounded-xl">
+      <div className="text-center py-16 text-[#456C8D] bg-white rounded-xl border border-[#EAEAEA]">
         <Circle className="w-16 h-16 mx-auto mb-4 opacity-50" />
-        <h3 className="text-xl font-semibold mb-2">Nenhuma tarefa encontrada</h3>
+        <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhuma tarefa encontrada</h3>
         <p>Adicione sua primeira tarefa para começar</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+    <div className="bg-white rounded-xl border border-[#EAEAEA] overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50">
-              <TableHead className="font-bold text-slate-900 w-[40px]">Status</TableHead>
-              <TableHead className="font-bold text-slate-900 min-w-[200px]">Tarefa</TableHead>
-              <TableHead className="font-bold text-slate-900 hidden md:table-cell">Projeto</TableHead>
-              <TableHead className="font-bold text-slate-900 hidden lg:table-cell">Responsável</TableHead>
-              <TableHead className="font-bold text-slate-900 hidden sm:table-cell">Prioridade</TableHead>
-              <TableHead className="font-bold text-slate-900 hidden xl:table-cell">Início</TableHead>
-              <TableHead className="font-bold text-slate-900 hidden xl:table-cell">Término</TableHead>
-              <TableHead className="font-bold text-slate-900 w-[100px] text-right">Ações</TableHead>
+            <TableRow className="bg-[#EAEAEA]">
+              <TableHead className="font-medium text-[#131A20] w-[40px]">Status</TableHead>
+              <TableHead className="font-medium text-[#131A20] min-w-[200px]">Tarefa</TableHead>
+              <TableHead className="font-medium text-[#131A20] hidden md:table-cell">Projeto</TableHead>
+              <TableHead className="font-medium text-[#131A20] hidden lg:table-cell">Responsável</TableHead>
+              <TableHead className="font-medium text-[#131A20] hidden sm:table-cell">Prioridade</TableHead>
+              <TableHead className="font-medium text-[#131A20] hidden xl:table-cell">Início</TableHead>
+              <TableHead className="font-medium text-[#131A20] hidden xl:table-cell">Término</TableHead>
+              <TableHead className="font-medium text-[#131A20] w-[100px] text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -102,25 +104,25 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
               const userInitials = getUserInitials(task.assigned_to);
 
               return (
-                <TableRow key={task.id} className="hover:bg-slate-50 transition-colors">
+                <TableRow key={task.id} className="hover:bg-[#EAEAEA]/30 transition-colors">
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="hover:opacity-70 transition-opacity">
-                          <StatusIcon className={`w-5 h-5 ${status.color.includes('yellow') ? 'text-yellow-600' : status.color.includes('blue') ? 'text-blue-600' : 'text-green-600'}`} />
+                          <StatusIcon className={`w-5 h-5 ${status.iconColor}`} />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
                         <DropdownMenuItem onClick={() => onStatusChange(task, "pending")}>
-                          <Circle className="w-4 h-4 mr-2 text-yellow-600" />
+                          <Circle className="w-4 h-4 mr-2 text-[#456C8D]" />
                           Pendente
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onStatusChange(task, "in_progress")}>
-                          <ArrowUpCircle className="w-4 h-4 mr-2 text-blue-600" />
+                          <ArrowUpCircle className="w-4 h-4 mr-2 text-[#6FA6FF]" />
                           Em Andamento
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => onStatusChange(task, "completed")}>
-                          <CheckCircle2 className="w-4 h-4 mr-2 text-green-600" />
+                          <CheckCircle2 className="w-4 h-4 mr-2 text-[#131A20]" />
                           Concluída
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -129,11 +131,11 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
 
                   <TableCell>
                     <div>
-                      <div className={`font-semibold text-slate-900 ${task.status === 'completed' ? 'line-through text-slate-500' : ''}`}>
+                      <div className={`font-semibold text-[#131A20] ${task.status === 'completed' ? 'line-through text-[#456C8D]' : ''}`}>
                         {task.title}
                       </div>
                       {task.description && (
-                        <div className="text-sm text-slate-600 line-clamp-1 mt-1">
+                        <div className="text-sm text-[#456C8D] line-clamp-1 mt-1">
                           {task.description}
                         </div>
                       )}
@@ -152,14 +154,14 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
                     {task.assigned_to && assignedUserName ? (
                       <div className="flex items-center gap-2">
                         <Avatar className="w-6 h-6">
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          <AvatarFallback className="text-xs bg-[#6FA6FF] text-white">
                             {userInitials}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm text-slate-700">{assignedUserName}</span>
+                        <span className="text-sm text-[#131A20]">{assignedUserName}</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-400">Não atribuída</span>
+                      <span className="text-sm text-[#456C8D]">Não atribuída</span>
                     )}
                   </TableCell>
 
@@ -170,12 +172,12 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
                     </Badge>
                   </TableCell>
 
-                  <TableCell className="hidden xl:table-cell text-sm text-slate-600">
-                    {task.start_date ? new Date(task.start_date).toLocaleDateString('pt-BR') : '-'}
+                  <TableCell className="hidden xl:table-cell text-sm text-[#456C8D]">
+                    {task.start_date ? task.start_date.split('-').reverse().join('/') : '-'}
                   </TableCell>
 
-                  <TableCell className="hidden xl:table-cell text-sm text-slate-600">
-                    {task.end_date ? new Date(task.end_date).toLocaleDateString('pt-BR') : '-'}
+                  <TableCell className="hidden xl:table-cell text-sm text-[#456C8D]">
+                    {task.end_date ? task.end_date.split('-').reverse().join('/') : '-'}
                   </TableCell>
 
                   <TableCell className="text-right">
@@ -184,7 +186,7 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
                         variant="ghost"
                         size="icon"
                         onClick={() => onEdit(task)}
-                        className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                        className="h-8 w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
@@ -192,7 +194,7 @@ export default function TaskTableView({ tasks, projects, onEdit, onDelete, onSta
                         variant="ghost"
                         size="icon"
                         onClick={() => onDelete(task.id)}
-                        className="h-8 w-8 text-slate-600 hover:text-red-600 hover:bg-red-50"
+                        className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

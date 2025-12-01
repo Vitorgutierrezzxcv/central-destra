@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
@@ -45,17 +44,17 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200"
+      className="bg-white rounded-xl p-4 md:p-6 mb-6 md:mb-8 border border-[#EAEAEA]"
     >
       <div className="flex items-center justify-between mb-4 md:mb-6">
-        <h3 className="text-lg md:text-xl font-bold text-slate-900">
+        <h3 className="text-lg md:text-xl font-semibold text-[#131A20]">
           {project ? 'Editar Projeto' : 'Novo Projeto'}
         </h3>
         <Button
           variant="ghost"
           size="icon"
           onClick={onCancel}
-          className="hover:bg-slate-100"
+          className="hover:bg-[#EAEAEA]"
         >
           <X className="w-5 h-5" />
         </Button>
@@ -70,7 +69,7 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
             value={currentProject.name}
             onChange={(e) => setCurrentProject({...currentProject, name: e.target.value})}
             required
-            className="h-10 md:h-11 border-slate-200 focus:border-blue-500"
+            className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
           />
         </div>
 
@@ -81,7 +80,7 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
             placeholder="Descreva o projeto..."
             value={currentProject.description}
             onChange={(e) => setCurrentProject({...currentProject, description: e.target.value})}
-            className="min-h-[80px] md:min-h-[100px] resize-none border-slate-200 focus:border-blue-500"
+            className="min-h-[80px] md:min-h-[100px] resize-none border-[#EAEAEA] focus:border-[#6FA6FF]"
           />
         </div>
 
@@ -92,7 +91,7 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
               value={currentProject.color}
               onValueChange={(value) => setCurrentProject({...currentProject, color: value})}
             >
-              <SelectTrigger id="color" className="h-10 md:h-11 border-slate-200 focus:border-blue-500">
+              <SelectTrigger id="color" className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]">
                 <SelectValue placeholder="Escolha uma cor" />
               </SelectTrigger>
               <SelectContent>
@@ -114,7 +113,7 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
               value={currentProject.status}
               onValueChange={(value) => setCurrentProject({...currentProject, status: value})}
             >
-              <SelectTrigger id="status" className="h-10 md:h-11 border-slate-200 focus:border-blue-500">
+              <SelectTrigger id="status" className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]">
                 <SelectValue placeholder="Status do projeto" />
               </SelectTrigger>
               <SelectContent>
@@ -139,7 +138,7 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 h-10 md:h-11"
+            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white h-10 md:h-11"
           >
             {isLoading ? (
               <>
