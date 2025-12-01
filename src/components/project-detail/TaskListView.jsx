@@ -1,8 +1,8 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
+import { sortTasksByUrgency } from "../tasks/taskSortUtils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -63,7 +63,8 @@ const formatDateOnly = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
-export default function TaskListView({ tasks, onEdit, onDelete, onStatusChange }) {
+export default function TaskListView({ tasks: unsortedTasks, onEdit, onDelete, onStatusChange }) {
+  const tasks = sortTasksByUrgency(unsortedTasks);
   const [expandedTasks, setExpandedTasks] = React.useState(new Set());
   const queryClient = useQueryClient();
 
