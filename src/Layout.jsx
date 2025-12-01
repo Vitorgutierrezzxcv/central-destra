@@ -312,15 +312,17 @@ function LayoutContent({ children }) {
           <div className="flex-1" />
         </div>
 
-        {/* Mobile header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-2 py-2 md:hidden sticky top-0 z-10">
-          <div className="flex items-center gap-2 w-full max-w-full">
-            <SidebarTrigger className="hover:bg-slate-100 p-1.5 rounded-lg transition-colors flex-shrink-0" />
-            <div className="flex-1 min-w-0 overflow-hidden">
-              <AppSwitcher isMobile={true} />
-            </div>
+        {/* Mobile header - simplified */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-3 py-2 md:hidden sticky top-0 z-10">
+          <div className="flex items-center justify-between w-full">
+            <SidebarTrigger className="hover:bg-slate-100 p-1.5 rounded-lg transition-colors" />
           </div>
         </header>
+
+        {/* Mobile bottom navigation bar */}
+        <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+          <AppSwitcher isMobile={true} />
+        </div>
 
         <div className="flex-1 overflow-x-hidden overflow-y-auto">
           {children}

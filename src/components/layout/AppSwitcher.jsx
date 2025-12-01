@@ -122,34 +122,28 @@ export default function AppSwitcher({ isMobile = false }) {
 
   if (isMobile) {
     return (
-      <>
-        <button
-          onClick={() => setShowDialog(true)}
-          className="flex items-center gap-1.5 hover:opacity-80 transition-opacity py-1 rounded-lg min-w-0"
-        >
-          <div className={`w-6 h-6 bg-gradient-to-br ${activeModule.color} rounded-md flex items-center justify-center shadow-sm flex-shrink-0`}>
-            <ActiveIcon className="w-3 h-3 text-white" />
-          </div>
-          <span className="text-sm font-bold text-slate-900 truncate">{activeModule.name}</span>
-          <ChevronDown className="w-3 h-3 text-slate-400 flex-shrink-0" />
-        </button>
-
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="w-[calc(100vw-32px)] max-w-sm">
-            <DialogHeader>
-              <DialogTitle className="text-lg">Escolha um Módulo</DialogTitle>
-              <DialogDescription className="text-sm">
-                Alterne entre diferentes áreas
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-2 py-3">
-              {modules.map(module => (
-                <ModuleCard key={module.id} module={module} />
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </>
+      <div className="flex items-center gap-2 bg-white/90 backdrop-blur-lg rounded-full px-2 py-2 shadow-xl border border-slate-200">
+        {modules.map(module => {
+          const Icon = module.icon;
+          const isActive = module.id === activeModule.id;
+          
+          return (
+            <button
+              key={module.id}
+              onClick={() => handleModuleClick(module)}
+              className={`
+                w-12 h-12 rounded-full flex items-center justify-center transition-all
+                ${isActive 
+                  ? `bg-gradient-to-br ${module.color} shadow-lg scale-110` 
+                  : 'bg-slate-100 hover:bg-slate-200'
+                }
+              `}
+            >
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-600'}`} />
+            </button>
+          );
+        })}
+      </div>
     );
   }
 

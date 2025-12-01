@@ -102,8 +102,8 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="mb-6 md:mb-8">
-          <p className="text-slate-600 text-sm md:text-lg mb-1">{greeting()},</p>
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-3 md:mb-4">
+          <p className="text-slate-600 text-base md:text-lg mb-1">{greeting()},</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 md:mb-4">
             {displayName}!
           </h1>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
