@@ -98,7 +98,7 @@ export default function Opportunities() {
   );
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
       <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">

@@ -221,7 +221,7 @@ export default function ProjectDetail() {
 
   if (!projectId) {
     return (
-      <div className="min-h-screen bg-white p-4 md:p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-[#456C8D] mx-auto mb-4" />
           <h2 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
@@ -235,7 +235,7 @@ export default function ProjectDetail() {
 
   if (loadingProject) {
     return (
-      <div className="min-h-screen bg-white p-4 md:p-6">
+      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6">
         <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
           <Skeleton className="h-12 md:h-16 w-full rounded-xl" />
           <Skeleton className="h-24 md:h-32 w-full rounded-xl" />
@@ -247,7 +247,7 @@ export default function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-white p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-6 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-[#456C8D] mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
@@ -278,7 +278,7 @@ export default function ProjectDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 md:mb-8">
