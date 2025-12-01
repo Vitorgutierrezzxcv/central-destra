@@ -124,15 +124,20 @@ function LayoutContent({ children }) {
 
   // Determine which module is active based on current page
   const getCurrentModule = () => {
-    const path = location.pathname;
+    const path = location.pathname.toLowerCase();
     if (path.includes('companies') || path.includes('opportunities') || path.includes('prospecting')) {
       return 'crm';
     }
-    if (path.includes('lancamentos')) {
+    // Check all finance pages
+    if (path.includes('lancamentos') || 
+        path.includes('financefixedexpenses') || 
+        path.includes('financevariableexpenses') || 
+        path.includes('financepayroll') || 
+        path.includes('financesummary')) {
       return 'finance';
     }
     // Check if any taskFlowNav url is present in the path
-    if (taskFlowNav.some(item => path.includes(item.url.substring(1)))) {
+    if (taskFlowNav.some(item => path.includes(item.url.substring(1).toLowerCase()))) {
       return 'taskflow';
     }
     return 'taskflow'; // Default to taskflow if no specific module path matches
