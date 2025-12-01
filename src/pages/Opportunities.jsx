@@ -98,17 +98,17 @@ export default function Opportunities() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-[1800px] mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#456C8D] rounded-xl md:rounded-2xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">Oportunidades</h1>
-              <p className="text-sm md:text-base text-slate-600">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Oportunidades</h1>
+              <p className="text-sm md:text-base text-[#456C8D]">
                 {opportunities.length} oportunidade{opportunities.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function Opportunities() {
                 placeholder="Buscar oportunidades..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm h-10 md:h-11 text-sm md:text-base rounded-full"
+                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 
@@ -129,7 +129,7 @@ export default function Opportunities() {
                 setEditingOpportunity(null);
                 setShowForm(true);
               }}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full h-10 md:h-11 px-6"
+              className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg h-10 md:h-11 px-6"
             >
               <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               <span className="text-sm md:text-base font-medium">Nova Oportunidade</span>
@@ -160,14 +160,14 @@ export default function Opportunities() {
           </div>
         ) : opportunities.length === 0 ? (
           <div className="text-center py-12">
-            <TrendingUp className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Nenhuma oportunidade cadastrada</h3>
-            <p className="text-slate-600 mb-6">
+            <TrendingUp className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhuma oportunidade cadastrada</h3>
+            <p className="text-[#456C8D] mb-6">
               Cadastre sua primeira oportunidade e comece a gerenciar seu funil de vendas
             </p>
             <Button 
               onClick={() => setShowForm(true)}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg rounded-full"
+              className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg"
             >
               <Plus className="w-5 h-5 mr-2" />
               Cadastrar Primeira Oportunidade
@@ -175,12 +175,12 @@ export default function Opportunities() {
           </div>
         ) : (
           <Tabs defaultValue="pipeline" className="w-full">
-            <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1">
-              <TabsTrigger value="pipeline" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
+            <TabsList className="bg-[#EAEAEA] mb-6 p-1 rounded-lg">
+              <TabsTrigger value="pipeline" className="flex items-center gap-2 data-[state=active]:bg-[#456C8D] data-[state=active]:text-white rounded-lg">
                 <Kanban className="w-4 h-4" />
                 Funil de Vendas
               </TabsTrigger>
-              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-600 data-[state=active]:text-white">
+              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-[#456C8D] data-[state=active]:text-white rounded-lg">
                 <LayoutGrid className="w-4 h-4" />
                 Grade
               </TabsTrigger>
@@ -219,7 +219,7 @@ export default function Opportunities() {
                             <p className="text-sm text-slate-600 mb-2">{company.name}</p>
                           )}
                           {opp.value && (
-                            <p className="text-emerald-600 font-semibold text-lg mb-3">
+                            <p className="text-[#456C8D] font-semibold text-lg mb-3">
                               R$ {parseFloat(opp.value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </p>
                           )}
@@ -231,7 +231,7 @@ export default function Opportunities() {
                               </div>
                               <div className="w-full bg-slate-200 rounded-full h-2">
                                 <div 
-                                  className="bg-emerald-500 h-2 rounded-full" 
+                                  className="bg-[#456C8D] h-2 rounded-full" 
                                   style={{ width: `${opp.probability}%` }}
                                 />
                               </div>
@@ -262,9 +262,9 @@ export default function Opportunities() {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Nenhuma oportunidade encontrada</h3>
-                  <p className="text-slate-600">Tente buscar com outros termos</p>
+                  <TrendingUp className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#131A20] mb-2">Nenhuma oportunidade encontrada</h3>
+                  <p className="text-[#456C8D]">Tente buscar com outros termos</p>
                 </div>
               )}
             </TabsContent>
