@@ -133,7 +133,7 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
       >
-        <Card className="shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl bg-white overflow-hidden">
+        <Card className="shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] dark:border-[#30363d] rounded-xl bg-white dark:bg-[#161b22] overflow-hidden">
           <CardHeader 
             className={`${colorClasses[module.color] || colorClasses.blue} p-4 md:p-6 cursor-pointer`}
             onClick={onToggle}
@@ -207,8 +207,8 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
               >
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-[#131A20] flex items-center gap-2">
-                      <ListTodo className="w-5 h-5 text-[#456C8D]" />
+                    <h4 className="font-semibold text-[#131A20] dark:text-white flex items-center gap-2">
+                      <ListTodo className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e]" />
                       Templates de Tarefas
                     </h4>
                     <Button
@@ -237,12 +237,12 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 bg-[#EAEAEA]/30 rounded-xl">
+                    <div className="text-center py-8 bg-[#EAEAEA]/30 dark:bg-[#21262d] rounded-xl">
                       <ListTodo className="w-12 h-12 text-[#EAEAEA] mx-auto mb-3" />
-                      <p className="text-[#456C8D] text-sm">
+                      <p className="text-[#456C8D] dark:text-[#8b949e] text-sm">
                         Nenhum template de tarefa ainda
                       </p>
-                      <p className="text-[#456C8D] text-xs mt-1">
+                      <p className="text-[#456C8D] dark:text-[#8b949e] text-xs mt-1">
                         Adicione templates para reutilizar em projetos
                       </p>
                     </div>
