@@ -343,24 +343,27 @@ function LayoutContent({ children }) {
           </SidebarGroup>
 
           {/* Dark mode toggle and UserProfile at bottom */}
-          <div className="mt-auto space-y-2">
-            <Button
-              variant="ghost"
+          <div className="mt-auto space-y-2 px-3">
+            <button
               onClick={() => setDarkMode(!darkMode)}
-              className="w-full flex items-center justify-start gap-3 px-3 py-2.5 hover:bg-[#EAEAEA] dark:hover:bg-[#2a3441] rounded-lg"
+              className="w-full flex items-center gap-3 px-3 py-3 hover:bg-[#EAEAEA] dark:hover:bg-[#2a3441] rounded-xl border border-[#EAEAEA] dark:border-[#2a3441] bg-[#EAEAEA]/30 dark:bg-[#1a2430] transition-all"
             >
               {darkMode ? (
                 <>
-                  <Sun className="w-5 h-5 text-yellow-500" />
+                  <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">
+                    <Sun className="w-4 h-4 text-yellow-600" />
+                  </div>
                   <span className="text-sm font-medium text-[#131A20] dark:text-white">Modo Claro</span>
                 </>
               ) : (
                 <>
-                  <Moon className="w-5 h-5 text-[#456C8D]" />
+                  <div className="w-8 h-8 rounded-lg bg-[#131A20] flex items-center justify-center">
+                    <Moon className="w-4 h-4 text-white" />
+                  </div>
                   <span className="text-sm font-medium text-[#131A20]">Modo Noturno</span>
                 </>
               )}
-            </Button>
+            </button>
             <UserProfile />
           </div>
         </SidebarContent>
@@ -473,7 +476,28 @@ function LayoutContent({ children }) {
                   })}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-[#EAEAEA]">
+                {/* Dark mode toggle for mobile menu */}
+                <div className="mt-6 pt-4 border-t border-[#EAEAEA] dark:border-[#2a3441]">
+                  <button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="w-full flex items-center gap-3 px-3 py-3 hover:bg-[#EAEAEA] dark:hover:bg-[#2a3441] rounded-xl border border-[#EAEAEA] dark:border-[#2a3441] bg-[#EAEAEA]/30 dark:bg-[#1a2430] transition-all mb-3"
+                  >
+                    {darkMode ? (
+                      <>
+                        <div className="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center">
+                          <Sun className="w-4 h-4 text-yellow-600" />
+                        </div>
+                        <span className="text-sm font-medium text-[#131A20] dark:text-white">Modo Claro</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-8 h-8 rounded-lg bg-[#131A20] flex items-center justify-center">
+                          <Moon className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-[#131A20]">Modo Noturno</span>
+                      </>
+                    )}
+                  </button>
                   <UserProfile />
                 </div>
               </div>
