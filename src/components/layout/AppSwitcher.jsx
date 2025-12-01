@@ -47,7 +47,7 @@ const allModules = [
     icon: Wallet,
     color: "bg-[#131A20]",
     defaultPage: "Lancamentos",
-    pages: ["Lancamentos"]
+    pages: ["Lancamentos", "FinanceFixedExpenses", "FinanceVariableExpenses", "FinancePayroll", "FinanceSummary"]
   },
   {
     id: "prospecting",
@@ -84,7 +84,11 @@ export default function AppSwitcher({ isMobile = false }) {
     }
     
     // Check if in Finance pages
-    if (currentPath.includes('lancamentos')) {
+    if (currentPath.includes('lancamentos') || 
+        currentPath.includes('financefixedexpenses') || 
+        currentPath.includes('financevariableexpenses') || 
+        currentPath.includes('financepayroll') || 
+        currentPath.includes('financesummary')) {
       return modules.find(m => m.id === 'finance');
     }
     
