@@ -463,7 +463,7 @@ export default function ProjectDetail() {
                 {loadingTasks ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                      <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+                      <Skeleton key={i} className="h-24 w-full rounded-xl" />
                     ))}
                   </div>
                 ) : (
@@ -480,7 +480,7 @@ export default function ProjectDetail() {
               {/* New TabsContent for Table View */}
               <TabsContent value="table" className="p-4 md:p-6 mt-0">
                 {loadingTasks ? (
-                  <Skeleton className="h-96 w-full rounded-2xl" />
+                  <Skeleton className="h-96 w-full rounded-xl" />
                 ) : (
                   <TaskTableView
                     tasks={tasks.filter(t => !t.parent_task_id)} // Pass only main tasks to table view
@@ -494,7 +494,7 @@ export default function ProjectDetail() {
 
               <TabsContent value="gantt" className="p-4 md:p-6 mt-0">
                 {loadingTasks ? (
-                  <Skeleton className="h-96 w-full rounded-2xl" />
+                  <Skeleton className="h-96 w-full rounded-xl" />
                 ) : (
                   <GanttChart tasks={tasks.filter(t => !t.parent_task_id)} projectColor={project.color} />
                 )}
