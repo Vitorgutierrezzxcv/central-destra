@@ -330,13 +330,102 @@ function LayoutContent({ children }) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setOpen(true)}
+              onClick={() => setMobileMenuOpen(true)}
               className="hover:bg-slate-100 rounded-lg"
             >
               <Menu className="w-5 h-5 text-slate-700" />
             </Button>
           </div>
         </header>
+
+        {/* Mobile sidebar overlay */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            <div 
+              className="absolute inset-0 bg-black/50" 
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl overflow-y-auto">
+              <div className="p-4">
+                <div className="flex justify-end mb-4">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="hover:bg-slate-100 rounded-lg"
+                  >
+                    <X className="w-5 h-5 text-slate-700" />
+                  </Button>
+                </div>
+                
+                <div className="mb-6">
+                  <AppSwitcher />
+                </div>
+
+                <div className="space-y-1">
+                  {currentModule === 'taskflow' && taskFlowNav.map((item) => {
+                    const isActive = location.pathname === item.url;
+                    return (
+                      <Link
+                        key={item.title}
+                        to={item.url}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    );
+                  })}
+                  {currentModule === 'crm' && crmNav.map((item) => {
+                    const isActive = location.pathname === item.url;
+                    return (
+                      <Link
+                        key={item.title}
+                        to={item.url}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    );
+                  })}
+                  {currentModule === 'finance' && financeNav.map((item) => {
+                    const isActive = location.pathname === item.url;
+                    return (
+                      <Link
+                        key={item.title}
+                        to={item.url}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md'
+                            : 'hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-200">
+                  <UserProfile />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Mobile bottom navigation bar */}
         <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
