@@ -115,7 +115,7 @@ export default function Projects() {
                 placeholder="Buscar projetos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
             <Button 

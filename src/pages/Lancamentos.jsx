@@ -158,7 +158,7 @@ export default function Lancamentos() {
                   placeholder="Buscar..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-white border-[#EAEAEA] h-10 text-sm rounded-lg"
+                  className="pl-9 bg-white dark:bg-[#0d1117] border-[#EAEAEA] dark:border-[#30363d] dark:text-white h-10 text-sm rounded-lg"
                 />
               </div>
               <div className="flex gap-2">
@@ -259,7 +259,7 @@ export default function Lancamentos() {
         </AnimatePresence>
 
         {/* Filters */}
-        <Card className="bg-white border border-[#EAEAEA] rounded-xl mb-6">
+        <Card className="bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] rounded-xl mb-6">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-4">
               <Filter className="w-5 h-5 text-[#456C8D] dark:text-[#8b949e]" />
