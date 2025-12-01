@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
@@ -37,17 +36,17 @@ export default function TasksCalendar({ tasks, selectedDate, onDateChange }) {
         locale={ptBR}
         modifiers={modifiers}
         modifiersStyles={modifiersStyles}
-        className="rounded-xl md:rounded-2xl border border-slate-200 text-sm md:text-base"
+        className="rounded-xl md:rounded-2xl border border-slate-200 dark:border-[#30363d] text-sm md:text-base"
       />
       
       <div className="mt-3 md:mt-4 w-full">
         <div className="flex items-center gap-1.5 md:gap-2 mb-2">
           <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" />
-          <span className="text-xs md:text-sm text-slate-600">Dias com tarefas</span>
+          <span className="text-xs md:text-sm text-slate-600 dark:text-[#8b949e]">Dias com tarefas</span>
         </div>
         {selectedDate && (
-          <div className="mt-2 md:mt-3 p-2.5 md:p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl md:rounded-2xl border border-purple-200">
-            <p className="text-xs md:text-sm font-semibold text-slate-900 mb-1.5 md:mb-2 line-clamp-2">
+          <div className="mt-2 md:mt-3 p-2.5 md:p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-[#21262d] dark:to-[#21262d] rounded-xl md:rounded-2xl border border-purple-200 dark:border-[#30363d]">
+            <p className="text-xs md:text-sm font-semibold text-slate-900 dark:text-white mb-1.5 md:mb-2 line-clamp-2">
               {selectedDate.toLocaleDateString('pt-BR', { 
                 weekday: 'long', 
                 year: 'numeric', 

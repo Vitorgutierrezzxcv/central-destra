@@ -57,15 +57,15 @@ export default function UserPerformanceRanking() {
 
   if (rankedUsers.length === 0) {
     return (
-      <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-        <CardHeader className="border-b border-slate-100 p-4 md:p-6">
-          <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
+      <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 dark:bg-[#161b22] backdrop-blur-sm">
+        <CardHeader className="border-b border-slate-100 dark:border-[#30363d] p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-500" />
             Ranking de Desempenho
           </CardTitle>
         </CardHeader>
         <CardContent className="p-4 md:p-6">
-          <div className="text-center py-8 text-slate-500">
+          <div className="text-center py-8 text-slate-500 dark:text-[#8b949e]">
             <Trophy className="w-12 h-12 mx-auto mb-2 opacity-50" />
             <p>Nenhuma tarefa atribuída ainda</p>
           </div>
@@ -75,10 +75,10 @@ export default function UserPerformanceRanking() {
   }
 
   return (
-    <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-      <CardHeader className="border-b border-slate-100 p-3 md:p-6">
+    <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 dark:bg-[#161b22] backdrop-blur-sm">
+      <CardHeader className="border-b border-slate-100 dark:border-[#30363d] p-3 md:p-6">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base md:text-xl font-bold text-slate-900 flex items-center gap-2">
+          <CardTitle className="text-base md:text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-500 flex-shrink-0" />
             <span className="truncate">Produtividade</span>
           </CardTitle>
@@ -88,22 +88,22 @@ export default function UserPerformanceRanking() {
         </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2 text-xs md:text-sm">
           <div className="flex items-center gap-1">
-            <span className="font-bold text-lg md:text-2xl text-slate-900">{rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)}</span>
-            <span className="text-slate-600">Total</span>
+            <span className="font-bold text-lg md:text-2xl text-slate-900 dark:text-white">{rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)}</span>
+            <span className="text-slate-600 dark:text-[#8b949e]">Total</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-slate-300"></div>
-            <span className="text-slate-600 text-xs">Pend.</span>
+            <span className="text-slate-600 dark:text-[#8b949e] text-xs">Pend.</span>
           </div>
           <div className="flex items-center gap-1">
             <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-            <span className="text-slate-600 text-xs">Concl.</span>
+            <span className="text-slate-600 dark:text-[#8b949e] text-xs">Concl.</span>
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-3 md:p-6 space-y-4 md:space-y-6">
         {/* Modern Chart */}
-        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl md:rounded-2xl p-3 md:p-6 overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-50 to-blue-50 dark:from-[#21262d] dark:to-[#21262d] rounded-xl md:rounded-2xl p-3 md:p-6 overflow-hidden">
           <div className="flex items-end justify-around gap-1 md:gap-2 h-32 md:h-48">
             {chartData.slice(0, 5).map((stat, index) => {
               const displayName = stat.user.display_name || stat.user.full_name?.split(' ')[0] || 'User';
@@ -155,7 +155,7 @@ export default function UserPerformanceRanking() {
                     >
                       {stat.completedTasks > 0 && (
                         <div className="absolute inset-x-0 -top-4 md:-top-6 text-center">
-                          <span className="text-[10px] md:text-xs font-bold text-slate-700">
+                          <span className="text-[10px] md:text-xs font-bold text-slate-700 dark:text-[#e6edf3]">
                             {stat.completedTasks}
                           </span>
                         </div>
@@ -165,7 +165,7 @@ export default function UserPerformanceRanking() {
                   
                   {/* User name */}
                   <div className="text-center w-full overflow-hidden">
-                    <p className="text-[10px] md:text-xs font-medium text-slate-700 truncate">
+                    <p className="text-[10px] md:text-xs font-medium text-slate-700 dark:text-[#e6edf3] truncate">
                       {displayName.length > 6 ? displayName.substring(0, 5) + '.' : displayName}
                     </p>
                   </div>
@@ -177,7 +177,7 @@ export default function UserPerformanceRanking() {
 
         {/* Ranking List */}
         <div className="space-y-2 md:space-y-3">
-          <h4 className="text-xs md:text-sm font-semibold text-slate-700 flex items-center gap-2">
+          <h4 className="text-xs md:text-sm font-semibold text-slate-700 dark:text-[#e6edf3] flex items-center gap-2">
             <Target className="w-3 h-3 md:w-4 md:h-4" />
             Classificação
           </h4>
@@ -196,7 +196,7 @@ export default function UserPerformanceRanking() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gradient-to-r from-slate-50 to-white p-2 md:p-4 rounded-lg md:rounded-xl border border-slate-200 hover:shadow-md transition-all"
+                className="bg-gradient-to-r from-slate-50 to-white dark:from-[#161b22] dark:to-[#161b22] p-2 md:p-4 rounded-lg md:rounded-xl border border-slate-200 dark:border-[#30363d] hover:shadow-md transition-all"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   {/* Rank Position */}
@@ -205,7 +205,7 @@ export default function UserPerformanceRanking() {
                       <Trophy className={`w-5 h-5 md:w-7 md:h-7 ${medalColors[index]}`} />
                     ) : (
                       <div className="w-5 h-5 md:w-7 md:h-7 rounded-full bg-slate-200 flex items-center justify-center">
-                        <span className="text-xs md:text-base font-bold text-slate-600">#{index + 1}</span>
+                        <span className="text-xs md:text-base font-bold text-slate-600 dark:text-[#8b949e]">#{index + 1}</span>
                       </div>
                     )}
                   </div>
@@ -225,7 +225,7 @@ export default function UserPerformanceRanking() {
 
                   <div className="flex-1 min-w-0 overflow-hidden">
                     <div className="flex items-center gap-1 md:gap-2">
-                      <h5 className="font-semibold text-slate-900 text-xs md:text-base truncate">
+                      <h5 className="font-semibold text-slate-900 dark:text-white text-xs md:text-base truncate">
                         {displayName}
                       </h5>
                       {index === 0 && (
@@ -234,7 +234,7 @@ export default function UserPerformanceRanking() {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-slate-600">
+                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-slate-600 dark:text-[#8b949e]">
                       <span className="font-medium text-green-600">
                         {stat.completedTasks} feita{stat.completedTasks !== 1 ? 's' : ''}
                       </span>
@@ -250,7 +250,7 @@ export default function UserPerformanceRanking() {
                     <div className="text-sm md:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                       {stat.completionRate}%
                     </div>
-                    <div className="text-[10px] md:text-xs text-slate-500 hidden sm:block">conclusão</div>
+                    <div className="text-[10px] md:text-xs text-slate-500 dark:text-[#8b949e] hidden sm:block">conclusão</div>
                   </div>
                 </div>
               </motion.div>
