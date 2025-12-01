@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,14 +11,14 @@ import TaskTemplateFormDialog from "./TaskTemplateFormDialog";
 import TaskTemplateItem from "./TaskTemplateItem";
 
 const colorClasses = {
-  blue: "from-blue-400 to-blue-500",
-  purple: "from-purple-400 to-purple-500",
-  green: "from-green-400 to-green-500",
-  orange: "from-orange-400 to-orange-500",
-  pink: "from-pink-400 to-pink-500",
-  red: "from-red-400 to-red-500",
-  indigo: "from-indigo-400 to-indigo-500",
-  teal: "from-teal-400 to-teal-500",
+  blue: "bg-[#6FA6FF]",
+  purple: "bg-[#456C8D]",
+  green: "bg-[#6FA6FF]",
+  orange: "bg-[#456C8D]",
+  pink: "bg-[#6FA6FF]",
+  red: "bg-[#456C8D]",
+  indigo: "bg-[#6FA6FF]",
+  teal: "bg-[#456C8D]",
 };
 
 export default function ModuleCard({ module, templates, isExpanded, onToggle, onEdit, onDelete }) {
@@ -134,9 +133,9 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
       >
-        <Card className="shadow-lg hover:shadow-xl transition-all border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm overflow-hidden">
+        <Card className="shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl bg-white overflow-hidden">
           <CardHeader 
-            className={`bg-gradient-to-br ${colorClasses[module.color] || colorClasses.blue} p-4 md:p-6 cursor-pointer`}
+            className={`${colorClasses[module.color] || colorClasses.blue} p-4 md:p-6 cursor-pointer`}
             onClick={onToggle}
           >
             <div className="flex items-center justify-between">
@@ -208,8 +207,8 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
               >
                 <CardContent className="p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-slate-900 flex items-center gap-2">
-                      <ListTodo className="w-5 h-5" />
+                    <h4 className="font-semibold text-[#131A20] flex items-center gap-2">
+                      <ListTodo className="w-5 h-5 text-[#456C8D]" />
                       Templates de Tarefas
                     </h4>
                     <Button
@@ -218,7 +217,7 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                         setEditingTemplate(null);
                         setShowTemplateDialog(true);
                       }}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-full h-8"
+                      className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-8"
                     >
                       <Plus className="w-4 h-4 mr-1" />
                       Adicionar Tarefa
@@ -238,12 +237,12 @@ export default function ModuleCard({ module, templates, isExpanded, onToggle, on
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 bg-slate-50 rounded-xl">
-                      <ListTodo className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                      <p className="text-slate-600 text-sm">
+                    <div className="text-center py-8 bg-[#EAEAEA]/30 rounded-xl">
+                      <ListTodo className="w-12 h-12 text-[#EAEAEA] mx-auto mb-3" />
+                      <p className="text-[#456C8D] text-sm">
                         Nenhum template de tarefa ainda
                       </p>
-                      <p className="text-slate-500 text-xs mt-1">
+                      <p className="text-[#456C8D] text-xs mt-1">
                         Adicione templates para reutilizar em projetos
                       </p>
                     </div>

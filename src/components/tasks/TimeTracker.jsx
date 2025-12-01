@@ -108,35 +108,35 @@ export default function TimeTracker({ task, compact = false }) {
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        <Clock className="w-4 h-4 text-slate-500" />
-        <span className={`text-sm font-medium ${isRunning ? 'text-blue-600 animate-pulse' : 'text-slate-700'}`}>
+        <Clock className="w-4 h-4 text-[#456C8D]" />
+        <span className={`text-sm font-medium ${isRunning ? 'text-[#6FA6FF] animate-pulse' : 'text-[#131A20]'}`}>
           {formatTime(currentTime)}
         </span>
         {timeEstimate > 0 && (
-          <span className="text-xs text-slate-500">/ {formatTime(timeEstimate)}</span>
+          <span className="text-xs text-[#456C8D]">/ {formatTime(timeEstimate)}</span>
         )}
       </div>
     );
   }
 
   return (
-    <div className="bg-gradient-to-r from-slate-50 to-white p-4 rounded-xl border border-slate-200">
+    <div className="bg-white p-4 rounded-xl border border-[#EAEAEA]">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Clock className="w-5 h-5 text-slate-600" />
+          <Clock className="w-5 h-5 text-[#456C8D]" />
           <div>
             <div className="flex items-center gap-2">
-              <span className={`text-2xl font-bold ${isRunning ? 'text-blue-600' : 'text-slate-900'}`}>
+              <span className={`text-2xl font-bold ${isRunning ? 'text-[#6FA6FF]' : 'text-[#131A20]'}`}>
                 {formatTime(currentTime)}
               </span>
               {isRunning && (
-                <Badge className="bg-blue-500 text-white animate-pulse">
+                <Badge className="bg-[#6FA6FF] text-white animate-pulse">
                   Rastreando
                 </Badge>
               )}
             </div>
             {timeEstimate > 0 && (
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-sm text-[#456C8D] mt-1">
                 Estimativa: {formatTime(timeEstimate)}
               </p>
             )}
@@ -144,9 +144,9 @@ export default function TimeTracker({ task, compact = false }) {
         </div>
 
         {isOtherUserTracking ? (
-          <div className="flex items-center gap-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
-            <AlertCircle className="w-4 h-4 text-yellow-600" />
-            <span className="text-xs text-yellow-700">
+          <div className="flex items-center gap-2 bg-[#EAEAEA] px-3 py-2 rounded-lg border border-[#EAEAEA]">
+            <AlertCircle className="w-4 h-4 text-[#456C8D]" />
+            <span className="text-xs text-[#456C8D]">
               Sendo rastreado por outro usuário
             </span>
           </div>
@@ -157,8 +157,8 @@ export default function TimeTracker({ task, compact = false }) {
             className={`${
               isRunning 
                 ? 'bg-red-500 hover:bg-red-600' 
-                : 'bg-blue-500 hover:bg-blue-600'
-            } rounded-full`}
+                : 'bg-[#6FA6FF] hover:bg-[#456C8D]'
+            } rounded-lg text-white`}
             size="sm"
           >
             {isRunning ? (
@@ -182,7 +182,7 @@ export default function TimeTracker({ task, compact = false }) {
             value={progressPercentage} 
             className={`h-2 ${isOverEstimate ? '[&>div]:bg-red-500' : ''}`}
           />
-          <div className="flex justify-between text-xs text-slate-600">
+          <div className="flex justify-between text-xs text-[#456C8D]">
             <span>{progressPercentage}% da estimativa</span>
             {isOverEstimate && (
               <span className="text-red-600 font-medium">

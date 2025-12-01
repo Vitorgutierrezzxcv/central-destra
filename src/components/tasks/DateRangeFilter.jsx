@@ -87,19 +87,19 @@ export default function DateRangeFilter({ onDateRangeChange }) {
   const hasActiveFilter = startDate || endDate || activePreset;
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm shadow-md border-slate-200 mb-4">
+    <Card className="bg-white border border-[#EAEAEA] mb-4">
       <CardContent className="p-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-slate-600" />
-            <Label className="text-sm font-semibold text-slate-900">Filtrar por Data</Label>
+            <Calendar className="w-5 h-5 text-[#456C8D]" />
+            <Label className="text-sm font-medium text-[#131A20]">Filtrar por Data</Label>
           </div>
           {hasActiveFilter && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleClear}
-              className="text-slate-600 hover:text-red-600 h-8 text-xs"
+              className="text-[#456C8D] hover:text-red-500 h-8 text-xs"
             >
               <X className="w-4 h-4 mr-1" />
               Limpar
@@ -117,8 +117,8 @@ export default function DateRangeFilter({ onDateRangeChange }) {
               onClick={() => handlePresetClick(preset)}
               className={`h-8 text-xs ${
                 activePreset === preset.id
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700'
-                  : 'hover:bg-slate-100'
+                  ? 'bg-[#6FA6FF] hover:bg-[#456C8D] text-white'
+                  : 'hover:bg-[#EAEAEA] border-[#EAEAEA]'
               }`}
             >
               {preset.label}
@@ -129,7 +129,7 @@ export default function DateRangeFilter({ onDateRangeChange }) {
         {/* Custom Date Range */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label htmlFor="start-date" className="text-xs text-slate-600">
+            <Label htmlFor="start-date" className="text-xs text-[#456C8D]">
               Data de Início
             </Label>
             <Input
@@ -141,7 +141,7 @@ export default function DateRangeFilter({ onDateRangeChange }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="end-date" className="text-xs text-slate-600">
+            <Label htmlFor="end-date" className="text-xs text-[#456C8D]">
               Data de Término
             </Label>
             <Input
@@ -157,8 +157,8 @@ export default function DateRangeFilter({ onDateRangeChange }) {
 
         {/* Active Filter Display */}
         {hasActiveFilter && (
-          <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-800">
+          <div className="mt-3 p-2 bg-[#6FA6FF]/10 rounded-lg border border-[#6FA6FF]/30">
+            <p className="text-xs text-[#456C8D]">
               <strong>Período ativo:</strong>{" "}
               {activePreset ? (
                 presets.find(p => p.id === activePreset)?.label
