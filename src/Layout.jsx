@@ -288,7 +288,7 @@ function LayoutContent({ children }) {
         </SidebarContent>
       </Sidebar>
 
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Toggle button in header bar - desktop only */}
         <div className="hidden md:flex items-center justify-between bg-white/60 backdrop-blur-sm border-b border-slate-200/50 px-4 py-2">
           <Button
@@ -313,17 +313,16 @@ function LayoutContent({ children }) {
         </div>
 
         {/* Mobile header */}
-        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-3 py-2 md:hidden sticky top-0 z-10">
-          <div className="flex items-center justify-between gap-2">
+        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-2 py-2 md:hidden sticky top-0 z-10">
+          <div className="flex items-center gap-2 w-full max-w-full">
             <SidebarTrigger className="hover:bg-slate-100 p-1.5 rounded-lg transition-colors flex-shrink-0" />
-            <div className="flex-1 min-w-0 flex justify-center">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <AppSwitcher isMobile={true} />
             </div>
-            <div className="w-8 flex-shrink-0" />
           </div>
         </header>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-x-hidden overflow-y-auto">
           {children}
         </div>
       </main>
@@ -334,7 +333,7 @@ function LayoutContent({ children }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden">
         <LayoutContent>{children}</LayoutContent>
       </div>
     </SidebarProvider>

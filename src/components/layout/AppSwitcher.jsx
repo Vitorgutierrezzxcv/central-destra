@@ -125,21 +125,21 @@ export default function AppSwitcher({ isMobile = false }) {
       <>
         <button
           onClick={() => setShowDialog(true)}
-          className="flex items-center gap-1.5 hover:opacity-80 transition-opacity px-2 py-1 rounded-lg"
+          className="flex items-center gap-1.5 hover:opacity-80 transition-opacity py-1 rounded-lg min-w-0"
         >
-          <div className={`w-7 h-7 bg-gradient-to-br ${activeModule.color} rounded-lg flex items-center justify-center shadow-sm flex-shrink-0`}>
-            <ActiveIcon className="w-3.5 h-3.5 text-white" />
+          <div className={`w-6 h-6 bg-gradient-to-br ${activeModule.color} rounded-md flex items-center justify-center shadow-sm flex-shrink-0`}>
+            <ActiveIcon className="w-3 h-3 text-white" />
           </div>
-          <span className="text-sm font-bold text-slate-900 truncate max-w-[80px]">{activeModule.name}</span>
-          <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+          <span className="text-sm font-bold text-slate-900 truncate">{activeModule.name}</span>
+          <ChevronDown className="w-3 h-3 text-slate-400 flex-shrink-0" />
         </button>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-md mx-4">
+          <DialogContent className="w-[calc(100vw-32px)] max-w-sm">
             <DialogHeader>
               <DialogTitle className="text-lg">Escolha um Módulo</DialogTitle>
               <DialogDescription className="text-sm">
-                Alterne entre diferentes áreas do sistema
+                Alterne entre diferentes áreas
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-2 py-3">
