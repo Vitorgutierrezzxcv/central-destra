@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
+import { useUserAccess } from "./components/layout/AccessGuard";
 
 const taskFlowNav = [
   {
@@ -57,21 +58,24 @@ const taskFlowQuickActions = [
   { title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }
 ];
 
-const crmNav = [
+const crmNavBase = [
   {
     title: "Cadastro",
     url: createPageUrl("Companies"),
     icon: Building2,
+    module: "crm",
   },
   {
     title: "Oportunidades",
     url: createPageUrl("Opportunities"),
     icon: TrendingUp,
+    module: "crm",
   },
   {
     title: "Prospecção",
     url: createPageUrl("Prospecting"),
     icon: Target,
+    module: "prospecting",
   },
 ];
 
@@ -93,6 +97,10 @@ function LayoutContent({ children }) {
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { open, setOpen } = useSidebar();
+  const { canAccess, hasFullAccess } = useUserAccess();
+
+  // Filter CRM nav based on access
+  const crmNav = crmNavBase.filter(item => canAccess(item.module));
 
   // Determine which module is active based on current page
   const getCurrentModule = () => {

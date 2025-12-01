@@ -5,7 +5,8 @@ import {
   Users, 
   ChevronDown,
   Grid3x3,
-  Wallet
+  Wallet,
+  Target
 } from "lucide-react";
 import {
   Dialog,
@@ -18,8 +19,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { useUserAccess } from "./AccessGuard";
 
-const modules = [
+const allModules = [
   {
     id: "taskflow",
     name: "TaskFlow",
@@ -46,6 +48,15 @@ const modules = [
     color: "from-amber-500 to-orange-600",
     defaultPage: "Lancamentos",
     pages: ["Lancamentos"]
+  },
+  {
+    id: "prospecting",
+    name: "Prospecção",
+    description: "Métricas de Social Selling",
+    icon: Target,
+    color: "from-cyan-500 to-blue-600",
+    defaultPage: "Prospecting",
+    pages: ["Prospecting"]
   }
 ];
 
@@ -53,10 +64,19 @@ export default function AppSwitcher({ isMobile = false }) {
   const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { canAccess, hasFullAccess } = useUserAccess();
+
+  // Filter modules based on user access
+  const modules = allModules.filter(module => canAccess(module.id));
 
   // Determine active module based on current page
   const getCurrentModule = () => {
     const currentPath = location.pathname.toLowerCase();
+    
+    // Check if in Prospecting pages
+    if (currentPath.includes('prospecting')) {
+      return modules.find(m => m.id === 'prospecting');
+    }
     
     // Check if in CRM pages
     if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
@@ -68,7 +88,7 @@ export default function AppSwitcher({ isMobile = false }) {
       return modules.find(m => m.id === 'finance');
     }
     
-    // Default to TaskFlow
+    // Default to TaskFlow or first available
     return modules.find(m => m.id === 'taskflow') || modules[0];
   };
 
