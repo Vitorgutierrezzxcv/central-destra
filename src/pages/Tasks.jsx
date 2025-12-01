@@ -240,8 +240,8 @@ export default function Tasks() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] mb-2">Tarefas</h1>
-            <p className="text-sm md:text-base text-[#456C8D]">Organize e acompanhe todas as suas tarefas</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] dark:text-white mb-2">Tarefas</h1>
+            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e]">Organize e acompanhe todas as suas tarefas</p>
           </div>
           <Button 
             onClick={() => {
@@ -344,14 +344,14 @@ export default function Tasks() {
         ) : (
           <div className="text-center py-12 md:py-16 bg-[#EAEAEA]/30 rounded-xl">
             <div className="w-16 h-16 md:w-24 md:h-24 bg-[#EAEAEA] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 md:w-12 md:h-12 text-[#456C8D]" />
+              <Plus className="w-8 h-8 md:w-12 md:h-12 text-[#456C8D] dark:text-[#8b949e]" />
             </div>
-            <h3 className="text-lg md:text-xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-lg md:text-xl font-semibold text-[#131A20] dark:text-white mb-2">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-4 md:mb-6 px-4">
+            <p className="text-sm md:text-base text-[#456C8D] dark:text-[#8b949e] mb-4 md:mb-6 px-4">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
