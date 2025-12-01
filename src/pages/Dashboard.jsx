@@ -102,13 +102,13 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="mb-6 md:mb-8">
-          <p className="text-[#456C8D] text-base md:text-lg mb-1">{greeting()},</p>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#131A20] mb-4 md:mb-4">
+          <p className="text-[#456C8D] dark:text-[#8b949e] text-base md:text-lg mb-1">{greeting()},</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#131A20] dark:text-white mb-4 md:mb-4">
             {displayName}!
           </h1>
           <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
             <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-white text-[#131A20] hover:bg-white/80 shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11 border border-[#EAEAEA]">
+              <Button className="w-full sm:w-auto bg-white text-[#131A20] dark:text-white hover:bg-white/80 shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11 border border-[#EAEAEA] dark:border-[#30363d]">
                 <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 <span className="text-sm md:text-base font-medium">Novo Projeto</span>
               </Button>
@@ -135,14 +135,14 @@ export default function Dashboard() {
           {/* Left Column - Today's Tasks & Projects */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
             {/* Today's Schedule */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white overflow-hidden">
+            <Card className="shadow-md border border-[#EAEAEA] dark:border-[#30363d] dark:border-[#30363d] rounded-xl md:rounded-2xl bg-white dark:bg-[#161b22] overflow-hidden">
               <CardHeader className="bg-[#6FA6FF]/10 border-none p-4 md:pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] mb-1">
+                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white mb-1">
                       Hoje
                     </CardTitle>
-                    <p className="text-xs md:text-sm text-[#456C8D]">
+                    <p className="text-xs md:text-sm text-[#456C8D] dark:text-[#8b949e]">
                       {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
                     </p>
                   </div>
@@ -157,12 +157,12 @@ export default function Dashboard() {
             </Card>
 
             {/* Projects Overview */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
-              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
+            <Card className="shadow-md border border-[#EAEAEA] dark:border-[#30363d] dark:border-[#30363d] rounded-xl md:rounded-2xl bg-white dark:bg-[#161b22]">
+              <CardHeader className="border-b border-[#EAEAEA] dark:border-[#30363d] p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20]">Projetos</CardTitle>
-                    <p className="text-xs md:text-sm text-[#456C8D] mt-1">
+                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] dark:text-white">Projetos</CardTitle>
+                    <p className="text-xs md:text-sm text-[#456C8D] dark:text-[#8b949e] mt-1">
                       {projects.filter(p => p.status === 'active').length} ativo(s)
                     </p>
                   </div>
@@ -185,9 +185,9 @@ export default function Dashboard() {
           {/* Right Column - Calendar & Notes */}
           <div className="space-y-4 md:space-y-6">
             {/* Calendar */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
-              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
-                <CardTitle className="text-lg md:text-xl font-semibold text-[#131A20] flex items-center gap-2">
+            <Card className="shadow-md border border-[#EAEAEA] dark:border-[#30363d] dark:border-[#30363d] rounded-xl md:rounded-2xl bg-white dark:bg-[#161b22]">
+              <CardHeader className="border-b border-[#EAEAEA] dark:border-[#30363d] p-4 md:p-6">
+                <CardTitle className="text-lg md:text-xl font-semibold text-[#131A20] dark:text-white flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-[#6FA6FF]" />
                   Calendário
                 </CardTitle>
