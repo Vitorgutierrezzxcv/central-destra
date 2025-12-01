@@ -1,4 +1,3 @@
-
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
@@ -110,13 +109,13 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
 
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 md:p-6 mb-6 border border-slate-200">
+    <div className="bg-white rounded-xl p-4 md:p-6 mb-6 border border-[#EAEAEA]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-slate-600" />
-          <h3 className="font-semibold text-slate-900 text-sm md:text-base">Filtros</h3>
+          <Filter className="w-5 h-5 text-[#456C8D]" />
+          <h3 className="font-medium text-[#131A20] text-sm md:text-base">Filtros</h3>
         </div>
-        <Badge variant="secondary" className="bg-slate-100 text-slate-700 text-xs md:text-sm">
+        <Badge variant="secondary" className="bg-[#EAEAEA] text-[#456C8D] text-xs md:text-sm">
           {taskCount} {taskCount === 1 ? 'tarefa' : 'tarefas'}
         </Badge>
       </div>
@@ -130,7 +129,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
             placeholder="Buscar tarefas..."
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
-            className="pl-9 border-slate-200 h-10 w-full"
+            className="pl-9 border-[#EAEAEA] h-10 w-full"
           />
         </div>
 
@@ -139,7 +138,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
           value={filters.dateRange}
           onValueChange={(value) => handleFilterChange("dateRange", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full">
+          <SelectTrigger className="border-[#EAEAEA] h-10 w-full">
             <CalendarDays className="w-4 h-4 mr-2" />
             <SelectValue placeholder="Prazo">
                 {selectedDateRangeLabel}
@@ -160,7 +159,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
                 <Popover>
                     <PopoverTrigger asChild>
                         <button
-                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-[#EAEAEA] bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-[#456C8D] focus:outline-none focus:ring-2 focus:ring-[#6FA6FF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         >
                             <CalendarDays className="mr-2 h-4 w-4" />
                             {filters.dateFrom ? (
@@ -185,7 +184,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
                 <Popover>
                     <PopoverTrigger asChild>
                         <button
-                            className="flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+                            className="flex h-10 w-full items-center justify-between rounded-md border border-[#EAEAEA] bg-white px-3 py-2 text-sm ring-offset-white placeholder:text-[#456C8D] focus:outline-none focus:ring-2 focus:ring-[#6FA6FF] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
                         >
                             <CalendarDays className="mr-2 h-4 w-4" />
                             {filters.dateTo ? (
@@ -214,7 +213,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
           value={filters.status}
           onValueChange={(value) => handleFilterChange("status", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full">
+          <SelectTrigger className="border-[#EAEAEA] h-10 w-full">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -231,7 +230,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
           value={filters.priority}
           onValueChange={(value) => handleFilterChange("priority", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full">
+          <SelectTrigger className="border-[#EAEAEA] h-10 w-full">
             <SelectValue placeholder="Prioridade" />
           </SelectTrigger>
           <SelectContent>
@@ -247,7 +246,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
           value={filters.project}
           onValueChange={(value) => handleFilterChange("project", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full">
+          <SelectTrigger className="border-[#EAEAEA] h-10 w-full">
             <SelectValue placeholder="Projeto" />
           </SelectTrigger>
           <SelectContent>
@@ -265,7 +264,7 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
           value={filters.assignedTo}
           onValueChange={(value) => handleFilterChange("assignedTo", value)}
         >
-          <SelectTrigger className="border-slate-200 h-10 w-full">
+          <SelectTrigger className="border-[#EAEAEA] h-10 w-full">
             <SelectValue placeholder="Responsável">
               {filters.assignedTo === "all" ? (
                 "Todos Responsáveis"

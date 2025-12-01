@@ -236,19 +236,19 @@ export default function Tasks() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">Tarefas</h1>
-            <p className="text-sm md:text-base text-slate-600">Organize e acompanhe todas as suas tarefas</p>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] mb-2">Tarefas</h1>
+            <p className="text-sm md:text-base text-[#456C8D]">Organize e acompanhe todas as suas tarefas</p>
           </div>
           <Button 
             onClick={() => {
               setEditingTask(null);
               setShowForm(true);
             }}
-            className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-11 md:h-12"
+            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12"
           >
             <Plus className="w-5 h-5 mr-2" />
             <span className="font-medium">Nova Tarefa</span>
@@ -282,21 +282,21 @@ export default function Tasks() {
         {loadingTasks || loadingProjects ? (
           <div className="space-y-3 md:space-y-4">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-32 md:h-36 bg-white/50 rounded-xl md:rounded-2xl animate-pulse" />
+              <div key={i} className="h-32 md:h-36 bg-[#EAEAEA] rounded-xl animate-pulse" />
             ))}
           </div>
         ) : filteredTasks.length > 0 ? (
           <Tabs defaultValue="grid" className="w-full">
-            <TabsList className="bg-white/80 backdrop-blur-sm shadow-md mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto">
-              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+            <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
+              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <LayoutGrid className="w-4 h-4" />
                 <span className="hidden sm:inline">Grade</span>
               </TabsTrigger>
-              <TabsTrigger value="kanban" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <TabsTrigger value="kanban" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <Kanban className="w-4 h-4" />
                 <span className="hidden sm:inline">Kanban</span>
               </TabsTrigger>
-              <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <TableIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">Tabela</span>
               </TabsTrigger>
@@ -342,16 +342,16 @@ export default function Tasks() {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="text-center py-12 md:py-16 bg-white/50 rounded-xl md:rounded-2xl">
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 md:w-12 md:h-12 text-slate-400" />
+          <div className="text-center py-12 md:py-16 bg-[#EAEAEA]/30 rounded-xl">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-[#EAEAEA] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 md:w-12 md:h-12 text-[#456C8D]" />
             </div>
-            <h3 className="text-lg md:text-xl font-semibold text-slate-900 mb-2">
+            <h3 className="text-lg md:text-xl font-semibold text-[#131A20] mb-2">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
-            <p className="text-sm md:text-base text-slate-600 mb-4 md:mb-6 px-4">
+            <p className="text-sm md:text-base text-[#456C8D] mb-4 md:mb-6 px-4">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
@@ -359,7 +359,7 @@ export default function Tasks() {
             {!(Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end) && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 rounded-full h-11 md:h-12"
+                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Criar Primeira Tarefa
