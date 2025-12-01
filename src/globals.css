@@ -34,28 +34,53 @@ css
   color: var(--text-primary);
 }
 
-/* Dark mode for cards, inputs, and common elements */
-.dark .bg-white {
+/* Dark mode for main backgrounds */
+.dark .min-h-screen {
+  background-color: #0d1117 !important;
+}
+
+.dark .bg-white,
+.dark .bg-\[white\] {
   background-color: #161b22 !important;
 }
 
-.dark .bg-\[\#EAEAEA\] {
+.dark .bg-\[\#EAEAEA\],
+.dark .bg-slate-50,
+.dark .bg-gray-50,
+.dark .bg-slate-100,
+.dark .bg-gray-100 {
   background-color: #21262d !important;
 }
 
-.dark .border-\[\#EAEAEA\] {
+.dark .bg-gradient-to-br,
+.dark .bg-gradient-to-r,
+.dark .bg-gradient-to-b {
+  background: #0d1117 !important;
+}
+
+.dark .border-\[\#EAEAEA\],
+.dark .border-slate-200,
+.dark .border-gray-200 {
   border-color: #30363d !important;
 }
 
-.dark .text-\[\#131A20\] {
+.dark .text-\[\#131A20\],
+.dark .text-slate-900,
+.dark .text-gray-900 {
   color: #e6edf3 !important;
 }
 
-.dark .text-\[\#456C8D\] {
+.dark .text-\[\#456C8D\],
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-gray-600,
+.dark .text-gray-500 {
   color: #8b949e !important;
 }
 
-.dark .hover\:bg-\[\#EAEAEA\]:hover {
+.dark .hover\:bg-\[\#EAEAEA\]:hover,
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-gray-100:hover {
   background-color: #21262d !important;
 }
 
@@ -64,7 +89,10 @@ css
 .dark [role="dialog"],
 .dark [role="listbox"],
 .dark .bg-popover,
-.dark .bg-card {
+.dark .bg-card,
+.dark [data-state="open"] > div,
+.dark [cmdk-root],
+.dark [cmdk-list] {
   background-color: #161b22 !important;
   border-color: #30363d !important;
   color: #e6edf3 !important;
@@ -72,7 +100,8 @@ css
 
 .dark input,
 .dark textarea,
-.dark select {
+.dark select,
+.dark [role="combobox"] {
   background-color: #0d1117 !important;
   border-color: #30363d !important;
   color: #e6edf3 !important;
@@ -83,16 +112,58 @@ css
   color: #8b949e !important;
 }
 
-/* Dark mode for buttons */
-.dark .bg-slate-100,
-.dark .bg-gray-100,
-.dark .bg-gray-50 {
+/* Dark mode for page containers */
+.dark .p-4,
+.dark .p-6,
+.dark .p-8 {
+  background-color: transparent !important;
+}
+
+/* Dark mode for cards */
+.dark [class*="Card"],
+.dark .rounded-xl,
+.dark .rounded-2xl,
+.dark .rounded-lg {
+  --tw-bg-opacity: 1;
+}
+
+.dark .shadow-lg,
+.dark .shadow-md,
+.dark .shadow-sm {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode for specific module colors */
+.dark .bg-\[\#6FA6FF\]\/5 {
+  background-color: rgba(111, 166, 255, 0.1) !important;
+}
+
+.dark .bg-\[\#6FA6FF\]\/10 {
+  background-color: rgba(111, 166, 255, 0.15) !important;
+}
+
+/* Dark mode for buttons and interactive elements */
+.dark button:not([class*="bg-"]) {
+  color: #e6edf3;
+}
+
+.dark .hover\:bg-slate-50:hover {
   background-color: #21262d !important;
 }
 
-.dark .hover\:bg-slate-100:hover,
-.dark .hover\:bg-gray-100:hover {
-  background-color: #30363d !important;
+/* Dark mode for tabs */
+.dark [role="tablist"] {
+  background-color: #21262d !important;
+  border-color: #30363d !important;
+}
+
+.dark [role="tab"] {
+  color: #8b949e !important;
+}
+
+.dark [role="tab"][data-state="active"] {
+  background-color: #161b22 !important;
+  color: #e6edf3 !important;
 }
 
 /* Dark mode for badges */
@@ -156,6 +227,57 @@ css
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: #484f58;
+}
+
+/* Force dark backgrounds on main content areas */
+.dark main,
+.dark main > div,
+.dark .flex-1 {
+  background-color: #0d1117 !important;
+}
+
+/* Dark mode for specific page backgrounds */
+.dark [class*="min-h-screen"][class*="bg-white"],
+.dark [class*="min-h-screen"][class*="bg-gradient"] {
+  background: #0d1117 !important;
+}
+
+/* Dark mode for label text */
+.dark label {
+  color: #e6edf3 !important;
+}
+
+/* Dark mode for dividers */
+.dark hr,
+.dark .divide-y > * {
+  border-color: #30363d !important;
+}
+
+/* Dark mode for select dropdowns */
+.dark [data-radix-select-viewport],
+.dark [data-radix-select-content] {
+  background-color: #161b22 !important;
+  border-color: #30363d !important;
+}
+
+.dark [data-radix-select-item] {
+  color: #e6edf3 !important;
+}
+
+.dark [data-radix-select-item]:hover,
+.dark [data-radix-select-item][data-highlighted] {
+  background-color: #21262d !important;
+}
+
+/* Dark mode for checkboxes */
+.dark [role="checkbox"] {
+  border-color: #30363d !important;
+  background-color: #0d1117 !important;
+}
+
+/* Dark mode for progress bars */
+.dark [role="progressbar"] {
+  background-color: #21262d !important;
 }
 
 /* Prevent horizontal scroll on mobile */
