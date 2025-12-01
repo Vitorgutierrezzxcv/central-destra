@@ -10,6 +10,28 @@ css
   --destra-blue: #6FA6FF;
   --destra-blue-dark: #456C8D;
   --destra-dark: #131A20;
+  --bg-primary: #ffffff;
+  --bg-secondary: #EAEAEA;
+  --text-primary: #131A20;
+  --text-secondary: #456C8D;
+  --border-color: #EAEAEA;
+}
+
+.dark {
+  --destra-light: #2a2a2a;
+  --destra-blue: #6FA6FF;
+  --destra-blue-dark: #456C8D;
+  --destra-dark: #0a0a0a;
+  --bg-primary: #131A20;
+  --bg-secondary: #1a2430;
+  --text-primary: #ffffff;
+  --text-secondary: #a0aec0;
+  --border-color: #2a3441;
+}
+
+.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Prevent horizontal scroll on mobile */

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle, Target, Repeat, Menu, X } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft, Wallet, ArrowDownCircle, ArrowUpCircle, Target, Repeat, Menu, X, Moon, Sun } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -116,8 +116,24 @@ function LayoutContent({ children }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('darkMode') === 'true';
+    }
+    return false;
+  });
   const { open, setOpen } = useSidebar();
   const { canAccess, hasFullAccess } = useUserAccess();
+
+  // Apply dark mode class to document
+  React.useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', darkMode.toString());
+  }, [darkMode]);
 
   // Filter CRM nav based on access
   const crmNav = crmNavBase.filter(item => canAccess(item.module));
@@ -154,7 +170,7 @@ function LayoutContent({ children }) {
 
   return (
     <>
-      <Sidebar className="border-r border-[#EAEAEA] bg-white">
+      <Sidebar className="border-r border-[#EAEAEA] dark:border-[#2a3441] bg-white dark:bg-[#131A20]">
         <SidebarContent className="p-3 flex flex-col h-full">
           {/* Close button for mobile */}
           <div className="md:hidden flex justify-end mb-2">
@@ -326,8 +342,25 @@ function LayoutContent({ children }) {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          {/* UserProfile at bottom */}
-          <div className="mt-auto">
+          {/* Dark mode toggle and UserProfile at bottom */}
+          <div className="mt-auto space-y-2">
+            <Button
+              variant="ghost"
+              onClick={() => setDarkMode(!darkMode)}
+              className="w-full flex items-center justify-start gap-3 px-3 py-2.5 hover:bg-[#EAEAEA] dark:hover:bg-[#2a3441] rounded-lg"
+            >
+              {darkMode ? (
+                <>
+                  <Sun className="w-5 h-5 text-yellow-500" />
+                  <span className="text-sm font-medium text-[#131A20] dark:text-white">Modo Claro</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-5 h-5 text-[#456C8D]" />
+                  <span className="text-sm font-medium text-[#131A20]">Modo Noturno</span>
+                </>
+              )}
+            </Button>
             <UserProfile />
           </div>
         </SidebarContent>
@@ -335,7 +368,7 @@ function LayoutContent({ children }) {
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Toggle button in header bar - desktop only */}
-        <div className="hidden md:flex items-center justify-between bg-white border-b border-[#EAEAEA] px-4 py-2">
+        <div className="hidden md:flex items-center justify-between bg-white dark:bg-[#131A20] border-b border-[#EAEAEA] dark:border-[#2a3441] px-4 py-2">
           <Button
             variant="ghost"
             size="sm"
@@ -366,7 +399,7 @@ function LayoutContent({ children }) {
               className="absolute inset-0 bg-[#131A20]/50" 
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl overflow-y-auto">
+            <div className="absolute left-0 top-0 bottom-0 w-72 bg-white dark:bg-[#131A20] shadow-xl overflow-y-auto">
               <div className="p-4">
                 <div className="flex justify-end mb-4">
                   <Button
@@ -450,7 +483,7 @@ function LayoutContent({ children }) {
 
         {/* Mobile bottom navigation bar */}
         <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div className="flex items-center gap-2 bg-white rounded-full px-2 py-2 shadow-lg border border-[#EAEAEA]">
+          <div className="flex items-center gap-2 bg-white dark:bg-[#1a2430] rounded-full px-2 py-2 shadow-lg border border-[#EAEAEA] dark:border-[#2a3441]">
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAEAEA] hover:bg-[#6FA6FF] hover:text-white transition-all"
@@ -472,7 +505,7 @@ function LayoutContent({ children }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-white overflow-x-hidden">
+      <div className="min-h-screen flex w-full bg-white dark:bg-[#131A20] overflow-x-hidden">
         <LayoutContent>{children}</LayoutContent>
       </div>
     </SidebarProvider>
