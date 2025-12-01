@@ -122,11 +122,11 @@ export default function AppSwitcher({ isMobile = false }) {
 
   if (isMobile) {
     return (
-      <div className="flex items-center gap-2 bg-white/90 backdrop-blur-lg rounded-full px-2 py-2 shadow-xl border border-slate-200">
+      <>
         {modules.map(module => {
           const Icon = module.icon;
           const isActive = module.id === activeModule.id;
-          
+
           return (
             <button
               key={module.id}
@@ -143,9 +143,9 @@ export default function AppSwitcher({ isMobile = false }) {
             </button>
           );
         })}
-      </div>
+      </>
     );
-  }
+    }
 
   return (
     <div className="w-full">
