@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   if (loadingUser || loadingTasks || loadingProjects) {
     return (
-      <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+      <div className="min-h-screen bg-white dark:bg-[#0d1117] p-4 md:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-lg" />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
@@ -98,7 +98,7 @@ export default function Dashboard() {
   const displayName = user?.display_name || user?.full_name?.split(' ')[0] || 'Usuário';
 
   return (
-    <div className="min-h-screen bg-white p-3 md:p-6 lg:p-8 overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-[#0d1117] p-3 md:p-6 lg:p-8 overflow-x-hidden">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <div className="mb-6 md:mb-8">
