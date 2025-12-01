@@ -85,6 +85,26 @@ const financeNav = [
     url: createPageUrl("Lancamentos"),
     icon: Wallet,
   },
+  {
+    title: "Gastos Fixos",
+    url: createPageUrl("FinanceFixedExpenses"),
+    icon: Wallet,
+  },
+  {
+    title: "Gastos Variáveis",
+    url: createPageUrl("FinanceVariableExpenses"),
+    icon: ArrowDownCircle,
+  },
+  {
+    title: "Folha de Pagamento",
+    url: createPageUrl("FinancePayroll"),
+    icon: Wallet,
+  },
+  {
+    title: "Destra Finances",
+    url: createPageUrl("FinanceSummary"),
+    icon: TrendingUp,
+  },
 ];
 
 const financeQuickActions = [
