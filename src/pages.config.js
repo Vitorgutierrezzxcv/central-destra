@@ -8,6 +8,10 @@ import Opportunities from './pages/Opportunities';
 import Lancamentos from './pages/Lancamentos';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
+import FinanceFixedExpenses from './pages/FinanceFixedExpenses';
+import FinanceVariableExpenses from './pages/FinanceVariableExpenses';
+import FinancePayroll from './pages/FinancePayroll';
+import FinanceSummary from './pages/FinanceSummary';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +26,10 @@ export const PAGES = {
     "Lancamentos": Lancamentos,
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
+    "FinanceFixedExpenses": FinanceFixedExpenses,
+    "FinanceVariableExpenses": FinanceVariableExpenses,
+    "FinancePayroll": FinancePayroll,
+    "FinanceSummary": FinanceSummary,
 }
 
 export const pagesConfig = {
