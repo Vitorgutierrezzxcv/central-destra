@@ -257,8 +257,8 @@ export default function FinanceSummary() {
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-semibold text-[#131A20]">Destra Finances</h1>
-              <p className="text-sm text-[#456C8D]">Resumo financeiro mensal (DRE)</p>
+              <h1 className="text-2xl md:text-3xl font-semibold text-[#131A20] dark:text-white">Destra Finances</h1>
+              <p className="text-sm text-[#456C8D] dark:text-[#8b949e]">Resumo financeiro mensal (DRE)</p>
             </div>
           </div>
 
@@ -276,44 +276,44 @@ export default function FinanceSummary() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
+          <Card className="bg-[#EAEAEA]/30 dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
             <CardContent className="p-3">
               <div className="flex items-center gap-1 mb-1">
                 <TrendingUp className="w-3 h-3 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Faturamento</span>
+                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Faturamento</span>
               </div>
-              <p className="text-sm md:text-lg font-bold text-[#131A20] truncate">{formatCurrency(totals.faturamentoBruto)}</p>
+              <p className="text-sm md:text-lg font-bold text-[#131A20] dark:text-white truncate">{formatCurrency(totals.faturamentoBruto)}</p>
             </CardContent>
           </Card>
-          <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
+          <Card className="bg-[#EAEAEA]/30 dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
             <CardContent className="p-3">
               <div className="flex items-center gap-1 mb-1">
                 <DollarSign className="w-3 h-3 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">EBITDA</span>
+                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">EBITDA</span>
               </div>
-              <p className={`text-sm md:text-lg font-bold truncate ${totals.ebitda >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold truncate ${totals.ebitda >= 0 ? 'text-[#131A20] dark:text-white' : 'text-red-500'}`}>
                 {formatCurrency(totals.ebitda)}
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
+          <Card className="bg-[#EAEAEA]/30 dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
             <CardContent className="p-3">
               <div className="flex items-center gap-1 mb-1">
                 <TrendingDown className="w-3 h-3 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Lucro Líquido</span>
+                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Lucro Líquido</span>
               </div>
-              <p className={`text-sm md:text-lg font-bold truncate ${totals.lucroLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold truncate ${totals.lucroLiquido >= 0 ? 'text-[#131A20] dark:text-white' : 'text-red-500'}`}>
                 {formatCurrency(totals.lucroLiquido)}
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-[#EAEAEA]/30 border-[#EAEAEA]">
+          <Card className="bg-[#EAEAEA]/30 dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d]">
             <CardContent className="p-3">
               <div className="flex items-center gap-1 mb-1">
                 <Percent className="w-3 h-3 text-[#6FA6FF]" />
-                <span className="text-xs text-[#456C8D]">Margem Líq.</span>
+                <span className="text-xs text-[#456C8D] dark:text-[#8b949e]">Margem Líq.</span>
               </div>
-              <p className={`text-sm md:text-lg font-bold ${totals.faturamentoLiquido > 0 && totals.lucroLiquido / totals.faturamentoLiquido >= 0 ? 'text-[#131A20]' : 'text-red-500'}`}>
+              <p className={`text-sm md:text-lg font-bold ${totals.faturamentoLiquido > 0 && totals.lucroLiquido / totals.faturamentoLiquido >= 0 ? 'text-[#131A20] dark:text-white' : 'text-red-500'}`}>
                 {formatPercent(totals.faturamentoLiquido > 0 ? totals.lucroLiquido / totals.faturamentoLiquido : 0)}
               </p>
             </CardContent>
@@ -329,10 +329,10 @@ export default function FinanceSummary() {
             const isNegative = value < 0;
             
             return (
-              <Card key={row.key} className={`border-[#EAEAEA] ${row.highlight ? 'bg-[#6FA6FF]/5' : ''}`}>
+              <Card key={row.key} className={`border-[#EAEAEA] dark:border-[#30363d] ${row.highlight ? 'bg-[#6FA6FF]/5' : ''}`}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-[#131A20]">{row.label.replace('= ', '')}</span>
+                    <span className="text-sm font-medium text-[#131A20] dark:text-white">{row.label.replace('= ', '')}</span>
                     {row.type === 'percent' ? (
                       <Badge variant="outline" className="text-xs">
                         {formatPercent(value)}
@@ -341,14 +341,14 @@ export default function FinanceSummary() {
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
-                      <p className="text-xs text-[#456C8D] mb-1">Este mês</p>
-                      <p className={`text-lg font-bold ${isNegative ? 'text-red-500' : 'text-[#131A20]'}`}>
+                      <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Este mês</p>
+                      <p className={`text-lg font-bold ${isNegative ? 'text-red-500' : 'text-[#131A20] dark:text-white'}`}>
                         {row.type === 'percent' ? formatPercent(value) : formatCurrency(value)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-[#456C8D] mb-1">Total {selectedYear}</p>
-                      <p className={`text-base font-semibold ${total < 0 ? 'text-red-500' : 'text-[#456C8D]'}`}>
+                      <p className="text-xs text-[#456C8D] dark:text-[#8b949e] mb-1">Total {selectedYear}</p>
+                      <p className={`text-base font-semibold ${total < 0 ? 'text-red-500' : 'text-[#456C8D] dark:text-[#8b949e]'}`}>
                         {row.type === 'percent' ? '-' : formatCurrency(total)}
                       </p>
                     </div>
@@ -359,9 +359,9 @@ export default function FinanceSummary() {
           })}
           
           {/* Monthly breakdown accordion */}
-          <Card className="border-[#EAEAEA]">
+          <Card className="border-[#EAEAEA] dark:border-[#30363d]">
             <CardContent className="p-4">
-              <p className="text-sm font-medium text-[#131A20] mb-3">Resumo Mensal</p>
+              <p className="text-sm font-medium text-[#131A20] dark:text-white mb-3">Resumo Mensal</p>
               <div className="grid grid-cols-3 gap-2">
                 {monthlySummary.map(m => {
                   const hasData = m.faturamentoBruto > 0 || m.lucroLiquido !== 0;
@@ -370,8 +370,8 @@ export default function FinanceSummary() {
                       key={m.month} 
                       className={`p-2 rounded-lg text-center ${hasData ? 'bg-[#EAEAEA]/50' : 'bg-gray-50'}`}
                     >
-                      <p className="text-xs font-medium text-[#456C8D] uppercase mb-1">{m.monthLabel}</p>
-                      <p className={`text-xs font-bold ${m.lucroLiquido < 0 ? 'text-red-500' : 'text-[#131A20]'}`}>
+                      <p className="text-xs font-medium text-[#456C8D] dark:text-[#8b949e] uppercase mb-1">{m.monthLabel}</p>
+                      <p className={`text-xs font-bold ${m.lucroLiquido < 0 ? 'text-red-500' : 'text-[#131A20] dark:text-white'}`}>
                         {formatCurrency(m.lucroLiquido, true)}
                       </p>
                     </div>
@@ -383,20 +383,20 @@ export default function FinanceSummary() {
         </div>
 
         {/* Desktop DRE Table */}
-        <Card className="border-[#EAEAEA] overflow-hidden hidden md:block">
+        <Card className="border-[#EAEAEA] dark:border-[#30363d] overflow-hidden hidden md:block">
           <div className="overflow-x-auto">
             <Table className="text-sm">
               <TableHeader>
                 <TableRow className="bg-[#EAEAEA]">
-                  <TableHead className="font-bold text-[#131A20] sticky left-0 bg-[#EAEAEA] min-w-[180px] p-4">
+                  <TableHead className="font-bold text-[#131A20] dark:text-white sticky left-0 bg-[#EAEAEA] min-w-[180px] p-4">
                     Indicador
                   </TableHead>
                   {monthlySummary.map(m => (
-                    <TableHead key={m.month} className="font-bold text-[#131A20] text-center capitalize min-w-[90px] p-4">
+                    <TableHead key={m.month} className="font-bold text-[#131A20] dark:text-white text-center capitalize min-w-[90px] p-4">
                       {m.monthLabel}
                     </TableHead>
                   ))}
-                  <TableHead className="font-bold text-[#131A20] text-center bg-[#6FA6FF]/10 min-w-[100px] p-4">
+                  <TableHead className="font-bold text-[#131A20] dark:text-white text-center bg-[#6FA6FF]/10 min-w-[100px] p-4">
                     Total
                   </TableHead>
                 </TableRow>
@@ -415,7 +415,7 @@ export default function FinanceSummary() {
                       ${row.subtotal ? 'bg-[#EAEAEA]/50 font-semibold' : ''}
                       ${row.highlight ? 'bg-[#6FA6FF]/10 font-semibold' : ''}
                       ${row.negative ? 'text-red-600' : ''}
-                      ${row.info ? 'text-[#456C8D]' : 'text-[#131A20]'}
+                      ${row.info ? 'text-[#456C8D] dark:text-[#8b949e]' : 'text-[#131A20] dark:text-white'}
                     `}>
                       <span className="whitespace-nowrap">{row.label}</span>
                     </TableCell>
@@ -448,12 +448,12 @@ export default function FinanceSummary() {
         </Card>
 
         {/* Info Card */}
-        <Card className="mt-6 border-[#EAEAEA]">
+        <Card className="mt-6 border-[#EAEAEA] dark:border-[#30363d]">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-[#6FA6FF] mt-0.5" />
-              <div className="text-sm text-[#456C8D]">
-                <p className="font-medium text-[#131A20] mb-1">Como funciona o Destra Finances</p>
+              <div className="text-sm text-[#456C8D] dark:text-[#8b949e]">
+                <p className="font-medium text-[#131A20] dark:text-white mb-1">Como funciona o Destra Finances</p>
                 <p>Os dados são calculados automaticamente a partir dos lançamentos, gastos fixos, gastos variáveis e folha de pagamento cadastrados em cada mês. Certifique-se de categorizar corretamente cada transação para obter indicadores precisos.</p>
               </div>
             </div>
