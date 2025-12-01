@@ -76,36 +76,36 @@ export default function UserPerformanceRanking() {
 
   return (
     <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-      <CardHeader className="border-b border-slate-100 p-4 md:p-6">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg md:text-xl font-bold text-slate-900 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-500" />
-            Produtividade
+      <CardHeader className="border-b border-slate-100 p-3 md:p-6">
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-base md:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-yellow-500 flex-shrink-0" />
+            <span className="truncate">Produtividade</span>
           </CardTitle>
-          <Badge variant="outline" className="bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700 border-orange-200">
+          <Badge variant="outline" className="bg-gradient-to-r from-yellow-100 to-orange-100 text-orange-700 border-orange-200 text-xs flex-shrink-0">
             Top {rankedUsers.length}
           </Badge>
         </div>
-        <div className="flex items-center gap-4 mt-2 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-2xl text-slate-900">{rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)}</span>
-            <span className="text-slate-600">Tarefas Totais</span>
+        <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2 text-xs md:text-sm">
+          <div className="flex items-center gap-1">
+            <span className="font-bold text-lg md:text-2xl text-slate-900">{rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)}</span>
+            <span className="text-slate-600">Total</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-slate-300"></div>
-            <span className="text-slate-600 text-xs">Pendente</span>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-slate-300"></div>
+            <span className="text-slate-600 text-xs">Pend.</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-            <span className="text-slate-600 text-xs">Concluído</span>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+            <span className="text-slate-600 text-xs">Concl.</span>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4 md:p-6 space-y-6">
+      <CardContent className="p-3 md:p-6 space-y-4 md:space-y-6">
         {/* Modern Chart */}
-        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-6">
-          <div className="flex items-end justify-around gap-2 h-48">
-            {chartData.map((stat, index) => {
+        <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl md:rounded-2xl p-3 md:p-6 overflow-hidden">
+          <div className="flex items-end justify-around gap-1 md:gap-2 h-32 md:h-48">
+            {chartData.slice(0, 5).map((stat, index) => {
               const displayName = stat.user.display_name || stat.user.full_name?.split(' ')[0] || 'User';
               const heightPercentage = (stat.completedTasks / maxTasks) * 100;
               const isLeader = index === 0;
@@ -116,7 +116,7 @@ export default function UserPerformanceRanking() {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   transition={{ delay: index * 0.1, duration: 0.5 }}
-                  className="flex flex-col items-center gap-2 flex-1 max-w-[80px]"
+                  className="flex flex-col items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[60px] md:max-w-[80px]"
                 >
                   {/* Badge for leader */}
                   {isLeader && stat.completedTasks > 0 && (
@@ -124,12 +124,12 @@ export default function UserPerformanceRanking() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: 0.5 }}
-                      className="relative mb-1"
+                      className="relative mb-0.5 md:mb-1"
                     >
-                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap">
-                        {stat.completionRate}% Feito
+                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[10px] md:text-xs font-bold px-1.5 md:px-3 py-0.5 md:py-1 rounded-full shadow-lg whitespace-nowrap">
+                        {stat.completionRate}%
                       </div>
-                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-orange-500"></div>
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-2 border-r-2 border-t-2 md:border-l-4 md:border-r-4 md:border-t-4 border-transparent border-t-orange-500"></div>
                     </motion.div>
                   )}
                   
@@ -145,7 +145,7 @@ export default function UserPerformanceRanking() {
                     }}
                   >
                     <div
-                      className={`w-full h-full rounded-t-xl shadow-lg transition-all hover:scale-105 ${
+                      className={`w-full h-full rounded-t-lg md:rounded-t-xl shadow-lg transition-all hover:scale-105 ${
                         isLeader
                           ? 'bg-gradient-to-t from-orange-400 to-amber-300'
                           : index % 2 === 0
@@ -154,8 +154,8 @@ export default function UserPerformanceRanking() {
                       }`}
                     >
                       {stat.completedTasks > 0 && (
-                        <div className="absolute inset-x-0 -top-6 text-center">
-                          <span className="text-xs font-bold text-slate-700">
+                        <div className="absolute inset-x-0 -top-4 md:-top-6 text-center">
+                          <span className="text-[10px] md:text-xs font-bold text-slate-700">
                             {stat.completedTasks}
                           </span>
                         </div>
@@ -164,9 +164,9 @@ export default function UserPerformanceRanking() {
                   </motion.div>
                   
                   {/* User name */}
-                  <div className="text-center">
-                    <p className="text-xs font-medium text-slate-700 truncate w-full">
-                      {displayName.length > 8 ? displayName.substring(0, 7) + '.' : displayName}
+                  <div className="text-center w-full overflow-hidden">
+                    <p className="text-[10px] md:text-xs font-medium text-slate-700 truncate">
+                      {displayName.length > 6 ? displayName.substring(0, 5) + '.' : displayName}
                     </p>
                   </div>
                 </motion.div>
@@ -176,12 +176,12 @@ export default function UserPerformanceRanking() {
         </div>
 
         {/* Ranking List */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-            <Target className="w-4 h-4" />
-            Classificação Detalhada
+        <div className="space-y-2 md:space-y-3">
+          <h4 className="text-xs md:text-sm font-semibold text-slate-700 flex items-center gap-2">
+            <Target className="w-3 h-3 md:w-4 md:h-4" />
+            Classificação
           </h4>
-          {rankedUsers.map((stat, index) => {
+          {rankedUsers.slice(0, 5).map((stat, index) => {
             const displayName = stat.user.display_name || stat.user.full_name || "Usuário";
             const initials = displayName
               .split(' ')
@@ -196,61 +196,61 @@ export default function UserPerformanceRanking() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-gradient-to-r from-slate-50 to-white p-3 md:p-4 rounded-xl border border-slate-200 hover:shadow-md transition-all"
+                className="bg-gradient-to-r from-slate-50 to-white p-2 md:p-4 rounded-lg md:rounded-xl border border-slate-200 hover:shadow-md transition-all"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   {/* Rank Position */}
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center flex-shrink-0">
                     {index < 3 ? (
-                      <Trophy className={`w-6 h-6 md:w-7 md:h-7 ${medalColors[index]}`} />
+                      <Trophy className={`w-5 h-5 md:w-7 md:h-7 ${medalColors[index]}`} />
                     ) : (
-                      <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-slate-200 flex items-center justify-center">
-                        <span className="text-sm md:text-base font-bold text-slate-600">#{index + 1}</span>
+                      <div className="w-5 h-5 md:w-7 md:h-7 rounded-full bg-slate-200 flex items-center justify-center">
+                        <span className="text-xs md:text-base font-bold text-slate-600">#{index + 1}</span>
                       </div>
                     )}
                   </div>
 
                   {/* User Info */}
-                  <Avatar className="w-10 h-10 md:w-12 md:h-12 border-2 border-white shadow-md">
+                  <Avatar className="w-8 h-8 md:w-12 md:h-12 border-2 border-white shadow-md flex-shrink-0">
                     {stat.user.profile_photo_url ? (
                       <AvatarImage src={stat.user.profile_photo_url} alt={displayName} />
                     ) : null}
                     <AvatarFallback 
-                      className="text-white font-semibold text-sm md:text-base"
+                      className="text-white font-semibold text-xs md:text-base"
                       style={{ background: colors[index % colors.length] }}
                     >
                       {initials}
                     </AvatarFallback>
                   </Avatar>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h5 className="font-semibold text-slate-900 text-sm md:text-base truncate">
+                  <div className="flex-1 min-w-0 overflow-hidden">
+                    <div className="flex items-center gap-1 md:gap-2">
+                      <h5 className="font-semibold text-slate-900 text-xs md:text-base truncate">
                         {displayName}
                       </h5>
                       {index === 0 && (
-                        <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs px-2">
-                          🏆 Líder
+                        <Badge className="bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-[10px] md:text-xs px-1 md:px-2 flex-shrink-0">
+                          🏆
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs md:text-sm text-slate-600">
+                    <div className="flex items-center gap-1 md:gap-2 text-[10px] md:text-sm text-slate-600">
                       <span className="font-medium text-green-600">
-                        {stat.completedTasks} concluída{stat.completedTasks !== 1 ? 's' : ''}
+                        {stat.completedTasks} feita{stat.completedTasks !== 1 ? 's' : ''}
                       </span>
-                      <span className="text-slate-400">•</span>
-                      <span>
-                        {stat.inProgressTasks} em andamento
+                      <span className="text-slate-400 hidden sm:inline">•</span>
+                      <span className="hidden sm:inline">
+                        {stat.inProgressTasks} andamento
                       </span>
                     </div>
                   </div>
 
                   {/* Completion Rate */}
-                  <div className="text-right">
-                    <div className="text-lg md:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-sm md:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                       {stat.completionRate}%
                     </div>
-                    <div className="text-xs text-slate-500">conclusão</div>
+                    <div className="text-[10px] md:text-xs text-slate-500 hidden sm:block">conclusão</div>
                   </div>
                 </div>
               </motion.div>

@@ -1,3 +1,4 @@
+css
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,15 +7,22 @@
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
+  width: 100%;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 /* Ensure all containers respect viewport width */
 * {
-  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Allow specific elements to overflow (like horizontal scrolling containers) */
 .overflow-x-auto,
 .overflow-x-scroll {
-  max-width: none;
+  max-width: 100%;
 }
