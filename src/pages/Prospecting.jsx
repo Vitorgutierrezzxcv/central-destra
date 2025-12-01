@@ -27,8 +27,9 @@ import ProspectingForm from "../components/prospecting/ProspectingForm";
 import ProspectingMetricsCards from "../components/prospecting/ProspectingMetricsCards";
 import ProspectingCharts from "../components/prospecting/ProspectingCharts";
 import ProspectingGoalsManager from "../components/prospecting/ProspectingGoalsManager";
+import AccessGuard from "../components/layout/AccessGuard";
 
-export default function Prospecting() {
+function ProspectingContent() {
   const [showForm, setShowForm] = useState(false);
   const [showGoalsManager, setShowGoalsManager] = useState(false);
   const [editingMetric, setEditingMetric] = useState(null);
@@ -307,5 +308,13 @@ export default function Prospecting() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function Prospecting() {
+  return (
+    <AccessGuard requiredModule="prospecting">
+      <ProspectingContent />
+    </AccessGuard>
   );
 }
