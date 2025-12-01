@@ -77,10 +77,10 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200"
+      className="bg-white rounded-xl p-4 md:p-6 mb-6 md:mb-8 border border-[#EAEAEA]"
     >
       <div className="flex items-center justify-between mb-4 md:mb-6">
-        <h3 className="text-lg md:text-xl font-bold text-slate-900">
+        <h3 className="text-lg md:text-xl font-semibold text-[#131A20]">
           {company ? 'Editar Empresa' : 'Nova Empresa'}
         </h3>
         <Button
@@ -95,23 +95,23 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
       
       <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
         {/* Logo Upload */}
-        <div className="flex flex-col items-center gap-4 p-4 bg-slate-50 rounded-xl">
+        <div className="flex flex-col items-center gap-4 p-4 bg-[#EAEAEA] rounded-xl">
           <div className="relative">
             {currentCompany.logo_url ? (
               <img 
                 src={currentCompany.logo_url} 
                 alt="Logo" 
-                className="w-24 h-24 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-white shadow-lg"
+                className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover border-4 border-white"
               />
             ) : (
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center border-4 border-white shadow-lg">
-                <Building2 className="w-12 h-12 md:w-16 md:h-16 text-green-500" />
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl bg-white flex items-center justify-center border-4 border-white">
+                <Building2 className="w-12 h-12 md:w-16 md:h-16 text-[#456C8D]" />
               </div>
             )}
           </div>
           <Label
             htmlFor="logo-upload"
-            className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-lg transition-colors text-sm font-medium border border-slate-200"
+            className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-[#EAEAEA] text-[#131A20] rounded-lg transition-colors text-sm font-medium border border-[#EAEAEA]"
           >
             {uploadingLogo ? (
               <>
@@ -144,7 +144,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               value={currentCompany.name}
               onChange={(e) => setCurrentCompany({...currentCompany, name: e.target.value})}
               required
-              className="h-10 md:h-11 border-slate-200 focus:border-green-500"
+              className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               value={currentCompany.segment}
               onValueChange={(value) => setCurrentCompany({...currentCompany, segment: value})}
             >
-              <SelectTrigger id="segment" className="h-10 md:h-11 border-slate-200 focus:border-green-500">
+              <SelectTrigger id="segment" className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]">
                 <SelectValue placeholder="Selecione o segmento" />
               </SelectTrigger>
               <SelectContent>
@@ -171,7 +171,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               value={currentCompany.status}
               onValueChange={(value) => setCurrentCompany({...currentCompany, status: value})}
             >
-              <SelectTrigger id="status" className="h-10 md:h-11 border-slate-200 focus:border-green-500">
+              <SelectTrigger id="status" className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -191,7 +191,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               placeholder="Ex: 50000.00"
               value={currentCompany.average_revenue}
               onChange={(e) => setCurrentCompany({...currentCompany, average_revenue: e.target.value})}
-              className="h-10 md:h-11 border-slate-200 focus:border-green-500"
+              className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
 
@@ -207,7 +207,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               placeholder="Ex: 2020"
               value={currentCompany.founded_year}
               onChange={(e) => setCurrentCompany({...currentCompany, founded_year: e.target.value})}
-              className="h-10 md:h-11 border-slate-200 focus:border-green-500"
+              className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
 
@@ -219,7 +219,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               placeholder="(11) 98765-4321"
               value={currentCompany.phone}
               onChange={(e) => setCurrentCompany({...currentCompany, phone: e.target.value})}
-              className="h-10 md:h-11 border-slate-200 focus:border-green-500"
+              className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
 
@@ -231,7 +231,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               placeholder="contato@empresa.com"
               value={currentCompany.email}
               onChange={(e) => setCurrentCompany({...currentCompany, email: e.target.value})}
-              className="h-10 md:h-11 border-slate-200 focus:border-green-500"
+              className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
 
@@ -242,7 +242,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
               placeholder="Rua, número, bairro, cidade - UF"
               value={currentCompany.address}
               onChange={(e) => setCurrentCompany({...currentCompany, address: e.target.value})}
-              className="min-h-[80px] resize-none border-slate-200 focus:border-green-500"
+              className="min-h-[80px] resize-none border-[#EAEAEA] focus:border-[#6FA6FF]"
             />
           </div>
         </div>
@@ -260,7 +260,7 @@ export default function CompanyForm({ company, onSubmit, onCancel, isLoading }) 
           <Button
             type="submit"
             disabled={isLoading || uploadingLogo}
-            className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 h-10 md:h-11"
+            className="w-full sm:w-auto bg-[#456C8D] hover:bg-[#131A20] text-white h-10 md:h-11"
           >
             {isLoading ? (
               <>

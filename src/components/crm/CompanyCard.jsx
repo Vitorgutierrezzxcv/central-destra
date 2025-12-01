@@ -6,9 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Pencil, Trash2, Building2, Calendar, DollarSign, Phone, Mail } from "lucide-react";
 
 const statusConfig = {
-  lead: { label: "Lead", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  client: { label: "Cliente", color: "bg-green-100 text-green-700 border-green-200" },
-  inactive: { label: "Inativo", color: "bg-slate-100 text-slate-700 border-slate-200" }
+  lead: { label: "Lead", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
+  client: { label: "Cliente", color: "bg-[#6FA6FF]/20 text-[#456C8D] border-[#6FA6FF]/30" },
+  inactive: { label: "Inativo", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" }
 };
 
 export default function CompanyCard({ company, onEdit, onDelete }) {
@@ -23,8 +23,8 @@ export default function CompanyCard({ company, onEdit, onDelete }) {
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="relative overflow-hidden shadow-lg hover:shadow-2xl transition-all border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm h-full">
-        <div className="h-24 md:h-28 bg-gradient-to-br from-green-400 to-teal-500 p-4 md:p-5">
+      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl h-full bg-white">
+        <div className="h-24 md:h-28 bg-[#456C8D] p-4 md:p-5">
           <div className="flex items-start justify-between">
             <Badge className={`${status.color} border text-xs`}>
               {status.label}
@@ -56,25 +56,25 @@ export default function CompanyCard({ company, onEdit, onDelete }) {
               <img 
                 src={company.logo_url} 
                 alt={company.name}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover border-2 border-slate-200 shadow-md"
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover border-2 border-[#EAEAEA]"
               />
             ) : (
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-gradient-to-br from-green-100 to-teal-100 flex items-center justify-center border-2 border-slate-200 shadow-md">
-                <Building2 className="w-8 h-8 md:w-10 md:h-10 text-green-600" />
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-[#EAEAEA] flex items-center justify-center border-2 border-[#EAEAEA]">
+                <Building2 className="w-8 h-8 md:w-10 md:h-10 text-[#456C8D]" />
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-lg text-slate-900 mb-1 line-clamp-2">
+              <h3 className="font-semibold text-lg text-[#131A20] mb-1 line-clamp-2">
                 {company.name}
               </h3>
-              <p className="text-sm text-slate-600 line-clamp-1">{company.segment}</p>
+              <p className="text-sm text-[#456C8D] line-clamp-1">{company.segment}</p>
             </div>
           </div>
 
           <div className="space-y-2">
             {company.average_revenue && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <DollarSign className="w-4 h-4 text-green-600" />
+              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
+                <DollarSign className="w-4 h-4 text-[#6FA6FF]" />
                 <span className="font-medium">
                   R$ {parseFloat(company.average_revenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
                 </span>
@@ -82,35 +82,35 @@ export default function CompanyCard({ company, onEdit, onDelete }) {
             )}
             
             {companyAge !== null && companyAge >= 0 && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Calendar className="w-4 h-4 text-blue-600" />
+              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
+                <Calendar className="w-4 h-4 text-[#6FA6FF]" />
                 <span>{companyAge} {companyAge === 1 ? 'ano' : 'anos'} de fundação</span>
               </div>
             )}
 
             {company.phone && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Phone className="w-4 h-4 text-purple-600" />
+              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
+                <Phone className="w-4 h-4 text-[#6FA6FF]" />
                 <span className="truncate">{company.phone}</span>
               </div>
             )}
 
             {company.email && (
-              <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Mail className="w-4 h-4 text-orange-600" />
+              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
+                <Mail className="w-4 h-4 text-[#6FA6FF]" />
                 <span className="truncate">{company.email}</span>
               </div>
             )}
           </div>
 
           {company.address && (
-            <div className="mt-3 pt-3 border-t border-slate-100">
-              <p className="text-xs text-slate-500 line-clamp-2">{company.address}</p>
+            <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
+              <p className="text-xs text-[#456C8D] line-clamp-2">{company.address}</p>
             </div>
           )}
 
-          <div className="mt-4 pt-4 border-t border-slate-100">
-            <span className="text-xs text-slate-500">
+          <div className="mt-4 pt-4 border-t border-[#EAEAEA]">
+            <span className="text-xs text-[#456C8D]">
               Criado em {new Date(company.created_date).toLocaleDateString('pt-BR', { 
                 day: '2-digit', 
                 month: 'short',
