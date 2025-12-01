@@ -191,6 +191,13 @@ export default function Opportunities() {
                 opportunities={filteredOpportunities}
                 companies={companies}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
+                onStageChange={(opp, newStage) => {
+                  updateOpportunityMutation.mutate({
+                    id: opp.id,
+                    opportunityData: { ...opp, stage: newStage }
+                  });
+                }}
               />
             </TabsContent>
 
