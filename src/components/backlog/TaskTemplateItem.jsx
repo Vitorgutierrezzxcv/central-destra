@@ -9,9 +9,9 @@ import { Pencil, Trash2, Flag, Clock, ChevronDown, ChevronRight, TrendingUp } fr
 import TaskExecutionHistoryDialog from "./TaskExecutionHistoryDialog";
 
 const priorityConfig = {
-  low: { label: "Baixa", color: "bg-slate-100 text-slate-700 border-slate-200" },
-  medium: { label: "Média", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  high: { label: "Alta", color: "bg-red-100 text-red-700 border-red-200" }
+  low: { label: "Baixa", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
+  medium: { label: "Média", color: "bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30" },
+  high: { label: "Alta", color: "bg-red-100 text-red-600 border-red-200" }
 };
 
 const formatTime = (seconds) => {
@@ -48,21 +48,21 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.05 }}
-        className="bg-white border border-slate-200 rounded-xl p-3 hover:shadow-md transition-all"
+        className="bg-white border border-[#EAEAEA] rounded-xl p-3 hover:shadow-md transition-all"
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline" className="bg-slate-50 text-slate-600 text-xs">
+              <Badge variant="outline" className="bg-[#EAEAEA] text-[#456C8D] text-xs border-[#EAEAEA]">
                 #{index + 1}
               </Badge>
-              <h5 className="font-semibold text-slate-900 text-sm">
+              <h5 className="font-semibold text-[#131A20] text-sm">
                 {template.title}
               </h5>
             </div>
             
             {template.description && (
-              <p className="text-slate-600 text-xs mb-2 line-clamp-2">
+              <p className="text-[#456C8D] text-xs mb-2 line-clamp-2">
                 {template.description}
               </p>
             )}
@@ -73,7 +73,7 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
                 {priority.label}
               </Badge>
               {template.estimated_days && (
-                <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 text-xs">
+                <Badge variant="outline" className="bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA] text-xs">
                   <Clock className="w-3 h-3 mr-1" />
                   {template.estimated_days} {template.estimated_days === 1 ? 'dia' : 'dias'}
                 </Badge>
@@ -82,14 +82,14 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
                 <>
                   <Badge 
                     variant="outline" 
-                    className="bg-green-50 text-green-700 border-green-200 text-xs cursor-pointer hover:bg-green-100"
+                    className="bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30 text-xs cursor-pointer hover:bg-[#6FA6FF]/20"
                     onClick={() => setShowHistory(true)}
                   >
                     <TrendingUp className="w-3 h-3 mr-1" />
                     {executionCount} {executionCount === 1 ? 'execução' : 'execuções'}
                   </Badge>
                   {averageTime && (
-                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                    <Badge variant="outline" className="bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA] text-xs">
                       <Clock className="w-3 h-3 mr-1" />
                       Média: {formatTime(averageTime)}
                     </Badge>
@@ -105,7 +105,7 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowHistory(true)}
-                className="h-7 w-7 text-slate-600 hover:text-green-600 hover:bg-green-50 rounded-full"
+                className="h-7 w-7 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10 rounded-lg"
               >
                 <TrendingUp className="w-3 h-3" />
               </Button>
@@ -114,7 +114,7 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
               variant="ghost"
               size="icon"
               onClick={() => onEdit(template)}
-              className="h-7 w-7 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
+              className="h-7 w-7 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10 rounded-lg"
             >
               <Pencil className="w-3 h-3" />
             </Button>
@@ -122,7 +122,7 @@ export default function TaskTemplateItem({ template, index, onEdit, onDelete }) 
               variant="ghost"
               size="icon"
               onClick={() => onDelete(template.id)}
-              className="h-7 w-7 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-full"
+              className="h-7 w-7 text-[#456C8D] hover:text-red-500 hover:bg-red-50 rounded-lg"
             >
               <Trash2 className="w-3 h-3" />
             </Button>

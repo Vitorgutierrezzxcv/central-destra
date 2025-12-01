@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -222,11 +221,11 @@ export default function ProjectDetail() {
 
   if (!projectId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">Projeto não encontrado</h2>
-          <Button onClick={() => navigate(createPageUrl("Projects"))} className="mt-4">
+          <AlertCircle className="w-12 h-12 md:w-16 md:h-16 text-[#456C8D] mx-auto mb-4" />
+          <h2 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
+          <Button onClick={() => navigate(createPageUrl("Projects"))} className="mt-4 bg-[#6FA6FF] hover:bg-[#456C8D] text-white">
             Voltar para Projetos
           </Button>
         </div>
@@ -236,11 +235,11 @@ export default function ProjectDetail() {
 
   if (loadingProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6">
+      <div className="min-h-screen bg-white p-4 md:p-6">
         <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
-          <Skeleton className="h-12 md:h-16 w-full rounded-2xl md:rounded-3xl" />
-          <Skeleton className="h-24 md:h-32 w-full rounded-2xl md:rounded-3xl" />
-          <Skeleton className="h-64 md:h-96 w-full rounded-2xl md:rounded-3xl" />
+          <Skeleton className="h-12 md:h-16 w-full rounded-xl" />
+          <Skeleton className="h-24 md:h-32 w-full rounded-xl" />
+          <Skeleton className="h-64 md:h-96 w-full rounded-xl" />
         </div>
       </div>
     );
@@ -248,11 +247,11 @@ export default function ProjectDetail() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-white p-6 flex items-center justify-center">
         <div className="text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Projeto não encontrado</h2>
-          <Button onClick={() => navigate(createPageUrl("Projects"))}>
+          <AlertCircle className="w-16 h-16 text-[#456C8D] mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-[#131A20] mb-2">Projeto não encontrado</h2>
+          <Button onClick={() => navigate(createPageUrl("Projects"))} className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white">
             Voltar para Projetos
           </Button>
         </div>
@@ -268,18 +267,18 @@ export default function ProjectDetail() {
   const progressPercentage = mainTasks.length > 0 ? Math.round((completedTasks / mainTasks.length) * 100) : 0;
 
   const colorClasses = {
-    blue: "from-blue-400 to-blue-600",
-    purple: "from-purple-400 to-purple-600",
-    green: "from-green-400 to-green-600",
-    orange: "from-orange-400 to-orange-600",
-    pink: "from-pink-400 to-pink-600",
-    red: "from-red-400 to-red-600",
-    indigo: "from-indigo-400 to-indigo-600",
-    teal: "from-teal-400 to-teal-600",
+    blue: "bg-[#6FA6FF]",
+    purple: "bg-[#456C8D]",
+    green: "bg-[#6FA6FF]",
+    orange: "bg-[#456C8D]",
+    pink: "bg-[#6FA6FF]",
+    red: "bg-[#456C8D]",
+    indigo: "bg-[#6FA6FF]",
+    teal: "bg-[#456C8D]",
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 md:mb-8">
@@ -287,17 +286,17 @@ export default function ProjectDetail() {
             variant="outline"
             size="icon"
             onClick={() => navigate(createPageUrl("Projects"))}
-            className="bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-10 w-10 md:h-12 md:w-12"
+            className="bg-white border-[#EAEAEA] hover:bg-[#EAEAEA] rounded-lg h-10 w-10 md:h-12 md:w-12"
           >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 text-[#456C8D]" />
           </Button>
           <div className="flex-1 flex flex-col sm:flex-row items-start sm:items-center gap-3 md:gap-4 w-full">
-            <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-gradient-to-br ${colorClasses[project.color]} flex items-center justify-center shadow-lg flex-shrink-0`}>
+            <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl ${colorClasses[project.color]} flex items-center justify-center flex-shrink-0`}>
               <span className="text-xl md:text-3xl text-white font-bold">{project.name[0]}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 truncate">{project.name}</h1>
-              <p className="text-xs sm:text-sm md:text-base text-slate-600 line-clamp-2">{project.description || "Sem descrição"}</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] truncate">{project.name}</h1>
+              <p className="text-xs sm:text-sm md:text-base text-[#456C8D] line-clamp-2">{project.description || "Sem descrição"}</p>
             </div>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
@@ -305,15 +304,15 @@ export default function ProjectDetail() {
               variant="outline"
               size="icon"
               onClick={() => setShowProjectForm(true)}
-              className="flex-1 sm:flex-initial bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10"
+              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] hover:bg-[#EAEAEA] rounded-lg h-9 w-9 md:h-10 md:w-10"
             >
-              <Pencil className="w-4 h-4" />
+              <Pencil className="w-4 h-4 text-[#456C8D]" />
             </Button>
             <Button
               variant="outline"
               size="icon"
               onClick={handleProjectDelete}
-              className="flex-1 sm:flex-initial bg-white/80 backdrop-blur-sm shadow-md hover:shadow-lg border-slate-200 rounded-full h-9 w-9 md:h-10 md:w-10 text-red-600 hover:text-red-700 hover:border-red-300"
+              className="flex-1 sm:flex-initial bg-white border-[#EAEAEA] hover:bg-red-50 hover:border-red-300 rounded-lg h-9 w-9 md:h-10 md:w-10 text-red-500"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
@@ -334,95 +333,95 @@ export default function ProjectDetail() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-          <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border-none shadow-lg hover:shadow-xl transition-all rounded-2xl md:rounded-3xl">
+          <Card className="bg-[#6FA6FF]/10 border border-[#6FA6FF]/30 shadow-sm hover:shadow-md transition-all rounded-xl">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
-                <div className="bg-white/80 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md mb-2 md:mb-0 w-fit">
-                  <ListTodo className="w-4 h-4 md:w-6 md:h-6 text-blue-600" />
+                <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
+                  <ListTodo className="w-4 h-4 md:w-6 md:h-6 text-[#6FA6FF]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-blue-600">
+                  <div className="text-2xl md:text-4xl font-bold text-[#6FA6FF]">
                     {mainTasks.length}
                   </div>
                 </div>
               </div>
-              <p className="text-slate-700 font-medium text-xs md:text-sm">Total de Tarefas</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Total de Tarefas</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-100 to-green-200 border-none shadow-lg hover:shadow-xl transition-all rounded-2xl md:rounded-3xl">
+          <Card className="bg-[#131A20]/5 border border-[#131A20]/10 shadow-sm hover:shadow-md transition-all rounded-xl">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
-                <div className="bg-white/80 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md mb-2 md:mb-0 w-fit">
-                  <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-green-600" />
+                <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
+                  <CheckCircle2 className="w-4 h-4 md:w-6 md:h-6 text-[#131A20]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-green-600">
+                  <div className="text-2xl md:text-4xl font-bold text-[#131A20]">
                     {completedTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-slate-700 font-medium text-xs md:text-sm">Concluídas</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Concluídas</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-100 to-purple-200 border-none shadow-lg hover:shadow-xl transition-all rounded-2xl md:rounded-3xl">
+          <Card className="bg-[#456C8D]/10 border border-[#456C8D]/20 shadow-sm hover:shadow-md transition-all rounded-xl">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
-                <div className="bg-white/80 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md mb-2 md:mb-0 w-fit">
-                  <Clock className="w-4 h-4 md:w-6 md:h-6 text-purple-600" />
+                <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
+                  <Clock className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-purple-600">
+                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D]">
                     {inProgressTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-slate-700 font-medium text-xs md:text-sm">Em Andamento</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Em Andamento</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-yellow-100 to-yellow-200 border-none shadow-lg hover:shadow-xl transition-all rounded-2xl md:rounded-3xl">
+          <Card className="bg-[#EAEAEA] border border-[#EAEAEA] shadow-sm hover:shadow-md transition-all rounded-xl">
             <CardContent className="p-3 md:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
-                <div className="bg-white/80 rounded-xl md:rounded-2xl p-2 md:p-3 shadow-md mb-2 md:mb-0 w-fit">
-                  <AlertCircle className="w-4 h-4 md:w-6 md:h-6 text-yellow-600" />
+                <div className="bg-white rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
+                  <AlertCircle className="w-4 h-4 md:w-6 md:h-6 text-[#456C8D]" />
                 </div>
                 <div className="md:text-right">
-                  <div className="text-2xl md:text-4xl font-bold text-yellow-600">
+                  <div className="text-2xl md:text-4xl font-bold text-[#456C8D]">
                     {pendingTasks}
                   </div>
                 </div>
               </div>
-              <p className="text-slate-700 font-medium text-xs md:text-sm">Pendentes</p>
+              <p className="text-[#456C8D] font-medium text-xs md:text-sm">Pendentes</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Progress Bar */}
-        <Card className="bg-white/80 backdrop-blur-sm shadow-lg border-none rounded-2xl md:rounded-3xl mb-6 md:mb-8">
+        <Card className="bg-white border border-[#EAEAEA] shadow-sm rounded-xl mb-6 md:mb-8">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-slate-900 text-sm md:text-base">Progresso do Projeto</h3>
-              <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{progressPercentage}%</span>
+              <h3 className="font-semibold text-[#131A20] text-sm md:text-base">Progresso do Projeto</h3>
+              <span className="text-xl md:text-2xl font-bold text-[#6FA6FF]">{progressPercentage}%</span>
             </div>
             <Progress value={progressPercentage} className="h-2 md:h-3" />
-            <p className="text-xs md:text-sm text-slate-600 mt-2">
+            <p className="text-xs md:text-sm text-[#456C8D] mt-2">
               {completedTasks} de {mainTasks.length} tarefas concluídas
             </p>
           </CardContent>
         </Card>
 
         {/* Tabs with Gantt, List and Table View */}
-        <Card className="shadow-xl border-none rounded-2xl md:rounded-3xl bg-white/80 backdrop-blur-sm">
-          <CardHeader className="border-b border-slate-200 p-4 md:p-6">
+        <Card className="shadow-sm border border-[#EAEAEA] rounded-xl bg-white">
+          <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <CardTitle className="text-xl md:text-2xl font-bold text-slate-900">Tarefas do Projeto</CardTitle>
+              <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20]">Tarefas do Projeto</CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <Button
                   onClick={() => setShowModuleDialog(true)}
                   variant="outline"
-                  className="w-full sm:w-auto border-purple-300 text-purple-700 hover:bg-purple-50 rounded-full h-10 md:h-11 text-sm"
+                  className="w-full sm:w-auto border-[#EAEAEA] text-[#456C8D] hover:bg-[#EAEAEA] rounded-lg h-10 md:h-11 text-sm"
                 >
                   <Package className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   <span className="text-sm md:text-base">Adicionar Módulo</span>
@@ -432,7 +431,7 @@ export default function ProjectDetail() {
                     setEditingTask(null);
                     setShowTaskForm(true);
                   }}
-                  className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 shadow-lg rounded-full h-10 md:h-11"
+                  className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11"
                 >
                   <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   <span className="text-sm md:text-base">Nova Tarefa</span>
@@ -442,17 +441,17 @@ export default function ProjectDetail() {
           </CardHeader>
           <CardContent className="p-0">
             <Tabs defaultValue="list" className="w-full">
-              <div className="border-b border-slate-200 px-4 md:px-6">
+              <div className="border-b border-[#EAEAEA] px-4 md:px-6">
                 <TabsList className="bg-transparent w-full sm:w-auto grid grid-cols-3 sm:flex">
-                  <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
+                  <TabsTrigger value="list" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-[#6FA6FF]">
                     <List className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">Lista</span>
                   </TabsTrigger>
-                  <TabsTrigger value="table" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
+                  <TabsTrigger value="table" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-[#6FA6FF]">
                     <TableIcon className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">Tabela</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gantt" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-purple-500">
+                  <TabsTrigger value="gantt" className="flex items-center gap-2 text-xs md:text-sm data-[state=active]:border-b-2 data-[state=active]:border-[#6FA6FF]">
                     <BarChart3 className="w-3 h-3 md:w-4 md:h-4" />
                     <span className="hidden sm:inline">Gantt</span>
                   </TabsTrigger>
