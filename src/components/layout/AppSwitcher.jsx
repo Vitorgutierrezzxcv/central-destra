@@ -92,28 +92,28 @@ export default function AppSwitcher({ isMobile = false }) {
       <button
         onClick={() => handleModuleClick(module)}
         className={`
-          relative w-full p-4 rounded-xl border-2 transition-all text-left
+          relative w-full p-3 rounded-xl border-2 transition-all text-left
           ${isActive 
             ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-pink-50' 
             : 'border-slate-200 hover:border-slate-300 hover:shadow-md bg-white'
           }
         `}
       >
-        <div className="flex items-start gap-3">
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${module.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
-            <Icon className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${module.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
+            <Icon className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-bold text-slate-900">{module.name}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-slate-900 text-sm">{module.name}</h3>
               {isActive && (
-                <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-none text-xs">
-                  <Check className="w-3 h-3 mr-1" />
+                <Badge className="bg-gradient-to-r from-purple-500 to-pink-600 text-white border-none text-[10px] px-1.5 py-0">
+                  <Check className="w-2.5 h-2.5 mr-0.5" />
                   Ativo
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-slate-600">{module.description}</p>
+            <p className="text-xs text-slate-600 truncate">{module.description}</p>
           </div>
         </div>
       </button>
@@ -122,43 +122,34 @@ export default function AppSwitcher({ isMobile = false }) {
 
   if (isMobile) {
     return (
-      <div className="flex items-center gap-2">
+      <>
         <button
           onClick={() => setShowDialog(true)}
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-1.5 hover:opacity-80 transition-opacity px-2 py-1 rounded-lg"
         >
-          <div className={`w-8 h-8 bg-gradient-to-br ${activeModule.color} rounded-lg flex items-center justify-center shadow-md`}>
-            <ActiveIcon className="w-4 h-4 text-white" />
+          <div className={`w-7 h-7 bg-gradient-to-br ${activeModule.color} rounded-lg flex items-center justify-center shadow-sm flex-shrink-0`}>
+            <ActiveIcon className="w-3.5 h-3.5 text-white" />
           </div>
-          <div className="text-left">
-            <h1 className="text-lg font-bold text-slate-900 leading-tight">{activeModule.name}</h1>
-          </div>
+          <span className="text-sm font-bold text-slate-900 truncate max-w-[80px]">{activeModule.name}</span>
+          <ChevronDown className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
         </button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setShowDialog(true)}
-          className="h-8 w-8 hover:bg-slate-100 rounded-lg bg-slate-50 border border-slate-200"
-        >
-          <Grid3x3 className="w-4 h-4 text-slate-700" />
-        </Button>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="max-w-[calc(100vw-32px)] sm:max-w-md mx-4">
             <DialogHeader>
-              <DialogTitle className="text-xl">Escolha um Módulo</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-lg">Escolha um Módulo</DialogTitle>
+              <DialogDescription className="text-sm">
                 Alterne entre diferentes áreas do sistema
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-3 py-4">
+            <div className="space-y-2 py-3">
               {modules.map(module => (
                 <ModuleCard key={module.id} module={module} />
               ))}
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </>
     );
   }
 
