@@ -40,23 +40,43 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
 
   // Fetch all users from the system
   const { data: allUsers, isLoading: loadingAllUsers } = useQuery({
-    queryKey: ['allUsers'],
+    queryKey: ['allUsersForTasks'],
     queryFn: async () => {
       try {
-        return await base44.entities.User.list();
+        const usersList = await base44.entities.User.list();
+        return usersList || [];
       } catch (error) {
-        console.error('Error loading users:', error);
+        console.log('Could not fetch users (permission denied), will use UserProfile');
         return [];
       }
     },
     initialData: [],
   });
 
-  // Fetch UserProfiles
+  // Fetch UserProfiles - this is the reliable fallback
   const { data: userProfiles, isLoading: loadingProfiles } = useQuery({
     queryKey: ['userProfiles'],
-    queryFn: () => base44.entities.UserProfile.list(),
+    queryFn: async () => {
+      try {
+        return await base44.entities.UserProfile.list();
+      } catch (error) {
+        console.error('Error loading user profiles:', error);
+        return [];
+      }
+    },
     initialData: [],
+  });
+
+  // Fetch current user to ensure at least current user is available
+  const { data: currentUser } = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: async () => {
+      try {
+        return await base44.auth.me();
+      } catch (error) {
+        return null;
+      }
+    },
   });
 
   // Fetch existing subtasks if editing
@@ -112,8 +132,18 @@ export default function TaskForm({ task, projects, onSubmit, onCancel, isLoading
       }
     });
     
+    // Adicionar o usuário atual se não estiver na lista
+    if (currentUser && currentUser.email && !userMap.has(currentUser.email)) {
+      userMap.set(currentUser.email, {
+        id: currentUser.id,
+        user_email: currentUser.email,
+        display_name: currentUser.display_name || currentUser.full_name || currentUser.email.split('@')[0],
+        full_name: currentUser.full_name || currentUser.email.split('@')[0]
+      });
+    }
+    
     return Array.from(userMap.values());
-  }, [allUsers, userProfiles]);
+  }, [allUsers, userProfiles, currentUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

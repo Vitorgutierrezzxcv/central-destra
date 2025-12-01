@@ -14,8 +14,37 @@ export default function TaskFilters({ onFilterChange, filters, projects, taskCou
   // Removed internal useState for filters, it is now passed as a prop.
 
   const { data: users, isLoading: loadingUsers } = useQuery({
-    queryKey: ['users'],
-    queryFn: () => base44.entities.User.list(),
+    queryKey: ['allUsersForFilter'],
+    queryFn: async () => {
+      try {
+        // Try to get users list (admin only)
+        const usersList = await base44.entities.User.list();
+        if (usersList && usersList.length > 0) {
+          return usersList.map(u => ({
+            id: u.id,
+            email: u.email,
+            display_name: u.display_name || u.full_name || u.email?.split('@')[0],
+            full_name: u.full_name || u.email?.split('@')[0]
+          }));
+        }
+      } catch (error) {
+        console.log('Could not fetch users, trying UserProfile');
+      }
+      
+      // Fallback to UserProfile entity
+      try {
+        const profiles = await base44.entities.UserProfile.list();
+        return profiles.map(p => ({
+          id: p.id,
+          email: p.user_email,
+          display_name: p.display_name || p.full_name || p.user_email?.split('@')[0],
+          full_name: p.full_name || p.user_email?.split('@')[0]
+        }));
+      } catch (error) {
+        console.error('Error loading users:', error);
+        return [];
+      }
+    },
     initialData: [],
   });
 
