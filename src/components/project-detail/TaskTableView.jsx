@@ -1,6 +1,7 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { sortTasksByUrgency } from "../tasks/taskSortUtils";
 import {
   Table,
   TableBody,
@@ -52,7 +53,8 @@ const formatDateOnly = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
-export default function TaskTableView({ tasks, onEdit, onDelete, onStatusChange }) {
+export default function TaskTableView({ tasks: unsortedTasks, onEdit, onDelete, onStatusChange }) {
+  const tasks = sortTasksByUrgency(unsortedTasks);
   const [expandedTasks, setExpandedTasks] = React.useState(new Set());
 
   const { data: users } = useQuery({
