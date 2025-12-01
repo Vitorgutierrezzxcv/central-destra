@@ -91,6 +91,7 @@ const financeQuickActions = [
 function LayoutContent({ children }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { open, setOpen } = useSidebar();
 
   // Determine which module is active based on current page
