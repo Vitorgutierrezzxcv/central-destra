@@ -129,7 +129,7 @@ function LayoutContent({ children }) {
 
   return (
     <>
-      <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm">
+      <Sidebar className="border-r border-[#EAEAEA] bg-white">
         <SidebarContent className="p-3 flex flex-col h-full">
           {/* Close button for mobile */}
           <div className="md:hidden flex justify-end mb-2">
@@ -149,7 +149,7 @@ function LayoutContent({ children }) {
           </div>
 
           <SidebarGroup>
-            <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
+            <SidebarGroupLabel className="text-xs font-medium text-[#456C8D] uppercase tracking-wider px-3 py-2">
               Navegação
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -157,15 +157,15 @@ function LayoutContent({ children }) {
                 {currentModule === 'taskflow' ? (
                   <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                     <CollapsibleTrigger asChild>
-                      <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
+                      <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#EAEAEA] transition-all mb-1 group">
                         <div className="flex items-center gap-3">
-                          <FolderKanban className="w-5 h-5 text-blue-600" />
-                          <span className="font-semibold text-slate-900">TaskFlow</span>
+                          <FolderKanban className="w-5 h-5 text-[#6FA6FF]" />
+                          <span className="font-medium text-[#131A20]">TaskFlow</span>
                         </div>
                         {isTaskFlowOpen ? (
-                          <ChevronDown className="w-4 h-4 text-slate-500 transition-transform" />
+                          <ChevronDown className="w-4 h-4 text-[#456C8D] transition-transform" />
                         ) : (
-                          <ChevronRight className="w-4 h-4 text-slate-500 transition-transform" />
+                          <ChevronRight className="w-4 h-4 text-[#456C8D] transition-transform" />
                         )}
                       </button>
                     </CollapsibleTrigger>
@@ -179,8 +179,8 @@ function LayoutContent({ children }) {
                               className={`
                                 rounded-lg transition-all duration-200
                                 ${isActive
-                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg'
-                                  : 'hover:bg-slate-100 text-slate-700'
+                                  ? 'bg-[#6FA6FF] text-white'
+                                  : 'hover:bg-[#EAEAEA] text-[#131A20]'
                                 }
                               `}
                             >
@@ -193,9 +193,9 @@ function LayoutContent({ children }) {
                         );
                       })}
 
-                      <div className="mt-3 pt-3 border-t border-slate-200">
+                      <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
                         <div className="px-3 pb-2">
-                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                          <span className="text-xs font-medium text-[#456C8D] uppercase tracking-wider">
                             Ações Rápidas
                           </span>
                         </div>
@@ -203,7 +203,7 @@ function LayoutContent({ children }) {
                           <Link
                             key={action.title}
                             to={action.url}
-                            className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] hover:bg-[#6FA6FF] hover:text-white transition-colors text-sm font-medium text-[#131A20] mb-1"
                           >
                             <action.icon className="w-4 h-4" />
                             {action.title}
@@ -216,10 +216,10 @@ function LayoutContent({ children }) {
                   <>
                     <div className="px-3 py-2 mb-2">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                        <div className="w-10 h-10 bg-[#6FA6FF] rounded-xl flex items-center justify-center">
                           <Building2 className="w-5 h-5 text-white" />
                         </div>
-                        <span className="font-bold text-slate-900">CRM</span>
+                        <span className="font-medium text-[#131A20]">CRM</span>
                       </div>
                     </div>
                     {crmNav.map((item) => {
@@ -231,8 +231,8 @@ function LayoutContent({ children }) {
                             className={`
                               rounded-lg mb-1 transition-all duration-200
                               ${isActive
-                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg'
-                                : 'hover:bg-slate-100 text-slate-700'
+                                ? 'bg-[#6FA6FF] text-white'
+                                : 'hover:bg-[#EAEAEA] text-[#131A20]'
                               }
                             `}
                           >
@@ -241,20 +241,20 @@ function LayoutContent({ children }) {
                               <span className="font-medium">{item.title}</span>
                             </Link>
                           </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
-                  </>
-                ) : (
-                  <>
-                    <div className="px-3 py-2 mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
+                          </SidebarMenuItem>
+                          );
+                          })}
+                          </>
+                          ) : (
+                          <>
+                          <div className="px-3 py-2 mb-2">
+                          <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-[#456C8D] rounded-xl flex items-center justify-center">
                           <Wallet className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-bold text-slate-900">Finanças</span>
-                      </div>
-                    </div>
+                          </div>
+                          <span className="font-medium text-[#131A20]">Finanças</span>
+                          </div>
+                          </div>
                     {financeNav.map((item) => {
                       const isActive = location.pathname === item.url;
                       return (
@@ -264,8 +264,8 @@ function LayoutContent({ children }) {
                             className={`
                               rounded-lg mb-1 transition-all duration-200
                               ${isActive
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg'
-                                : 'hover:bg-slate-100 text-slate-700'
+                                ? 'bg-[#456C8D] text-white'
+                                : 'hover:bg-[#EAEAEA] text-[#131A20]'
                               }
                             `}
                           >
@@ -274,27 +274,27 @@ function LayoutContent({ children }) {
                               <span className="font-medium">{item.title}</span>
                             </Link>
                           </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })}
+                          </SidebarMenuItem>
+                          );
+                          })}
 
-                    <div className="mt-3 pt-3 border-t border-slate-200">
-                      <div className="px-3 pb-2">
-                        <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                          Ações Rápidas
-                        </span>
-                      </div>
-                      {financeQuickActions.map(action => (
-                        <Link
-                          key={action.title}
-                          to={action.url}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium mb-1`}
-                        >
-                          <action.icon className="w-4 h-4" />
-                          {action.title}
-                        </Link>
-                      ))}
-                    </div>
+                          <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
+                          <div className="px-3 pb-2">
+                          <span className="text-xs font-medium text-[#456C8D] uppercase tracking-wider">
+                            Ações Rápidas
+                          </span>
+                          </div>
+                          {financeQuickActions.map(action => (
+                          <Link
+                            key={action.title}
+                            to={action.url}
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#EAEAEA] hover:bg-[#456C8D] hover:text-white transition-colors text-sm font-medium mb-1 text-[#131A20]"
+                          >
+                            <action.icon className="w-4 h-4" />
+                            {action.title}
+                          </Link>
+                          ))}
+                          </div>
                   </>
                 )}
               </SidebarMenu>
@@ -310,22 +310,22 @@ function LayoutContent({ children }) {
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Toggle button in header bar - desktop only */}
-        <div className="hidden md:flex items-center justify-between bg-white/60 backdrop-blur-sm border-b border-slate-200/50 px-4 py-2">
+        <div className="hidden md:flex items-center justify-between bg-white border-b border-[#EAEAEA] px-4 py-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setOpen(!open)}
-            className="hover:bg-slate-100 rounded-lg h-9 px-3"
+            className="hover:bg-[#EAEAEA] rounded-lg h-9 px-3"
           >
             {open ? (
               <>
-                <PanelLeftClose className="w-4 h-4 mr-2 text-slate-700" />
-                <span className="text-sm text-slate-700">Ocultar Menu</span>
+                <PanelLeftClose className="w-4 h-4 mr-2 text-[#456C8D]" />
+                <span className="text-sm text-[#456C8D]">Ocultar Menu</span>
               </>
             ) : (
               <>
-                <PanelLeft className="w-4 h-4 mr-2 text-slate-700" />
-                <span className="text-sm text-slate-700">Mostrar Menu</span>
+                <PanelLeft className="w-4 h-4 mr-2 text-[#456C8D]" />
+                <span className="text-sm text-[#456C8D]">Mostrar Menu</span>
               </>
             )}
           </Button>
@@ -338,7 +338,7 @@ function LayoutContent({ children }) {
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden">
             <div 
-              className="absolute inset-0 bg-black/50" 
+              className="absolute inset-0 bg-[#131A20]/50" 
               onClick={() => setMobileMenuOpen(false)}
             />
             <div className="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-xl overflow-y-auto">
@@ -348,12 +348,12 @@ function LayoutContent({ children }) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="hover:bg-slate-100 rounded-lg"
+                    className="hover:bg-[#EAEAEA] rounded-lg"
                   >
-                    <X className="w-5 h-5 text-slate-700" />
+                    <X className="w-5 h-5 text-[#456C8D]" />
                   </Button>
                 </div>
-                
+
                 <div className="mb-6">
                   <AppSwitcher />
                 </div>
@@ -368,8 +368,8 @@ function LayoutContent({ children }) {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
-                            : 'hover:bg-slate-100 text-slate-700'
+                            ? 'bg-[#6FA6FF] text-white'
+                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -386,8 +386,8 @@ function LayoutContent({ children }) {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md'
-                            : 'hover:bg-slate-100 text-slate-700'
+                            ? 'bg-[#6FA6FF] text-white'
+                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -404,8 +404,8 @@ function LayoutContent({ children }) {
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
                           isActive
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md'
-                            : 'hover:bg-slate-100 text-slate-700'
+                            ? 'bg-[#456C8D] text-white'
+                            : 'hover:bg-[#EAEAEA] text-[#131A20]'
                         }`}
                       >
                         <item.icon className="w-5 h-5" />
@@ -415,7 +415,7 @@ function LayoutContent({ children }) {
                   })}
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-200">
+                <div className="mt-6 pt-4 border-t border-[#EAEAEA]">
                   <UserProfile />
                 </div>
               </div>
@@ -425,12 +425,12 @@ function LayoutContent({ children }) {
 
         {/* Mobile bottom navigation bar */}
         <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <div className="flex items-center gap-2 bg-white/90 backdrop-blur-lg rounded-full px-2 py-2 shadow-xl border border-slate-200">
+          <div className="flex items-center gap-2 bg-white rounded-full px-2 py-2 shadow-lg border border-[#EAEAEA]">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="w-12 h-12 rounded-full flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-all"
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-[#EAEAEA] hover:bg-[#6FA6FF] hover:text-white transition-all"
             >
-              <Menu className="w-5 h-5 text-slate-600" />
+              <Menu className="w-5 h-5" />
             </button>
             <AppSwitcher isMobile={true} />
           </div>
@@ -447,7 +447,7 @@ function LayoutContent({ children }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50 overflow-x-hidden">
+      <div className="min-h-screen flex w-full bg-[#EAEAEA] overflow-x-hidden">
         <LayoutContent>{children}</LayoutContent>
       </div>
     </SidebarProvider>
