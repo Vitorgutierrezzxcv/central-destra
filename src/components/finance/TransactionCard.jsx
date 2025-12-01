@@ -1,142 +1,151 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Building2, FolderKanban } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { 
+  ArrowUpCircle, 
+  ArrowDownCircle, 
+  Pencil, 
+  Trash2,
+  Building2,
+  FolderKanban,
+  TrendingUp,
+  TrendingDown
+} from "lucide-react";
 
-const categoryLabels = {
-  sale: "Venda",
-  service: "Serviço",
-  investment: "Investimento",
-  other_income: "Outra Entrada",
-  transport: "Transporte",
-  tax: "Imposto",
-  tools: "Ferramentas",
-  salary: "Salário",
-  rent: "Aluguel",
-  utilities: "Utilidades",
-  marketing: "Marketing",
-  supplies: "Suprimentos",
-  maintenance: "Manutenção",
-  insurance: "Seguro",
-  professional_services: "Serviços Profissionais",
-  other_expense: "Outra Saída"
+const categoryMacroLabels = {
+  faturamento_bruto: "Faturamento Bruto",
+  imposto_faturamento: "Imp. Faturamento",
+  deducoes_cancelamentos: "Deduções",
+  cmv: "CMV",
+  despesa_variavel: "Desp. Variável",
+  despesa_fixa: "Desp. Fixa",
+  folha_pagamento: "Folha",
+  resultado_financeiro: "Resultado Fin.",
+  imposto_lucro: "Imp. Lucro"
 };
 
 const paymentMethodLabels = {
   cash: "Dinheiro",
-  credit_card: "Cartão de Crédito",
-  debit_card: "Cartão de Débito",
-  bank_transfer: "Transferência Bancária",
+  credit_card: "Cartão Crédito",
+  debit_card: "Cartão Débito",
+  bank_transfer: "Transferência",
   pix: "PIX",
+  boleto: "Boleto",
   check: "Cheque"
 };
 
 const statusConfig = {
-  completed: { label: "Concluído", color: "bg-[#131A20]/10 text-[#131A20] border-[#131A20]/20" },
-  pending: { label: "Pendente", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
-  cancelled: { label: "Cancelado", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" }
+  completed: { label: "Pago", color: "bg-green-100 text-green-700" },
+  pending: { label: "Em Aberto", color: "bg-yellow-100 text-yellow-700" },
+  cancelled: { label: "Cancelado", color: "bg-red-100 text-red-700" }
 };
 
 export default function TransactionCard({ transaction, companies, projects, onEdit, onDelete }) {
-  const isIncome = transaction.type === 'income';
-  const company = companies.find(c => c.id === transaction.company_id);
-  const project = projects.find(p => p.id === transaction.project_id);
-  const status = statusConfig[transaction.status];
+  const isIncome = transaction.type === 'income' || transaction.type === 'financial_income';
+  const company = companies?.find(c => c.id === transaction.company_id);
+  const project = projects?.find(p => p.id === transaction.project_id);
+  const status = statusConfig[transaction.status] || statusConfig.completed;
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '-';
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
+      exit={{ opacity: 0, y: -10 }}
     >
-      <Card className={`border-l-4 ${isIncome ? 'border-[#131A20]' : 'border-[#6FA6FF]'} shadow-sm hover:shadow-md transition-all bg-white border border-[#EAEAEA]`}>
-        <CardContent className="p-4 md:p-5">
-          <div className="flex items-start gap-3">
-            <div className={`mt-1 ${isIncome ? 'text-[#131A20]' : 'text-[#6FA6FF]'} flex-shrink-0`}>
-              {isIncome ? (
-                <ArrowUpCircle className="w-6 h-6" />
-              ) : (
-                <ArrowDownCircle className="w-6 h-6" />
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#131A20]">
-                    {transaction.description || categoryLabels[transaction.category]}
+      <Card className="border-[#EAEAEA] hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                isIncome ? 'bg-green-100' : 'bg-red-100'
+              }`}>
+                {isIncome ? (
+                  transaction.type === 'financial_income' 
+                    ? <TrendingUp className="w-5 h-5 text-green-600" />
+                    : <ArrowUpCircle className="w-5 h-5 text-green-600" />
+                ) : (
+                  transaction.type === 'financial_expense'
+                    ? <TrendingDown className="w-5 h-5 text-red-600" />
+                    : <ArrowDownCircle className="w-5 h-5 text-red-600" />
+                )}
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold text-[#131A20] truncate">
+                    {transaction.description || categoryMacroLabels[transaction.category_macro] || 'Lançamento'}
                   </h3>
-                  <p className="text-sm text-[#456C8D]">
-                    {format(new Date(transaction.date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                  </p>
+                  <Badge variant="outline" className="text-xs">
+                    {categoryMacroLabels[transaction.category_macro]}
+                  </Badge>
                 </div>
-                <div className={`text-2xl font-bold ${isIncome ? 'text-[#131A20]' : 'text-[#6FA6FF]'}`}>
-                  {isIncome ? '+' : '-'} R$ {parseFloat(transaction.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2 items-center mb-3">
-                <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D]">
-                  {categoryLabels[transaction.category]}
-                </Badge>
                 
-                <Badge variant="outline" className={`border ${status.color}`}>
-                  {status.label}
-                </Badge>
-
-                <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D]">
-                  {paymentMethodLabels[transaction.payment_method]}
-                </Badge>
-
-                {transaction.recurring && (
-                  <Badge className="bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30">
-                    Recorrente
+                <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-[#456C8D]">
+                  <span>{formatDate(transaction.date)}</span>
+                  {transaction.month_reference && (
+                    <span className="text-[#6FA6FF]">• Ref: {transaction.month_reference}</span>
+                  )}
+                  {transaction.category_detail && (
+                    <span>• {transaction.category_detail}</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  <Badge className={`text-xs ${status.color}`}>
+                    {status.label}
                   </Badge>
-                )}
-
-                {company && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D] flex items-center gap-1">
-                    <Building2 className="w-3 h-3" />
-                    {company.name}
-                  </Badge>
-                )}
-
-                {project && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D] flex items-center gap-1">
-                    <FolderKanban className="w-3 h-3" />
-                    {project.name}
-                  </Badge>
-                )}
+                  {transaction.payment_method && (
+                    <Badge variant="outline" className="text-xs">
+                      {paymentMethodLabels[transaction.payment_method]}
+                    </Badge>
+                  )}
+                  {company && (
+                    <Badge variant="outline" className="text-xs flex items-center gap-1">
+                      <Building2 className="w-3 h-3" />
+                      {company.name}
+                    </Badge>
+                  )}
+                  {project && (
+                    <Badge variant="outline" className="text-xs flex items-center gap-1">
+                      <FolderKanban className="w-3 h-3" />
+                      {project.name}
+                    </Badge>
+                  )}
+                </div>
               </div>
-
-              {transaction.notes && (
-                <p className="text-sm text-[#456C8D] italic mb-2">
-                  {transaction.notes}
-                </p>
-              )}
             </div>
-
-            <div className="flex md:flex-col gap-1 flex-shrink-0">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onEdit(transaction)}
-                className="h-8 w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
-              >
-                <Pencil className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onDelete(transaction.id)}
-                className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+            
+            <div className="flex items-center gap-4 flex-shrink-0">
+              <span className={`text-lg font-bold ${isIncome ? 'text-green-600' : 'text-red-500'}`}>
+                {isIncome ? '+' : '-'} R$ {transaction.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </span>
+              
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(transaction)}
+                  className="h-8 w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(transaction.id)}
+                  className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
