@@ -126,17 +126,17 @@ export default function RecurringTaskForm({ task, projects, onSubmit, onCancel, 
       exit={{ opacity: 0, y: -20 }}
       className="mb-6 md:mb-8"
     >
-      <Card className="bg-white rounded-2xl md:rounded-3xl shadow-xl border border-slate-200">
-        <CardHeader className="border-b border-slate-200 p-4 md:p-6">
+      <Card className="bg-white rounded-xl border border-[#EAEAEA]">
+        <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg md:text-xl font-bold text-slate-900">
+            <CardTitle className="text-lg md:text-xl font-semibold text-[#131A20]">
               {task ? 'Editar Tarefa Recorrente' : 'Nova Tarefa Recorrente'}
             </CardTitle>
             <Button
               variant="ghost"
               size="icon"
               onClick={onCancel}
-              className="hover:bg-slate-100"
+              className="hover:bg-[#EAEAEA]"
             >
               <X className="w-5 h-5" />
             </Button>
@@ -184,7 +184,7 @@ export default function RecurringTaskForm({ task, projects, onSubmit, onCancel, 
                       <SelectItem key={userProfile.user_email} value={userProfile.user_email}>
                         <div className="flex items-center gap-2">
                           <Avatar className="w-5 h-5">
-                            <AvatarFallback className="text-xs bg-gradient-to-br from-violet-500 to-purple-600 text-white">
+                            <AvatarFallback className="text-xs bg-[#6FA6FF] text-white">
                               {getUserDisplayName(userProfile).split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
@@ -262,8 +262,8 @@ export default function RecurringTaskForm({ task, projects, onSubmit, onCancel, 
             </div>
 
             {/* Recurrence Settings */}
-            <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-4 md:p-6 space-y-4 border border-violet-200">
-              <h3 className="font-semibold text-slate-900 flex items-center gap-2">
+            <div className="bg-[#EAEAEA]/30 rounded-xl p-4 md:p-6 space-y-4 border border-[#EAEAEA]">
+              <h3 className="font-semibold text-[#131A20] flex items-center gap-2">
                 <span className="text-2xl">🔄</span>
                 Configurações de Recorrência
               </h3>
@@ -379,7 +379,7 @@ export default function RecurringTaskForm({ task, projects, onSubmit, onCancel, 
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full sm:w-auto bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 h-10 md:h-11"
+                className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white h-10 md:h-11"
               >
                 {isLoading ? (
                   <>

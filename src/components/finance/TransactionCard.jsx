@@ -36,9 +36,9 @@ const paymentMethodLabels = {
 };
 
 const statusConfig = {
-  completed: { label: "Concluído", color: "bg-green-100 text-green-700 border-green-200" },
-  pending: { label: "Pendente", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
-  cancelled: { label: "Cancelado", color: "bg-slate-100 text-slate-700 border-slate-200" }
+  completed: { label: "Concluído", color: "bg-[#131A20]/10 text-[#131A20] border-[#131A20]/20" },
+  pending: { label: "Pendente", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
+  cancelled: { label: "Cancelado", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" }
 };
 
 export default function TransactionCard({ transaction, companies, projects, onEdit, onDelete }) {
@@ -53,10 +53,10 @@ export default function TransactionCard({ transaction, companies, projects, onEd
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <Card className={`border-l-4 ${isIncome ? 'border-green-500' : 'border-red-500'} shadow-md hover:shadow-lg transition-all bg-white/80 backdrop-blur-sm`}>
+      <Card className={`border-l-4 ${isIncome ? 'border-[#131A20]' : 'border-[#6FA6FF]'} shadow-sm hover:shadow-md transition-all bg-white border border-[#EAEAEA]`}>
         <CardContent className="p-4 md:p-5">
           <div className="flex items-start gap-3">
-            <div className={`mt-1 ${isIncome ? 'text-green-600' : 'text-red-600'} flex-shrink-0`}>
+            <div className={`mt-1 ${isIncome ? 'text-[#131A20]' : 'text-[#6FA6FF]'} flex-shrink-0`}>
               {isIncome ? (
                 <ArrowUpCircle className="w-6 h-6" />
               ) : (
@@ -67,20 +67,20 @@ export default function TransactionCard({ transaction, companies, projects, onEd
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
                 <div>
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-[#131A20]">
                     {transaction.description || categoryLabels[transaction.category]}
                   </h3>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-[#456C8D]">
                     {format(new Date(transaction.date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                   </p>
                 </div>
-                <div className={`text-2xl font-bold ${isIncome ? 'text-green-600' : 'text-red-600'}`}>
+                <div className={`text-2xl font-bold ${isIncome ? 'text-[#131A20]' : 'text-[#6FA6FF]'}`}>
                   {isIncome ? '+' : '-'} R$ {parseFloat(transaction.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2 items-center mb-3">
-                <Badge variant="outline" className="bg-white border-slate-200">
+                <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D]">
                   {categoryLabels[transaction.category]}
                 </Badge>
                 
@@ -88,25 +88,25 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                   {status.label}
                 </Badge>
 
-                <Badge variant="outline" className="bg-white border-slate-200">
+                <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D]">
                   {paymentMethodLabels[transaction.payment_method]}
                 </Badge>
 
                 {transaction.recurring && (
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                  <Badge className="bg-[#6FA6FF]/10 text-[#6FA6FF] border-[#6FA6FF]/30">
                     Recorrente
                   </Badge>
                 )}
 
                 {company && (
-                  <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
+                  <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D] flex items-center gap-1">
                     <Building2 className="w-3 h-3" />
                     {company.name}
                   </Badge>
                 )}
 
                 {project && (
-                  <Badge variant="outline" className="bg-white border-slate-200 flex items-center gap-1">
+                  <Badge variant="outline" className="bg-white border-[#EAEAEA] text-[#456C8D] flex items-center gap-1">
                     <FolderKanban className="w-3 h-3" />
                     {project.name}
                   </Badge>
@@ -114,7 +114,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
               </div>
 
               {transaction.notes && (
-                <p className="text-sm text-slate-600 italic mb-2">
+                <p className="text-sm text-[#456C8D] italic mb-2">
                   {transaction.notes}
                 </p>
               )}
@@ -125,7 +125,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(transaction)}
-                className="h-8 w-8 text-slate-600 hover:text-blue-600 hover:bg-blue-50"
+                className="h-8 w-8 text-[#456C8D] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
               >
                 <Pencil className="w-4 h-4" />
               </Button>
@@ -133,7 +133,7 @@ export default function TransactionCard({ transaction, companies, projects, onEd
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(transaction.id)}
-                className="h-8 w-8 text-slate-600 hover:text-red-600 hover:bg-red-50"
+                className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50"
               >
                 <Trash2 className="w-4 h-4" />
               </Button>

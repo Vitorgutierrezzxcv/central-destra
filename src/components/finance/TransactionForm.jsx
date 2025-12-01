@@ -81,17 +81,17 @@ export default function TransactionForm({ transaction, defaultType, companies, p
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-6 mb-6 md:mb-8 border border-slate-200"
+      className="bg-white rounded-xl p-4 md:p-6 mb-6 md:mb-8 border border-[#EAEAEA]"
     >
       <div className="flex items-center justify-between mb-4 md:mb-6">
-        <h3 className="text-lg md:text-xl font-bold text-slate-900">
+        <h3 className="text-lg md:text-xl font-semibold text-[#131A20]">
           {transaction ? 'Editar Lançamento' : 'Novo Lançamento'}
         </h3>
         <Button
           variant="ghost"
           size="icon"
           onClick={onCancel}
-          className="hover:bg-slate-100"
+          className="hover:bg-[#EAEAEA]"
         >
           <X className="w-5 h-5" />
         </Button>
@@ -142,7 +142,7 @@ export default function TransactionForm({ transaction, defaultType, companies, p
               value={currentTransaction.amount}
               onChange={(e) => setCurrentTransaction({...currentTransaction, amount: e.target.value})}
               required
-              className="h-10 md:h-11 border-slate-200"
+              className="h-10 md:h-11 border-[#EAEAEA]"
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function TransactionForm({ transaction, defaultType, companies, p
               value={currentTransaction.date}
               onChange={(e) => setCurrentTransaction({...currentTransaction, date: e.target.value})}
               required
-              className="h-10 md:h-11 border-slate-200"
+              className="h-10 md:h-11 border-[#EAEAEA]"
             />
           </div>
 
@@ -199,7 +199,7 @@ export default function TransactionForm({ transaction, defaultType, companies, p
               placeholder="Breve descrição do lançamento"
               value={currentTransaction.description}
               onChange={(e) => setCurrentTransaction({...currentTransaction, description: e.target.value})}
-              className="h-10 md:h-11 border-slate-200"
+              className="h-10 md:h-11 border-[#EAEAEA]"
             />
           </div>
 
@@ -250,7 +250,7 @@ export default function TransactionForm({ transaction, defaultType, companies, p
               placeholder="Observações adicionais..."
               value={currentTransaction.notes}
               onChange={(e) => setCurrentTransaction({...currentTransaction, notes: e.target.value})}
-              className="min-h-[80px] resize-none border-slate-200"
+              className="min-h-[80px] resize-none border-[#EAEAEA]"
             />
           </div>
 
@@ -282,10 +282,10 @@ export default function TransactionForm({ transaction, defaultType, companies, p
           <Button
             type="submit"
             disabled={isLoading}
-            className={`w-full sm:w-auto h-10 md:h-11 ${
+            className={`w-full sm:w-auto h-10 md:h-11 text-white ${
               currentTransaction.type === 'income'
-                ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700'
-                : 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700'
+                ? 'bg-[#131A20] hover:bg-[#456C8D]'
+                : 'bg-[#6FA6FF] hover:bg-[#456C8D]'
             }`}
           >
             {isLoading ? (
