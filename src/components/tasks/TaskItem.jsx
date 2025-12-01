@@ -11,8 +11,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger } from
+"@/components/ui/dropdown-menu";
 
 import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
 import TimeTracker from "./TimeTracker";
@@ -59,30 +59,30 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list(),
-    initialData: [],
+    initialData: []
   });
 
   const { data: currentUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => base44.auth.me()
   });
 
   const createExecutionHistoryMutation = useMutation({
-    mutationFn: (historyData) => base44.entities.TaskExecutionHistory.create(historyData),
+    mutationFn: (historyData) => base44.entities.TaskExecutionHistory.create(historyData)
   });
 
   const getUserDisplayName = (email) => {
     if (!email) return null;
-    const user = users.find(u => u.email === email);
+    const user = users.find((u) => u.email === email);
     if (!user) return email.split('@')[0]; // Fallback to username from email
     return user.display_name || user.full_name || email.split('@')[0];
   };
 
   const getUserInitials = (email) => {
     if (!email) return '?';
-    const user = users.find(u => u.email === email);
-    const name = user ? (user.display_name || user.full_name || email) : email;
-    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    const user = users.find((u) => u.email === email);
+    const name = user ? user.display_name || user.full_name || email : email;
+    return name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
   };
 
   const handleStatusChange = async (newStatus) => {
@@ -92,8 +92,8 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
       try {
         // Buscar o template original
         const templates = await base44.entities.TaskTemplate.filter({ module_id: task.module_id });
-        const template = templates.find(t => t.title === task.title);
-        
+        const template = templates.find((t) => t.title === task.title);
+
         if (template && project) {
           // Salvar histórico de execução
           await createExecutionHistoryMutation.mutateAsync({
@@ -124,8 +124,8 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-    >
+      exit={{ opacity: 0, y: -20 }}>
+
       <Card className={`border-l-4 ${status.borderColor} shadow-sm hover:shadow-md transition-all bg-white dark:bg-[#161b22] border border-[#EAEAEA] dark:border-[#30363d] dark:border-[#30363d]`}>
         <CardContent className="p-4 md:p-5">
           <div className="flex items-start gap-3">
@@ -156,8 +156,8 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-[#456C8D] dark:text-[#8b949e]' : 'text-[#131A20] dark:text-white'}`}>
                   {task.title}
                 </h3>
-                {task.assigned_to && assignedUserName && (
-                  <div className="flex items-center gap-2 bg-[#EAEAEA] dark:bg-[#21262d] px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
+                {task.assigned_to && assignedUserName &&
+                <div className="flex items-center gap-2 bg-[#EAEAEA] dark:bg-[#21262d] px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
                     <Avatar className="w-5 h-5">
                       <AvatarFallback className="text-[10px] bg-[#6FA6FF] text-white">
                         {userInitials}
@@ -165,21 +165,21 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                     </Avatar>
                     <span className="text-xs font-medium text-[#131A20] dark:text-white">{assignedUserName}</span>
                   </div>
-                )}
+                }
               </div>
               
-              {task.description && (
-                <div className="mb-3">
+              {task.description &&
+              <div className="mb-3">
                   <TaskDescriptionDisplay description={task.description} />
                 </div>
-              )}
+              }
 
               <div className="flex flex-wrap gap-2 items-center mb-3">
-                {project && (
-                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] text-xs text-[#456C8D] dark:text-[#8b949e]">
+                {project &&
+                <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] text-xs text-[#456C8D] dark:text-[#8b949e]">
                     {project.name}
                   </Badge>
-                )}
+                }
                 
                 <Badge className={`${status.bg} ${status.color} border ${status.borderColor} text-xs`}>
                   {status.label}
@@ -190,21 +190,21 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   {priority.label}
                 </Badge>
                 
-                {task.start_date && (
-                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
+                {task.start_date &&
+                <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
                     <Calendar className="w-3 h-3" />
                     <span className="hidden sm:inline">Início: </span>
                     {task.start_date.split('-').reverse().slice(0, 2).join('/')}
                   </Badge>
-                )}
+                }
 
-                {task.end_date && (
-                  <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
+                {task.end_date &&
+                <Badge variant="outline" className="bg-white dark:bg-[#161b22] border-[#EAEAEA] dark:border-[#30363d] flex items-center gap-1 text-xs text-[#456C8D] dark:text-[#8b949e]">
                     <Clock className="w-3 h-3" />
                     <span className="hidden sm:inline">Fim: </span>
                     {task.end_date.split('-').reverse().slice(0, 2).join('/')}
                   </Badge>
-                )}
+                }
               </div>
 
               {/* SubTask Display */}
@@ -212,26 +212,26 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
 
               {/* Time Tracker */}
               <div className="mt-3">
-                {showFullTracker ? (
-                  <div>
+                {showFullTracker ?
+                <div>
                     <TimeTracker task={task} />
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowFullTracker(false)}
-                      className="mt-2 text-xs"
-                    >
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowFullTracker(false)}
+                    className="mt-2 text-xs">
+
                       Ocultar rastreador
                     </Button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowFullTracker(true)}
-                    className="w-full hover:bg-[#EAEAEA] dark:bg-[#21262d] p-2 rounded-lg transition-colors"
-                  >
+                  </div> :
+
+                <button
+                  onClick={() => setShowFullTracker(true)} className="bg-transparent text-black p-2 rounded-lg w-full hover:bg-[#EAEAEA] dark:bg-[#21262d] transition-colors">
+
+
                     <TimeTracker task={task} compact />
                   </button>
-                )}
+                }
               </div>
             </div>
 
@@ -240,22 +240,22 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(task)}
-                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10"
-              >
+                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-[#6FA6FF] hover:bg-[#6FA6FF]/10">
+
                 <Pencil className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(task.id)}
-                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-red-500 hover:bg-red-50"
-              >
+                className="h-8 w-8 text-[#456C8D] dark:text-[#8b949e] hover:text-red-500 hover:bg-red-50">
+
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-    </motion.div>
-  );
+    </motion.div>);
+
 }
