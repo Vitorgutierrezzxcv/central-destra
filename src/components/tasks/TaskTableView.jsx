@@ -1,6 +1,7 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { sortTasksByUrgency } from "./taskSortUtils";
 import {
   Table,
   TableBody,
@@ -47,7 +48,8 @@ const priorityConfig = {
   high: { label: "Alta", color: "bg-red-100 text-red-600" }
 };
 
-export default function TaskTableView({ tasks, projects, onEdit, onDelete, onStatusChange }) {
+export default function TaskTableView({ tasks: unsortedTasks, projects, onEdit, onDelete, onStatusChange }) {
+  const tasks = sortTasksByUrgency(unsortedTasks);
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list(),

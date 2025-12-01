@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Flag, CheckCircle2 } from "lucide-react";
-import { format, isToday, parseISO } from "date-fns";
+import { format, isToday, parseISO, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const priorityConfig = {
@@ -13,17 +13,27 @@ const priorityConfig = {
 };
 
 export default function UpcomingTasks({ tasks, projects }) {
+  const now = startOfDay(new Date());
+  
+  // Filtrar tarefas de hoje ou atrasadas
   const todayTasks = tasks
     .filter(task => {
       if (task.status === 'completed') return false;
-      const startDate = task.start_date ? parseISO(task.start_date) : null;
       const endDate = task.end_date ? parseISO(task.end_date) : null;
-      return (startDate && isToday(startDate)) || (endDate && isToday(endDate));
+      const startDate = task.start_date ? parseISO(task.start_date) : null;
+      // Incluir atrasadas, hoje ou próximas
+      if (endDate && (isBefore(endDate, now) || isToday(endDate))) return true;
+      if (startDate && isToday(startDate)) return true;
+      return false;
     })
     .sort((a, b) => {
-      const timeA = a.start_date ? new Date(a.start_date).getTime() : new Date(a.end_date).getTime();
-      const timeB = b.start_date ? new Date(b.start_date).getTime() : new Date(b.end_date).getTime();
-      return timeA - timeB;
+      // Atrasadas primeiro, depois por data mais próxima
+      const aDate = a.end_date ? parseISO(a.end_date) : (a.start_date ? parseISO(a.start_date) : null);
+      const bDate = b.end_date ? parseISO(b.end_date) : (b.start_date ? parseISO(b.start_date) : null);
+      if (!aDate && bDate) return 1;
+      if (aDate && !bDate) return -1;
+      if (!aDate && !bDate) return 0;
+      return aDate - bDate;
     })
     .slice(0, 4);
 

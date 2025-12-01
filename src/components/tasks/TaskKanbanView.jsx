@@ -2,6 +2,7 @@ import React from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { sortTasksByUrgency } from "./taskSortUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -58,7 +59,8 @@ export default function TaskKanbanView({ tasks, projects, onEdit, onDelete, onSt
   };
 
   const getTasksByStatus = (status) => {
-    return tasks.filter(task => task.status === status);
+    const filtered = tasks.filter(task => task.status === status);
+    return sortTasksByUrgency(filtered);
   };
 
   const getUserDisplayName = (email) => {
