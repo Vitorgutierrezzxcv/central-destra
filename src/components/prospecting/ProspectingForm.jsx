@@ -91,11 +91,6 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
       onSuccess: (createdLead) => {
         setTodayLeads([...todayLeads, { ...leadData, id: createdLead?.id, tempId: Date.now() }]);
         setNewLeadName("");
-        // Update instagram_leads count
-        setCurrentMetric(prev => ({
-          ...prev,
-          instagram_leads: prev.instagram_leads + 1
-        }));
       }
     });
   };
@@ -105,10 +100,6 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
       deleteLeadMutation.mutate(lead.id);
     }
     setTodayLeads(todayLeads.filter(l => (l.id || l.tempId) !== (lead.id || lead.tempId)));
-    setCurrentMetric(prev => ({
-      ...prev,
-      instagram_leads: Math.max(0, prev.instagram_leads - 1)
-    }));
   };
 
   const handleSubmit = (e) => {
