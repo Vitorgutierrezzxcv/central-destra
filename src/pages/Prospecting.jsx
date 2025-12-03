@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, TrendingUp, Calendar, Plus, Settings } from "lucide-react";
+import { Target, TrendingUp, Calendar, Plus, Settings, Users } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AnimatePresence } from "framer-motion";
 import { 
@@ -64,7 +64,11 @@ function ProspectingContent() {
   });
 
   const createMetricMutation = useMutation({
-    mutationFn: (metricData) => base44.entities.ProspectingMetrics.create({ ...metricData, user_email: user.email }),
+    mutationFn: (metricData) => base44.entities.ProspectingMetrics.create({ 
+      ...metricData, 
+      user_email: user.email,
+      seller_email: metricData.seller_email || user.email
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
       setShowForm(false);
@@ -144,12 +148,20 @@ function ProspectingContent() {
   const { start: currentStart, end: currentEnd } = getDateRangeFilter();
   const { start: compStart, end: compEnd } = getComparisonDateRange();
 
-  const currentMetrics = filterMetricsByRange(metrics, currentStart, currentEnd);
-  const comparisonMetrics = filterMetricsByRange(metrics, compStart, compEnd);
+  // Filter by seller if selected
+  const sellerFilteredMetrics = selectedSeller === "all" 
+    ? metrics 
+    : metrics.filter(m => m.seller_email === selectedSeller);
 
-  // Check if there's already a metric for today
+  const currentMetrics = filterMetricsByRange(sellerFilteredMetrics, currentStart, currentEnd);
+  const comparisonMetrics = filterMetricsByRange(sellerFilteredMetrics, compStart, compEnd);
+
+  // Get unique sellers from metrics
+  const sellersInMetrics = [...new Set(metrics.map(m => m.seller_email).filter(Boolean))];
+
+  // Check if there's already a metric for today (for current user)
   const today = format(new Date(), 'yyyy-MM-dd');
-  const todayMetric = metrics.find(m => m.date === today);
+  const todayMetric = metrics.find(m => m.date === today && m.seller_email === user?.email);
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
@@ -196,6 +208,22 @@ function ProspectingContent() {
               </Select>
             </div>
 
+            {/* Seller Filter */}
+            <Select value={selectedSeller} onValueChange={setSelectedSeller}>
+              <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
+                <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+                <SelectValue placeholder="Filtrar por vendedor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Vendedores</SelectItem>
+                {users.map(u => (
+                  <SelectItem key={u.email} value={u.email}>
+                    {u.full_name || u.email}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className="grid grid-cols-2 sm:flex sm:justify-end gap-2">
               <Button
                 onClick={() => setShowGoalsManager(true)}
@@ -237,6 +265,7 @@ function ProspectingContent() {
                 setEditingMetric(null);
               }}
               isLoading={createMetricMutation.isPending || updateMetricMutation.isPending}
+              currentUserEmail={user?.email}
             />
           )}
         </AnimatePresence>
