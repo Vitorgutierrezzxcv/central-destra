@@ -17,7 +17,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
-export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail, allLeads = [] }) {
+export default function ProspectingForm({ date, onCancel, currentUserEmail, allLeads = [] }) {
   const queryClient = useQueryClient();
   
   // Fetch all users for seller selection - usando UserProfile que é acessível a todos
@@ -33,22 +33,8 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
     full_name: profile.full_name || profile.display_name || profile.user_email
   }));
 
-  const formDate = metric?.date || new Date().toISOString().split('T')[0];
-
-  const [currentMetric, setCurrentMetric] = useState(metric || {
-    date: formDate,
-    seller_email: currentUserEmail || "",
-    instagram_leads: 0,
-    instagram_responses: 0,
-    whatsapp_collected: 0,
-    meetings_scheduled: 0,
-    no_shows: 0,
-    meetings_held: 0,
-    follow_ups_sent: 0,
-    follow_ups_responses: 0,
-    sales_amount: 0,
-    notes: ""
-  });
+  const [formDate, setFormDate] = useState(date || new Date().toISOString().split('T')[0]);
+  const [sellerEmail, setSellerEmail] = useState(currentUserEmail || "");
 
   // Quick lead registration
   const [newLeadName, setNewLeadName] = useState("");
@@ -59,7 +45,7 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   const getLeadsForDate = () => {
     return allLeads.filter(l => {
       const leadDate = l.last_contact_date || l.created_date?.split('T')[0];
-      return leadDate === formDate && l.seller_email === (currentMetric.seller_email || currentUserEmail);
+      return leadDate === formDate && l.seller_email === sellerEmail;
     });
   };
   
@@ -68,7 +54,7 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   // Atualiza lista quando allLeads muda
   React.useEffect(() => {
     setTodayLeads(getLeadsForDate());
-  }, [allLeads, formDate, currentMetric.seller_email]);
+  }, [allLeads, formDate, sellerEmail]);
 
   const stageLabels = {
     prospectado: "Prospectado",
