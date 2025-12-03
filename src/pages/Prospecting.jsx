@@ -364,11 +364,11 @@ function ProspectingContent() {
           </TabsContent>
 
           <TabsContent value="metrics" className="space-y-6">
-            {loadingMetrics ? (
+            {loadingMetrics || loadingLeads ? (
               <div className="text-center py-12">
                 <p className="text-slate-600">Carregando métricas...</p>
               </div>
-            ) : currentMetrics.length > 0 ? (
+            ) : (currentMetrics.length > 0 || leads.length > 0) ? (
               <>
                 <ProspectingMetricsCards
                   currentMetrics={currentMetrics}

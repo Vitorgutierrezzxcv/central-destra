@@ -86,12 +86,18 @@ const sourceLabels = {
 
 // Calcula recomendação baseada no estágio e tempo
 const calculateRecommendation = (lead) => {
-  if (!lead.last_stage_change && !lead.last_contact_date) return "aguardar";
+  // Usa last_stage_change, last_contact_date ou created_date como fallback
+  const lastChangeStr = lead.last_stage_change || lead.last_contact_date || lead.created_date;
   
-  const lastChange = lead.last_stage_change 
-    ? parseISO(lead.last_stage_change) 
-    : parseISO(lead.last_contact_date);
-  const daysSinceChange = differenceInDays(new Date(), lastChange);
+  let daysSinceChange = 0;
+  if (lastChangeStr) {
+    try {
+      const lastChange = parseISO(lastChangeStr.split('T')[0]);
+      daysSinceChange = differenceInDays(new Date(), lastChange);
+    } catch (e) {
+      daysSinceChange = 0;
+    }
+  }
 
   switch (lead.stage) {
     case "prospectado":
