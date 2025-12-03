@@ -34,7 +34,7 @@ import AccessGuard from "../components/layout/AccessGuard";
 function ProspectingContent() {
   const [showForm, setShowForm] = useState(false);
   const [showGoalsManager, setShowGoalsManager] = useState(false);
-  const [editingMetric, setEditingMetric] = useState(null);
+  const [selectedFormDate, setSelectedFormDate] = useState(new Date().toISOString().split('T')[0]);
   const [dateRange, setDateRange] = useState("week");
   const [comparisonPeriod, setComparisonPeriod] = useState("previous");
   const [selectedSeller, setSelectedSeller] = useState("all");
@@ -57,12 +57,6 @@ function ProspectingContent() {
     email: profile.user_email,
     full_name: profile.full_name || profile.display_name || profile.user_email
   }));
-
-  const { data: metrics, isLoading: loadingMetrics } = useQuery({
-    queryKey: ['prospecting-metrics'],
-    queryFn: () => base44.entities.ProspectingMetrics.list('-date'),
-    initialData: [],
-  });
 
   const { data: goals, isLoading: loadingGoals } = useQuery({
     queryKey: ['prospecting-goals', user?.email],
@@ -93,35 +87,7 @@ function ProspectingContent() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
   });
 
-  const createMetricMutation = useMutation({
-    mutationFn: (metricData) => base44.entities.ProspectingMetrics.create({ 
-      ...metricData, 
-      user_email: user.email,
-      seller_email: metricData.seller_email || user.email
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
-      setShowForm(false);
-      setEditingMetric(null);
-    },
-  });
 
-  const updateMetricMutation = useMutation({
-    mutationFn: ({ id, metricData }) => base44.entities.ProspectingMetrics.update(id, metricData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
-      setShowForm(false);
-      setEditingMetric(null);
-    },
-  });
-
-  const handleSubmit = (metricData) => {
-    if (editingMetric) {
-      updateMetricMutation.mutate({ id: editingMetric.id, metricData });
-    } else {
-      createMetricMutation.mutate(metricData);
-    }
-  };
 
   const getDateRangeFilter = () => {
     const now = new Date();
