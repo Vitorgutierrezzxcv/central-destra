@@ -17,7 +17,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
-export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail }) {
+export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail, allLeads = [] }) {
   const queryClient = useQueryClient();
   
   // Fetch all users for seller selection - usando UserProfile que é acessível a todos
@@ -33,8 +33,10 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
     full_name: profile.full_name || profile.display_name || profile.user_email
   }));
 
+  const formDate = metric?.date || new Date().toISOString().split('T')[0];
+
   const [currentMetric, setCurrentMetric] = useState(metric || {
-    date: new Date().toISOString().split('T')[0],
+    date: formDate,
     seller_email: currentUserEmail || "",
     instagram_leads: 0,
     instagram_responses: 0,
@@ -52,7 +54,14 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   const [newLeadName, setNewLeadName] = useState("");
   const [newLeadSource, setNewLeadSource] = useState("destra");
   const [newLeadStage, setNewLeadStage] = useState("prospectado");
-  const [todayLeads, setTodayLeads] = useState([]);
+  
+  // Carrega leads do dia selecionado
+  const leadsForDate = allLeads.filter(l => {
+    const leadDate = l.last_contact_date || l.created_date?.split('T')[0];
+    return leadDate === formDate && l.seller_email === (currentMetric.seller_email || currentUserEmail);
+  });
+  
+  const [todayLeads, setTodayLeads] = useState(leadsForDate);
 
   const stageLabels = {
     prospectado: "Prospectado",
