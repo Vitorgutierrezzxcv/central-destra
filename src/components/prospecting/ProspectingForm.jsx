@@ -250,70 +250,21 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
                 </div>
               )}
               <p className="text-xs text-slate-500 mt-2">
-                {todayLeads.length} lead(s) cadastrado(s) hoje
+                {todayLeads.length} lead(s) cadastrado(s) neste dia
               </p>
-            </div>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {fields.map(field => (
-                <div key={field.key} className="space-y-2">
-                  <Label htmlFor={field.key} className="text-sm font-medium flex items-center gap-2">
-                    <span>{field.icon}</span>
-                    {field.label}
-                  </Label>
-                  <Input
-                    id={field.key}
-                    type="number"
-                    step={field.type === "currency" ? "0.01" : "1"}
-                    min="0"
-                    value={currentMetric[field.key]}
-                    onChange={(e) => setCurrentMetric({
-                      ...currentMetric,
-                      [field.key]: parseFloat(e.target.value) || 0
-                    })}
-                    className="h-11 border-slate-200"
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes" className="text-sm font-medium">Observações</Label>
-              <Textarea
-                id="notes"
-                placeholder="Adicione observações sobre o dia..."
-                value={currentMetric.notes}
-                onChange={(e) => setCurrentMetric({ ...currentMetric, notes: e.target.value })}
-                className="min-h-[100px] resize-none border-slate-200"
-              />
-            </div>
-
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4">
+              <div className="flex justify-end pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                disabled={isLoading}
-                className="w-full sm:w-auto h-11"
+                className="h-11"
               >
-                Cancelar
+                Fechar
               </Button>
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 h-11"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {metric ? 'Salvando...' : 'Registrando...'}
-                  </>
-                ) : (
-                  <>{metric ? 'Salvar' : 'Registrar Métricas'}</>
-                )}
-              </Button>
-            </div>
-          </form>
+              </div>
+              </div>
         </CardContent>
       </Card>
     </motion.div>
