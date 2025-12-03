@@ -349,11 +349,11 @@ function ProspectingContent() {
 
           <TabsContent value="goals" className="space-y-6">
             <ProspectingGoalsManager
-              goals={goals}
-              userEmail={user?.email}
-              metrics={currentMetrics}
-              embedded={true}
-            />
+                              goals={goals}
+                              userEmail={user?.email}
+                              metrics={currentLeads}
+                              embedded={true}
+                            />
           </TabsContent>
         </Tabs>
       </div>
