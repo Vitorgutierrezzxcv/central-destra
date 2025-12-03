@@ -195,12 +195,23 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
                   className="flex-1 h-10 border-slate-200 bg-white"
                 />
                 <Select value={newLeadSource} onValueChange={setNewLeadSource}>
+                  <SelectTrigger className="w-full sm:w-[120px] h-10 border-slate-200 bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="destra">Destra</SelectItem>
+                    <SelectItem value="bernardo">Bernardo</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={newLeadStage} onValueChange={setNewLeadStage}>
                   <SelectTrigger className="w-full sm:w-[140px] h-10 border-slate-200 bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="destra">Perfil Destra</SelectItem>
-                    <SelectItem value="bernardo">Perfil Bernardo</SelectItem>
+                    <SelectItem value="prospectado">Prospectado</SelectItem>
+                    <SelectItem value="respondeu">Respondeu</SelectItem>
+                    <SelectItem value="whatsapp_coletado">WhatsApp</SelectItem>
+                    <SelectItem value="reuniao_marcada">Reunião Marcada</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button 
