@@ -27,6 +27,7 @@ import ProspectingForm from "../components/prospecting/ProspectingForm";
 import ProspectingMetricsCards from "../components/prospecting/ProspectingMetricsCards";
 import ProspectingCharts from "../components/prospecting/ProspectingCharts";
 import ProspectingGoalsManager from "../components/prospecting/ProspectingGoalsManager";
+import ConversionFunnel from "../components/prospecting/ConversionFunnel";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -273,6 +274,7 @@ function ProspectingContent() {
                   comparisonMetrics={comparisonMetrics}
                   dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
                 />
+                <ConversionFunnel metrics={currentMetrics} />
                 <ProspectingCharts
                   metrics={currentMetrics}
                   goals={goals}
