@@ -307,22 +307,20 @@ function ProspectingContent() {
           </TabsContent>
 
           <TabsContent value="metrics" className="space-y-6">
-            {loadingMetrics || loadingLeads ? (
+            {loadingLeads ? (
               <div className="text-center py-12">
                 <p className="text-slate-600">Carregando métricas...</p>
               </div>
-            ) : (currentMetrics.length > 0 || leads.length > 0) ? (
+            ) : leads.length > 0 ? (
               <>
                 <ProspectingMetricsCards
-                  currentMetrics={currentMetrics}
-                  comparisonMetrics={comparisonMetrics}
                   leads={currentLeads}
                   comparisonLeads={comparisonLeads}
                   dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
                 />
-                <ConversionFunnel metrics={currentMetrics} />
+                <ConversionFunnel leads={currentLeads} />
                 <ProspectingCharts
-                  metrics={currentMetrics}
+                  leads={currentLeads}
                   goals={goals}
                   dateRange={dateRange}
                 />
