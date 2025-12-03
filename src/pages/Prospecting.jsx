@@ -133,24 +133,8 @@ function ProspectingContent() {
     }
   };
 
-  const filterMetricsByRange = (metricsData, start, end) => {
-    return metricsData.filter(m => {
-      if (!m.date) return false;
-      const metricDate = parseISO(m.date);
-      return isWithinInterval(metricDate, { start, end });
-    });
-  };
-
   const { start: currentStart, end: currentEnd } = getDateRangeFilter();
   const { start: compStart, end: compEnd } = getComparisonDateRange();
-
-  // Filter by seller if selected
-  const sellerFilteredMetrics = selectedSeller === "all" 
-    ? metrics 
-    : metrics.filter(m => m.seller_email === selectedSeller);
-
-  const currentMetrics = filterMetricsByRange(sellerFilteredMetrics, currentStart, currentEnd);
-  const comparisonMetrics = filterMetricsByRange(sellerFilteredMetrics, compStart, compEnd);
 
   // Filter leads by date range and seller
   const filterLeadsByRange = (leadsData, start, end) => {
@@ -167,13 +151,6 @@ function ProspectingContent() {
 
   const currentLeads = filterLeadsByRange(sellerFilteredLeads, currentStart, currentEnd);
   const comparisonLeads = filterLeadsByRange(sellerFilteredLeads, compStart, compEnd);
-
-  // Get unique sellers from metrics
-  const sellersInMetrics = [...new Set(metrics.map(m => m.seller_email).filter(Boolean))];
-
-  // Check if there's already a metric for today (for current user)
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const todayMetric = metrics.find(m => m.date === today && m.seller_email === user?.email);
 
   return (
     <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
