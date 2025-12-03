@@ -241,7 +241,7 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
                       ) : null}
                       <span className="text-xs">{lead.name}</span>
                       <span className="text-[10px] ml-1 text-slate-400">
-                        ({lead.source === 'bernardo' ? 'B' : 'D'})
+                        ({lead.source === 'bernardo' ? 'B' : 'D'} • {stageLabels[lead.stage] || lead.stage})
                       </span>
                       <button
                         type="button"
