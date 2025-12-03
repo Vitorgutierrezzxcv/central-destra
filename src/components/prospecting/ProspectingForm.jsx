@@ -125,7 +125,7 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
         <CardHeader className="border-b border-slate-200 p-4 md:p-6">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg md:text-xl font-bold text-slate-900">
-              {metric ? 'Editar Métricas' : 'Registrar Métricas do Dia'}
+              Registrar Leads - {new Date(formDate + 'T12:00:00').toLocaleDateString('pt-BR')}
             </CardTitle>
             <Button
               variant="ghost"
@@ -139,13 +139,13 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
         </CardHeader>
 
         <CardContent className="p-4 md:p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="seller_email" className="text-sm font-medium">Vendedor *</Label>
                 <Select
-                  value={currentMetric.seller_email}
-                  onValueChange={(value) => setCurrentMetric({ ...currentMetric, seller_email: value })}
+                  value={sellerEmail}
+                  onValueChange={setSellerEmail}
                 >
                   <SelectTrigger className="h-11 border-slate-200">
                     <SelectValue placeholder="Selecione o vendedor" />
@@ -164,9 +164,8 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
                 <Input
                   id="date"
                   type="date"
-                  value={currentMetric.date}
-                  onChange={(e) => setCurrentMetric({ ...currentMetric, date: e.target.value })}
-                  required
+                  value={formDate}
+                  onChange={(e) => setFormDate(e.target.value)}
                   className="h-11 border-slate-200"
                 />
               </div>
