@@ -18,25 +18,32 @@ const getPerformanceLevel = (value, benchmark) => {
   return { level: 'low', color: 'text-red-600', bg: 'bg-red-100', label: 'Atenção' };
 };
 
-export default function ConversionFunnel({ metrics }) {
-  // Calcular totais
-  const totals = metrics.reduce((acc, m) => ({
-    instagram_leads: acc.instagram_leads + (m.instagram_leads || 0),
-    instagram_responses: acc.instagram_responses + (m.instagram_responses || 0),
-    whatsapp_collected: acc.whatsapp_collected + (m.whatsapp_collected || 0),
-    meetings_scheduled: acc.meetings_scheduled + (m.meetings_scheduled || 0),
-    meetings_held: acc.meetings_held + (m.meetings_held || 0),
-    no_shows: acc.no_shows + (m.no_shows || 0),
-    sales_amount: acc.sales_amount + (m.sales_amount || 0),
-  }), {
-    instagram_leads: 0,
-    instagram_responses: 0,
-    whatsapp_collected: 0,
-    meetings_scheduled: 0,
-    meetings_held: 0,
-    no_shows: 0,
-    sales_amount: 0,
-  });
+export default function ConversionFunnel({ leads = [] }) {
+  // Ordem dos estágios do funil
+  const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
+  
+  // Calcula quantos leads passaram por cada estágio
+  const calculateFromLeads = (stage) => {
+    if (!leads || leads.length === 0) return 0;
+    const stageIndex = stageOrder.indexOf(stage);
+    return leads.filter(l => {
+      if (!l.stage) return false;
+      const leadStageIndex = stageOrder.indexOf(l.stage);
+      if (stage === 'prospectado') return true;
+      return leadStageIndex >= stageIndex;
+    }).length;
+  };
+
+  // Calcular totais baseados nos leads
+  const totals = {
+    instagram_leads: calculateFromLeads('prospectado'),
+    instagram_responses: calculateFromLeads('respondeu'),
+    whatsapp_collected: calculateFromLeads('whatsapp'),
+    meetings_scheduled: calculateFromLeads('reuniao_marcada'),
+    meetings_held: calculateFromLeads('reuniao_realizada'),
+    no_shows: leads.filter(l => l.stage === 'no_show').length,
+    sales_amount: leads.filter(l => l.stage === 'venda_fechada').reduce((sum, l) => sum + (l.potential_value || 0), 0),
+  };
 
   // Calcular taxas de conversão
   const leadToResponse = totals.instagram_leads > 0 

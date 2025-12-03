@@ -6,26 +6,53 @@ import { ptBR } from "date-fns/locale";
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#14b8a6', '#ef4444', '#6366f1', '#ec4899'];
 
-export default function ProspectingCharts({ metrics, goals, dateRange }) {
-  // Sort metrics by date
-  const sortedMetrics = [...metrics].sort((a, b) => new Date(a.date) - new Date(b.date));
+export default function ProspectingCharts({ leads = [], goals, dateRange }) {
+  // Ordem dos estágios do funil
+  const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
+  
+  // Calcula quantos leads passaram por cada estágio
+  const calculateFromLeads = (stage) => {
+    if (!leads || leads.length === 0) return 0;
+    const stageIndex = stageOrder.indexOf(stage);
+    return leads.filter(l => {
+      if (!l.stage) return false;
+      const leadStageIndex = stageOrder.indexOf(l.stage);
+      if (stage === 'prospectado') return true;
+      return leadStageIndex >= stageIndex;
+    }).length;
+  };
+
+  // Agrupa leads por data
+  const leadsByDate = leads.reduce((acc, lead) => {
+    const date = lead.last_contact_date || lead.created_date?.split('T')[0];
+    if (!date) return acc;
+    if (!acc[date]) acc[date] = [];
+    acc[date].push(lead);
+    return acc;
+  }, {});
+
+  // Sort dates
+  const sortedDates = Object.keys(leadsByDate).sort();
 
   // Prepare data for line chart (daily evolution)
-  const dailyData = sortedMetrics.map(m => ({
-    date: format(parseISO(m.date), 'dd/MM', { locale: ptBR }),
-    leads: m.instagram_leads || 0,
-    responses: m.instagram_responses || 0,
-    whatsapp: m.whatsapp_collected || 0,
-    meetings: m.meetings_scheduled || 0,
-    held: m.meetings_held || 0,
-  }));
+  const dailyData = sortedDates.map(date => {
+    const dateLeads = leadsByDate[date];
+    return {
+      date: format(parseISO(date), 'dd/MM', { locale: ptBR }),
+      leads: dateLeads.length,
+      responses: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('respondeu')).length,
+      whatsapp: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('whatsapp')).length,
+      meetings: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('reuniao_marcada')).length,
+      held: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('reuniao_realizada')).length,
+    };
+  });
 
   // Prepare data for conversion funnel
-  const totalLeads = metrics.reduce((sum, m) => sum + (m.instagram_leads || 0), 0);
-  const totalResponses = metrics.reduce((sum, m) => sum + (m.instagram_responses || 0), 0);
-  const totalWhatsapp = metrics.reduce((sum, m) => sum + (m.whatsapp_collected || 0), 0);
-  const totalMeetings = metrics.reduce((sum, m) => sum + (m.meetings_scheduled || 0), 0);
-  const totalHeld = metrics.reduce((sum, m) => sum + (m.meetings_held || 0), 0);
+  const totalLeads = calculateFromLeads('prospectado');
+  const totalResponses = calculateFromLeads('respondeu');
+  const totalWhatsapp = calculateFromLeads('whatsapp');
+  const totalMeetings = calculateFromLeads('reuniao_marcada');
+  const totalHeld = calculateFromLeads('reuniao_realizada');
 
   const funnelData = [
     { name: 'Leads', value: totalLeads, percentage: 100 },
@@ -35,18 +62,25 @@ export default function ProspectingCharts({ metrics, goals, dateRange }) {
     { name: 'Realizadas', value: totalHeld, percentage: totalLeads > 0 ? (totalHeld / totalLeads * 100).toFixed(1) : 0 },
   ];
 
-  // Prepare data for follow-ups
-  const followUpData = sortedMetrics.map(m => ({
-    date: format(parseISO(m.date), 'dd/MM', { locale: ptBR }),
-    sent: m.follow_ups_sent || 0,
-    responses: m.follow_ups_responses || 0,
-  }));
+  // Prepare data for follow-ups (propostas e segundas reuniões)
+  const followUpData = sortedDates.map(date => {
+    const dateLeads = leadsByDate[date];
+    return {
+      date: format(parseISO(date), 'dd/MM', { locale: ptBR }),
+      sent: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('proposta_enviada')).length,
+      responses: dateLeads.filter(l => stageOrder.indexOf(l.stage) >= stageOrder.indexOf('segunda_reuniao_marcada')).length,
+    };
+  });
 
   // Prepare data for sales evolution
-  const salesData = sortedMetrics.map(m => ({
-    date: format(parseISO(m.date), 'dd/MM', { locale: ptBR }),
-    sales: m.sales_amount || 0,
-  }));
+  const salesData = sortedDates.map(date => {
+    const dateLeads = leadsByDate[date];
+    const salesLeads = dateLeads.filter(l => l.stage === 'venda_fechada');
+    return {
+      date: format(parseISO(date), 'dd/MM', { locale: ptBR }),
+      sales: salesLeads.reduce((sum, l) => sum + (l.potential_value || 0), 0),
+    };
+  });
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
