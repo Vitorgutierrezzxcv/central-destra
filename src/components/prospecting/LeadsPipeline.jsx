@@ -326,45 +326,51 @@ export default function LeadsPipeline({
     <div className="space-y-6">
       {/* Pipeline Overview */}
       <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-none">
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 px-3 md:px-6">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white flex items-center gap-2 text-base md:text-lg">
-              <ChevronRight className="w-5 h-5 text-purple-400" />
-              Pipeline de Vendas
+            <CardTitle className="text-white flex items-center gap-2 text-sm md:text-lg">
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-purple-400" />
+              Pipeline
             </CardTitle>
-            {pendingRecommendations > 0 && (
-              <Badge className="bg-amber-500 text-white">
-                <AlertCircle className="w-3 h-3 mr-1" />
-                {pendingRecommendations} ações pendentes
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {pendingRecommendations > 0 && (
+                <Badge className="bg-amber-500 text-white text-[10px] md:text-xs px-2">
+                  <AlertCircle className="w-3 h-3 mr-1" />
+                  {pendingRecommendations}
+                </Badge>
+              )}
+              <span className="text-white/60 text-xs">{totalLeads} leads</span>
+            </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2 md:gap-3 items-center justify-center py-2">
-            {stages.slice(0, -1).map((stage, idx) => {
-              const Icon = stage.icon;
-              const count = stageCounts[stage.key] || 0;
-              return (
-                <React.Fragment key={stage.key}>
-                  <div className="flex flex-col items-center">
-                    <div className={`w-9 h-9 md:w-11 md:h-11 rounded-full ${stage.color} flex items-center justify-center mb-1`}>
-                      <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                    </div>
-                    <span className="text-white font-bold text-sm">{count}</span>
-                    <span className="text-white/70 text-[9px] md:text-[10px] text-center max-w-[55px] md:max-w-[70px] leading-tight">
-                      {stage.label}
-                    </span>
-                  </div>
-                  {idx < stages.length - 2 && (
-                    <ChevronRight className="w-3 h-3 text-white/30 hidden md:block" />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </div>
-          <div className="text-center mt-3">
-            <span className="text-white/60 text-sm">Total: {totalLeads} leads</span>
+        <CardContent className="px-2 md:px-6 pb-4">
+          {/* Mobile: Horizontal scroll */}
+          <div className="overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0">
+            <div className="flex gap-1 md:gap-3 items-center justify-start md:justify-center min-w-max md:min-w-0 py-1">
+              {stages.slice(0, -1).map((stage, idx) => {
+                const Icon = stage.icon;
+                const count = stageCounts[stage.key] || 0;
+                return (
+                  <React.Fragment key={stage.key}>
+                    <button
+                      onClick={() => setStageFilter(stageFilter === stage.key ? "all" : stage.key)}
+                      className={`flex flex-col items-center transition-opacity ${stageFilter !== "all" && stageFilter !== stage.key ? 'opacity-40' : ''}`}
+                    >
+                      <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${stage.color} flex items-center justify-center mb-0.5`}>
+                        <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+                      </div>
+                      <span className="text-white font-bold text-xs md:text-sm">{count}</span>
+                      <span className="text-white/70 text-[8px] md:text-[10px] text-center max-w-[45px] md:max-w-[60px] leading-tight truncate">
+                        {stage.label}
+                      </span>
+                    </button>
+                    {idx < stages.length - 2 && (
+                      <ChevronRight className="w-2.5 h-2.5 md:w-3 md:h-3 text-white/30 flex-shrink-0" />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
           </div>
         </CardContent>
       </Card>
