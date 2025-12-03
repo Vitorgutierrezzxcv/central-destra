@@ -77,7 +77,7 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
       name: isInstagram ? newLeadName : newLeadName,
       instagram: isInstagram ? newLeadName : "",
       source: newLeadSource,
-      stage: "prospectado",
+      stage: newLeadStage,
       seller_email: currentMetric.seller_email || currentUserEmail,
       last_contact_date: currentMetric.date
     };
