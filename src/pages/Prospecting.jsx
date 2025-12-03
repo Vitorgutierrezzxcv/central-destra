@@ -28,6 +28,7 @@ import ProspectingMetricsCards from "../components/prospecting/ProspectingMetric
 import ProspectingCharts from "../components/prospecting/ProspectingCharts";
 import ProspectingGoalsManager from "../components/prospecting/ProspectingGoalsManager";
 import ConversionFunnel from "../components/prospecting/ConversionFunnel";
+import LeadsPipeline from "../components/prospecting/LeadsPipeline";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -61,6 +62,28 @@ function ProspectingContent() {
     queryFn: () => base44.entities.ProspectingGoal.filter({ user_email: user.email, active: true }),
     initialData: [],
     enabled: !!user,
+  });
+
+  // Leads Pipeline
+  const { data: leads, isLoading: loadingLeads } = useQuery({
+    queryKey: ['prospect-leads'],
+    queryFn: () => base44.entities.ProspectLead.list('-created_date'),
+    initialData: [],
+  });
+
+  const createLeadMutation = useMutation({
+    mutationFn: (leadData) => base44.entities.ProspectLead.create(leadData),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
+  });
+
+  const updateLeadMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.ProspectLead.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
+  });
+
+  const deleteLeadMutation = useMutation({
+    mutationFn: (id) => base44.entities.ProspectLead.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
   });
 
   const createMetricMutation = useMutation({
@@ -281,8 +304,14 @@ function ProspectingContent() {
         </AnimatePresence>
 
         {/* Dashboard */}
-        <Tabs defaultValue="metrics" className="w-full">
-          <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-2 w-full sm:w-auto rounded-lg">
+        <Tabs defaultValue="leads" className="w-full">
+          <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
+            <TabsTrigger
+              value="leads"
+              className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
+            >
+              Pipeline
+            </TabsTrigger>
             <TabsTrigger
               value="metrics"
               className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
@@ -296,6 +325,19 @@ function ProspectingContent() {
               Metas
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="leads" className="space-y-6">
+            <LeadsPipeline
+              leads={leads}
+              users={users}
+              currentUser={user}
+              selectedSeller={selectedSeller}
+              onCreateLead={(data) => createLeadMutation.mutate(data)}
+              onUpdateLead={(id, data) => updateLeadMutation.mutate({ id, data })}
+              onDeleteLead={(id) => deleteLeadMutation.mutate(id)}
+              isLoading={createLeadMutation.isPending || updateLeadMutation.isPending}
+            />
+          </TabsContent>
 
           <TabsContent value="metrics" className="space-y-6">
             {loadingMetrics ? (
