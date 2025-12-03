@@ -116,16 +116,9 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
     onSubmit(currentMetric);
   };
 
+  // Campos removidos - agora as métricas são calculadas automaticamente pelos leads cadastrados
   const fields = [
-    { key: "instagram_leads", label: "Leads Prospectados (Instagram)", icon: "📱" },
-    { key: "instagram_responses", label: "Respostas Recebidas", icon: "💬" },
-    { key: "whatsapp_collected", label: "WhatsApps Coletados", icon: "📞" },
-    { key: "meetings_scheduled", label: "Reuniões Marcadas", icon: "📅" },
-    { key: "no_shows", label: "No-Shows", icon: "❌" },
-    { key: "meetings_held", label: "Reuniões Realizadas", icon: "✅" },
-    { key: "follow_ups_sent", label: "Follow-ups Enviados", icon: "📧" },
-    { key: "follow_ups_responses", label: "Follow-ups Respondidos", icon: "✉️" },
-    { key: "sales_amount", label: "Vendas (R$)", icon: "💰", type: "currency" },
+    { key: "sales_amount", label: "Valor de Vendas (R$)", icon: "💰", type: "currency" },
   ];
 
   return (
