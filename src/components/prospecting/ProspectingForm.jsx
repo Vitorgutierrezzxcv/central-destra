@@ -114,16 +114,6 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
     setTodayLeads(todayLeads.filter(l => (l.id || l.tempId) !== (lead.id || lead.tempId)));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(currentMetric);
-  };
-
-  // Campos removidos - agora as métricas são calculadas automaticamente pelos leads cadastrados
-  const fields = [
-    { key: "sales_amount", label: "Valor de Vendas (R$)", icon: "💰", type: "currency" },
-  ];
-
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
