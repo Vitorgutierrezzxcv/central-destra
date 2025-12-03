@@ -72,6 +72,7 @@ export default function ConversionFunnel({ metrics }) {
     {
       key: 'leads',
       label: 'Leads Prospectados',
+      shortLabel: 'Leads',
       value: totals.instagram_leads,
       rate: null,
       benchmark: null,
@@ -81,54 +82,62 @@ export default function ConversionFunnel({ metrics }) {
     {
       key: 'responses',
       label: 'Responderam',
+      shortLabel: 'Respostas',
       value: totals.instagram_responses,
       rate: leadToResponse,
       benchmark: BENCHMARKS.leadToResponse,
       nextLabel: 'Taxa de Resposta',
+      shortNextLabel: 'Resposta',
     },
     {
       key: 'whatsapp',
       label: 'WhatsApp Coletado',
+      shortLabel: 'WhatsApp',
       value: totals.whatsapp_collected,
       rate: responseToWhatsapp,
       benchmark: BENCHMARKS.responseToWhatsapp,
       nextLabel: 'Resposta → WhatsApp',
+      shortNextLabel: 'Resp→Wpp',
     },
     {
       key: 'meetings',
       label: 'Reuniões Marcadas',
+      shortLabel: 'Marcadas',
       value: totals.meetings_scheduled,
       rate: whatsappToMeeting,
       benchmark: BENCHMARKS.whatsappToMeeting,
       nextLabel: 'WhatsApp → Reunião',
+      shortNextLabel: 'Wpp→Reun',
     },
     {
       key: 'held',
       label: 'Reuniões Realizadas',
+      shortLabel: 'Realizadas',
       value: totals.meetings_held,
       rate: totals.meetings_scheduled > 0 ? ((totals.meetings_held / totals.meetings_scheduled) * 100) : 0,
       benchmark: { min: 60, good: 75, great: 90 },
       nextLabel: 'Taxa de Comparecimento',
+      shortNextLabel: 'Compar.',
     },
   ];
 
   return (
     <Card className="border-[#EAEAEA]">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-semibold text-[#131A20] flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-[#6FA6FF]" />
+      <CardHeader className="pb-2 px-3 md:px-6">
+        <CardTitle className="text-base md:text-lg font-semibold text-[#131A20] flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-[#6FA6FF]" />
           Funil de Conversão
         </CardTitle>
-        <p className="text-sm text-[#456C8D]">
-          Análise das taxas de conversão em cada etapa
+        <p className="text-xs md:text-sm text-[#456C8D]">
+          Taxas de conversão em cada etapa
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 md:space-y-4 px-3 md:px-6">
         {/* Funil Visual */}
-        <div className="space-y-2">
+        <div className="space-y-1 md:space-y-2">
           {funnelSteps.map((step, index) => {
             const performance = step.benchmark ? getPerformanceLevel(step.rate, step.benchmark) : null;
-            const widthPercent = 100 - (index * 15); // Diminui a cada etapa
+            const widthPercent = 100 - (index * 10); // Diminui menos no mobile
             
             return (
               <div key={step.key}>
@@ -138,14 +147,15 @@ export default function ConversionFunnel({ metrics }) {
                   style={{ width: `${widthPercent}%` }}
                 >
                   <div className={`
-                    py-3 px-4 rounded-lg text-center
+                    py-2 md:py-3 px-2 md:px-4 rounded-lg
                     ${index === 0 ? 'bg-[#6FA6FF]' : 'bg-[#EAEAEA]'}
                   `}>
-                    <div className="flex items-center justify-between">
-                      <span className={`text-sm font-medium ${index === 0 ? 'text-white' : 'text-[#131A20]'}`}>
-                        {step.label}
+                    <div className="flex items-center justify-between gap-1">
+                      <span className={`text-xs md:text-sm font-medium truncate ${index === 0 ? 'text-white' : 'text-[#131A20]'}`}>
+                        <span className="hidden sm:inline">{step.label}</span>
+                        <span className="sm:hidden">{step.shortLabel}</span>
                       </span>
-                      <span className={`text-lg font-bold ${index === 0 ? 'text-white' : 'text-[#131A20]'}`}>
+                      <span className={`text-sm md:text-lg font-bold flex-shrink-0 ${index === 0 ? 'text-white' : 'text-[#131A20]'}`}>
                         {step.value}
                       </span>
                     </div>
@@ -154,15 +164,18 @@ export default function ConversionFunnel({ metrics }) {
                 
                 {/* Taxa de conversão entre etapas */}
                 {step.rate !== null && index > 0 && (
-                  <div className="flex items-center justify-center my-2 gap-2">
-                    <ArrowDown className="w-4 h-4 text-[#456C8D]" />
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-[#456C8D]">{step.nextLabel}:</span>
-                      <Badge className={`${performance?.bg} ${performance?.color} text-xs font-semibold`}>
+                  <div className="flex items-center justify-center my-1 md:my-2 gap-1 md:gap-2">
+                    <ArrowDown className="w-3 h-3 md:w-4 md:h-4 text-[#456C8D]" />
+                    <div className="flex items-center gap-1 md:gap-2 flex-wrap justify-center">
+                      <span className="text-[10px] md:text-xs text-[#456C8D]">
+                        <span className="hidden sm:inline">{step.nextLabel}:</span>
+                        <span className="sm:hidden">{step.shortNextLabel}:</span>
+                      </span>
+                      <Badge className={`${performance?.bg} ${performance?.color} text-[10px] md:text-xs font-semibold px-1.5 md:px-2`}>
                         {step.rate.toFixed(1)}%
                       </Badge>
                       {performance && (
-                        <span className={`text-xs ${performance.color}`}>
+                        <span className={`text-[10px] md:text-xs ${performance.color} hidden xs:inline`}>
                           {performance.label}
                         </span>
                       )}
@@ -175,9 +188,9 @@ export default function ConversionFunnel({ metrics }) {
         </div>
 
         {/* Insights e Recomendações */}
-        <div className="border-t border-[#EAEAEA] pt-4 mt-4">
-          <h4 className="text-sm font-semibold text-[#131A20] mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-[#6FA6FF]" />
+        <div className="border-t border-[#EAEAEA] pt-3 md:pt-4 mt-3 md:mt-4">
+          <h4 className="text-xs md:text-sm font-semibold text-[#131A20] mb-2 md:mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#6FA6FF]" />
             Diagnóstico do Funil
           </h4>
           <div className="space-y-2">
@@ -241,21 +254,21 @@ export default function ConversionFunnel({ metrics }) {
 
         {/* Resumo Geral */}
         {totals.instagram_leads > 0 && (
-          <div className="bg-[#EAEAEA]/30 rounded-lg p-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="bg-[#EAEAEA]/30 rounded-lg p-3 md:p-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <div className="text-center">
-                <p className="text-xs text-[#456C8D] mb-1">Conversão Geral</p>
-                <p className="text-xl font-bold text-[#131A20]">
+                <p className="text-[10px] md:text-xs text-[#456C8D] mb-0.5 md:mb-1">Conversão Geral</p>
+                <p className="text-base md:text-xl font-bold text-[#131A20]">
                   {overallConversion.toFixed(2)}%
                 </p>
-                <p className="text-xs text-[#456C8D]">Lead → Venda</p>
+                <p className="text-[10px] md:text-xs text-[#456C8D]">Lead → Venda</p>
               </div>
               <div className="text-center">
-                <p className="text-xs text-[#456C8D] mb-1">Ticket Médio</p>
-                <p className="text-xl font-bold text-[#6FA6FF]">
+                <p className="text-[10px] md:text-xs text-[#456C8D] mb-0.5 md:mb-1">Ticket Médio</p>
+                <p className="text-base md:text-xl font-bold text-[#6FA6FF]">
                   R$ {salesCount > 0 ? (totals.sales_amount / salesCount).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) : '0'}
                 </p>
-                <p className="text-xs text-[#456C8D]">por venda</p>
+                <p className="text-[10px] md:text-xs text-[#456C8D]">por venda</p>
               </div>
             </div>
           </div>
@@ -293,12 +306,12 @@ function InsightCard({ type, title, message }) {
   const { icon: Icon, bg, border, iconColor, titleColor } = config[type];
 
   return (
-    <div className={`p-3 rounded-lg ${bg} border ${border}`}>
-      <div className="flex items-start gap-2">
-        <Icon className={`w-4 h-4 ${iconColor} mt-0.5 flex-shrink-0`} />
-        <div>
-          <p className={`text-sm font-medium ${titleColor}`}>{title}</p>
-          <p className="text-xs text-gray-600 mt-0.5">{message}</p>
+    <div className={`p-2 md:p-3 rounded-lg ${bg} border ${border}`}>
+      <div className="flex items-start gap-1.5 md:gap-2">
+        <Icon className={`w-3.5 h-3.5 md:w-4 md:h-4 ${iconColor} mt-0.5 flex-shrink-0`} />
+        <div className="min-w-0">
+          <p className={`text-xs md:text-sm font-medium ${titleColor}`}>{title}</p>
+          <p className="text-[10px] md:text-xs text-gray-600 mt-0.5 leading-relaxed">{message}</p>
         </div>
       </div>
     </div>
