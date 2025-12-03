@@ -94,8 +94,9 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
       instagram: isInstagram ? newLeadName : "",
       source: newLeadSource,
       stage: newLeadStage,
-      seller_email: currentMetric.seller_email || currentUserEmail,
-      last_contact_date: currentMetric.date
+      seller_email: sellerEmail,
+      last_contact_date: formDate,
+      last_stage_change: new Date().toISOString()
     };
 
     createLeadMutation.mutate(leadData, {
