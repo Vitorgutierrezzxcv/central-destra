@@ -742,7 +742,10 @@ export default function LeadsPipeline({
       </Card>
 
       {/* Form Dialog */}
-      <Dialog open={showForm} onOpenChange={setShowForm}>
+      <Dialog open={showForm} onOpenChange={(open) => {
+        setShowForm(open);
+        if (!open) resetForm();
+      }}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingLead ? 'Editar Lead' : 'Novo Lead'}</DialogTitle>
