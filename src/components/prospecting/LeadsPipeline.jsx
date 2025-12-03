@@ -53,7 +53,8 @@ const stages = [
 ];
 
 const sourceLabels = {
-  instagram: "Instagram",
+  destra: "Perfil Destra",
+  bernardo: "Perfil Bernardo",
   indicacao: "Indicação",
   linkedin: "LinkedIn",
   site: "Site",
