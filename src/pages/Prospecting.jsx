@@ -224,21 +224,26 @@ function ProspectingContent() {
                 <span className="md:hidden text-sm">Metas</span>
               </Button>
 
-              <Button
-                onClick={() => {
-                  setEditingMetric(todayMetric || null);
-                  setShowForm(true);
-                }}
-                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-3 md:px-6"
-              >
-                <Plus className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
-                <span className="hidden md:inline text-sm md:text-base font-medium">
-                  {todayMetric ? 'Editar Hoje' : 'Registrar Hoje'}
-                </span>
-                <span className="md:hidden text-sm font-medium">
-                  {todayMetric ? 'Editar' : 'Registrar'}
-                </span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={selectedFormDate}
+                  onChange={(e) => setSelectedFormDate(e.target.value)}
+                  className="h-10 md:h-11 px-3 rounded-lg border border-[#EAEAEA] bg-white text-sm"
+                />
+                <Button
+                  onClick={() => setShowForm(true)}
+                  className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-3 md:px-6"
+                >
+                  <Plus className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                  <span className="hidden md:inline text-sm md:text-base font-medium">
+                    Registrar Leads
+                  </span>
+                  <span className="md:hidden text-sm font-medium">
+                    Registrar
+                  </span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
