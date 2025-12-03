@@ -6,10 +6,27 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Loader2, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
-export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading }) {
+export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail }) {
+  // Fetch all users for seller selection
+  const { data: users } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
   const [currentMetric, setCurrentMetric] = useState(metric || {
     date: new Date().toISOString().split('T')[0],
+    seller_email: currentUserEmail || "",
     instagram_leads: 0,
     instagram_responses: 0,
     whatsapp_collected: 0,
@@ -65,16 +82,36 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading 
 
         <CardContent className="p-4 md:p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="date" className="text-sm font-medium">Data *</Label>
-              <Input
-                id="date"
-                type="date"
-                value={currentMetric.date}
-                onChange={(e) => setCurrentMetric({ ...currentMetric, date: e.target.value })}
-                required
-                className="h-11 border-slate-200"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="seller_email" className="text-sm font-medium">Vendedor *</Label>
+                <Select
+                  value={currentMetric.seller_email}
+                  onValueChange={(value) => setCurrentMetric({ ...currentMetric, seller_email: value })}
+                >
+                  <SelectTrigger className="h-11 border-slate-200">
+                    <SelectValue placeholder="Selecione o vendedor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map(user => (
+                      <SelectItem key={user.email} value={user.email}>
+                        {user.full_name || user.email}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date" className="text-sm font-medium">Data *</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={currentMetric.date}
+                  onChange={(e) => setCurrentMetric({ ...currentMetric, date: e.target.value })}
+                  required
+                  className="h-11 border-slate-200"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
