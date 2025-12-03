@@ -61,7 +61,10 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   };
 
   const createLeadMutation = useMutation({
-    mutationFn: (leadData) => base44.entities.ProspectLead.create(leadData),
+    mutationFn: (leadData) => base44.entities.ProspectLead.create({
+      ...leadData,
+      last_stage_change: new Date().toISOString()
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['prospect-leads'] });
     },
