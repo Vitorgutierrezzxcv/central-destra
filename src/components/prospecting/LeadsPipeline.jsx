@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Plus, 
   Search, 
@@ -34,23 +35,45 @@ import {
   Pencil,
   Trash2,
   Instagram,
-  Loader2
+  Loader2,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  PhoneCall,
+  Send
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format } from "date-fns";
+import { format, differenceInDays, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { base44 } from "@/api/base44Client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const stages = [
   { key: "prospectado", label: "Prospectado", icon: Users, color: "bg-slate-500", description: "Lead identificado" },
   { key: "respondeu", label: "Respondeu", icon: MessageCircle, color: "bg-blue-500", description: "Respondeu mensagem" },
-  { key: "whatsapp_coletado", label: "WhatsApp", icon: Phone, color: "bg-green-500", description: "WhatsApp coletado" },
+  { key: "whatsapp", label: "WhatsApp", icon: Phone, color: "bg-green-500", description: "Foi pro WhatsApp" },
   { key: "reuniao_marcada", label: "Reunião Marcada", icon: Calendar, color: "bg-orange-500", description: "Reunião agendada" },
   { key: "no_show", label: "No-Show", icon: UserX, color: "bg-red-400", description: "Não compareceu" },
-  { key: "reuniao_realizada", label: "Reunião Realizada", icon: Video, color: "bg-purple-500", description: "Reunião feita" },
+  { key: "reuniao_realizada", label: "1ª Reunião", icon: Video, color: "bg-purple-500", description: "Reunião feita" },
   { key: "proposta_enviada", label: "Proposta", icon: FileText, color: "bg-indigo-500", description: "Proposta enviada" },
-  { key: "venda_fechada", label: "Venda Fechada", icon: Trophy, color: "bg-emerald-500", description: "Cliente!" },
+  { key: "segunda_reuniao_marcada", label: "2ª Reunião", icon: Calendar, color: "bg-cyan-500", description: "Segunda reunião" },
+  { key: "venda_fechada", label: "Venda!", icon: Trophy, color: "bg-emerald-500", description: "Cliente!" },
   { key: "perdido", label: "Perdido", icon: XCircle, color: "bg-gray-400", description: "Lead perdido" },
 ];
+
+const recommendationLabels = {
+  aguardar: { label: "Aguardar Resposta", icon: Clock, color: "bg-slate-100 text-slate-700" },
+  follow_up_instagram: { label: "Follow-up Instagram", icon: Instagram, color: "bg-pink-100 text-pink-700" },
+  follow_up_whatsapp: { label: "Pedir WhatsApp", icon: Phone, color: "bg-green-100 text-green-700" },
+  follow_up_whatsapp_msg: { label: "Follow-up WhatsApp", icon: Send, color: "bg-green-100 text-green-700" },
+  ligar: { label: "Ligar", icon: PhoneCall, color: "bg-blue-100 text-blue-700" },
+  montar_proposta: { label: "Montar Proposta", icon: FileText, color: "bg-indigo-100 text-indigo-700" },
+  marcar_segunda_reuniao: { label: "Marcar 2ª Reunião", icon: Calendar, color: "bg-cyan-100 text-cyan-700" },
+  follow_up_proposta: { label: "Follow-up Proposta", icon: Send, color: "bg-purple-100 text-purple-700" },
+  ligar_proposta: { label: "Ligar (Proposta)", icon: PhoneCall, color: "bg-purple-100 text-purple-700" },
+  ligar_no_show: { label: "Ligar (No-Show)", icon: PhoneCall, color: "bg-red-100 text-red-700" },
+  nenhuma: { label: "Sem recomendação", icon: CheckCircle2, color: "bg-gray-100 text-gray-500" },
+};
 
 const sourceLabels = {
   destra: "Perfil Destra",
@@ -59,6 +82,57 @@ const sourceLabels = {
   linkedin: "LinkedIn",
   site: "Site",
   outro: "Outro"
+};
+
+// Calcula recomendação baseada no estágio e tempo
+const calculateRecommendation = (lead) => {
+  if (!lead.last_stage_change && !lead.last_contact_date) return "aguardar";
+  
+  const lastChange = lead.last_stage_change 
+    ? parseISO(lead.last_stage_change) 
+    : parseISO(lead.last_contact_date);
+  const daysSinceChange = differenceInDays(new Date(), lastChange);
+
+  switch (lead.stage) {
+    case "prospectado":
+      if (daysSinceChange >= 2) return "follow_up_whatsapp";
+      if (daysSinceChange >= 1) return "follow_up_instagram";
+      return "aguardar";
+    
+    case "respondeu":
+      if (daysSinceChange >= 2) return "follow_up_whatsapp";
+      if (daysSinceChange >= 1) return "follow_up_instagram";
+      return "aguardar";
+    
+    case "whatsapp":
+      if (daysSinceChange >= 2) return "ligar";
+      if (daysSinceChange >= 1) return "follow_up_whatsapp_msg";
+      return "aguardar";
+    
+    case "reuniao_marcada":
+      return "aguardar";
+    
+    case "no_show":
+      return "ligar_no_show";
+    
+    case "reuniao_realizada":
+      return "montar_proposta";
+    
+    case "proposta_enviada":
+      if (daysSinceChange >= 3) return "ligar_proposta";
+      if (daysSinceChange >= 1) return "follow_up_proposta";
+      return "marcar_segunda_reuniao";
+    
+    case "segunda_reuniao_marcada":
+      return "aguardar";
+    
+    case "venda_fechada":
+    case "perdido":
+      return "nenhuma";
+    
+    default:
+      return "aguardar";
+  }
 };
 
 export default function LeadsPipeline({ 
@@ -75,6 +149,17 @@ export default function LeadsPipeline({
   const [editingLead, setEditingLead] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [stageFilter, setStageFilter] = useState("all");
+  const [showOnlyWithRecommendation, setShowOnlyWithRecommendation] = useState(false);
+
+  const queryClient = useQueryClient();
+
+  // Mutation para criar oportunidade
+  const createOpportunityMutation = useMutation({
+    mutationFn: (data) => base44.entities.Opportunity.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+    }
+  });
 
   const [formData, setFormData] = useState({
     name: "",
@@ -83,11 +168,11 @@ export default function LeadsPipeline({
     email: "",
     source: "destra",
     stage: "prospectado",
-    next_action: "",
-    next_action_date: "",
     seller_email: currentUser?.email || "",
     notes: "",
-    potential_value: ""
+    potential_value: "",
+    company_segment: "",
+    meeting_date: ""
   });
 
   const resetForm = () => {
@@ -98,11 +183,11 @@ export default function LeadsPipeline({
       email: "",
       source: "destra",
       stage: "prospectado",
-      next_action: "",
-      next_action_date: "",
       seller_email: currentUser?.email || "",
       notes: "",
-      potential_value: ""
+      potential_value: "",
+      company_segment: "",
+      meeting_date: ""
     });
     setEditingLead(null);
   };
@@ -115,13 +200,13 @@ export default function LeadsPipeline({
         instagram: lead.instagram || "",
         whatsapp: lead.whatsapp || "",
         email: lead.email || "",
-        source: lead.source || "instagram",
+        source: lead.source || "destra",
         stage: lead.stage || "prospectado",
-        next_action: lead.next_action || "",
-        next_action_date: lead.next_action_date || "",
         seller_email: lead.seller_email || currentUser?.email || "",
         notes: lead.notes || "",
-        potential_value: lead.potential_value || ""
+        potential_value: lead.potential_value || "",
+        company_segment: lead.company_segment || "",
+        meeting_date: lead.meeting_date ? lead.meeting_date.split('T')[0] : ""
       });
     } else {
       resetForm();
@@ -129,15 +214,23 @@ export default function LeadsPipeline({
     setShowForm(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const now = new Date().toISOString();
     const data = {
       ...formData,
       potential_value: formData.potential_value ? parseFloat(formData.potential_value) : null,
-      last_contact_date: new Date().toISOString().split('T')[0]
+      last_contact_date: new Date().toISOString().split('T')[0],
+      last_stage_change: now,
+      recommendation_done: false
     };
 
     if (editingLead) {
+      // Se mudou de estágio, atualiza timestamp
+      if (editingLead.stage !== formData.stage) {
+        data.last_stage_change = now;
+        data.recommendation_done = false;
+      }
       onUpdateLead(editingLead.id, data);
     } else {
       onCreateLead(data);
@@ -146,60 +239,125 @@ export default function LeadsPipeline({
     resetForm();
   };
 
-  const handleStageChange = (lead, newStage) => {
-    onUpdateLead(lead.id, { 
-      ...lead, 
+  const handleStageChange = async (lead, newStage) => {
+    const now = new Date().toISOString();
+    const updateData = { 
       stage: newStage,
+      last_contact_date: new Date().toISOString().split('T')[0],
+      last_stage_change: now,
+      recommendation_done: false
+    };
+
+    // Se passou para reunião realizada, criar oportunidade automaticamente
+    if (newStage === "reuniao_realizada" && lead.stage !== "reuniao_realizada" && !lead.opportunity_id) {
+      const opportunity = await createOpportunityMutation.mutateAsync({
+        title: `Oportunidade - ${lead.name}`,
+        stage: "presentation",
+        status: "open",
+        source: lead.source,
+        contact_name: lead.name,
+        contact_email: lead.email,
+        contact_phone: lead.whatsapp,
+        value: lead.potential_value || 0,
+        assigned_to: lead.seller_email,
+        needs: lead.notes,
+        next_step: "Montar e enviar proposta"
+      });
+      
+      if (opportunity?.id) {
+        updateData.opportunity_id = opportunity.id;
+      }
+    }
+
+    onUpdateLead(lead.id, updateData);
+  };
+
+  const handleRecommendationDone = (lead) => {
+    onUpdateLead(lead.id, {
+      recommendation_done: true,
       last_contact_date: new Date().toISOString().split('T')[0]
     });
   };
 
+  // Leads com recomendações calculadas
+  const leadsWithRecommendations = useMemo(() => {
+    return leads.map(lead => ({
+      ...lead,
+      calculatedRecommendation: calculateRecommendation(lead)
+    }));
+  }, [leads]);
+
   // Filter leads
-  const filteredLeads = leads.filter(lead => {
+  const filteredLeads = leadsWithRecommendations.filter(lead => {
     const matchesSearch = 
       lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.instagram?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStage = stageFilter === "all" || lead.stage === stageFilter;
     const matchesSeller = selectedSeller === "all" || lead.seller_email === selectedSeller;
-    return matchesSearch && matchesStage && matchesSeller;
+    const matchesRecommendation = !showOnlyWithRecommendation || 
+      (lead.calculatedRecommendation !== "aguardar" && 
+       lead.calculatedRecommendation !== "nenhuma" && 
+       !lead.recommendation_done);
+    return matchesSearch && matchesStage && matchesSeller && matchesRecommendation;
   });
 
   // Count leads per stage
   const stageCounts = stages.reduce((acc, stage) => {
-    acc[stage.key] = filteredLeads.filter(l => l.stage === stage.key).length;
+    acc[stage.key] = leadsWithRecommendations.filter(l => 
+      l.stage === stage.key && 
+      (selectedSeller === "all" || l.seller_email === selectedSeller)
+    ).length;
     return acc;
   }, {});
 
-  const totalLeads = filteredLeads.length;
+  // Count leads with pending recommendations
+  const pendingRecommendations = leadsWithRecommendations.filter(l => 
+    l.calculatedRecommendation !== "aguardar" && 
+    l.calculatedRecommendation !== "nenhuma" && 
+    !l.recommendation_done &&
+    (selectedSeller === "all" || l.seller_email === selectedSeller)
+  ).length;
+
+  const totalLeads = leadsWithRecommendations.filter(l => 
+    selectedSeller === "all" || l.seller_email === selectedSeller
+  ).length;
 
   return (
     <div className="space-y-6">
       {/* Pipeline Overview */}
       <Card className="bg-gradient-to-br from-slate-900 to-slate-800 border-none">
         <CardHeader className="pb-2">
-          <CardTitle className="text-white flex items-center gap-2 text-base md:text-lg">
-            <ChevronRight className="w-5 h-5 text-purple-400" />
-            Pipeline de Vendas
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-white flex items-center gap-2 text-base md:text-lg">
+              <ChevronRight className="w-5 h-5 text-purple-400" />
+              Pipeline de Vendas
+            </CardTitle>
+            {pendingRecommendations > 0 && (
+              <Badge className="bg-amber-500 text-white">
+                <AlertCircle className="w-3 h-3 mr-1" />
+                {pendingRecommendations} ações pendentes
+              </Badge>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2 md:gap-4 items-center justify-center py-2">
+          <div className="flex flex-wrap gap-2 md:gap-3 items-center justify-center py-2">
             {stages.slice(0, -1).map((stage, idx) => {
               const Icon = stage.icon;
               const count = stageCounts[stage.key] || 0;
               return (
                 <React.Fragment key={stage.key}>
                   <div className="flex flex-col items-center">
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full ${stage.color} flex items-center justify-center mb-1`}>
-                      <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    <div className={`w-9 h-9 md:w-11 md:h-11 rounded-full ${stage.color} flex items-center justify-center mb-1`}>
+                      <Icon className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
-                    <span className="text-white font-bold text-sm md:text-base">{count}</span>
-                    <span className="text-white/70 text-[10px] md:text-xs text-center max-w-[60px] md:max-w-[80px] leading-tight">
+                    <span className="text-white font-bold text-sm">{count}</span>
+                    <span className="text-white/70 text-[9px] md:text-[10px] text-center max-w-[55px] md:max-w-[70px] leading-tight">
                       {stage.label}
                     </span>
                   </div>
                   {idx < stages.length - 2 && (
-                    <ChevronRight className="w-4 h-4 text-white/30 hidden md:block" />
+                    <ChevronRight className="w-3 h-3 text-white/30 hidden md:block" />
                   )}
                 </React.Fragment>
               );
@@ -223,7 +381,7 @@ export default function LeadsPipeline({
           />
         </div>
         <Select value={stageFilter} onValueChange={setStageFilter}>
-          <SelectTrigger className="w-full md:w-[200px] h-11 border-slate-200">
+          <SelectTrigger className="w-full md:w-[180px] h-11 border-slate-200">
             <SelectValue placeholder="Filtrar por etapa" />
           </SelectTrigger>
           <SelectContent>
@@ -233,6 +391,14 @@ export default function LeadsPipeline({
             ))}
           </SelectContent>
         </Select>
+        <Button
+          variant={showOnlyWithRecommendation ? "default" : "outline"}
+          onClick={() => setShowOnlyWithRecommendation(!showOnlyWithRecommendation)}
+          className={`h-11 ${showOnlyWithRecommendation ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+        >
+          <AlertCircle className="w-4 h-4 mr-2" />
+          Ações Pendentes
+        </Button>
         <Button 
           onClick={() => handleOpenForm()}
           className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 h-11"
@@ -248,35 +414,33 @@ export default function LeadsPipeline({
           <table className="w-full">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="text-left p-3 md:p-4 font-semibold text-slate-700 min-w-[180px]">Lead</th>
-                {stages.map(stage => {
-                  const Icon = stage.icon;
-                  return (
-                    <th key={stage.key} className="text-center p-2 md:p-3 font-semibold text-slate-700 min-w-[80px]">
-                      <div className="flex flex-col items-center gap-1">
-                        <div className={`w-6 h-6 md:w-7 md:h-7 rounded-full ${stage.color} flex items-center justify-center`}>
-                          <Icon className="w-3 h-3 md:w-4 md:h-4 text-white" />
-                        </div>
-                        <span className="text-[10px] md:text-xs">{stage.label}</span>
-                      </div>
-                    </th>
-                  );
-                })}
-                <th className="text-center p-2 md:p-3 font-semibold text-slate-700 min-w-[120px]">Próxima Ação</th>
-                <th className="text-center p-2 md:p-3 font-semibold text-slate-700 min-w-[80px]">Ações</th>
+                <th className="text-left p-3 font-semibold text-slate-700 min-w-[160px]">Lead</th>
+                <th className="text-left p-3 font-semibold text-slate-700 min-w-[100px]">Etapa</th>
+                <th className="text-left p-3 font-semibold text-slate-700 min-w-[180px]">Recomendação</th>
+                <th className="text-center p-3 font-semibold text-slate-700 min-w-[100px]">Último Contato</th>
+                <th className="text-center p-3 font-semibold text-slate-700 min-w-[80px]">Ações</th>
               </tr>
             </thead>
             <tbody>
               <AnimatePresence>
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={stages.length + 3} className="text-center py-12 text-slate-500">
-                      Nenhum lead encontrado. Clique em "Novo Lead" para adicionar.
+                    <td colSpan={5} className="text-center py-12 text-slate-500">
+                      {showOnlyWithRecommendation 
+                        ? "Nenhuma ação pendente! 🎉" 
+                        : "Nenhum lead encontrado."}
                     </td>
                   </tr>
                 ) : (
                   filteredLeads.map(lead => {
                     const seller = users.find(u => u.email === lead.seller_email);
+                    const currentStage = stages.find(s => s.key === lead.stage);
+                    const StageIcon = currentStage?.icon || Users;
+                    const recommendation = recommendationLabels[lead.calculatedRecommendation] || recommendationLabels.aguardar;
+                    const RecommendationIcon = recommendation.icon;
+                    const showRecommendation = lead.calculatedRecommendation !== "aguardar" && 
+                                               lead.calculatedRecommendation !== "nenhuma";
+                    
                     return (
                       <motion.tr
                         key={lead.id}
@@ -285,67 +449,100 @@ export default function LeadsPipeline({
                         exit={{ opacity: 0 }}
                         className="border-b border-slate-100 hover:bg-slate-50/50"
                       >
-                        <td className="p-3 md:p-4">
+                        <td className="p-3">
                           <div className="flex flex-col">
-                            <span className="font-semibold text-slate-900 text-sm md:text-base">{lead.name}</span>
+                            <span className="font-semibold text-slate-900 text-sm">{lead.name}</span>
                             {lead.instagram && (
-                              <span className="text-xs text-blue-500 flex items-center gap-1">
+                              <span className="text-xs text-pink-500 flex items-center gap-1">
                                 <Instagram className="w-3 h-3" />
                                 {lead.instagram}
                               </span>
                             )}
-                            <span className="text-[10px] md:text-xs text-slate-400">
+                            {lead.whatsapp && (
+                              <span className="text-xs text-green-600 flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {lead.whatsapp}
+                              </span>
+                            )}
+                            <span className="text-[10px] text-slate-400 mt-1">
                               {seller?.full_name || lead.seller_email}
                             </span>
-                          </div>
-                        </td>
-                        {stages.map(stage => {
-                          const isCurrentStage = lead.stage === stage.key;
-                          const stageIndex = stages.findIndex(s => s.key === stage.key);
-                          const currentIndex = stages.findIndex(s => s.key === lead.stage);
-                          const isPassed = stageIndex < currentIndex;
-                          
-                          return (
-                            <td key={stage.key} className="text-center p-2">
-                              <button
-                                onClick={() => handleStageChange(lead, stage.key)}
-                                className={`w-6 h-6 md:w-7 md:h-7 rounded-full border-2 flex items-center justify-center transition-all
-                                  ${isCurrentStage 
-                                    ? `${stage.color} border-transparent` 
-                                    : isPassed 
-                                      ? 'bg-green-100 border-green-500' 
-                                      : 'bg-white border-slate-200 hover:border-slate-400'
-                                  }`}
-                              >
-                                {isCurrentStage && (
-                                  <div className="w-2 h-2 bg-white rounded-full" />
-                                )}
-                                {isPassed && (
-                                  <svg className="w-3 h-3 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                )}
-                              </button>
-                            </td>
-                          );
-                        })}
-                        <td className="p-2 md:p-3 text-center">
-                          <div className="flex flex-col items-center">
-                            {lead.next_action ? (
-                              <>
-                                <span className="text-xs text-slate-700 max-w-[100px] truncate">{lead.next_action}</span>
-                                {lead.next_action_date && (
-                                  <Badge variant="outline" className="text-[10px] mt-1">
-                                    {format(new Date(lead.next_action_date), "dd/MM", { locale: ptBR })}
-                                  </Badge>
-                                )}
-                              </>
-                            ) : (
-                              <span className="text-xs text-slate-400">-</span>
+                            {lead.opportunity_id && (
+                              <Badge variant="outline" className="w-fit mt-1 text-[10px] border-purple-300 text-purple-600">
+                                No CRM
+                              </Badge>
                             )}
                           </div>
                         </td>
-                        <td className="p-2 md:p-3 text-center">
+                        <td className="p-3">
+                          <Select 
+                            value={lead.stage} 
+                            onValueChange={(v) => handleStageChange(lead, v)}
+                          >
+                            <SelectTrigger className="h-9 w-[140px] border-slate-200">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-5 h-5 rounded-full ${currentStage?.color} flex items-center justify-center`}>
+                                  <StageIcon className="w-3 h-3 text-white" />
+                                </div>
+                                <span className="text-xs truncate">{currentStage?.label}</span>
+                              </div>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {stages.map(stage => {
+                                const Icon = stage.icon;
+                                return (
+                                  <SelectItem key={stage.key} value={stage.key}>
+                                    <div className="flex items-center gap-2">
+                                      <div className={`w-5 h-5 rounded-full ${stage.color} flex items-center justify-center`}>
+                                        <Icon className="w-3 h-3 text-white" />
+                                      </div>
+                                      {stage.label}
+                                    </div>
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                        </td>
+                        <td className="p-3">
+                          {showRecommendation ? (
+                            <div className="flex items-center gap-2">
+                              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
+                                <RecommendationIcon className="w-3.5 h-3.5" />
+                                {recommendation.label}
+                              </div>
+                              {!lead.recommendation_done ? (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleRecommendationDone(lead)}
+                                  className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                                >
+                                  <CheckCircle2 className="w-4 h-4" />
+                                </Button>
+                              ) : (
+                                <Badge variant="outline" className="text-green-600 border-green-300 text-[10px]">
+                                  Feito
+                                </Badge>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-xs text-slate-400 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {lead.stage === "venda_fechada" ? "Concluído! 🎉" : "Aguardando resposta..."}
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3 text-center">
+                          {lead.last_contact_date ? (
+                            <span className="text-xs text-slate-600">
+                              {format(parseISO(lead.last_contact_date), "dd/MM", { locale: ptBR })}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400">-</span>
+                          )}
+                        </td>
+                        <td className="p-3 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <Button
                               variant="ghost"
@@ -418,6 +615,14 @@ export default function LeadsPipeline({
                 />
               </div>
               <div className="space-y-2">
+                <Label>Segmento</Label>
+                <Input
+                  value={formData.company_segment}
+                  onChange={(e) => setFormData({ ...formData, company_segment: e.target.value })}
+                  placeholder="Ex: E-commerce, SaaS..."
+                />
+              </div>
+              <div className="space-y-2">
                 <Label>Origem</Label>
                 <Select value={formData.source} onValueChange={(v) => setFormData({ ...formData, source: v })}>
                   <SelectTrigger>
@@ -468,22 +673,14 @@ export default function LeadsPipeline({
                   placeholder="0,00"
                 />
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Próxima Ação</Label>
-              <Input
-                value={formData.next_action}
-                onChange={(e) => setFormData({ ...formData, next_action: e.target.value })}
-                placeholder="Ex: Enviar mensagem de follow-up"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Data da Próxima Ação</Label>
-              <Input
-                type="date"
-                value={formData.next_action_date}
-                onChange={(e) => setFormData({ ...formData, next_action_date: e.target.value })}
-              />
+              <div className="space-y-2">
+                <Label>Data da Reunião</Label>
+                <Input
+                  type="datetime-local"
+                  value={formData.meeting_date}
+                  onChange={(e) => setFormData({ ...formData, meeting_date: e.target.value })}
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Observações</Label>
