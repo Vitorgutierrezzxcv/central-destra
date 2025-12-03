@@ -45,7 +45,15 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   // Quick lead registration
   const [newLeadName, setNewLeadName] = useState("");
   const [newLeadSource, setNewLeadSource] = useState("destra");
+  const [newLeadStage, setNewLeadStage] = useState("prospectado");
   const [todayLeads, setTodayLeads] = useState([]);
+
+  const stageLabels = {
+    prospectado: "Prospectado",
+    respondeu: "Respondeu",
+    whatsapp_coletado: "WhatsApp",
+    reuniao_marcada: "Reunião Marcada",
+  };
 
   const createLeadMutation = useMutation({
     mutationFn: (leadData) => base44.entities.ProspectLead.create(leadData),
