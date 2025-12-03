@@ -252,13 +252,8 @@ function ProspectingContent() {
         <AnimatePresence>
           {showForm && (
             <ProspectingForm
-              metric={editingMetric}
-              onSubmit={handleSubmit}
-              onCancel={() => {
-                setShowForm(false);
-                setEditingMetric(null);
-              }}
-              isLoading={createMetricMutation.isPending || updateMetricMutation.isPending}
+              date={selectedFormDate}
+              onCancel={() => setShowForm(false)}
               currentUserEmail={user?.email}
               allLeads={leads}
             />
