@@ -526,35 +526,28 @@ export default function LeadsPipeline({
                         </Select>
                       </div>
 
-                      {/* Recommendation */}
-                      {showRecommendation ? (
-                        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
-                          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
-                            <RecommendationIcon className="w-3.5 h-3.5" />
-                            {recommendation.label}
-                          </div>
-                          {!lead.recommendation_done ? (
-                            <Button
-                              size="sm"
-                              onClick={() => handleRecommendationDone(lead)}
-                              className="h-8 bg-green-600 hover:bg-green-700 text-white"
-                            >
-                              <CheckCircle2 className="w-4 h-4 mr-1" />
-                              Feito
-                            </Button>
-                          ) : (
-                            <Badge className="bg-green-100 text-green-700">
-                              <CheckCircle2 className="w-3 h-3 mr-1" />
-                              Feito
-                            </Badge>
-                          )}
+                      {/* Recommendation - Sempre mostra */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
+                          <RecommendationIcon className="w-3.5 h-3.5" />
+                          {recommendation.label}
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-xs text-slate-400 p-2">
-                          <Clock className="w-3 h-3" />
-                          {lead.stage === "venda_fechada" ? "Concluído! 🎉" : "Aguardando resposta..."}
-                        </div>
-                      )}
+                        {showRecommendation && !lead.recommendation_done ? (
+                          <Button
+                            size="sm"
+                            onClick={() => handleRecommendationDone(lead)}
+                            className="h-8 bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <CheckCircle2 className="w-4 h-4 mr-1" />
+                            Feito
+                          </Button>
+                        ) : showRecommendation && lead.recommendation_done ? (
+                          <Badge className="bg-green-100 text-green-700">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Feito
+                          </Badge>
+                        ) : null}
+                      </div>
 
                       {/* Footer */}
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
@@ -680,33 +673,26 @@ export default function LeadsPipeline({
                           </Select>
                         </td>
                         <td className="p-3">
-                          {showRecommendation ? (
-                            <div className="flex items-center gap-2">
-                              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
-                                <RecommendationIcon className="w-3.5 h-3.5" />
-                                {recommendation.label}
-                              </div>
-                              {!lead.recommendation_done ? (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleRecommendationDone(lead)}
-                                  className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                >
-                                  <CheckCircle2 className="w-4 h-4" />
-                                </Button>
-                              ) : (
-                                <Badge variant="outline" className="text-green-600 border-green-300 text-[10px]">
-                                  Feito
-                                </Badge>
-                              )}
+                          <div className="flex items-center gap-2">
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
+                              <RecommendationIcon className="w-3.5 h-3.5" />
+                              {recommendation.label}
                             </div>
-                          ) : (
-                            <span className="text-xs text-slate-400 flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {lead.stage === "venda_fechada" ? "Concluído! 🎉" : "Aguardando resposta..."}
-                            </span>
-                          )}
+                            {showRecommendation && !lead.recommendation_done ? (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleRecommendationDone(lead)}
+                                className="h-7 px-2 text-green-600 hover:text-green-700 hover:bg-green-50"
+                              >
+                                <CheckCircle2 className="w-4 h-4" />
+                              </Button>
+                            ) : showRecommendation && lead.recommendation_done ? (
+                              <Badge variant="outline" className="text-green-600 border-green-300 text-[10px]">
+                                Feito
+                              </Badge>
+                            ) : null}
+                          </div>
                         </td>
                         <td className="p-3 text-center">
                           {lead.last_contact_date ? (
