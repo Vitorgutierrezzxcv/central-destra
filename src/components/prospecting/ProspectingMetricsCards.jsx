@@ -22,12 +22,12 @@ export default function ProspectingMetricsCards({ currentMetrics, comparisonMetr
     const stageMapping = {
       instagram_leads: 'prospectado',
       instagram_responses: 'respondeu',
-      whatsapp_collected: 'whatsapp_coletado',
+      whatsapp_collected: 'whatsapp',
       meetings_scheduled: 'reuniao_marcada',
       meetings_held: 'reuniao_realizada',
       no_shows: 'no_show',
-      follow_ups_sent: 'follow_up_enviado',
-      follow_ups_responses: 'follow_up_respondido',
+      follow_ups_sent: 'proposta_enviada',
+      follow_ups_responses: 'segunda_reuniao_marcada',
     };
 
     // Se tem mapeamento para leads, soma os dois
