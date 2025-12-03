@@ -186,14 +186,21 @@ function ProspectingContent() {
   const currentMetrics = filterMetricsByRange(sellerFilteredMetrics, currentStart, currentEnd);
   const comparisonMetrics = filterMetricsByRange(sellerFilteredMetrics, compStart, compEnd);
 
-  // Filter leads by seller (sem filtro de data para métricas - conta todos os leads)
+  // Filter leads by date range and seller
+  const filterLeadsByRange = (leadsData, start, end) => {
+    return leadsData.filter(l => {
+      if (!l.last_contact_date && !l.created_date) return false;
+      const leadDate = parseISO(l.last_contact_date || l.created_date?.split('T')[0]);
+      return isWithinInterval(leadDate, { start, end });
+    });
+  };
+
   const sellerFilteredLeads = selectedSeller === "all"
     ? leads
     : leads.filter(l => l.seller_email === selectedSeller);
 
-  // Para métricas, usa todos os leads (sem filtro de data)
-  const currentLeads = sellerFilteredLeads;
-  const comparisonLeads = [];
+  const currentLeads = filterLeadsByRange(sellerFilteredLeads, currentStart, currentEnd);
+  const comparisonLeads = filterLeadsByRange(sellerFilteredLeads, compStart, compEnd);
 
   // Get unique sellers from metrics
   const sellersInMetrics = [...new Set(metrics.map(m => m.seller_email).filter(Boolean))];
