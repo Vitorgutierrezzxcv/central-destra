@@ -312,6 +312,7 @@ function ProspectingContent() {
               }}
               isLoading={createMetricMutation.isPending || updateMetricMutation.isPending}
               currentUserEmail={user?.email}
+              allLeads={leads}
             />
           )}
         </AnimatePresence>
