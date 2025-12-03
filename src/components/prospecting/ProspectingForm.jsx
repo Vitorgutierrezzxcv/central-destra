@@ -199,12 +199,12 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
                   <SelectContent>
                     <SelectItem value="prospectado">Prospectado</SelectItem>
                     <SelectItem value="respondeu">Respondeu</SelectItem>
-                    <SelectItem value="whatsapp_coletado">WhatsApp</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
                     <SelectItem value="reuniao_marcada">Reunião Marcada</SelectItem>
                     <SelectItem value="no_show">No-Show</SelectItem>
-                    <SelectItem value="reuniao_realizada">Reunião Realizada</SelectItem>
-                    <SelectItem value="follow_up_enviado">Follow-up Enviado</SelectItem>
-                    <SelectItem value="follow_up_respondido">Follow-up Respondido</SelectItem>
+                    <SelectItem value="reuniao_realizada">1ª Reunião</SelectItem>
+                    <SelectItem value="proposta_enviada">Proposta</SelectItem>
+                    <SelectItem value="segunda_reuniao_marcada">2ª Reunião</SelectItem>
                     <SelectItem value="venda_fechada">Venda Realizada</SelectItem>
                   </SelectContent>
                 </Select>
