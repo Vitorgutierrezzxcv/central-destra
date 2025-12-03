@@ -20,12 +20,18 @@ import { base44 } from "@/api/base44Client";
 export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail }) {
   const queryClient = useQueryClient();
   
-  // Fetch all users for seller selection
-  const { data: users } = useQuery({
-    queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list(),
+  // Fetch all users for seller selection - usando UserProfile que é acessível a todos
+  const { data: userProfiles } = useQuery({
+    queryKey: ['user-profiles'],
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
+
+  // Mapeia os perfis para o formato esperado
+  const users = userProfiles.map(profile => ({
+    email: profile.user_email,
+    full_name: profile.full_name || profile.display_name || profile.user_email
+  }));
 
   const [currentMetric, setCurrentMetric] = useState(metric || {
     date: new Date().toISOString().split('T')[0],
