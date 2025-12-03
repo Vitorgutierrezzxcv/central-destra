@@ -365,6 +365,8 @@ function ProspectingContent() {
                 <ProspectingMetricsCards
                   currentMetrics={currentMetrics}
                   comparisonMetrics={comparisonMetrics}
+                  leads={currentLeads}
+                  comparisonLeads={comparisonLeads}
                   dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
                 />
                 <ConversionFunnel metrics={currentMetrics} />
