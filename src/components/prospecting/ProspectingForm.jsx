@@ -51,12 +51,12 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   const stageLabels = {
     prospectado: "Prospectado",
     respondeu: "Respondeu",
-    whatsapp_coletado: "WhatsApp",
+    whatsapp: "WhatsApp",
     reuniao_marcada: "Reunião Marcada",
     no_show: "No-Show",
-    reuniao_realizada: "Reunião Realizada",
-    follow_up_enviado: "Follow-up Enviado",
-    follow_up_respondido: "Follow-up Respondido",
+    reuniao_realizada: "1ª Reunião",
+    proposta_enviada: "Proposta",
+    segunda_reuniao_marcada: "2ª Reunião",
     venda_fechada: "Venda Realizada",
   };
 
