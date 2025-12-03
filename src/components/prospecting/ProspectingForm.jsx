@@ -209,7 +209,7 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
                   </SelectContent>
                 </Select>
                 <Select value={newLeadStage} onValueChange={setNewLeadStage}>
-                  <SelectTrigger className="w-full sm:w-[140px] h-10 border-slate-200 bg-white">
+                  <SelectTrigger className="w-full sm:w-[160px] h-10 border-slate-200 bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -217,6 +217,11 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
                     <SelectItem value="respondeu">Respondeu</SelectItem>
                     <SelectItem value="whatsapp_coletado">WhatsApp</SelectItem>
                     <SelectItem value="reuniao_marcada">Reunião Marcada</SelectItem>
+                    <SelectItem value="no_show">No-Show</SelectItem>
+                    <SelectItem value="reuniao_realizada">Reunião Realizada</SelectItem>
+                    <SelectItem value="follow_up_enviado">Follow-up Enviado</SelectItem>
+                    <SelectItem value="follow_up_respondido">Follow-up Respondido</SelectItem>
+                    <SelectItem value="venda_fechada">Venda Realizada</SelectItem>
                   </SelectContent>
                 </Select>
                 <Button 
