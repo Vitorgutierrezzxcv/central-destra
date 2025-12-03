@@ -408,8 +408,166 @@ export default function LeadsPipeline({
         </Button>
       </div>
 
-      {/* Leads Table */}
-      <Card className="border-slate-200 overflow-hidden">
+      {/* Mobile Cards View */}
+      <div className="md:hidden space-y-3">
+        <AnimatePresence>
+          {filteredLeads.length === 0 ? (
+            <Card className="border-slate-200">
+              <CardContent className="py-12 text-center text-slate-500">
+                {showOnlyWithRecommendation 
+                  ? "Nenhuma ação pendente! 🎉" 
+                  : "Nenhum lead encontrado."}
+              </CardContent>
+            </Card>
+          ) : (
+            filteredLeads.map(lead => {
+              const seller = users.find(u => u.email === lead.seller_email);
+              const currentStage = stages.find(s => s.key === lead.stage);
+              const StageIcon = currentStage?.icon || Users;
+              const recommendation = recommendationLabels[lead.calculatedRecommendation] || recommendationLabels.aguardar;
+              const RecommendationIcon = recommendation.icon;
+              const showRecommendation = lead.calculatedRecommendation !== "aguardar" && 
+                                         lead.calculatedRecommendation !== "nenhuma";
+              
+              return (
+                <motion.div
+                  key={lead.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                >
+                  <Card className="border-slate-200">
+                    <CardContent className="p-4">
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-slate-900">{lead.name}</h3>
+                          <div className="flex flex-wrap gap-2 mt-1">
+                            {lead.instagram && (
+                              <span className="text-xs text-pink-500 flex items-center gap-1">
+                                <Instagram className="w-3 h-3" />
+                                {lead.instagram}
+                              </span>
+                            )}
+                            {lead.whatsapp && (
+                              <span className="text-xs text-green-600 flex items-center gap-1">
+                                <Phone className="w-3 h-3" />
+                                {lead.whatsapp}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleOpenForm(lead)}
+                            className="h-8 w-8 text-slate-500"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onDeleteLead(lead.id)}
+                            className="h-8 w-8 text-slate-500"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Stage Selector */}
+                      <div className="mb-3">
+                        <Select 
+                          value={lead.stage} 
+                          onValueChange={(v) => handleStageChange(lead, v)}
+                        >
+                          <SelectTrigger className="h-10 w-full border-slate-200">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-6 h-6 rounded-full ${currentStage?.color} flex items-center justify-center`}>
+                                <StageIcon className="w-3.5 h-3.5 text-white" />
+                              </div>
+                              <span className="text-sm font-medium">{currentStage?.label}</span>
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {stages.map(stage => {
+                              const Icon = stage.icon;
+                              return (
+                                <SelectItem key={stage.key} value={stage.key}>
+                                  <div className="flex items-center gap-2">
+                                    <div className={`w-5 h-5 rounded-full ${stage.color} flex items-center justify-center`}>
+                                      <Icon className="w-3 h-3 text-white" />
+                                    </div>
+                                    {stage.label}
+                                  </div>
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Recommendation */}
+                      {showRecommendation ? (
+                        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50">
+                          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${recommendation.color}`}>
+                            <RecommendationIcon className="w-3.5 h-3.5" />
+                            {recommendation.label}
+                          </div>
+                          {!lead.recommendation_done ? (
+                            <Button
+                              size="sm"
+                              onClick={() => handleRecommendationDone(lead)}
+                              className="h-8 bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              <CheckCircle2 className="w-4 h-4 mr-1" />
+                              Feito
+                            </Button>
+                          ) : (
+                            <Badge className="bg-green-100 text-green-700">
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Feito
+                            </Badge>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 text-xs text-slate-400 p-2">
+                          <Clock className="w-3 h-3" />
+                          {lead.stage === "venda_fechada" ? "Concluído! 🎉" : "Aguardando resposta..."}
+                        </div>
+                      )}
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+                        <span className="text-[11px] text-slate-400">
+                          {seller?.full_name || lead.seller_email?.split('@')[0]}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {lead.opportunity_id && (
+                            <Badge variant="outline" className="text-[10px] border-purple-300 text-purple-600">
+                              CRM
+                            </Badge>
+                          )}
+                          {lead.last_contact_date && (
+                            <span className="text-[11px] text-slate-500">
+                              {format(parseISO(lead.last_contact_date), "dd/MM", { locale: ptBR })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Desktop Table View */}
+      <Card className="border-slate-200 overflow-hidden hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
