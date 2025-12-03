@@ -173,6 +173,73 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
               </div>
             </div>
 
+            {/* Quick Lead Registration */}
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-100">
+              <Label className="text-sm font-semibold text-slate-700 mb-3 block">
+                📱 Cadastrar Leads Prospectados
+              </Label>
+              <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                <Input
+                  placeholder="Nome ou @instagram"
+                  value={newLeadName}
+                  onChange={(e) => setNewLeadName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddLead())}
+                  className="flex-1 h-10 border-slate-200 bg-white"
+                />
+                <Select value={newLeadSource} onValueChange={setNewLeadSource}>
+                  <SelectTrigger className="w-full sm:w-[140px] h-10 border-slate-200 bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="destra">Perfil Destra</SelectItem>
+                    <SelectItem value="bernardo">Perfil Bernardo</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button 
+                  type="button" 
+                  onClick={handleAddLead}
+                  disabled={!newLeadName.trim() || createLeadMutation.isPending}
+                  className="h-10 bg-blue-600 hover:bg-blue-700"
+                >
+                  {createLeadMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
+              
+              {todayLeads.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {todayLeads.map((lead) => (
+                    <Badge 
+                      key={lead.id || lead.tempId} 
+                      variant="secondary" 
+                      className="pl-2 pr-1 py-1 bg-white border border-slate-200 text-slate-700"
+                    >
+                      {lead.instagram ? (
+                        <Instagram className="w-3 h-3 mr-1 text-pink-500" />
+                      ) : null}
+                      <span className="text-xs">{lead.name}</span>
+                      <span className="text-[10px] ml-1 text-slate-400">
+                        ({lead.source === 'bernardo' ? 'B' : 'D'})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLead(lead)}
+                        className="ml-1 hover:bg-slate-100 rounded p-0.5"
+                      >
+                        <X className="w-3 h-3 text-slate-400" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-slate-500 mt-2">
+                {todayLeads.length} lead(s) cadastrado(s) hoje
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {fields.map(field => (
                 <div key={field.key} className="space-y-2">
