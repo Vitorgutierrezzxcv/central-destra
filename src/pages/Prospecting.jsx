@@ -36,6 +36,7 @@ function ProspectingContent() {
   const [editingMetric, setEditingMetric] = useState(null);
   const [dateRange, setDateRange] = useState("week");
   const [comparisonPeriod, setComparisonPeriod] = useState("previous");
+  const [selectedSeller, setSelectedSeller] = useState("all");
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -43,11 +44,16 @@ function ProspectingContent() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: metrics, isLoading: loadingMetrics } = useQuery({
-    queryKey: ['prospecting-metrics', user?.email],
-    queryFn: () => base44.entities.ProspectingMetrics.filter({ user_email: user.email }, '-date'),
+  const { data: users } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: () => base44.entities.User.list(),
     initialData: [],
-    enabled: !!user,
+  });
+
+  const { data: metrics, isLoading: loadingMetrics } = useQuery({
+    queryKey: ['prospecting-metrics'],
+    queryFn: () => base44.entities.ProspectingMetrics.list('-date'),
+    initialData: [],
   });
 
   const { data: goals, isLoading: loadingGoals } = useQuery({
