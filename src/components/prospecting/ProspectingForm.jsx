@@ -255,14 +255,14 @@ export default function ProspectingForm({ date, onCancel, currentUserEmail, allL
               </div>
 
               <div className="flex justify-end pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                className="h-11"
-              >
-                Fechar
-              </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  className="h-11"
+                >
+                  Fechar
+                </Button>
               </div>
               </div>
         </CardContent>
