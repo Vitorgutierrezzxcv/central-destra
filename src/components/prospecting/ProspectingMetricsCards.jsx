@@ -3,19 +3,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 export default function ProspectingMetricsCards({ currentMetrics, comparisonMetrics, dateRangeLabel, leads = [], comparisonLeads = [] }) {
-  // Calcula métricas dos dados antigos (ProspectingMetrics)
-  const calculateTotalFromMetrics = (metrics, key) => {
-    return metrics.reduce((sum, m) => sum + (m[key] || 0), 0);
-  };
-
-  // Calcula métricas baseado nos leads cadastrados
-  // Conta todos os leads que passaram por aquele estágio (estágio atual >= estágio alvo)
+  // Ordem dos estágios do funil
   const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
   
+  // Calcula métricas baseado nos leads cadastrados
+  // Conta todos os leads que passaram por aquele estágio (estágio atual >= estágio alvo)
   const calculateFromLeads = (leadsData, stage) => {
+    if (!leadsData || leadsData.length === 0) return 0;
+    
     const stageIndex = stageOrder.indexOf(stage);
+    
     // Conta leads que estão nesse estágio OU passaram por ele (índice maior)
     return leadsData.filter(l => {
+      if (!l.stage) return false;
       const leadStageIndex = stageOrder.indexOf(l.stage);
       // Para prospectado, conta todos os leads
       if (stage === 'prospectado') return true;
@@ -24,11 +24,8 @@ export default function ProspectingMetricsCards({ currentMetrics, comparisonMetr
     }).length;
   };
 
-  // Combina métricas antigas + novas baseadas em leads
-  const getMetricValue = (metricsData, leadsData, key) => {
-    // Valor das métricas antigas
-    const oldValue = calculateTotalFromMetrics(metricsData, key);
-    
+  // Calcula valor baseado apenas nos leads (sem usar métricas antigas)
+  const getMetricValue = (leadsData, key) => {
     // Mapeia as chaves para os stages dos leads
     const stageMapping = {
       instagram_leads: 'prospectado',
@@ -41,20 +38,18 @@ export default function ProspectingMetricsCards({ currentMetrics, comparisonMetr
       follow_ups_responses: 'segunda_reuniao_marcada',
     };
 
-    // Se tem mapeamento para leads, soma os dois
+    // Se tem mapeamento para leads
     if (stageMapping[key]) {
-      const leadsValue = calculateFromLeads(leadsData, stageMapping[key]);
-      return oldValue + leadsValue;
+      return calculateFromLeads(leadsData, stageMapping[key]);
     }
     
-    // Para vendas, usa valor das métricas antigas + leads com venda_fechada
+    // Para vendas, conta leads com venda_fechada e soma valores
     if (key === 'sales_amount') {
-      const salesLeads = leadsData.filter(l => l.stage === 'venda_fechada');
-      const leadsValue = salesLeads.reduce((sum, l) => sum + (l.potential_value || 0), 0);
-      return oldValue + leadsValue;
+      const salesLeads = (leadsData || []).filter(l => l.stage === 'venda_fechada');
+      return salesLeads.reduce((sum, l) => sum + (l.potential_value || 0), 0);
     }
 
-    return oldValue;
+    return 0;
   };
 
   const calculateChange = (current, previous) => {
