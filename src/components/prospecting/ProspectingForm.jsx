@@ -18,6 +18,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
 export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading, currentUserEmail }) {
+  const queryClient = useQueryClient();
+  
   // Fetch all users for seller selection
   const { data: users } = useQuery({
     queryKey: ['all-users'],
@@ -39,6 +41,62 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
     sales_amount: 0,
     notes: ""
   });
+
+  // Quick lead registration
+  const [newLeadName, setNewLeadName] = useState("");
+  const [newLeadSource, setNewLeadSource] = useState("destra");
+  const [todayLeads, setTodayLeads] = useState([]);
+
+  const createLeadMutation = useMutation({
+    mutationFn: (leadData) => base44.entities.ProspectLead.create(leadData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prospect-leads'] });
+    },
+  });
+
+  const deleteLeadMutation = useMutation({
+    mutationFn: (id) => base44.entities.ProspectLead.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prospect-leads'] });
+    },
+  });
+
+  const handleAddLead = () => {
+    if (!newLeadName.trim()) return;
+    
+    const isInstagram = newLeadName.startsWith("@");
+    const leadData = {
+      name: isInstagram ? newLeadName : newLeadName,
+      instagram: isInstagram ? newLeadName : "",
+      source: newLeadSource,
+      stage: "prospectado",
+      seller_email: currentMetric.seller_email || currentUserEmail,
+      last_contact_date: currentMetric.date
+    };
+
+    createLeadMutation.mutate(leadData, {
+      onSuccess: (createdLead) => {
+        setTodayLeads([...todayLeads, { ...leadData, id: createdLead?.id, tempId: Date.now() }]);
+        setNewLeadName("");
+        // Update instagram_leads count
+        setCurrentMetric(prev => ({
+          ...prev,
+          instagram_leads: prev.instagram_leads + 1
+        }));
+      }
+    });
+  };
+
+  const handleRemoveLead = (lead) => {
+    if (lead.id) {
+      deleteLeadMutation.mutate(lead.id);
+    }
+    setTodayLeads(todayLeads.filter(l => (l.id || l.tempId) !== (lead.id || lead.tempId)));
+    setCurrentMetric(prev => ({
+      ...prev,
+      instagram_leads: Math.max(0, prev.instagram_leads - 1)
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
