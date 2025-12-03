@@ -56,12 +56,19 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
   const [newLeadStage, setNewLeadStage] = useState("prospectado");
   
   // Carrega leads do dia selecionado
-  const leadsForDate = allLeads.filter(l => {
-    const leadDate = l.last_contact_date || l.created_date?.split('T')[0];
-    return leadDate === formDate && l.seller_email === (currentMetric.seller_email || currentUserEmail);
-  });
+  const getLeadsForDate = () => {
+    return allLeads.filter(l => {
+      const leadDate = l.last_contact_date || l.created_date?.split('T')[0];
+      return leadDate === formDate && l.seller_email === (currentMetric.seller_email || currentUserEmail);
+    });
+  };
   
-  const [todayLeads, setTodayLeads] = useState(leadsForDate);
+  const [todayLeads, setTodayLeads] = useState(getLeadsForDate);
+  
+  // Atualiza lista quando allLeads muda
+  React.useEffect(() => {
+    setTodayLeads(getLeadsForDate());
+  }, [allLeads, formDate, currentMetric.seller_email]);
 
   const stageLabels = {
     prospectado: "Prospectado",
