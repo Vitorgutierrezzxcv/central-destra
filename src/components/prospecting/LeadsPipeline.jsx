@@ -370,42 +370,47 @@ export default function LeadsPipeline({
       </Card>
 
       {/* Filters and Actions */}
-      <div className="flex flex-col md:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <Input
-            placeholder="Buscar por nome ou Instagram..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-11 border-slate-200"
-          />
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              placeholder="Buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-10 border-slate-200"
+            />
+          </div>
+          <Button 
+            onClick={() => handleOpenForm()}
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 h-10 px-3 md:px-4"
+          >
+            <Plus className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Novo Lead</span>
+          </Button>
         </div>
-        <Select value={stageFilter} onValueChange={setStageFilter}>
-          <SelectTrigger className="w-full md:w-[180px] h-11 border-slate-200">
-            <SelectValue placeholder="Filtrar por etapa" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas as etapas</SelectItem>
-            {stages.map(stage => (
-              <SelectItem key={stage.key} value={stage.key}>{stage.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          variant={showOnlyWithRecommendation ? "default" : "outline"}
-          onClick={() => setShowOnlyWithRecommendation(!showOnlyWithRecommendation)}
-          className={`h-11 ${showOnlyWithRecommendation ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
-        >
-          <AlertCircle className="w-4 h-4 mr-2" />
-          Ações Pendentes
-        </Button>
-        <Button 
-          onClick={() => handleOpenForm()}
-          className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 h-11"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Lead
-        </Button>
+        <div className="flex gap-2">
+          <Select value={stageFilter} onValueChange={setStageFilter}>
+            <SelectTrigger className="flex-1 md:w-[180px] md:flex-none h-10 border-slate-200">
+              <SelectValue placeholder="Etapa" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as etapas</SelectItem>
+              {stages.map(stage => (
+                <SelectItem key={stage.key} value={stage.key}>{stage.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant={showOnlyWithRecommendation ? "default" : "outline"}
+            onClick={() => setShowOnlyWithRecommendation(!showOnlyWithRecommendation)}
+            className={`h-10 flex-1 md:flex-none ${showOnlyWithRecommendation ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+          >
+            <AlertCircle className="w-4 h-4 md:mr-2" />
+            <span className="hidden md:inline">Ações Pendentes</span>
+            <span className="md:hidden">{pendingRecommendations}</span>
+          </Button>
+        </div>
       </div>
 
       {/* Mobile Cards View */}
