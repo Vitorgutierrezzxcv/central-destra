@@ -53,6 +53,11 @@ export default function ProspectingForm({ metric, onSubmit, onCancel, isLoading,
     respondeu: "Respondeu",
     whatsapp_coletado: "WhatsApp",
     reuniao_marcada: "Reunião Marcada",
+    no_show: "No-Show",
+    reuniao_realizada: "Reunião Realizada",
+    follow_up_enviado: "Follow-up Enviado",
+    follow_up_respondido: "Follow-up Respondido",
+    venda_fechada: "Venda Realizada",
   };
 
   const createLeadMutation = useMutation({
