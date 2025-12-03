@@ -83,8 +83,8 @@ export default function ProspectingMetricsCards({ currentMetrics, comparisonMetr
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {metrics.map((metric) => {
-        const currentValue = getMetricValue(leads, metric.key);
-        const previousValue = getMetricValue(comparisonLeads, metric.key);
+        const currentValue = getMetricValue(currentMetrics, leads, metric.key);
+        const previousValue = getMetricValue(comparisonMetrics, comparisonLeads, metric.key);
         const change = calculateChange(currentValue, previousValue);
         const isPositive = change > 0;
         const isNegative = change < 0;
