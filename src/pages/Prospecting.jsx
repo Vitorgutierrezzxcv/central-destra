@@ -45,11 +45,18 @@ function ProspectingContent() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: users } = useQuery({
-    queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list(),
+  // Usar UserProfile que é acessível a todos os usuários
+  const { data: userProfiles } = useQuery({
+    queryKey: ['user-profiles'],
+    queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
+
+  // Mapeia os perfis para o formato esperado
+  const users = userProfiles.map(profile => ({
+    email: profile.user_email,
+    full_name: profile.full_name || profile.display_name || profile.user_email
+  }));
 
   const { data: metrics, isLoading: loadingMetrics } = useQuery({
     queryKey: ['prospecting-metrics'],
