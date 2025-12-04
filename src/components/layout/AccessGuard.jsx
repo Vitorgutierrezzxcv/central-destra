@@ -59,6 +59,9 @@ function getDefaultPageForUser(allowedModules) {
     prospecting: "Prospecting"
   };
   
+  // Prioriza prospecção se o usuário tiver acesso
+  if (allowedModules.includes('prospecting')) return "Prospecting";
+  
   return modulePages[allowedModules[0]] || "Dashboard";
 }
 
