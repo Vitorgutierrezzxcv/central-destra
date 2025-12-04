@@ -18,8 +18,9 @@ import StatsCards from "../components/dashboard/StatsCards";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
 import UpcomingTasks from "../components/dashboard/UpcomingTasks";
 import UserPerformanceRanking from "../components/dashboard/UserPerformanceRanking";
+import AccessGuard from "../components/layout/AccessGuard";
 
-export default function Dashboard() {
+function DashboardContent() {
   const [viewMode, setViewMode] = useState("week");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -207,5 +208,13 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <AccessGuard requiredModule="taskflow">
+      <DashboardContent />
+    </AccessGuard>
   );
 }
