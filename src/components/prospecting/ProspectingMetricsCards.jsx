@@ -33,13 +33,17 @@ export default function ProspectingMetricsCards({ leads = [], comparisonLeads = 
       whatsapp_collected: 'whatsapp',
       meetings_scheduled: 'reuniao_marcada',
       meetings_held: 'reuniao_realizada',
-      no_shows: 'no_show',
       follow_ups_sent: 'proposta_enviada',
       follow_ups_responses: 'segunda_reuniao_marcada',
     };
 
     if (stageMapping[key]) {
       return calculateFromLeads(leadsData, stageMapping[key]);
+    }
+    
+    // Para no-shows, conta apenas leads que estão atualmente nesse estágio
+    if (key === 'no_shows') {
+      return (leadsData || []).filter(l => l.stage === 'no_show').length;
     }
     
     // Para vendas, conta leads com venda_fechada e soma valores
