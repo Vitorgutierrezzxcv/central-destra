@@ -276,6 +276,7 @@ function ProspectingContent() {
               onCancel={() => setShowForm(false)}
               currentUserEmail={user?.email}
               allLeads={leads}
+              prospectingUsers={prospectingUsers}
             />
           )}
         </AnimatePresence>
