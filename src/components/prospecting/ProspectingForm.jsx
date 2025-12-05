@@ -17,21 +17,11 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
-export default function ProspectingForm({ date, onCancel, currentUserEmail, allLeads = [] }) {
+export default function ProspectingForm({ date, onCancel, currentUserEmail, allLeads = [], prospectingUsers = [] }) {
   const queryClient = useQueryClient();
   
-  // Fetch all users for seller selection - usando UserProfile que é acessível a todos
-  const { data: userProfiles } = useQuery({
-    queryKey: ['user-profiles'],
-    queryFn: () => base44.entities.UserProfile.list(),
-    initialData: [],
-  });
-
-  // Mapeia os perfis para o formato esperado
-  const users = userProfiles.map(profile => ({
-    email: profile.user_email,
-    full_name: profile.full_name || profile.display_name || profile.user_email
-  }));
+  // Usa a lista de usuários com acesso à prospecção passada como prop
+  const users = prospectingUsers;
 
   const [formDate, setFormDate] = useState(date || new Date().toISOString().split('T')[0]);
   const [sellerEmail, setSellerEmail] = useState(currentUserEmail || "");
