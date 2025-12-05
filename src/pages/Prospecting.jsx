@@ -45,18 +45,38 @@ function ProspectingContent() {
     queryFn: () => base44.auth.me(),
   });
 
-  // Usar UserProfile que é acessível a todos os usuários
+  // Buscar todos os usuários do sistema
+  const { data: allUsers } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: () => base44.entities.User.list(),
+    initialData: [],
+  });
+
+  // Usar UserProfile para nomes de exibição
   const { data: userProfiles } = useQuery({
     queryKey: ['user-profiles'],
     queryFn: () => base44.entities.UserProfile.list(),
     initialData: [],
   });
 
-  // Mapeia os perfis para o formato esperado
-  const users = userProfiles.map(profile => ({
-    email: profile.user_email,
-    full_name: profile.full_name || profile.display_name || profile.user_email
-  }));
+  // Filtra apenas usuários que têm acesso à prospecção (allowed_modules inclui 'prospecting' ou não tem restrição)
+  const prospectingUsers = allUsers
+    .filter(u => {
+      const allowedModules = u.allowed_modules || [];
+      // Se não tem allowed_modules definido ou está vazio, tem acesso total
+      // Ou se tem 'prospecting' na lista
+      return allowedModules.length === 0 || allowedModules.includes('prospecting');
+    })
+    .map(u => {
+      const profile = userProfiles.find(p => p.user_email === u.email);
+      return {
+        email: u.email,
+        full_name: profile?.full_name || profile?.display_name || u.full_name || u.email
+      };
+    });
+
+  // Para compatibilidade, mantém users como alias
+  const users = prospectingUsers;
 
   const { data: goals, isLoading: loadingGoals } = useQuery({
     queryKey: ['prospecting-goals', user?.email],
