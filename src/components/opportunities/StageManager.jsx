@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Plus, Trash2, GripVertical, Settings } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const colorOptions = [
   { value: "from-slate-400 to-slate-500", label: "Cinza", preview: "bg-slate-400" },
@@ -66,11 +67,21 @@ export default function StageManager({ isOpen, onClose, stages }) {
     }
   };
 
-  const handleUpdateOrder = (stageId, newOrder) => {
-    const stage = editingStages.find(s => s.id === stageId);
-    if (stage) {
-      updateStageMutation.mutate({ id: stageId, data: { ...stage, order: newOrder } });
-    }
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    
+    const items = Array.from(editingStages);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    
+    // Update all orders
+    items.forEach((item, index) => {
+      if (item.order !== index + 1) {
+        updateStageMutation.mutate({ id: item.id, data: { ...item, order: index + 1 } });
+      }
+    });
+    
+    setEditingStages(items);
   };
 
   const generateKey = (label) => {
@@ -154,7 +165,7 @@ export default function StageManager({ isOpen, onClose, stages }) {
 
           {/* Existing Stages */}
           <div>
-            <h3 className="font-semibold text-slate-900 mb-3">Estágios Atuais</h3>
+            <h3 className="font-semibold text-slate-900 mb-3">Estágios Atuais (arraste para reordenar)</h3>
             {editingStages.length === 0 ? (
               <Card className="bg-slate-50">
                 <CardContent className="p-8 text-center">
@@ -163,55 +174,56 @@ export default function StageManager({ isOpen, onClose, stages }) {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-2">
-                {editingStages
-                  .sort((a, b) => (a.order || 0) - (b.order || 0))
-                  .map((stage, index) => {
-                    const colorOption = colorOptions.find(c => c.value === stage.color) || colorOptions[0];
-                    return (
-                      <Card key={stage.id} className="border-slate-200">
-                        <CardContent className="p-3">
-                          <div className="flex items-center gap-3">
-                            <GripVertical className="w-5 h-5 text-slate-400 cursor-move" />
-                            <div className={`w-8 h-8 rounded ${colorOption.preview}`} />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-slate-900">{stage.label}</h4>
-                              <p className="text-xs text-slate-500">{stage.key}</p>
-                            </div>
-                            <div className="flex gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                disabled={index === 0}
-                                onClick={() => handleUpdateOrder(stage.id, stage.order - 1.5)}
-                                className="h-8 w-8"
-                              >
-                                ↑
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                disabled={index === editingStages.length - 1}
-                                onClick={() => handleUpdateOrder(stage.id, stage.order + 1.5)}
-                                className="h-8 w-8"
-                              >
-                                ↓
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteStage(stage.id)}
-                                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-              </div>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="stages">
+                  {(provided) => (
+                    <div 
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="space-y-2"
+                    >
+                      {editingStages
+                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                        .map((stage, index) => {
+                          const colorOption = colorOptions.find(c => c.value === stage.color) || colorOptions[0];
+                          return (
+                            <Draggable key={stage.id} draggableId={stage.id} index={index}>
+                              {(provided, snapshot) => (
+                                <Card 
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  className={`border-slate-200 ${snapshot.isDragging ? 'shadow-lg ring-2 ring-blue-400' : ''}`}
+                                >
+                                  <CardContent className="p-3">
+                                    <div className="flex items-center gap-3">
+                                      <div {...provided.dragHandleProps}>
+                                        <GripVertical className="w-5 h-5 text-slate-400 cursor-grab active:cursor-grabbing" />
+                                      </div>
+                                      <div className={`w-8 h-8 rounded ${colorOption.preview}`} />
+                                      <div className="flex-1">
+                                        <h4 className="font-semibold text-slate-900">{stage.label}</h4>
+                                        <p className="text-xs text-slate-500">{stage.key}</p>
+                                      </div>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleDeleteStage(stage.id)}
+                                        className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Draggable>
+                          );
+                        })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             )}
           </div>
         </div>
