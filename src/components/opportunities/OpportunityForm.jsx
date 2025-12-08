@@ -38,7 +38,8 @@ const priorityLabels = {
 export default function OpportunityForm({ opportunity, companies, onSubmit, onCancel, isLoading }) {
   const [currentOpportunity, setCurrentOpportunity] = useState(opportunity || {
     title: "",
-    company_id: companies.length > 0 ? companies[0].id : "",
+    company_id: "",
+    company_name: "",
     value: "",
     stage: "prospecting",
     status: "open",
@@ -57,7 +58,7 @@ export default function OpportunityForm({ opportunity, companies, onSubmit, onCa
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (currentOpportunity.title.trim() && currentOpportunity.company_id) {
+    if (currentOpportunity.title.trim()) {
       const dataToSubmit = {
         ...currentOpportunity,
         value: currentOpportunity.value ? parseFloat(currentOpportunity.value) : null,
@@ -66,24 +67,6 @@ export default function OpportunityForm({ opportunity, companies, onSubmit, onCa
       onSubmit(dataToSubmit);
     }
   };
-
-  if (companies.length === 0) {
-    return (
-      <Dialog open={true} onOpenChange={onCancel}>
-        <DialogContent className="max-w-md">
-          <div className="text-center py-8">
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">
-              Nenhuma empresa cadastrada
-            </h3>
-            <p className="text-slate-600 mb-6">
-              Você precisa cadastrar uma empresa antes de criar oportunidades
-            </p>
-            <Button onClick={onCancel}>Entendi</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
 
   return (
     <Dialog open={true} onOpenChange={onCancel}>
@@ -110,15 +93,16 @@ export default function OpportunityForm({ opportunity, companies, onSubmit, onCa
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="company_id" className="text-sm font-medium">Empresa *</Label>
+                <Label htmlFor="company_id" className="text-sm font-medium">Empresa (opcional)</Label>
                 <Select
                   value={currentOpportunity.company_id}
-                  onValueChange={(value) => setCurrentOpportunity({...currentOpportunity, company_id: value})}
+                  onValueChange={(value) => setCurrentOpportunity({...currentOpportunity, company_id: value, company_name: ""})}
                 >
                   <SelectTrigger id="company_id" className="h-10 border-slate-200 focus:border-emerald-500">
-                    <SelectValue placeholder="Selecione a empresa" />
+                    <SelectValue placeholder="Selecione se houver cadastro" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value={null}>Nenhuma (nome manual)</SelectItem>
                     {companies.map(company => (
                       <SelectItem key={company.id} value={company.id}>
                         {company.name}
@@ -127,6 +111,19 @@ export default function OpportunityForm({ opportunity, companies, onSubmit, onCa
                   </SelectContent>
                 </Select>
               </div>
+
+              {!currentOpportunity.company_id && (
+                <div className="space-y-2">
+                  <Label htmlFor="company_name" className="text-sm font-medium">Nome da Empresa</Label>
+                  <Input
+                    id="company_name"
+                    placeholder="Digite o nome da empresa"
+                    value={currentOpportunity.company_name}
+                    onChange={(e) => setCurrentOpportunity({...currentOpportunity, company_name: e.target.value})}
+                    className="h-10 border-slate-200 focus:border-emerald-500"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="value" className="text-sm font-medium">Valor Estimado (R$)</Label>

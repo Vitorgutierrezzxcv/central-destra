@@ -254,24 +254,32 @@ export default function LeadsPipeline({
       recommendation_done: false
     };
 
-    // Se passou para reunião realizada, criar oportunidade automaticamente
-    if (newStage === "reuniao_realizada" && lead.stage !== "reuniao_realizada" && !lead.opportunity_id) {
-      const opportunity = await createOpportunityMutation.mutateAsync({
-        title: `Oportunidade - ${lead.name}`,
-        stage: "presentation",
-        status: "open",
-        source: lead.source,
-        contact_name: lead.name,
-        contact_email: lead.email,
-        contact_phone: lead.whatsapp,
-        value: lead.potential_value || 0,
-        assigned_to: lead.seller_email,
-        needs: lead.notes,
-        next_step: "Montar e enviar proposta"
-      });
-      
-      if (opportunity?.id) {
-        updateData.opportunity_id = opportunity.id;
+    // Define a partir de qual estágio criar oportunidade (whatsapp ou posterior)
+    const stagesThatTriggerOpportunity = ["whatsapp", "reuniao_marcada", "no_show", "reuniao_realizada", "proposta_enviada", "segunda_reuniao_marcada", "venda_fechada"];
+    
+    // Se passou para whatsapp ou estágio posterior, criar oportunidade automaticamente
+    if (stagesThatTriggerOpportunity.includes(newStage) && !lead.opportunity_id) {
+      try {
+        const opportunity = await createOpportunityMutation.mutateAsync({
+          title: `${lead.name}${lead.company_segment ? ' - ' + lead.company_segment : ''}`,
+          company_name: lead.name,
+          stage: "qualification",
+          status: "open",
+          source: lead.source,
+          contact_name: lead.name,
+          contact_email: lead.email,
+          contact_phone: lead.whatsapp,
+          value: lead.potential_value || 0,
+          assigned_to: lead.seller_email,
+          needs: lead.notes,
+          next_step: "Continuar follow-up"
+        });
+        
+        if (opportunity?.id) {
+          updateData.opportunity_id = opportunity.id;
+        }
+      } catch (error) {
+        console.error('Erro ao criar oportunidade:', error);
       }
     }
 
