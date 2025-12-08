@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, TrendingUp, Kanban, LayoutGrid } from "lucide-react";
+import { Plus, Search, TrendingUp, Kanban, LayoutGrid, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { AnimatePresence } from "framer-motion";
 
 import OpportunityForm from "../components/opportunities/OpportunityForm";
 import OpportunityPipeline from "../components/opportunities/OpportunityPipeline";
+import StageManager from "../components/opportunities/StageManager";
 
 const stageLabels = {
   prospecting: "Prospecção",
@@ -34,6 +35,7 @@ export default function Opportunities() {
   const [showForm, setShowForm] = useState(false);
   const [editingOpportunity, setEditingOpportunity] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showStageManager, setShowStageManager] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: opportunities, isLoading } = useQuery({
@@ -45,6 +47,28 @@ export default function Opportunities() {
   const { data: companies } = useQuery({
     queryKey: ['companies'],
     queryFn: () => base44.entities.Company.list(),
+    initialData: [],
+  });
+
+  const { data: stages = [] } = useQuery({
+    queryKey: ['opportunity-stages'],
+    queryFn: async () => {
+      const customStages = await base44.entities.OpportunityStage.list();
+      if (customStages.length === 0) {
+        // Create default stages if none exist
+        const defaults = [
+          { key: "prospecting", label: "Prospecção", color: "from-slate-400 to-slate-500", order: 1 },
+          { key: "qualification", label: "Qualificação", color: "from-blue-400 to-blue-500", order: 2 },
+          { key: "presentation", label: "Apresentação", color: "from-purple-400 to-purple-500", order: 3 },
+          { key: "negotiation", label: "Negociação", color: "from-orange-400 to-orange-500", order: 4 },
+          { key: "closing", label: "Fechamento", color: "from-green-400 to-green-500", order: 5 },
+          { key: "post_sale", label: "Pós-venda", color: "from-teal-400 to-teal-500", order: 6 },
+        ];
+        await Promise.all(defaults.map(s => base44.entities.OpportunityStage.create(s)));
+        return defaults;
+      }
+      return customStages.sort((a, b) => (a.order || 0) - (b.order || 0));
+    },
     initialData: [],
   });
 
@@ -124,16 +148,26 @@ export default function Opportunities() {
                 className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
               />
             </div>
-            <Button 
-              onClick={() => {
-                setEditingOpportunity(null);
-                setShowForm(true);
-              }}
-              className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg h-10 md:h-11 px-6"
-            >
-              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              <span className="text-sm md:text-base font-medium">Nova Oportunidade</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowStageManager(true)}
+                variant="outline"
+                className="border-[#456C8D] text-[#456C8D] hover:bg-[#456C8D] hover:text-white rounded-lg h-10 md:h-11 px-4"
+              >
+                <Settings className="w-4 h-4 md:w-5 md:h-5 md:mr-2" />
+                <span className="hidden md:inline text-sm md:text-base font-medium">Gerenciar Estágios</span>
+              </Button>
+              <Button 
+                onClick={() => {
+                  setEditingOpportunity(null);
+                  setShowForm(true);
+                }}
+                className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg h-10 md:h-11 px-6"
+              >
+                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                <span className="text-sm md:text-base font-medium">Nova Oportunidade</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -143,6 +177,7 @@ export default function Opportunities() {
             <OpportunityForm
               opportunity={editingOpportunity}
               companies={companies}
+              stages={stages}
               onSubmit={handleSubmit}
               onCancel={() => {
                 setShowForm(false);
@@ -152,6 +187,15 @@ export default function Opportunities() {
             />
           )}
         </AnimatePresence>
+
+        {/* Stage Manager */}
+        {showStageManager && (
+          <StageManager
+            isOpen={showStageManager}
+            onClose={() => setShowStageManager(false)}
+            stages={stages}
+          />
+        )}
 
         {/* Content */}
         {isLoading ? (
@@ -190,6 +234,7 @@ export default function Opportunities() {
               <OpportunityPipeline
                 opportunities={filteredOpportunities}
                 companies={companies}
+                stages={stages}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onStageChange={(opp, newStage) => {

@@ -35,7 +35,7 @@ const priorityLabels = {
   high: "Alta"
 };
 
-export default function OpportunityForm({ opportunity, companies, onSubmit, onCancel, isLoading }) {
+export default function OpportunityForm({ opportunity, companies, stages = [], onSubmit, onCancel, isLoading }) {
   const [currentOpportunity, setCurrentOpportunity] = useState(opportunity || {
     title: "",
     company_id: "",

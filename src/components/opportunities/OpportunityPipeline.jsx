@@ -8,16 +8,7 @@ import { ptBR } from "date-fns/locale";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import OpportunityDetail from "./OpportunityDetail";
 
-const stages = [
-  { key: "prospecting", label: "Prospecção", color: "from-slate-400 to-slate-500" },
-  { key: "qualification", label: "Qualificação", color: "from-blue-400 to-blue-500" },
-  { key: "presentation", label: "Apresentação", color: "from-purple-400 to-purple-500" },
-  { key: "negotiation", label: "Negociação", color: "from-orange-400 to-orange-500" },
-  { key: "closing", label: "Fechamento", color: "from-green-400 to-green-500" },
-  { key: "post_sale", label: "Pós-venda", color: "from-teal-400 to-teal-500" },
-];
-
-export default function OpportunityPipeline({ opportunities, companies, onEdit, onDelete, onStageChange }) {
+export default function OpportunityPipeline({ opportunities, companies, stages = [], onEdit, onDelete, onStageChange }) {
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
 
   const getOpportunitiesByStage = (stage) => {
