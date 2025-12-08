@@ -101,7 +101,6 @@ const calculateRecommendation = (lead) => {
 
   switch (lead.stage) {
     case "prospectado":
-      if (daysSinceChange >= 2) return "follow_up_whatsapp";
       if (daysSinceChange >= 1) return "follow_up_instagram";
       return "aguardar";
     
