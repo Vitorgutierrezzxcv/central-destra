@@ -148,9 +148,15 @@ export default function OpportunityForm({ opportunity, companies, stages = [], o
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {Object.entries(stageLabels).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
+                    {stages.length > 0 ? (
+                      stages.map((stage) => (
+                        <SelectItem key={stage.key} value={stage.key}>{stage.label}</SelectItem>
+                      ))
+                    ) : (
+                      Object.entries(stageLabels).map(([key, label]) => (
+                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
