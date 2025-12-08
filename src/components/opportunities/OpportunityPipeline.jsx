@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Building2, DollarSign, User, Clock, Pencil, Trash2 } from "lucide-react
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import OpportunityDetail from "./OpportunityDetail";
 
 const stages = [
   { key: "prospecting", label: "Prospecção", color: "from-slate-400 to-slate-500" },
@@ -17,6 +18,8 @@ const stages = [
 ];
 
 export default function OpportunityPipeline({ opportunities, companies, onEdit, onDelete, onStageChange }) {
+  const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+
   const getOpportunitiesByStage = (stage) => {
     return opportunities.filter(opp => opp.stage === stage);
   };
@@ -84,7 +87,8 @@ export default function OpportunityPipeline({ opportunities, companies, onEdit, 
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`bg-white rounded-lg p-3 shadow hover:shadow-md transition-shadow border border-slate-200 ${
+                                  onClick={() => setSelectedOpportunity(opp)}
+                                  className={`bg-white rounded-lg p-3 shadow hover:shadow-md transition-shadow border border-slate-200 cursor-pointer ${
                                     snapshot.isDragging ? 'shadow-lg ring-2 ring-emerald-400' : ''
                                   }`}
                                 >
@@ -176,6 +180,15 @@ export default function OpportunityPipeline({ opportunities, companies, onEdit, 
           );
         })}
       </div>
+      
+      {selectedOpportunity && (
+        <OpportunityDetail
+          opportunity={selectedOpportunity}
+          company={companies.find(c => c.id === selectedOpportunity.company_id)}
+          isOpen={!!selectedOpportunity}
+          onClose={() => setSelectedOpportunity(null)}
+        />
+      )}
     </DragDropContext>
   );
 }
