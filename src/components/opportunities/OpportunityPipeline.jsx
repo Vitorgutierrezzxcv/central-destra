@@ -113,10 +113,10 @@ export default function OpportunityPipeline({ opportunities, companies, stages =
                                     </div>
                                   </div>
                                   
-                                  {company && (
+                                  {(company?.name || opp.company_name) && (
                                     <div className="flex items-center gap-2 text-xs text-slate-600 mb-2">
                                       <Building2 className="w-3 h-3" />
-                                      <span className="truncate">{company.name}</span>
+                                      <span className="truncate">{company?.name || opp.company_name}</span>
                                     </div>
                                   )}
 

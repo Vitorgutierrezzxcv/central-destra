@@ -260,8 +260,8 @@ export default function Opportunities() {
                               {stageLabels[opp.stage]}
                             </Badge>
                           </div>
-                          {company && (
-                            <p className="text-sm text-slate-600 mb-2">{company.name}</p>
+                          {(company?.name || opp.company_name) && (
+                            <p className="text-sm text-slate-600 mb-2">{company?.name || opp.company_name}</p>
                           )}
                           {opp.value && (
                             <p className="text-[#456C8D] font-semibold text-lg mb-3">

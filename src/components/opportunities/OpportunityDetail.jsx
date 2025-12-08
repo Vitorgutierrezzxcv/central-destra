@@ -131,15 +131,15 @@ export default function OpportunityDetail({ opportunity, company, isOpen, onClos
               </Card>
 
               {/* Empresa */}
-              {company && (
+              {(company || opportunity.company_name) && (
                 <Card>
                   <CardContent className="p-4">
                     <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                       <Building2 className="w-4 h-4" />
                       Empresa
                     </h3>
-                    <p className="text-slate-700">{company.name}</p>
-                    {company.segment && (
+                    <p className="text-slate-700">{company?.name || opportunity.company_name}</p>
+                    {company?.segment && (
                       <p className="text-sm text-slate-500 mt-1">{company.segment}</p>
                     )}
                   </CardContent>
