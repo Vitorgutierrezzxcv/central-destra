@@ -90,55 +90,7 @@ function ProspectingContent() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
   });
 
-  // Criar oportunidades para leads existentes que não têm
-  const createOpportunityMutation = useMutation({
-    mutationFn: (data) => base44.entities.Opportunity.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
-    }
-  });
 
-  // Processa leads existentes quando a página carrega
-  React.useEffect(() => {
-    if (!leads || leads.length === 0) return;
-
-    const stagesThatNeedOpportunity = ["whatsapp", "reuniao_marcada", "no_show", "reuniao_realizada", "proposta_enviada", "segunda_reuniao_marcada", "venda_fechada"];
-    
-    const leadsToProcess = leads.filter(lead => 
-      stagesThatNeedOpportunity.includes(lead.stage) && !lead.opportunity_id
-    );
-
-    if (leadsToProcess.length === 0) return;
-
-    // Processa cada lead sem oportunidade
-    leadsToProcess.forEach(async (lead) => {
-      try {
-        const opportunity = await createOpportunityMutation.mutateAsync({
-          title: `${lead.name}${lead.company_segment ? ' - ' + lead.company_segment : ''}`,
-          company_name: lead.name,
-          stage: "qualification",
-          status: "open",
-          source: lead.source,
-          contact_name: lead.name,
-          contact_email: lead.email,
-          contact_phone: lead.whatsapp,
-          value: lead.potential_value || 0,
-          assigned_to: lead.seller_email,
-          needs: lead.notes,
-          next_step: "Continuar follow-up"
-        });
-        
-        if (opportunity?.id) {
-          await updateLeadMutation.mutateAsync({ 
-            id: lead.id, 
-            data: { opportunity_id: opportunity.id } 
-          });
-        }
-      } catch (error) {
-        console.error('Erro ao criar oportunidade para lead:', lead.name, error);
-      }
-    });
-  }, [leads]);
 
 
 
