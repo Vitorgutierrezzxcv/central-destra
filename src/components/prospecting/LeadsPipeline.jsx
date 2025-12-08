@@ -557,9 +557,16 @@ export default function LeadsPipeline({
 
                       {/* Footer */}
                       <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-                        <span className="text-[11px] text-slate-400">
-                          {seller?.full_name || lead.seller_email?.split('@')[0]}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-slate-400">
+                            {seller?.full_name || lead.seller_email?.split('@')[0]}
+                          </span>
+                          {lead.source && (
+                            <Badge variant="outline" className="text-[10px] border-blue-300 text-blue-600">
+                              {sourceLabels[lead.source] || lead.source}
+                            </Badge>
+                          )}
+                        </div>
                         <div className="flex items-center gap-2">
                           {lead.opportunity_id && (
                             <Badge variant="outline" className="text-[10px] border-purple-300 text-purple-600">
@@ -638,14 +645,21 @@ export default function LeadsPipeline({
                                 {lead.whatsapp}
                               </span>
                             )}
-                            <span className="text-[10px] text-slate-400 mt-1">
-                              {seller?.full_name || lead.seller_email}
-                            </span>
-                            {lead.opportunity_id && (
-                              <Badge variant="outline" className="w-fit mt-1 text-[10px] border-purple-300 text-purple-600">
-                                No CRM
-                              </Badge>
-                            )}
+                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                              <span className="text-[10px] text-slate-400">
+                                {seller?.full_name || lead.seller_email}
+                              </span>
+                              {lead.source && (
+                                <Badge variant="outline" className="text-[10px] border-blue-300 text-blue-600">
+                                  {sourceLabels[lead.source] || lead.source}
+                                </Badge>
+                              )}
+                              {lead.opportunity_id && (
+                                <Badge variant="outline" className="text-[10px] border-purple-300 text-purple-600">
+                                  No CRM
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </td>
                         <td className="p-3">
