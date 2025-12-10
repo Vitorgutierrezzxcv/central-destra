@@ -389,6 +389,26 @@ export default function LeadsPipeline({
 
       {/* Filters and Actions */}
       <div className="flex flex-col gap-3">
+        {/* Contador de leads filtrados */}
+        {filteredLeads.length !== totalLeads && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center justify-between">
+            <span className="text-sm text-blue-800">
+              Mostrando <strong>{filteredLeads.length}</strong> de <strong>{totalLeads}</strong> leads
+            </span>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setSearchTerm("");
+                setStageFilter("all");
+                setShowOnlyWithRecommendation(false);
+              }}
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-100 h-7 text-xs"
+            >
+              Limpar Filtros
+            </Button>
+          </div>
+        )}
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
