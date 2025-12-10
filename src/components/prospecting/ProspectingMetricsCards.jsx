@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-export default function ProspectingMetricsCards({ leads = [], comparisonLeads = [], dateRangeLabel }) {
+export default function ProspectingMetricsCards({ leads = [], comparisonLeads = [], dateRangeLabel, onStageClick }) {
   // Ordem dos estágios do funil
   const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
   
@@ -58,15 +58,15 @@ export default function ProspectingMetricsCards({ leads = [], comparisonLeads = 
   };
 
   const metrics = [
-    { key: "instagram_leads", label: "Leads Prospectados", icon: "📱", color: "from-blue-400 to-blue-600" },
-    { key: "instagram_responses", label: "Respostas", icon: "💬", color: "from-purple-400 to-purple-600" },
-    { key: "whatsapp_collected", label: "WhatsApps", icon: "📞", color: "from-green-400 to-green-600" },
-    { key: "meetings_scheduled", label: "Reuniões Marcadas", icon: "📅", color: "from-orange-400 to-orange-600" },
-    { key: "meetings_held", label: "Reuniões Realizadas", icon: "✅", color: "from-teal-400 to-teal-600" },
-    { key: "no_shows", label: "No-Shows", icon: "❌", color: "from-red-400 to-red-600" },
-    { key: "follow_ups_sent", label: "Follow-ups Env.", icon: "📧", color: "from-indigo-400 to-indigo-600" },
-    { key: "follow_ups_responses", label: "Follow-ups Resp.", icon: "✉️", color: "from-pink-400 to-pink-600" },
-    { key: "sales_amount", label: "Vendas", icon: "💰", color: "from-amber-400 to-amber-600", isCurrency: true },
+    { key: "instagram_leads", label: "Leads Prospectados", icon: "📱", color: "from-blue-400 to-blue-600", stage: "prospectado" },
+    { key: "instagram_responses", label: "Respostas", icon: "💬", color: "from-purple-400 to-purple-600", stage: "respondeu" },
+    { key: "whatsapp_collected", label: "WhatsApps", icon: "📞", color: "from-green-400 to-green-600", stage: "whatsapp" },
+    { key: "meetings_scheduled", label: "Reuniões Marcadas", icon: "📅", color: "from-orange-400 to-orange-600", stage: "reuniao_marcada" },
+    { key: "meetings_held", label: "Reuniões Realizadas", icon: "✅", color: "from-teal-400 to-teal-600", stage: "reuniao_realizada" },
+    { key: "no_shows", label: "No-Shows", icon: "❌", color: "from-red-400 to-red-600", stage: "no_show" },
+    { key: "follow_ups_sent", label: "Follow-ups Env.", icon: "📧", color: "from-indigo-400 to-indigo-600", stage: "proposta_enviada" },
+    { key: "follow_ups_responses", label: "Follow-ups Resp.", icon: "✉️", color: "from-pink-400 to-pink-600", stage: "segunda_reuniao_marcada" },
+    { key: "sales_amount", label: "Vendas", icon: "💰", color: "from-amber-400 to-amber-600", isCurrency: true, stage: "venda_fechada" },
   ];
 
   return (
@@ -81,7 +81,8 @@ export default function ProspectingMetricsCards({ leads = [], comparisonLeads = 
         return (
           <Card
             key={metric.key}
-            className={`bg-gradient-to-br ${metric.color} border-none shadow-lg hover:shadow-xl transition-all rounded-2xl`}
+            onClick={() => onStageClick?.(metric.stage)}
+            className={`bg-gradient-to-br ${metric.color} border-none shadow-lg hover:shadow-xl transition-all rounded-2xl cursor-pointer`}
           >
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">

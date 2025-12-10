@@ -29,6 +29,7 @@ import ProspectingCharts from "../components/prospecting/ProspectingCharts";
 import ProspectingGoalsManager from "../components/prospecting/ProspectingGoalsManager";
 import ConversionFunnel from "../components/prospecting/ConversionFunnel";
 import LeadsPipeline from "../components/prospecting/LeadsPipeline";
+import LeadsListModal from "../components/prospecting/LeadsListModal";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -38,6 +39,8 @@ function ProspectingContent() {
   const [dateRange, setDateRange] = useState("week");
   const [comparisonPeriod, setComparisonPeriod] = useState("previous");
   const [selectedSeller, setSelectedSeller] = useState("all");
+  const [showLeadsModal, setShowLeadsModal] = useState(false);
+  const [selectedStage, setSelectedStage] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -203,6 +206,11 @@ function ProspectingContent() {
   const currentLeads = filterLeadsByRange(sellerFilteredLeads, currentStart, currentEnd);
   const comparisonLeads = filterLeadsByRange(sellerFilteredLeads, compStart, compEnd);
 
+  const handleStageClick = (stage) => {
+    setSelectedStage(stage);
+    setShowLeadsModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
@@ -322,6 +330,15 @@ function ProspectingContent() {
           )}
         </AnimatePresence>
 
+        {/* Modal de Lista de Leads */}
+        <LeadsListModal
+          isOpen={showLeadsModal}
+          onClose={() => setShowLeadsModal(false)}
+          leads={currentLeads}
+          stage={selectedStage}
+          users={users}
+        />
+
         {/* Dashboard */}
         <Tabs defaultValue="leads" className="w-full">
           <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
@@ -369,8 +386,12 @@ function ProspectingContent() {
                   leads={currentLeads}
                   comparisonLeads={comparisonLeads}
                   dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
+                  onStageClick={handleStageClick}
                 />
-                <ConversionFunnel leads={currentLeads} />
+                <ConversionFunnel 
+                  leads={currentLeads}
+                  onStageClick={handleStageClick}
+                />
                 <ProspectingCharts
                   leads={currentLeads}
                   goals={goals}

@@ -18,7 +18,7 @@ const getPerformanceLevel = (value, benchmark) => {
   return { level: 'low', color: 'text-red-600', bg: 'bg-red-100', label: 'Atenção' };
 };
 
-export default function ConversionFunnel({ leads = [] }) {
+export default function ConversionFunnel({ leads = [], onStageClick }) {
   // Ordem dos estágios do funil
   const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
   
@@ -89,6 +89,7 @@ export default function ConversionFunnel({ leads = [] }) {
       benchmark: null,
       icon: Target,
       color: 'bg-[#6FA6FF]',
+      stage: 'prospectado',
     },
     {
       key: 'responses',
@@ -99,6 +100,7 @@ export default function ConversionFunnel({ leads = [] }) {
       benchmark: BENCHMARKS.leadToResponse,
       nextLabel: 'Taxa de Resposta',
       shortNextLabel: 'Resposta',
+      stage: 'respondeu',
     },
     {
       key: 'whatsapp',
@@ -109,6 +111,7 @@ export default function ConversionFunnel({ leads = [] }) {
       benchmark: BENCHMARKS.responseToWhatsapp,
       nextLabel: 'Resposta → WhatsApp',
       shortNextLabel: 'Resp→Wpp',
+      stage: 'whatsapp',
     },
     {
       key: 'meetings',
@@ -119,6 +122,7 @@ export default function ConversionFunnel({ leads = [] }) {
       benchmark: BENCHMARKS.whatsappToMeeting,
       nextLabel: 'WhatsApp → Reunião',
       shortNextLabel: 'Wpp→Reun',
+      stage: 'reuniao_marcada',
     },
     {
       key: 'held',
@@ -129,6 +133,7 @@ export default function ConversionFunnel({ leads = [] }) {
       benchmark: { min: 60, good: 75, great: 90 },
       nextLabel: 'Taxa de Comparecimento',
       shortNextLabel: 'Compar.',
+      stage: 'reuniao_realizada',
     },
   ];
 
@@ -154,11 +159,12 @@ export default function ConversionFunnel({ leads = [] }) {
               <div key={step.key}>
                 {/* Barra do funil */}
                 <div 
-                  className="relative mx-auto transition-all"
+                  className="relative mx-auto transition-all cursor-pointer"
                   style={{ width: `${widthPercent}%` }}
+                  onClick={() => onStageClick?.(step.stage)}
                 >
                   <div className={`
-                    py-2 md:py-3 px-2 md:px-4 rounded-lg
+                    py-2 md:py-3 px-2 md:px-4 rounded-lg hover:opacity-90 transition-opacity
                     ${index === 0 ? 'bg-[#6FA6FF]' : 'bg-[#EAEAEA]'}
                   `}>
                     <div className="flex items-center justify-between gap-1">
