@@ -7,17 +7,21 @@ export default function ProspectingMetricsCards({ leads = [], comparisonLeads = 
   const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
   
   // Calcula métricas baseado nos leads cadastrados
-  // Conta apenas leads que ESTÃO ATUALMENTE naquele estágio específico
+  // Conta leads que passaram por aquele estágio OU estão nele atualmente
   const calculateFromLeads = (leadsData, stage) => {
     if (!leadsData || leadsData.length === 0) return 0;
     
-    // Para prospectado, conta todos os leads exceto perdidos
-    if (stage === 'prospectado') {
-      return leadsData.filter(l => l.stage !== 'perdido').length;
-    }
+    const stageIndex = stageOrder.indexOf(stage);
     
-    // Para outros estágios, conta apenas leads que estão exatamente nesse estágio
-    return leadsData.filter(l => l.stage === stage).length;
+    // Conta leads que estão nesse estágio OU passaram por ele (índice maior)
+    return leadsData.filter(l => {
+      if (!l.stage) return false;
+      const leadStageIndex = stageOrder.indexOf(l.stage);
+      // Para prospectado, conta todos os leads exceto perdidos
+      if (stage === 'prospectado') return l.stage !== 'perdido';
+      // Para outros estágios, conta se está nele ou já passou
+      return leadStageIndex >= stageIndex && l.stage !== 'perdido';
+    }).length;
   };
 
   // Calcula valor baseado nos leads
