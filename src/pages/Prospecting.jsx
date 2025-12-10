@@ -363,16 +363,16 @@ function ProspectingContent() {
               <div className="text-center py-12">
                 <p className="text-slate-600">Carregando métricas...</p>
               </div>
-            ) : sellerFilteredLeads.length > 0 ? (
+            ) : currentLeads.length > 0 ? (
               <>
                 <ProspectingMetricsCards
-                  leads={sellerFilteredLeads}
+                  leads={currentLeads}
                   comparisonLeads={comparisonLeads}
                   dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
                 />
-                <ConversionFunnel leads={sellerFilteredLeads} />
+                <ConversionFunnel leads={currentLeads} />
                 <ProspectingCharts
-                  leads={sellerFilteredLeads}
+                  leads={currentLeads}
                   goals={goals}
                   dateRange={dateRange}
                 />
