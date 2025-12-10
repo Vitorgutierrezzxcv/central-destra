@@ -41,6 +41,7 @@ function ProspectingContent() {
   const [selectedSeller, setSelectedSeller] = useState("all");
   const [showLeadsModal, setShowLeadsModal] = useState(false);
   const [selectedStage, setSelectedStage] = useState(null);
+  const [viewMode, setViewMode] = useState("period"); // "period" ou "total"
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -203,7 +204,11 @@ function ProspectingContent() {
     ? leads
     : leads.filter(l => l.seller_email === selectedSeller);
 
-  const currentLeads = filterLeadsByRange(sellerFilteredLeads, currentStart, currentEnd);
+  // Se modo total, usa todos os leads filtrados por vendedor
+  // Se modo período, filtra por data
+  const currentLeads = viewMode === "total" 
+    ? sellerFilteredLeads 
+    : filterLeadsByRange(sellerFilteredLeads, currentStart, currentEnd);
   const comparisonLeads = filterLeadsByRange(sellerFilteredLeads, compStart, compEnd);
 
   const handleStageClick = (stage) => {
@@ -229,32 +234,55 @@ function ProspectingContent() {
           </div>
 
           <div className="flex flex-col gap-3 mt-4">
+            {/* Toggle de Visualização */}
             <div className="grid grid-cols-2 gap-2">
-              <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
-                  <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Hoje</SelectItem>
-                  <SelectItem value="week">Esta Semana</SelectItem>
-                  <SelectItem value="biweek">Últimas 2 Semanas</SelectItem>
-                  <SelectItem value="month">Este Mês</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
-                <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
-                  <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="previous">Período Anterior</SelectItem>
-                  <SelectItem value="lastWeek">Semana Passada</SelectItem>
-                  <SelectItem value="lastMonth">Mês Passado</SelectItem>
-                </SelectContent>
-              </Select>
+              <Button
+                variant={viewMode === "period" ? "default" : "outline"}
+                onClick={() => setViewMode("period")}
+                className={`h-10 md:h-11 rounded-lg ${viewMode === "period" ? 'bg-[#6FA6FF] hover:bg-[#456C8D]' : ''}`}
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Por Período
+              </Button>
+              <Button
+                variant={viewMode === "total" ? "default" : "outline"}
+                onClick={() => setViewMode("total")}
+                className={`h-10 md:h-11 rounded-lg ${viewMode === "total" ? 'bg-[#6FA6FF] hover:bg-[#456C8D]' : ''}`}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                Visão Total
+              </Button>
             </div>
+
+            {/* Filtros de período - só aparecem no modo "period" */}
+            {viewMode === "period" && (
+              <div className="grid grid-cols-2 gap-2">
+                <Select value={dateRange} onValueChange={setDateRange}>
+                  <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
+                    <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="day">Hoje</SelectItem>
+                    <SelectItem value="week">Esta Semana</SelectItem>
+                    <SelectItem value="biweek">Últimas 2 Semanas</SelectItem>
+                    <SelectItem value="month">Este Mês</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
+                  <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
+                    <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="previous">Período Anterior</SelectItem>
+                    <SelectItem value="lastWeek">Semana Passada</SelectItem>
+                    <SelectItem value="lastMonth">Mês Passado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             {/* Seller Filter */}
             <Select value={selectedSeller} onValueChange={setSelectedSeller}>
@@ -340,7 +368,7 @@ function ProspectingContent() {
         />
 
         {/* Dashboard */}
-        <Tabs defaultValue="leads" className="w-full">
+        <Tabs defaultValue={viewMode === "total" ? "leads" : "metrics"} className="w-full">
           <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
             <TabsTrigger
               value="leads"
@@ -351,12 +379,14 @@ function ProspectingContent() {
             <TabsTrigger
               value="metrics"
               className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
+              disabled={viewMode === "total"}
             >
               Métricas
             </TabsTrigger>
             <TabsTrigger
               value="goals"
               className="data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-4 py-2"
+              disabled={viewMode === "total"}
             >
               Metas
             </TabsTrigger>
@@ -376,7 +406,25 @@ function ProspectingContent() {
           </TabsContent>
 
           <TabsContent value="metrics" className="space-y-6">
-            {loadingLeads ? (
+            {viewMode === "total" ? (
+              <Card className="bg-white border border-[#EAEAEA] rounded-xl">
+                <CardContent className="p-12 text-center">
+                  <TrendingUp className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#131A20] mb-2">
+                    Métricas não disponíveis na visão total
+                  </h3>
+                  <p className="text-[#456C8D] mb-6">
+                    Selecione "Por Período" para ver as métricas e análises
+                  </p>
+                  <Button
+                    onClick={() => setViewMode("period")}
+                    className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg"
+                  >
+                    Ver Por Período
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : loadingLeads ? (
               <div className="text-center py-12">
                 <p className="text-slate-600">Carregando métricas...</p>
               </div>
@@ -421,12 +469,32 @@ function ProspectingContent() {
           </TabsContent>
 
           <TabsContent value="goals" className="space-y-6">
-            <ProspectingGoalsManager
-                              goals={goals}
-                              userEmail={user?.email}
-                              metrics={currentLeads}
-                              embedded={true}
-                            />
+            {viewMode === "total" ? (
+              <Card className="bg-white border border-[#EAEAEA] rounded-xl">
+                <CardContent className="p-12 text-center">
+                  <Target className="w-16 h-16 text-[#EAEAEA] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#131A20] mb-2">
+                    Metas não disponíveis na visão total
+                  </h3>
+                  <p className="text-[#456C8D] mb-6">
+                    Selecione "Por Período" para gerenciar suas metas
+                  </p>
+                  <Button
+                    onClick={() => setViewMode("period")}
+                    className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg"
+                  >
+                    Ver Por Período
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <ProspectingGoalsManager
+                goals={goals}
+                userEmail={user?.email}
+                metrics={currentLeads}
+                embedded={true}
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>
