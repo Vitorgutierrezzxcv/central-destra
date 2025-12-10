@@ -64,11 +64,9 @@ export default function ConversionFunnel({ leads = [] }) {
     ? (totals.meetings_scheduled / totals.whatsapp_collected) * 100 
     : 0;
 
-  // Usando reuniões realizadas para calcular conversão de venda
-  // Assumindo que cada venda = 1 reunião que converteu
-  const salesCount = totals.sales_amount > 0 ? Math.max(1, Math.floor(totals.meetings_held / 3)) : 0; // Estimativa
+  // Conversão de reunião para venda (usando contagem real de vendas)
   const meetingToSale = totals.meetings_held > 0 
-    ? (salesCount / totals.meetings_held) * 100 
+    ? (totals.sales_count / totals.meetings_held) * 100 
     : 0;
 
   // Taxa de no-show
@@ -77,8 +75,8 @@ export default function ConversionFunnel({ leads = [] }) {
     : 0;
 
   // Taxa de conversão geral (do lead à venda)
-  const overallConversion = totals.instagram_leads > 0 && salesCount > 0
-    ? (salesCount / totals.instagram_leads) * 100
+  const overallConversion = totals.instagram_leads > 0 && totals.sales_count > 0
+    ? (totals.sales_count / totals.instagram_leads) * 100
     : 0;
 
   const funnelSteps = [
