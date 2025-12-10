@@ -22,15 +22,20 @@ export default function ConversionFunnel({ leads = [] }) {
   // Ordem dos estágios do funil
   const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
   
-  // Calcula quantos leads passaram por cada estágio
+  // Calcula quantos leads passaram por cada estágio (mesma lógica do ProspectingMetricsCards)
   const calculateFromLeads = (stage) => {
     if (!leads || leads.length === 0) return 0;
     const stageIndex = stageOrder.indexOf(stage);
+    
     return leads.filter(l => {
       if (!l.stage) return false;
       const leadStageIndex = stageOrder.indexOf(l.stage);
-      if (stage === 'prospectado') return true;
-      return leadStageIndex >= stageIndex;
+      
+      // Para prospectado, conta todos exceto perdidos
+      if (stage === 'prospectado') return l.stage !== 'perdido';
+      
+      // Para outros, conta se já passou pelo estágio (índice >= target) e não está perdido
+      return leadStageIndex >= stageIndex && l.stage !== 'perdido';
     }).length;
   };
 
@@ -42,6 +47,7 @@ export default function ConversionFunnel({ leads = [] }) {
     meetings_scheduled: calculateFromLeads('reuniao_marcada'),
     meetings_held: calculateFromLeads('reuniao_realizada'),
     no_shows: leads.filter(l => l.stage === 'no_show').length,
+    sales_count: leads.filter(l => l.stage === 'venda_fechada').length,
     sales_amount: leads.filter(l => l.stage === 'venda_fechada').reduce((sum, l) => sum + (l.potential_value || 0), 0),
   };
 
