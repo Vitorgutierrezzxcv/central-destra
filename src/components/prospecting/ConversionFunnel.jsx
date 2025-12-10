@@ -277,7 +277,7 @@ export default function ConversionFunnel({ leads = [] }) {
               <div className="text-center">
                 <p className="text-[10px] md:text-xs text-[#456C8D] mb-0.5 md:mb-1">Ticket Médio</p>
                 <p className="text-base md:text-xl font-bold text-[#6FA6FF]">
-                  R$ {salesCount > 0 ? (totals.sales_amount / salesCount).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) : '0'}
+                  R$ {totals.sales_count > 0 ? (totals.sales_amount / totals.sales_count).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) : '0'}
                 </p>
                 <p className="text-[10px] md:text-xs text-[#456C8D]">por venda</p>
               </div>
