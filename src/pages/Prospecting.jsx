@@ -44,6 +44,8 @@ function ProspectingContent() {
   const [showLeadsModal, setShowLeadsModal] = useState(false);
   const [selectedStage, setSelectedStage] = useState(null);
   const [viewMode, setViewMode] = useState("period"); // "period" ou "total"
+  const [customStartDate, setCustomStartDate] = useState("");
+  const [customEndDate, setCustomEndDate] = useState("");
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -157,6 +159,14 @@ function ProspectingContent() {
         return { start: subWeeks(startOfWeek(now, { locale: ptBR }), 1), end: endOfWeek(now, { locale: ptBR }) };
       case "month":
         return { start: startOfMonth(now), end: endOfMonth(now) };
+      case "custom":
+        if (customStartDate && customEndDate) {
+          return { 
+            start: startOfDay(parseISO(customStartDate)), 
+            end: endOfDay(parseISO(customEndDate)) 
+          };
+        }
+        return { start: startOfWeek(now, { locale: ptBR }), end: endOfWeek(now, { locale: ptBR }) };
       default:
         return { start: startOfWeek(now, { locale: ptBR }), end: endOfWeek(now, { locale: ptBR }) };
     }
@@ -258,31 +268,58 @@ function ProspectingContent() {
 
             {/* Filtros de período - só aparecem no modo "period" */}
             {viewMode === "period" && (
-              <div className="grid grid-cols-2 gap-2">
-                <Select value={dateRange} onValueChange={setDateRange}>
-                  <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
-                    <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="day">Hoje</SelectItem>
-                    <SelectItem value="week">Esta Semana</SelectItem>
-                    <SelectItem value="biweek">Últimas 2 Semanas</SelectItem>
-                    <SelectItem value="month">Este Mês</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Select value={dateRange} onValueChange={setDateRange}>
+                    <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
+                      <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="day">Hoje</SelectItem>
+                      <SelectItem value="week">Esta Semana</SelectItem>
+                      <SelectItem value="biweek">Últimas 2 Semanas</SelectItem>
+                      <SelectItem value="month">Este Mês</SelectItem>
+                      <SelectItem value="custom">Período Personalizado</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
-                  <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
-                    <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="previous">Período Anterior</SelectItem>
-                    <SelectItem value="lastWeek">Semana Passada</SelectItem>
-                    <SelectItem value="lastMonth">Mês Passado</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select value={comparisonPeriod} onValueChange={setComparisonPeriod}>
+                    <SelectTrigger className="w-full bg-white border-[#EAEAEA] h-10 md:h-11 rounded-lg">
+                      <TrendingUp className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="previous">Período Anterior</SelectItem>
+                      <SelectItem value="lastWeek">Semana Passada</SelectItem>
+                      <SelectItem value="lastMonth">Mês Passado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Campos de data personalizada */}
+                {dateRange === "custom" && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-xs text-[#456C8D] mb-1 block">Data Início</label>
+                      <Input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="h-10 border-[#EAEAEA]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-[#456C8D] mb-1 block">Data Fim</label>
+                      <Input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="h-10 border-[#EAEAEA]"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
