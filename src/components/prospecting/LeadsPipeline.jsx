@@ -149,6 +149,14 @@ export default function LeadsPipeline({
   onDeleteLead,
   isLoading 
 }) {
+  // Invalidar queries de métricas e metas quando houver mudanças
+  const queryClient = useQueryClient();
+  
+  React.useEffect(() => {
+    // Sempre que leads mudarem, invalidar todas as queries relacionadas
+    queryClient.invalidateQueries({ queryKey: ['prospecting-goals'] });
+    queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
+  }, [leads, queryClient]);
   const [showForm, setShowForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -163,6 +171,19 @@ export default function LeadsPipeline({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['opportunities'] });
     }
+  });
+
+  // Mutation para atualizar oportunidade
+  const updateOpportunityMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Opportunity.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+    }
+  });
+
+  // Mutation para criar histórico de mudança de fase
+  const createStageHistoryMutation = useMutation({
+    mutationFn: (data) => base44.entities.LeadStageHistory.create(data),
   });
 
   const [formData, setFormData] = useState({
@@ -230,10 +251,39 @@ export default function LeadsPipeline({
     };
 
     if (editingLead) {
-      // Se mudou de estágio, atualiza timestamp
+      // Se mudou de estágio, registrar histórico e atualizar timestamp
       if (editingLead.stage !== formData.stage) {
         data.last_stage_change = now;
         data.recommendation_done = false;
+        
+        // Registrar histórico
+        try {
+          await createStageHistoryMutation.mutateAsync({
+            lead_id: editingLead.id,
+            lead_name: editingLead.name,
+            previous_stage: editingLead.stage,
+            new_stage: formData.stage,
+            changed_by: currentUser?.email || "system",
+            change_date: now,
+          });
+        } catch (error) {
+          console.error('Erro ao criar histórico:', error);
+        }
+
+        // Se mudou para perdido ou venda_fechada, atualizar oportunidade
+        if (editingLead.opportunity_id && (formData.stage === "perdido" || formData.stage === "venda_fechada")) {
+          try {
+            await updateOpportunityMutation.mutateAsync({
+              id: editingLead.opportunity_id,
+              data: {
+                status: formData.stage === "venda_fechada" ? "won" : "lost",
+                actual_close_date: new Date().toISOString().split('T')[0],
+              }
+            });
+          } catch (error) {
+            console.error('Erro ao atualizar oportunidade:', error);
+          }
+        }
       }
       onUpdateLead(editingLead.id, data);
     } else {
@@ -251,6 +301,20 @@ export default function LeadsPipeline({
       last_stage_change: now,
       recommendation_done: false
     };
+
+    // Registrar histórico de mudança de fase
+    try {
+      await createStageHistoryMutation.mutateAsync({
+        lead_id: lead.id,
+        lead_name: lead.name,
+        previous_stage: lead.stage,
+        new_stage: newStage,
+        changed_by: currentUser?.email || "system",
+        change_date: now,
+      });
+    } catch (error) {
+      console.error('Erro ao criar histórico:', error);
+    }
 
     // Define a partir de qual estágio criar oportunidade (whatsapp ou posterior)
     const stagesThatTriggerOpportunity = ["whatsapp", "reuniao_marcada", "no_show", "reuniao_realizada", "proposta_enviada", "segunda_reuniao_marcada", "venda_fechada"];
@@ -278,6 +342,21 @@ export default function LeadsPipeline({
         }
       } catch (error) {
         console.error('Erro ao criar oportunidade:', error);
+      }
+    }
+
+    // Se mudou para perdido ou venda_fechada, atualizar oportunidade se existir
+    if (lead.opportunity_id && (newStage === "perdido" || newStage === "venda_fechada")) {
+      try {
+        await updateOpportunityMutation.mutateAsync({
+          id: lead.opportunity_id,
+          data: {
+            status: newStage === "venda_fechada" ? "won" : "lost",
+            actual_close_date: new Date().toISOString().split('T')[0],
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao atualizar oportunidade:', error);
       }
     }
 
@@ -512,7 +591,7 @@ export default function LeadsPipeline({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => onDeleteLead(lead.id)}
+                            onClick={() => onDeleteLead(lead)}
                             className="h-8 w-8 text-slate-500"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -756,7 +835,7 @@ export default function LeadsPipeline({
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => onDeleteLead(lead.id)}
+                              onClick={() => onDeleteLead(lead)}
                               className="h-7 w-7 text-slate-500 hover:text-red-600"
                             >
                               <Trash2 className="w-3.5 h-3.5" />

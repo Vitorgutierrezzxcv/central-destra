@@ -97,8 +97,40 @@ function ProspectingContent() {
   });
 
   const deleteLeadMutation = useMutation({
-    mutationFn: (id) => base44.entities.ProspectLead.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
+    mutationFn: async (lead) => {
+      // Se o lead tem oportunidade, marcar como perdida antes de deletar
+      if (lead.opportunity_id) {
+        try {
+          await base44.entities.Opportunity.update(lead.opportunity_id, {
+            status: "lost",
+            actual_close_date: new Date().toISOString().split('T')[0],
+          });
+        } catch (error) {
+          console.error('Erro ao atualizar oportunidade:', error);
+        }
+      }
+      
+      // Registrar no histórico antes de deletar
+      try {
+        await base44.entities.LeadStageHistory.create({
+          lead_id: lead.id,
+          lead_name: lead.name,
+          previous_stage: lead.stage,
+          new_stage: "deleted",
+          changed_by: user?.email || "system",
+          change_date: new Date().toISOString(),
+          notes: "Lead deletado"
+        });
+      } catch (error) {
+        console.error('Erro ao criar histórico:', error);
+      }
+      
+      return base44.entities.ProspectLead.delete(lead.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prospect-leads'] });
+      queryClient.invalidateQueries({ queryKey: ['opportunities'] });
+    },
   });
 
   // Criar oportunidades para leads existentes que não têm
@@ -468,8 +500,8 @@ function ProspectingContent() {
               selectedSeller={selectedSeller}
               onCreateLead={(data) => createLeadMutation.mutate(data)}
               onUpdateLead={(id, data) => updateLeadMutation.mutate({ id, data })}
-              onDeleteLead={(id) => deleteLeadMutation.mutate(id)}
-              isLoading={createLeadMutation.isPending || updateLeadMutation.isPending}
+              onDeleteLead={(lead) => deleteLeadMutation.mutate(lead)}
+              isLoading={createLeadMutation.isPending || updateLeadMutation.isPending || deleteLeadMutation.isPending}
             />
           </TabsContent>
 
