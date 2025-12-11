@@ -37,6 +37,7 @@ import ProspectingNotes from "../components/prospecting/ProspectingNotes";
 import ProspectingAIChat from "../components/prospecting/ProspectingAIChat";
 import SourceMetrics from "../components/prospecting/SourceMetrics";
 import AccessGuard from "../components/layout/AccessGuard";
+import DailyGoalsWidget from "../components/prospecting/DailyGoalsWidget";
 
 function ProspectingContent() {
   const [showForm, setShowForm] = useState(false);
