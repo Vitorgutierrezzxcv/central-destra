@@ -122,45 +122,47 @@ Responda de forma concisa, prática e focada em ações. Use dados específicos 
   ];
 
   return (
-    <Card className="border-[#EAEAEA]">
-      <CardHeader className="pb-3 bg-gradient-to-r from-purple-50 to-blue-50">
-        <CardTitle className="text-lg font-semibold text-[#131A20] flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
-          Assistente de Prospecção IA
+    <Card className="border-[#EAEAEA] flex flex-col h-[600px]">
+      <CardHeader className="pb-3 border-b border-[#EAEAEA] flex-shrink-0">
+        <CardTitle className="text-base font-semibold text-[#131A20] flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          Assistente IA
         </CardTitle>
-        <p className="text-sm text-[#456C8D]">
-          Análise inteligente das suas métricas em tempo real
-        </p>
       </CardHeader>
-      <CardContent className="p-0">
+      
+      <div className="flex-1 overflow-y-auto">
         {/* Messages */}
-        <div className="h-[400px] overflow-y-auto p-4 space-y-4">
+        <div className="p-4 md:p-6 space-y-6">
           <AnimatePresence>
             {messages.map((message, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
+                className="flex gap-3 md:gap-4"
               >
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  message.role === "user" 
-                    ? "bg-blue-500" 
-                    : "bg-gradient-to-br from-purple-500 to-blue-500"
-                }`}>
-                  {message.role === "user" ? (
-                    <User className="w-4 h-4 text-white" />
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  {message.role === "assistant" ? (
+                    <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
                   ) : (
-                    <Bot className="w-4 h-4 text-white" />
+                    <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-700 flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
                   )}
                 </div>
-                <div className={`flex-1 ${message.role === "user" ? "flex justify-end" : ""}`}>
-                  <div className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 ${
-                    message.role === "user"
-                      ? "bg-blue-500 text-white"
-                      : "bg-[#EAEAEA] text-[#131A20]"
-                  }`}>
-                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                
+                {/* Message Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm mb-1 text-slate-900">
+                    {message.role === "assistant" ? "Assistente" : "Você"}
+                  </div>
+                  <div className="text-slate-700 text-[15px] leading-relaxed whitespace-pre-wrap">
+                    {message.content}
                   </div>
                 </div>
               </motion.div>
@@ -171,13 +173,18 @@ Responda de forma concisa, prática e focada em ações. Use dados específicos 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex gap-3"
+              className="flex gap-3 md:gap-4"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-                <Bot className="w-4 h-4 text-white" />
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div className="bg-[#EAEAEA] rounded-2xl px-4 py-3">
-                <Loader2 className="w-4 h-4 animate-spin text-[#456C8D]" />
+              <div className="flex-1">
+                <div className="font-semibold text-sm mb-1 text-slate-900">Assistente</div>
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -186,50 +193,50 @@ Responda de forma concisa, prática e focada em ações. Use dados específicos 
         </div>
 
         {/* Quick Questions */}
-        {messages.length === 1 && (
-          <div className="px-4 pb-3 space-y-2">
-            <p className="text-xs text-[#456C8D] font-medium">Perguntas rápidas:</p>
-            <div className="flex flex-wrap gap-2">
+        {messages.length === 1 && !isLoading && (
+          <div className="px-4 md:px-6 pb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {quickQuestions.map((question, idx) => (
-                <Button
+                <button
                   key={idx}
-                  variant="outline"
-                  size="sm"
                   onClick={() => setInput(question)}
-                  className="text-xs h-auto py-1.5 px-3 border-[#EAEAEA] hover:bg-purple-50 hover:border-purple-300"
+                  className="text-left p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors text-sm text-slate-700"
                 >
                   {question}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
         )}
+      </div>
 
-        {/* Input */}
-        <div className="p-4 border-t border-[#EAEAEA]">
-          <div className="flex gap-2">
+      {/* Input */}
+      <div className="p-3 md:p-4 border-t border-[#EAEAEA] flex-shrink-0 bg-white">
+        <div className="flex gap-2 items-end">
+          <div className="flex-1 relative">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Digite sua pergunta..."
+              onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+              placeholder="Envie uma mensagem..."
               disabled={isLoading}
-              className="flex-1 border-[#EAEAEA] focus:border-purple-400"
+              className="w-full border-slate-300 focus:border-slate-400 focus:ring-1 focus:ring-slate-400 pr-10 resize-none rounded-xl"
             />
-            <Button
-              onClick={handleSend}
-              disabled={isLoading || !input.trim()}
-              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-            >
-              {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
           </div>
+          <Button
+            onClick={handleSend}
+            disabled={isLoading || !input.trim()}
+            size="icon"
+            className="h-10 w-10 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:bg-slate-200"
+          >
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
+          </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }
