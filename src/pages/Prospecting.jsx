@@ -31,6 +31,7 @@ import ConversionFunnel from "../components/prospecting/ConversionFunnel";
 import LeadsPipeline from "../components/prospecting/LeadsPipeline";
 import LeadsListModal from "../components/prospecting/LeadsListModal";
 import ProspectingNotes from "../components/prospecting/ProspectingNotes";
+import ProspectingAIChat from "../components/prospecting/ProspectingAIChat";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -441,10 +442,18 @@ function ProspectingContent() {
                   leads={currentLeads}
                   onStageClick={handleStageClick}
                 />
-                <ProspectingNotes
-                  userEmail={user?.email}
-                  dateRange={dateRange}
-                />
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ProspectingAIChat
+                    leads={currentLeads}
+                    dateRangeLabel={format(currentStart, "dd MMM", { locale: ptBR }) + " - " + format(currentEnd, "dd MMM", { locale: ptBR })}
+                  />
+                  <ProspectingNotes
+                    userEmail={user?.email}
+                    dateRange={dateRange}
+                  />
+                </div>
+
                 <ProspectingCharts
                   leads={currentLeads}
                   goals={goals}
