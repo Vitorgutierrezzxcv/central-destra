@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, TrendingUp, Calendar, Plus, Settings, Users } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { AnimatePresence } from "framer-motion";
 import { 
   startOfDay, 
@@ -302,21 +305,47 @@ function ProspectingContent() {
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="text-xs text-[#456C8D] mb-1 block">Data Início</label>
-                      <Input
-                        type="date"
-                        value={customStartDate}
-                        onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="h-10 border-[#EAEAEA]"
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-left font-normal h-10 border-[#EAEAEA]"
+                          >
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {customStartDate ? format(parseISO(customStartDate), "dd/MM/yyyy", { locale: ptBR }) : "Selecione..."}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <CalendarComponent
+                            mode="single"
+                            selected={customStartDate ? parseISO(customStartDate) : undefined}
+                            onSelect={(date) => setCustomStartDate(date ? format(date, "yyyy-MM-dd") : "")}
+                            locale={ptBR}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                     <div>
                       <label className="text-xs text-[#456C8D] mb-1 block">Data Fim</label>
-                      <Input
-                        type="date"
-                        value={customEndDate}
-                        onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="h-10 border-[#EAEAEA]"
-                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start text-left font-normal h-10 border-[#EAEAEA]"
+                          >
+                            <Calendar className="mr-2 h-4 w-4" />
+                            {customEndDate ? format(parseISO(customEndDate), "dd/MM/yyyy", { locale: ptBR }) : "Selecione..."}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <CalendarComponent
+                            mode="single"
+                            selected={customEndDate ? parseISO(customEndDate) : undefined}
+                            onSelect={(date) => setCustomEndDate(date ? format(date, "yyyy-MM-dd") : "")}
+                            locale={ptBR}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
                 )}
