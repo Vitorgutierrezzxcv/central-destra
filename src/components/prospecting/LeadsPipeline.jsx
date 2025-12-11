@@ -149,14 +149,6 @@ export default function LeadsPipeline({
   onDeleteLead,
   isLoading 
 }) {
-  // Invalidar queries de métricas e metas quando houver mudanças
-  const queryClient = useQueryClient();
-  
-  React.useEffect(() => {
-    // Sempre que leads mudarem, invalidar todas as queries relacionadas
-    queryClient.invalidateQueries({ queryKey: ['prospecting-goals'] });
-    queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
-  }, [leads, queryClient]);
   const [showForm, setShowForm] = useState(false);
   const [editingLead, setEditingLead] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -164,6 +156,12 @@ export default function LeadsPipeline({
   const [showOnlyWithRecommendation, setShowOnlyWithRecommendation] = useState(false);
 
   const queryClient = useQueryClient();
+  
+  // Invalidar queries de métricas e metas quando houver mudanças
+  React.useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['prospecting-goals'] });
+    queryClient.invalidateQueries({ queryKey: ['prospecting-metrics'] });
+  }, [leads, queryClient]);
 
   // Mutation para criar oportunidade
   const createOpportunityMutation = useMutation({
