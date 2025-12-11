@@ -42,15 +42,42 @@ function ProspectingContent() {
   const [showForm, setShowForm] = useState(false);
   const [showGoalsManager, setShowGoalsManager] = useState(false);
   const [selectedFormDate, setSelectedFormDate] = useState(new Date().toISOString().split('T')[0]);
-  const [dateRange, setDateRange] = useState("week");
-  const [comparisonPeriod, setComparisonPeriod] = useState("previous");
-  const [selectedSeller, setSelectedSeller] = useState("all");
   const [showLeadsModal, setShowLeadsModal] = useState(false);
   const [selectedStage, setSelectedStage] = useState(null);
-  const [viewMode, setViewMode] = useState("period"); // "period" ou "total"
-  const [customStartDate, setCustomStartDate] = useState("");
-  const [customEndDate, setCustomEndDate] = useState("");
+  const [viewMode, setViewMode] = useState(() => localStorage.getItem('prospecting-view-mode') || "period");
+  const [customStartDate, setCustomStartDate] = useState(() => localStorage.getItem('prospecting-custom-start') || "");
+  const [customEndDate, setCustomEndDate] = useState(() => localStorage.getItem('prospecting-custom-end') || "");
   const queryClient = useQueryClient();
+
+  // Carregar preferências salvas
+  const [dateRange, setDateRange] = useState(() => localStorage.getItem('prospecting-date-range') || "week");
+  const [comparisonPeriod, setComparisonPeriod] = useState(() => localStorage.getItem('prospecting-comparison') || "previous");
+  const [selectedSeller, setSelectedSeller] = useState(() => localStorage.getItem('prospecting-seller') || "all");
+
+  // Salvar preferências quando mudarem
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-view-mode', viewMode);
+  }, [viewMode]);
+
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-date-range', dateRange);
+  }, [dateRange]);
+
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-comparison', comparisonPeriod);
+  }, [comparisonPeriod]);
+
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-seller', selectedSeller);
+  }, [selectedSeller]);
+
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-custom-start', customStartDate);
+  }, [customStartDate]);
+
+  React.useEffect(() => {
+    localStorage.setItem('prospecting-custom-end', customEndDate);
+  }, [customEndDate]);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
