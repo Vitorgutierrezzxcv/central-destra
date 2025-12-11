@@ -28,58 +28,53 @@ export default function ProspectingAIChat({ leads = [], dateRangeLabel }) {
   }, [messages]);
 
   const generateMetricsContext = () => {
-    const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
+    // Dados completos de cada lead para análise detalhada
+    const leadsData = leads.map(lead => ({
+      nome: lead.name,
+      origem: lead.source === 'destra' ? 'Perfil Destra' : lead.source === 'bernardo' ? 'Perfil Bernardo' : lead.source,
+      estagio: lead.stage,
+      vendedor: lead.seller_email,
+      valor_potencial: lead.potential_value,
+      segmento: lead.company_segment,
+      data_criacao: lead.created_date,
+      ultimo_contato: lead.last_contact_date,
+      instagram: lead.instagram,
+      whatsapp: lead.whatsapp,
+    }));
+
+    // Métricas por origem
+    const leadsDestro = leads.filter(l => l.source === 'destra');
+    const leadsBernardo = leads.filter(l => l.source === 'bernardo');
     
-    const getCountForStage = (stage) => {
-      const stageIndex = stageOrder.indexOf(stage);
-      return leads.filter(l => {
-        if (!l.stage) return false;
-        const leadStageIndex = stageOrder.indexOf(l.stage);
-        if (stage === 'prospectado') return l.stage !== 'perdido';
-        return leadStageIndex >= stageIndex && l.stage !== 'perdido';
-      }).length;
+    const calcMetricsBySource = (sourceLeads) => {
+      const prosp = sourceLeads.filter(l => l.stage !== 'perdido').length;
+      const resp = sourceLeads.filter(l => ['respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada'].includes(l.stage)).length;
+      const vendas = sourceLeads.filter(l => l.stage === 'venda_fechada').length;
+      const valorVendas = sourceLeads.filter(l => l.stage === 'venda_fechada').reduce((sum, l) => sum + (l.potential_value || 0), 0);
+      return {
+        total: prosp,
+        responderam: resp,
+        taxa_resposta: prosp > 0 ? ((resp / prosp) * 100).toFixed(1) : 0,
+        vendas,
+        valor_vendas: valorVendas,
+        taxa_conversao: prosp > 0 ? ((vendas / prosp) * 100).toFixed(1) : 0
+      };
     };
 
-    const metrics = {
+    const metricsDestro = calcMetricsBySource(leadsDestro);
+    const metricsBernardo = calcMetricsBySource(leadsBernardo);
+
+    return JSON.stringify({
       periodo: dateRangeLabel,
-      total_leads: leads.filter(l => l.stage !== 'perdido').length,
-      prospectados: getCountForStage('prospectado'),
-      responderam: getCountForStage('respondeu'),
-      whatsapp: getCountForStage('whatsapp'),
-      reunioes_marcadas: getCountForStage('reuniao_marcada'),
-      reunioes_realizadas: getCountForStage('reuniao_realizada'),
-      no_shows: leads.filter(l => l.stage === 'no_show').length,
-      propostas_enviadas: getCountForStage('proposta_enviada'),
-      vendas_fechadas: leads.filter(l => l.stage === 'venda_fechada').length,
-      valor_total_vendas: leads.filter(l => l.stage === 'venda_fechada').reduce((sum, l) => sum + (l.potential_value || 0), 0),
-      perdidos: leads.filter(l => l.stage === 'perdido').length,
-      
-      // Taxas de conversão
-      taxa_resposta: leads.length > 0 ? ((getCountForStage('respondeu') / getCountForStage('prospectado')) * 100).toFixed(1) : 0,
-      taxa_whatsapp: getCountForStage('respondeu') > 0 ? ((getCountForStage('whatsapp') / getCountForStage('respondeu')) * 100).toFixed(1) : 0,
-      taxa_reuniao: getCountForStage('whatsapp') > 0 ? ((getCountForStage('reuniao_marcada') / getCountForStage('whatsapp')) * 100).toFixed(1) : 0,
-      taxa_fechamento: getCountForStage('reuniao_realizada') > 0 ? ((leads.filter(l => l.stage === 'venda_fechada').length / getCountForStage('reuniao_realizada')) * 100).toFixed(1) : 0,
-      taxa_no_show: getCountForStage('reuniao_marcada') > 0 ? ((leads.filter(l => l.stage === 'no_show').length / getCountForStage('reuniao_marcada')) * 100).toFixed(1) : 0,
-    };
-
-    return `
-Análise de Prospecção (${metrics.periodo}):
-
-FUNIL DE VENDAS:
-- Total de Leads Ativos: ${metrics.total_leads}
-- Prospectados: ${metrics.prospectados}
-- Responderam: ${metrics.responderam} (${metrics.taxa_resposta}% taxa de resposta)
-- WhatsApp Coletados: ${metrics.whatsapp} (${metrics.taxa_whatsapp}% de respostas → whatsapp)
-- Reuniões Marcadas: ${metrics.reunioes_marcadas} (${metrics.taxa_reuniao}% de whatsapp → reunião)
-- Reuniões Realizadas: ${metrics.reunioes_realizadas}
-- No-Shows: ${metrics.no_shows} (${metrics.taxa_no_show}% taxa de no-show)
-- Propostas Enviadas: ${metrics.propostas_enviadas}
-- Vendas Fechadas: ${metrics.vendas_fechadas} (${metrics.taxa_fechamento}% taxa de fechamento)
-- Valor Total em Vendas: R$ ${metrics.valor_total_vendas.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-- Leads Perdidos: ${metrics.perdidos}
-
-Com base nesses dados, analise e responda à pergunta do usuário de forma objetiva e acionável.
-    `.trim();
+      total_leads: leads.length,
+      leads_completos: leadsData,
+      performance_por_perfil: {
+        perfil_destra: metricsDestro,
+        perfil_bernardo: metricsBernardo
+      },
+      vendedores: [...new Set(leads.map(l => l.seller_email))],
+      segmentos: [...new Set(leads.map(l => l.company_segment).filter(Boolean))]
+    }, null, 2);
   };
 
   const handleSend = async () => {
@@ -91,12 +86,20 @@ Com base nesses dados, analise e responda à pergunta do usuário de forma objet
     setIsLoading(true);
 
     try {
-      const metricsContext = generateMetricsContext();
-      const fullPrompt = `${metricsContext}
+      const fullContext = generateMetricsContext();
+      const fullPrompt = `Você é um assistente de análise de vendas e prospecção com acesso COMPLETO aos dados de todos os leads. Analise qualquer pergunta sobre:
+- Performance por perfil (Destra vs Bernardo)
+- Taxa de resposta, conversão, ticket médio por origem
+- Análise por vendedor, segmento
+- Leads específicos e detalhes
+- Qualquer métrica ou comparação solicitada
 
-PERGUNTA DO USUÁRIO: ${userMessage}
+DADOS COMPLETOS:
+${fullContext}
 
-Responda de forma concisa, prática e focada em ações. Use dados específicos das métricas apresentadas. Se identificar gargalos, sugira soluções específicas.`;
+PERGUNTA: ${userMessage}
+
+Responda com dados específicos, insights práticos e sugestões acionáveis.`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: fullPrompt,
@@ -115,10 +118,10 @@ Responda de forma concisa, prática e focada em ações. Use dados específicos 
   };
 
   const quickQuestions = [
-    "Qual o principal gargalo do meu funil?",
-    "Como melhorar minha taxa de resposta?",
-    "Estratégias para reduzir no-show",
-    "Como aumentar a taxa de fechamento?"
+    "Qual perfil tem melhor taxa de resposta?",
+    "Qual vendedor está performando melhor?",
+    "Quais leads estão mais próximos de fechar?",
+    "Compare performance Destra vs Bernardo"
   ];
 
   return (
