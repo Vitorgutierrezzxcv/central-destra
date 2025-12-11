@@ -35,6 +35,7 @@ import LeadsPipeline from "../components/prospecting/LeadsPipeline";
 import LeadsListModal from "../components/prospecting/LeadsListModal";
 import ProspectingNotes from "../components/prospecting/ProspectingNotes";
 import ProspectingAIChat from "../components/prospecting/ProspectingAIChat";
+import SourceMetrics from "../components/prospecting/SourceMetrics";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -540,6 +541,8 @@ function ProspectingContent() {
                   leads={currentLeads}
                   onStageClick={handleStageClick}
                 />
+
+                <SourceMetrics leads={currentLeads} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <ProspectingAIChat
