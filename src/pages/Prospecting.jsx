@@ -496,6 +496,12 @@ function ProspectingContent() {
           users={users}
         />
 
+        {/* Daily Goals Widget - sempre visível */}
+        <DailyGoalsWidget 
+          goals={goals} 
+          leads={sellerFilteredLeads}
+        />
+
         {/* Dashboard */}
         <Tabs defaultValue={viewMode === "total" ? "leads" : "metrics"} className="w-full">
           <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
