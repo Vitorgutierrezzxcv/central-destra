@@ -67,14 +67,46 @@ export default function ProspectingGoalsManager({ goals, userEmail, metrics = []
   };
 
   const calculateProgress = (goal) => {
-    if (!metrics || metrics.length === 0) return 0;
-    const total = metrics.reduce((sum, m) => sum + (m[goal.metric_type] || 0), 0);
-    return goal.goal_value > 0 ? Math.min((total / goal.goal_value) * 100, 100) : 0;
+    const currentValue = getCurrentValue(goal);
+    return goal.goal_value > 0 ? Math.min((currentValue / goal.goal_value) * 100, 100) : 0;
   };
 
   const getCurrentValue = (goal) => {
     if (!metrics || metrics.length === 0) return 0;
-    return metrics.reduce((sum, m) => sum + (m[goal.metric_type] || 0), 0);
+    
+    // Mapeamento correto das métricas dos leads
+    const metricMapping = {
+      instagram_leads: 'prospectado',
+      instagram_responses: 'respondeu',
+      whatsapp_collected: 'whatsapp',
+      meetings_scheduled: 'reuniao_marcada',
+      meetings_held: 'reuniao_realizada',
+      follow_ups_sent: 'proposta_enviada',
+      follow_ups_responses: 'segunda_reuniao_marcada',
+      sales_amount: 'venda_fechada',
+    };
+
+    const targetStage = metricMapping[goal.metric_type];
+    if (!targetStage) return 0;
+
+    const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
+    
+    if (goal.metric_type === 'sales_amount') {
+      // Para vendas, soma os valores dos leads fechados
+      return metrics
+        .filter(l => l.stage === 'venda_fechada')
+        .reduce((sum, l) => sum + (l.potential_value || 0), 0);
+    }
+    
+    // Para outras métricas, conta leads que passaram pelo estágio
+    const stageIndex = stageOrder.indexOf(targetStage);
+    return metrics.filter(l => {
+      if (!l.stage) return false;
+      const leadStageIndex = stageOrder.indexOf(l.stage);
+      
+      if (targetStage === 'prospectado') return l.stage !== 'perdido';
+      return leadStageIndex >= stageIndex && l.stage !== 'perdido';
+    }).length;
   };
 
   const content = (

@@ -30,6 +30,7 @@ import ProspectingGoalsManager from "../components/prospecting/ProspectingGoalsM
 import ConversionFunnel from "../components/prospecting/ConversionFunnel";
 import LeadsPipeline from "../components/prospecting/LeadsPipeline";
 import LeadsListModal from "../components/prospecting/LeadsListModal";
+import ProspectingNotes from "../components/prospecting/ProspectingNotes";
 import AccessGuard from "../components/layout/AccessGuard";
 
 function ProspectingContent() {
@@ -439,6 +440,10 @@ function ProspectingContent() {
                 <ConversionFunnel 
                   leads={currentLeads}
                   onStageClick={handleStageClick}
+                />
+                <ProspectingNotes
+                  userEmail={user?.email}
+                  dateRange={dateRange}
                 />
                 <ProspectingCharts
                   leads={currentLeads}
