@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Target, TrendingUp } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { isToday, parseISO } from "date-fns";
 
 const metricLabels = {
   instagram_leads: "Leads",
@@ -19,6 +20,18 @@ export default function DailyGoalsWidget({ goals = [], leads = [] }) {
 
   if (visibleGoals.length === 0) return null;
 
+  // Filtra apenas leads de HOJE
+  const todayLeads = leads.filter(l => {
+    const dateToCheck = l.last_contact_date || l.created_date;
+    if (!dateToCheck) return false;
+    try {
+      const leadDate = parseISO(dateToCheck.split('T')[0]);
+      return isToday(leadDate);
+    } catch (e) {
+      return false;
+    }
+  });
+
   const getCurrentValue = (goal) => {
     const metricMapping = {
       instagram_leads: 'prospectado',
@@ -32,7 +45,7 @@ export default function DailyGoalsWidget({ goals = [], leads = [] }) {
     const stageOrder = ['prospectado', 'respondeu', 'whatsapp', 'reuniao_marcada', 'no_show', 'reuniao_realizada', 'proposta_enviada', 'segunda_reuniao_marcada', 'venda_fechada', 'perdido'];
     const stageIndex = stageOrder.indexOf(targetStage);
     
-    return leads.filter(l => {
+    return todayLeads.filter(l => {
       if (!l.stage) return false;
       const leadStageIndex = stageOrder.indexOf(l.stage);
       
