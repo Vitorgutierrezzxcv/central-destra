@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Plus, Trash2, Target, TrendingUp, X } from "lucide-react";
+import { Plus, Trash2, Target, TrendingUp, X, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const metricLabels = {
@@ -30,6 +30,7 @@ const periodLabels = {
 
 export default function ProspectingGoalsManager({ goals, userEmail, metrics = [], embedded = false, onClose }) {
   const [showForm, setShowForm] = useState(false);
+  const [editingGoal, setEditingGoal] = useState(null);
   const [newGoal, setNewGoal] = useState({
     period: "weekly",
     metric_type: "instagram_leads",
@@ -53,6 +54,21 @@ export default function ProspectingGoalsManager({ goals, userEmail, metrics = []
     },
   });
 
+  const updateGoalMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.ProspectingGoal.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['prospecting-goals'] });
+      setShowForm(false);
+      setEditingGoal(null);
+      setNewGoal({
+        period: "weekly",
+        metric_type: "instagram_leads",
+        goal_value: 0,
+        start_date: new Date().toISOString().split('T')[0],
+      });
+    },
+  });
+
   const deleteGoalMutation = useMutation({
     mutationFn: (id) => base44.entities.ProspectingGoal.delete(id),
     onSuccess: () => {
@@ -62,8 +78,34 @@ export default function ProspectingGoalsManager({ goals, userEmail, metrics = []
 
   const handleCreateGoal = () => {
     if (newGoal.goal_value > 0) {
-      createGoalMutation.mutate(newGoal);
+      if (editingGoal) {
+        updateGoalMutation.mutate({ id: editingGoal.id, data: newGoal });
+      } else {
+        createGoalMutation.mutate(newGoal);
+      }
     }
+  };
+
+  const handleEdit = (goal) => {
+    setEditingGoal(goal);
+    setNewGoal({
+      period: goal.period,
+      metric_type: goal.metric_type,
+      goal_value: goal.goal_value,
+      start_date: goal.start_date,
+    });
+    setShowForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setShowForm(false);
+    setEditingGoal(null);
+    setNewGoal({
+      period: "weekly",
+      metric_type: "instagram_leads",
+      goal_value: 0,
+      start_date: new Date().toISOString().split('T')[0],
+    });
   };
 
   const calculateProgress = (goal) => {
@@ -176,16 +218,16 @@ export default function ProspectingGoalsManager({ goals, userEmail, metrics = []
                 </div>
 
                 <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={() => setShowForm(false)}>
+                  <Button variant="outline" onClick={handleCancelEdit}>
                     Cancelar
                   </Button>
                   <Button
                     onClick={handleCreateGoal}
-                    disabled={createGoalMutation.isPending}
+                    disabled={createGoalMutation.isPending || updateGoalMutation.isPending}
                     className="bg-gradient-to-r from-cyan-500 to-blue-600"
                   >
                     <Plus className="w-4 h-4 mr-2" />
-                    Criar Meta
+                    {editingGoal ? 'Salvar Meta' : 'Criar Meta'}
                   </Button>
                 </div>
               </CardContent>
@@ -214,14 +256,24 @@ export default function ProspectingGoalsManager({ goals, userEmail, metrics = []
                         Meta {periodLabels[goal.period]}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteGoalMutation.mutate(goal.id)}
-                      className="text-white hover:bg-white/20 h-8 w-8"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEdit(goal)}
+                        className="text-white hover:bg-white/20 h-8 w-8"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteGoalMutation.mutate(goal.id)}
+                        className="text-white hover:bg-white/20 h-8 w-8"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-4 space-y-3">
