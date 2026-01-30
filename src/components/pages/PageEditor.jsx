@@ -165,117 +165,131 @@ export default function PageEditor({ page, blocks, onBack, currentUser }) {
   }, [localBlocks.length]);
 
   const parseMarkdownToBlocks = (text) => {
-    const lines = text.split('\n').filter(line => line.trim());
+    const lines = text.split('\n');
     const blocks = [];
-    let currentListType = null;
-    let currentListItems = [];
 
-    lines.forEach(line => {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       const trimmed = line.trim();
-      if (!trimmed) return;
 
-      // Heading 1 (# ou ##)
-      if (trimmed.startsWith('# ')) {
-        blocks.push({
-          type: 'heading_1',
-          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
-        });
-        currentListType = null;
-      } 
-      // Heading 2
-      else if (trimmed.startsWith('## ')) {
-        blocks.push({
-          type: 'heading_2',
-          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
-        });
-        currentListType = null;
-      }
-      // Heading 3
-      else if (trimmed.startsWith('### ')) {
+      if (!trimmed) continue;
+
+      // Heading levels
+      if (trimmed.startsWith('#### ')) {
         blocks.push({
           type: 'heading_3',
-          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
+          content: { text: trimmed.replace(/^#### /, '') }
         });
-        currentListType = null;
+      } else if (trimmed.startsWith('### ')) {
+        blocks.push({
+          type: 'heading_3',
+          content: { text: trimmed.replace(/^### /, '') }
+        });
+      } else if (trimmed.startsWith('## ')) {
+        blocks.push({
+          type: 'heading_2',
+          content: { text: trimmed.replace(/^## /, '') }
+        });
+      } else if (trimmed.startsWith('# ')) {
+        blocks.push({
+          type: 'heading_1',
+          content: { text: trimmed.replace(/^# /, '') }
+        });
+      }
+      // Table detection
+      else if (trimmed.includes('|')) {
+        blocks.push({
+          type: 'paragraph',
+          content: { text: trimmed.replace(/\|/g, ' ') }
+        });
+      }
+      // Toggle/dropdown
+      else if (trimmed.startsWith('> ') || trimmed.startsWith('>> ')) {
+        const toggleText = trimmed.replace(/^>+ /, '');
+        blocks.push({
+          type: 'toggle',
+          content: { text: toggleText, expanded: false, blocks: [] }
+        });
       }
       // Bullet list
       else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-        const text = trimmed.replace(/^[-*] /, '').replace(/\*\*/g, '');
         blocks.push({
           type: 'bulleted_list',
-          content: { text }
+          content: { text: trimmed.replace(/^[-*] /, '') }
         });
-        currentListType = null;
       }
       // Numbered list
       else if (/^\d+\. /.test(trimmed)) {
-        const text = trimmed.replace(/^\d+\. /, '').replace(/\*\*/g, '');
         blocks.push({
           type: 'numbered_list',
-          content: { text }
+          content: { text: trimmed.replace(/^\d+\. /, '') }
         });
-        currentListType = null;
       }
       // Regular paragraph
       else {
-        const cleanText = trimmed.replace(/\*\*/g, '');
         blocks.push({
           type: 'paragraph',
-          content: { text: cleanText }
+          content: { text: trimmed }
         });
       }
-    });
+    }
 
-    return blocks;
+    return blocks.filter(b => b);
   };
 
   const handlePaste = async (e) => {
     e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
+    const html = e.clipboardData.getData('text/html');
     if (!text.trim()) return;
 
     setSaveStatus("saving");
     
     try {
-      // Primeiro tenta parsing local de markdown
-      let parsedBlocks = parseMarkdownToBlocks(text);
-      
-      // Se não encontrou estrutura, usa LLM
-      if (parsedBlocks.length === 1) {
-        const result = await base44.integrations.Core.InvokeLLM({
-          prompt: `Analise este conteúdo e reconheça EXATAMENTE sua estrutura:
-- Títulos (# = heading_1, ## = heading_2, ### = heading_3)
-- Parágrafos
-- Listas com bullets (- ou *)
-- Listas numeradas (1. 2. 3.)
-- Negrito (**texto**)
-- Itálico (*texto*)
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analise este conteúdo colado e estruture em blocos. Reconheça:
 
-Conteúdo:
+ESTRUTURA:
+- Títulos em negrito como **texto** = heading_1
+- ### Títulos com # = heading_3 
+- #### Títulos com #### = heading_4
+- > Conteúdo indentado = toggle (dropdown)
+- | Tabelas = múltiplos parágrafos
+- - Listas com bullet
+- 1. Listas numeradas
+- Imagens/URLs = paragraph com URL
+- Negrito **texto** = manter formatação
+- Nomes de pessoas = manter exatamente
+
+CONTEÚDO:
 ${text}
 
-Retorne APENAS JSON:
+${html ? `HTML ORIGINAL:\n${html}` : ''}
+
+RETORNE JSON PURO:
 {
   "blocks": [
-    {"type": "heading_2", "content": {"text": "Playbook de Branding: O Guia Definitivo para a Construção da Marca"}},
-    {"type": "paragraph", "content": {"text": "..."}}
+    {"type": "heading_1", "content": {"text": "**Título em Negrito**"}},
+    {"type": "heading_2", "content": {"text": "Subtítulo"}},
+    {"type": "paragraph", "content": {"text": "Parágrafo com **negrito** e nomes"}},
+    {"type": "toggle", "content": {"text": "Clique para expandir", "expanded": false, "blocks": []}},
+    {"type": "bulleted_list", "content": {"text": "Item"}},
+    {"type": "numbered_list", "content": {"text": "Item numerado"}}
   ]
 }`,
-          response_json_schema: {
-            type: "object",
-            properties: {
-              blocks: {
-                type: "array",
-                items: { type: "object" }
-              }
+        response_json_schema: {
+          type: "object",
+          properties: {
+            blocks: {
+              type: "array",
+              items: { type: "object" }
             }
           }
-        });
-        parsedBlocks = result?.blocks || parsedBlocks;
-      }
+        }
+      });
 
-      if (parsedBlocks.length > 0) {
-        const newBlocks = [...localBlocks, ...parsedBlocks];
+      if (result?.blocks?.length) {
+        const newBlocks = [...localBlocks, ...result.blocks];
         setLocalBlocks(newBlocks);
         autoSave(newBlocks, true);
       }
