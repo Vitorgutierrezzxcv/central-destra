@@ -6,7 +6,8 @@ import {
   ChevronDown,
   Grid3x3,
   Wallet,
-  Target
+  Target,
+  FileText
 } from "lucide-react";
 import {
   Dialog,
@@ -57,6 +58,15 @@ const allModules = [
     color: "bg-[#6FA6FF]",
     defaultPage: "Prospecting",
     pages: ["Prospecting"]
+  },
+  {
+    id: "pages",
+    name: "Páginas",
+    description: "Wiki e Documentação",
+    icon: FileText,
+    color: "bg-indigo-600",
+    defaultPage: "Pages",
+    pages: ["Pages"]
   }
 ];
 
@@ -72,6 +82,11 @@ export default function AppSwitcher({ isMobile = false }) {
   // Determine active module based on current page
   const getCurrentModule = () => {
     const currentPath = location.pathname.toLowerCase();
+    
+    // Check if in Pages module
+    if (currentPath.includes('pages')) {
+      return modules.find(m => m.id === 'pages');
+    }
     
     // Check if in Prospecting pages
     if (currentPath.includes('prospecting')) {
