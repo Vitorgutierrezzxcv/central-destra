@@ -6,7 +6,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag, Clock } from "lucide-react";
+import { Pencil, Trash2, Calendar, Circle, CheckCircle2, ArrowUpCircle, Flag, Clock, FileText, Plus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +53,7 @@ const priorityConfig = {
 export default function TaskItem({ task, project, onEdit, onDelete, onStatusChange }) {
   const [showFullTracker, setShowFullTracker] = React.useState(false);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const status = statusConfig[task.status];
   const StatusIcon = status.icon;
@@ -70,6 +73,33 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
   const createExecutionHistoryMutation = useMutation({
     mutationFn: (historyData) => base44.entities.TaskExecutionHistory.create(historyData),
   });
+
+  const createPageMutation = useMutation({
+    mutationFn: (pageData) => base44.entities.Page.create(pageData),
+    onSuccess: (newPage) => {
+      queryClient.invalidateQueries({ queryKey: ['pages'] });
+      // Vincular página à tarefa
+      base44.entities.Task.update(task.id, { linked_page_id: newPage.id });
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      // Navegar para a página
+      navigate(createPageUrl("Pages"));
+    },
+  });
+
+  const handleCreateOrOpenPage = async () => {
+    if (task.linked_page_id) {
+      // Já tem página, abrir
+      navigate(createPageUrl("Pages"));
+    } else {
+      // Criar nova página
+      await createPageMutation.mutateAsync({
+        title: `Resposta: ${task.title}`,
+        icon: "📝",
+        workspace_id: task.project_id,
+        sort_order: 0,
+      });
+    }
+  };
 
   const getUserDisplayName = (email) => {
     if (!email) return null;
@@ -189,6 +219,32 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   <Flag className="w-3 h-3 mr-1" />
                   {priority.label}
                 </Badge>
+
+                {task.linked_page_id && (
+                  <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 text-xs">
+                    <FileText className="w-3 h-3 mr-1" />
+                    Com Documentação
+                  </Badge>
+                )}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCreateOrOpenPage}
+                  className="h-6 px-2 text-xs border-blue-200 text-blue-700 hover:bg-blue-50"
+                >
+                  {task.linked_page_id ? (
+                    <>
+                      <FileText className="w-3 h-3 mr-1" />
+                      Ver Página
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-3 h-3 mr-1" />
+                      Criar Página
+                    </>
+                  )}
+                </Button>
                 
                 {task.start_date && (
                   <Badge variant="outline" className="bg-white border-[#EAEAEA] flex items-center gap-1 text-xs text-[#456C8D]">
