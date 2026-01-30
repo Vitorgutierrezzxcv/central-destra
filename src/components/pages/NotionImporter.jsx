@@ -43,41 +43,32 @@ Extraia TUDO - título, ícone, TODOS os blocos, imagens, tabelas, código, list
 
 Para cada subpágina encontrada, acesse-a também e extraia seu conteúdo completo de forma recursiva.
 
-Retorne em JSON:
+Retorne APENAS em JSON puro (sem markdown, sem explicações):
 {
   "title": "Título exato da página",
-  "icon": "emoji ou símbolo visual",
+  "icon": "emoji",
   "blocks": [
-    {
-      "type": "heading_1|heading_2|heading_3|paragraph|bulleted_list|numbered_list|todo|quote|code_block|callout|divider|image|table",
-      "content": {
-        "text": "conteúdo",
-        "checked": boolean (para todo),
-        "language": "linguagem" (para code_block),
-        "code": "código",
-        "url": "url" (para imagem)
-      }
-    }
+    {"type": "heading_1", "content": {"text": "conteúdo"}},
+    {"type": "paragraph", "content": {"text": "conteúdo"}}
   ],
   "subpages": [
-    {
-      "title": "Título da subpágina",
-      "icon": "emoji",
-      "blocks": [],
-      "subpages": []
-    }
+    {"title": "Subpágina", "icon": "emoji", "blocks": [], "subpages": []}
   ]
-}
-
-Seja PRECISO e COMPLETO. Toda informação visível deve estar no JSON.`,
+}`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             title: { type: "string" },
             icon: { type: "string" },
-            blocks: { type: "array" },
-            subpages: { type: "array" }
+            blocks: {
+              type: "array",
+              items: { type: "object" }
+            },
+            subpages: {
+              type: "array",
+              items: { type: "object" }
+            }
           },
           required: ["title"]
         }
