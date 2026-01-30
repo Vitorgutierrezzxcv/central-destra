@@ -32,106 +32,91 @@ export default function NotionImporter({ onImportComplete }) {
     if (!notionUrl) return;
 
     setIsImporting(true);
-    setStatus({ type: 'info', message: 'Buscando conteúdo do Notion...' });
+    setStatus({ type: 'info', message: 'Acessando página do Notion...' });
 
     try {
-      // Usar LLM para extrair e converter conteúdo do Notion com subpáginas
+      // Primeiro, buscar a página html para extrair informações
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `
-Acesse esta página pública do Notion: ${notionUrl}
+        prompt: `Acesse e analise COMPLETAMENTE esta página pública do Notion: ${notionUrl}
 
-Extraia TODO o conteúdo da página INCLUINDO todas as subpáginas e converta para o seguinte formato JSON:
+Extraia TUDO - título, ícone, TODOS os blocos, imagens, tabelas, código, listas, e TODAS as subpáginas (links que abrem novas páginas).
 
+Para cada subpágina encontrada, acesse-a também e extraia seu conteúdo completo de forma recursiva.
+
+Retorne em JSON:
 {
-  "title": "Título da página",
-  "icon": "emoji se houver, senão 📄",
+  "title": "Título exato da página",
+  "icon": "emoji ou símbolo visual",
   "blocks": [
     {
-      "type": "heading_1" | "heading_2" | "heading_3" | "paragraph" | "bulleted_list" | "numbered_list" | "todo" | "quote" | "code_block" | "callout" | "divider",
+      "type": "heading_1|heading_2|heading_3|paragraph|bulleted_list|numbered_list|todo|quote|code_block|callout|divider|image|table",
       "content": {
-        "text": "conteúdo do bloco",
-        "checked": true/false (apenas para todo),
-        "language": "linguagem" (apenas para code_block),
-        "code": "código" (apenas para code_block)
+        "text": "conteúdo",
+        "checked": boolean (para todo),
+        "language": "linguagem" (para code_block),
+        "code": "código",
+        "url": "url" (para imagem)
       }
     }
   ],
   "subpages": [
     {
       "title": "Título da subpágina",
-      "icon": "emoji se houver",
-      "blocks": [...],
-      "subpages": [...]
+      "icon": "emoji",
+      "blocks": [],
+      "subpages": []
     }
   ]
 }
 
-IMPORTANTE:
-- Extraia TODAS as páginas e subpáginas aninhadas recursivamente
-- Mantenha toda a formatação e estrutura hierárquica
-- Converta títulos para heading_1, heading_2, heading_3
-- Converta listas com bullets para bulleted_list
-- Converta listas numeradas para numbered_list
-- Converta checkboxes para todo
-- Converta blocos de código para code_block
-- Converta callouts/avisos para callout
-- Use divider para separadores
-- Para parágrafos normais use paragraph
-- Inclua links entre páginas se houver
-
-Retorne APENAS o JSON completo com toda a estrutura, sem texto adicional.
-        `,
+Seja PRECISO e COMPLETO. Toda informação visível deve estar no JSON.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             title: { type: "string" },
             icon: { type: "string" },
-            blocks: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: { type: "string" },
-                  content: { type: "object" }
-                }
-              }
-            },
-            subpages: {
-              type: "array",
-              items: { type: "object" }
-            }
-          }
+            blocks: { type: "array" },
+            subpages: { type: "array" }
+          },
+          required: ["title"]
         }
       });
 
-      setStatus({ type: 'info', message: 'Criando páginas e subpáginas...' });
+      if (!result.title) {
+        throw new Error("Não foi possível extrair o título da página");
+      }
 
-      // Função recursiva para criar páginas e subpáginas
+      setStatus({ type: 'info', message: `Criando "${result.title}" com ${result.subpages?.length || 0} subpáginas...` });
+
+      // Função recursiva para criar páginas
       const createPageWithSubpages = async (pageData, parentId = null, sortOrder = 0) => {
-        // Criar página principal
         const newPage = await createPageMutation.mutateAsync({
-          title: pageData.title,
+          title: pageData.title || "Página Importada",
           icon: pageData.icon || "📄",
           workspace_id: "imported",
-          parent_page_id: parentId,
+          parent_page_id: parentId || null,
           sort_order: sortOrder,
         });
 
-        // Criar blocos da página
-        if (pageData.blocks && pageData.blocks.length > 0) {
-          const blocksToCreate = pageData.blocks.map((block, index) => ({
+        // Criar blocos
+        if (pageData.blocks?.length) {
+          const blocksToCreate = pageData.blocks.map((block, idx) => ({
             page_id: newPage.id,
             type: block.type,
-            content: block.content,
-            sort_order: index
+            content: block.content || {},
+            sort_order: idx
           }));
 
-          await createBlocksMutation.mutateAsync(blocksToCreate);
+          try {
+            await createBlocksMutation.mutateAsync(blocksToCreate);
+          } catch (e) {
+            console.error('Erro ao criar blocos:', e);
+          }
         }
 
-        // Criar subpáginas recursivamente
-        if (pageData.subpages && pageData.subpages.length > 0) {
+        // Criar subpáginas
+        if (pageData.subpages?.length) {
           for (let i = 0; i < pageData.subpages.length; i++) {
             await createPageWithSubpages(pageData.subpages[i], newPage.id, i);
           }
@@ -140,27 +125,23 @@ Retorne APENAS o JSON completo com toda a estrutura, sem texto adicional.
         return newPage;
       };
 
-      const mainPage = await createPageWithSubpages(result);
-
-      const totalBlocks = result.blocks?.length || 0;
-      const totalSubpages = result.subpages?.length || 0;
+      await createPageWithSubpages(result);
 
       setStatus({ 
         type: 'success', 
-        message: `✓ Importação concluída! "${result.title}" + ${totalSubpages} subpáginas e ${totalBlocks} blocos criados.` 
+        message: `✓ Wiki importada! ${result.subpages?.length || 0} subpáginas criadas.` 
       });
-
       setNotionUrl("");
       
       if (onImportComplete) {
-        onImportComplete(mainPage);
+        onImportComplete(result);
       }
 
     } catch (error) {
       console.error('Erro ao importar:', error);
       setStatus({ 
         type: 'error', 
-        message: 'Erro ao importar. Verifique se a página é pública e tente novamente.' 
+        message: error.message || 'Erro na importação. Tente novamente.'
       });
     } finally {
       setIsImporting(false);
