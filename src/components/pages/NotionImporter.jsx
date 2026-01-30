@@ -39,20 +39,37 @@ export default function NotionImporter({ onImportComplete }) {
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Acesse e analise COMPLETAMENTE esta página pública do Notion: ${notionUrl}
 
-Extraia TUDO - título, ícone, TODOS os blocos, imagens, tabelas, código, listas, e TODAS as subpáginas (links que abrem novas páginas).
+Extraia TUDO - título, ícone, TODOS os blocos incluindo:
+- Títulos (Heading 1, 2, 3)
+- Parágrafos 
+- Listas com bullets
+- Listas numeradas
+- Listas aninhadas (indentação)
+- Callouts/caixas destacadas
+- Toggles/dropdowns (como tipo "toggle")
+- Divisores
+- Imagens, tabelas, código
+- TODAS as subpáginas recursivamente
 
-Para cada subpágina encontrada, acesse-a também e extraia seu conteúdo completo de forma recursiva.
+IMPORTANTE: Preservar EXATAMENTE a estrutura, indentação e formatação.
+Para listas aninhadas, criar múltiplos blocos respectivos.
+Para toggles, usar type "toggle" com título e conteúdo interno.
 
-Retorne APENAS em JSON puro (sem markdown, sem explicações):
+Retorne APENAS em JSON puro:
 {
-  "title": "Título exato da página",
-  "icon": "emoji",
+  "title": "Título exato",
+  "icon": "emoji ou vazio",
   "blocks": [
-    {"type": "heading_1", "content": {"text": "conteúdo"}},
-    {"type": "paragraph", "content": {"text": "conteúdo"}}
+    {"type": "heading_1", "content": {"text": "..."}},
+    {"type": "heading_2", "content": {"text": "..."}},
+    {"type": "paragraph", "content": {"text": "..."}},
+    {"type": "bulleted_list", "content": {"text": "...", "level": 0}},
+    {"type": "numbered_list", "content": {"text": "...", "level": 0}},
+    {"type": "toggle", "content": {"text": "título", "blocks": [...]}},
+    {"type": "callout", "content": {"text": "..."}}
   ],
   "subpages": [
-    {"title": "Subpágina", "icon": "emoji", "blocks": [], "subpages": []}
+    {"title": "...", "icon": "...", "blocks": [], "subpages": []}
   ]
 }`,
         add_context_from_internet: true,
