@@ -65,9 +65,9 @@ export default function Pages() {
   }
 
   return (
-    <div className="flex h-screen bg-white">
-      {/* Sidebar */}
-      <div className={`flex-shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-80' : 'w-0'} overflow-hidden`}>
+    <div className="flex h-screen bg-white w-screen overflow-x-hidden">
+      {/* Sidebar - Hidden on mobile, visible on desktop */}
+      <div className={`hidden lg:flex flex-shrink-0 transition-all duration-300 ${sidebarOpen ? 'lg:w-80' : 'lg:w-0'} overflow-hidden bg-white border-r`}>
         <PageTree
           pages={pages}
           onSelectPage={setSelectedPage}
@@ -78,12 +78,12 @@ export default function Pages() {
         />
       </div>
 
-      {/* Toggle Button */}
+      {/* Toggle Button - Only on desktop */}
       <Button
         variant="ghost"
         size="icon"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="flex-shrink-0 h-screen rounded-none border-l hover:bg-slate-100"
+        className="hidden lg:flex flex-shrink-0 rounded-none border-l hover:bg-slate-100 h-10"
       >
         {sidebarOpen ? (
           <ChevronLeft className="w-4 h-4" />
@@ -93,7 +93,7 @@ export default function Pages() {
       </Button>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto w-full min-w-0">
         {selectedPage ? (
           <PageEditor
             page={selectedPage}
