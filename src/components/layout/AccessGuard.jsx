@@ -56,7 +56,8 @@ function getDefaultPageForUser(allowedModules) {
     taskflow: "Dashboard",
     crm: "Companies",
     finance: "Lancamentos",
-    prospecting: "Prospecting"
+    prospecting: "Prospecting",
+    pages: "Pages"
   };
   
   // Prioriza prospecção se o usuário tiver acesso
