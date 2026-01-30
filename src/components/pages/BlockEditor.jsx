@@ -201,6 +201,32 @@ export default function BlockEditor({
         </div>
       );
 
+    case 'toggle':
+      return (
+        <div className="border border-slate-200 rounded-lg overflow-hidden">
+          <button
+            onClick={() => handleContentChange({ expanded: !localContent.expanded })}
+            className="w-full flex items-center gap-2 p-3 hover:bg-slate-50 text-left font-medium"
+          >
+            <span className={`transform transition-transform ${localContent.expanded ? 'rotate-90' : ''}`}>▶</span>
+            <Textarea
+              {...commonProps}
+              rows={1}
+              placeholder="Título do toggle..."
+              onClick={(e) => e.stopPropagation()}
+              className="w-full border-none focus:ring-0 resize-none bg-transparent"
+            />
+          </button>
+          {localContent.expanded && localContent.blocks && (
+            <div className="bg-slate-50 border-t border-slate-200 p-3 space-y-2">
+              {localContent.blocks.map((block, idx) => (
+                <div key={idx} className="text-sm text-slate-700">{block}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+
     default: // paragraph
       return (
         <Textarea
