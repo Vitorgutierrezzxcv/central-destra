@@ -164,52 +164,124 @@ export default function PageEditor({ page, blocks, onBack, currentUser }) {
     }
   }, [localBlocks.length]);
 
+  const parseMarkdownToBlocks = (text) => {
+    const lines = text.split('\n').filter(line => line.trim());
+    const blocks = [];
+    let currentListType = null;
+    let currentListItems = [];
+
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+
+      // Heading 1 (# ou ##)
+      if (trimmed.startsWith('# ')) {
+        blocks.push({
+          type: 'heading_1',
+          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
+        });
+        currentListType = null;
+      } 
+      // Heading 2
+      else if (trimmed.startsWith('## ')) {
+        blocks.push({
+          type: 'heading_2',
+          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
+        });
+        currentListType = null;
+      }
+      // Heading 3
+      else if (trimmed.startsWith('### ')) {
+        blocks.push({
+          type: 'heading_3',
+          content: { text: trimmed.replace(/^#+ /, '').replace(/\*\*/g, '') }
+        });
+        currentListType = null;
+      }
+      // Bullet list
+      else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        const text = trimmed.replace(/^[-*] /, '').replace(/\*\*/g, '');
+        blocks.push({
+          type: 'bulleted_list',
+          content: { text }
+        });
+        currentListType = null;
+      }
+      // Numbered list
+      else if (/^\d+\. /.test(trimmed)) {
+        const text = trimmed.replace(/^\d+\. /, '').replace(/\*\*/g, '');
+        blocks.push({
+          type: 'numbered_list',
+          content: { text }
+        });
+        currentListType = null;
+      }
+      // Regular paragraph
+      else {
+        const cleanText = trimmed.replace(/\*\*/g, '');
+        blocks.push({
+          type: 'paragraph',
+          content: { text: cleanText }
+        });
+      }
+    });
+
+    return blocks;
+  };
+
   const handlePaste = async (e) => {
+    e.preventDefault();
     const text = e.clipboardData.getData('text/plain');
     if (!text.trim()) return;
 
     setSaveStatus("saving");
     
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analise este texto colado e reconheça sua estrutura (títulos, subtítulos, listas, etc).
+      // Primeiro tenta parsing local de markdown
+      let parsedBlocks = parseMarkdownToBlocks(text);
+      
+      // Se não encontrou estrutura, usa LLM
+      if (parsedBlocks.length === 1) {
+        const result = await base44.integrations.Core.InvokeLLM({
+          prompt: `Analise este conteúdo e reconheça EXATAMENTE sua estrutura:
+- Títulos (# = heading_1, ## = heading_2, ### = heading_3)
+- Parágrafos
+- Listas com bullets (- ou *)
+- Listas numeradas (1. 2. 3.)
+- Negrito (**texto**)
+- Itálico (*texto*)
 
-Texto:
+Conteúdo:
 ${text}
 
-Retorne APENAS JSON com blocos reconhecidos:
+Retorne APENAS JSON:
 {
   "blocks": [
-    {"type": "heading_1", "content": {"text": "..."}},
-    {"type": "paragraph", "content": {"text": "..."}},
-    {"type": "bulleted_list", "content": {"text": "..."}},
-    {"type": "numbered_list", "content": {"text": "..."}}
+    {"type": "heading_2", "content": {"text": "Playbook de Branding: O Guia Definitivo para a Construção da Marca"}},
+    {"type": "paragraph", "content": {"text": "..."}}
   ]
 }`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            blocks: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  type: { type: "string" },
-                  content: { type: "object" }
-                }
+          response_json_schema: {
+            type: "object",
+            properties: {
+              blocks: {
+                type: "array",
+                items: { type: "object" }
               }
             }
           }
-        }
-      });
+        });
+        parsedBlocks = result?.blocks || parsedBlocks;
+      }
 
-      if (result?.blocks?.length) {
-        const newBlocks = [...localBlocks, ...result.blocks];
+      if (parsedBlocks.length > 0) {
+        const newBlocks = [...localBlocks, ...parsedBlocks];
         setLocalBlocks(newBlocks);
         autoSave(newBlocks, true);
       }
     } catch (error) {
       console.error('Erro ao processar cola:', error);
+      setSaveStatus("saved");
     }
   };
 
