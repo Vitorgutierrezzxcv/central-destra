@@ -286,9 +286,9 @@ Retorne APENAS JSON:
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="flex flex-col h-screen bg-white overflow-hidden">
       {/* Header */}
-      <div className="border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 bg-white z-10">
+      <div className="border-b border-slate-200 px-6 py-3 flex items-center justify-between bg-white flex-shrink-0">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" onClick={onBack}>
             ← Voltar
@@ -336,20 +336,22 @@ Retorne APENAS JSON:
         </div>
       </div>
 
-      {/* Cover Image (placeholder) */}
-      {page?.cover_image_url && (
-        <div className="h-64 bg-gradient-to-r from-blue-500 to-purple-600" />
-      )}
+      {/* Content Area */}
+      <div className="flex-1 overflow-auto" onPaste={handlePaste}>
+        {/* Cover Image (placeholder) */}
+        {page?.cover_image_url && (
+          <div className="h-64 bg-gradient-to-r from-blue-500 to-purple-600 flex-shrink-0" />
+        )}
 
-      {/* Hidden paste handler */}
-      <input 
-        ref={pasteInputRef}
-        type="hidden" 
-        onPaste={handlePaste}
-      />
+        {/* Hidden paste handler */}
+        <input 
+          ref={pasteInputRef}
+          type="hidden" 
+          onPaste={handlePaste}
+        />
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12" onPaste={handlePaste}>
+        {/* Content */}
+        <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Icon & Title */}
         <div className="mb-8">
           <button 
@@ -412,6 +414,7 @@ Retorne APENAS JSON:
             <Plus className="w-4 h-4 mr-2" />
             Clique ou digite '/' para adicionar bloco
           </Button>
+        </div>
         </div>
       </div>
 
