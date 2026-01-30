@@ -33,6 +33,7 @@ export default function PageEditor({ page, blocks, onBack, currentUser }) {
   const [autoFocusBlock, setAutoFocusBlock] = useState(null);
   const saveTimeoutRef = useRef(null);
   const queryClient = useQueryClient();
+  const pasteInputRef = useRef(null);
 
   useEffect(() => {
     setTitle(page?.title || "");
@@ -163,6 +164,55 @@ export default function PageEditor({ page, blocks, onBack, currentUser }) {
     }
   }, [localBlocks.length]);
 
+  const handlePaste = async (e) => {
+    const text = e.clipboardData.getData('text/plain');
+    if (!text.trim()) return;
+
+    setSaveStatus("saving");
+    
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analise este texto colado e reconheça sua estrutura (títulos, subtítulos, listas, etc).
+
+Texto:
+${text}
+
+Retorne APENAS JSON com blocos reconhecidos:
+{
+  "blocks": [
+    {"type": "heading_1", "content": {"text": "..."}},
+    {"type": "paragraph", "content": {"text": "..."}},
+    {"type": "bulleted_list", "content": {"text": "..."}},
+    {"type": "numbered_list", "content": {"text": "..."}}
+  ]
+}`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            blocks: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  type: { type: "string" },
+                  content: { type: "object" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (result?.blocks?.length) {
+        const newBlocks = [...localBlocks, ...result.blocks];
+        setLocalBlocks(newBlocks);
+        autoSave(newBlocks, true);
+      }
+    } catch (error) {
+      console.error('Erro ao processar cola:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -219,8 +269,15 @@ export default function PageEditor({ page, blocks, onBack, currentUser }) {
         <div className="h-64 bg-gradient-to-r from-blue-500 to-purple-600" />
       )}
 
+      {/* Hidden paste handler */}
+      <input 
+        ref={pasteInputRef}
+        type="hidden" 
+        onPaste={handlePaste}
+      />
+
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-6 py-12" onPaste={handlePaste}>
         {/* Icon & Title */}
         <div className="mb-8">
           <button 
