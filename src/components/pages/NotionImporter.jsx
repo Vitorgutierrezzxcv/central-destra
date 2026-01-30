@@ -32,15 +32,15 @@ export default function NotionImporter({ onImportComplete }) {
     if (!notionUrl) return;
 
     setIsImporting(true);
-    setStatus({ type: 'info', message: 'Buscando página do Notion...' });
+    setStatus({ type: 'info', message: 'Buscando conteúdo do Notion...' });
 
     try {
-      // Usar LLM para extrair e converter conteúdo do Notion
+      // Usar LLM para extrair e converter conteúdo do Notion com subpáginas
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `
 Acesse esta página pública do Notion: ${notionUrl}
 
-Extraia TODO o conteúdo da página e converta para o seguinte formato JSON:
+Extraia TODO o conteúdo da página INCLUINDO todas as subpáginas e converta para o seguinte formato JSON:
 
 {
   "title": "Título da página",
@@ -55,11 +55,20 @@ Extraia TODO o conteúdo da página e converta para o seguinte formato JSON:
         "code": "código" (apenas para code_block)
       }
     }
+  ],
+  "subpages": [
+    {
+      "title": "Título da subpágina",
+      "icon": "emoji se houver",
+      "blocks": [...],
+      "subpages": [...]
+    }
   ]
 }
 
 IMPORTANTE:
-- Mantenha toda a formatação e estrutura
+- Extraia TODAS as páginas e subpáginas aninhadas recursivamente
+- Mantenha toda a formatação e estrutura hierárquica
 - Converta títulos para heading_1, heading_2, heading_3
 - Converta listas com bullets para bulleted_list
 - Converta listas numeradas para numbered_list
@@ -68,8 +77,9 @@ IMPORTANTE:
 - Converta callouts/avisos para callout
 - Use divider para separadores
 - Para parágrafos normais use paragraph
+- Inclua links entre páginas se houver
 
-Retorne APENAS o JSON, sem texto adicional.
+Retorne APENAS o JSON completo com toda a estrutura, sem texto adicional.
         `,
         add_context_from_internet: true,
         response_json_schema: {
@@ -86,42 +96,64 @@ Retorne APENAS o JSON, sem texto adicional.
                   content: { type: "object" }
                 }
               }
+            },
+            subpages: {
+              type: "array",
+              items: { type: "object" }
             }
           }
         }
       });
 
-      setStatus({ type: 'info', message: 'Criando página...' });
+      setStatus({ type: 'info', message: 'Criando páginas e subpáginas...' });
 
-      // Criar página
-      const newPage = await createPageMutation.mutateAsync({
-        title: result.title,
-        icon: result.icon || "📄",
-        workspace_id: "imported",
-        sort_order: 0,
-      });
+      // Função recursiva para criar páginas e subpáginas
+      const createPageWithSubpages = async (pageData, parentId = null, sortOrder = 0) => {
+        // Criar página principal
+        const newPage = await createPageMutation.mutateAsync({
+          title: pageData.title,
+          icon: pageData.icon || "📄",
+          workspace_id: "imported",
+          parent_page_id: parentId,
+          sort_order: sortOrder,
+        });
 
-      setStatus({ type: 'info', message: 'Importando blocos...' });
+        // Criar blocos da página
+        if (pageData.blocks && pageData.blocks.length > 0) {
+          const blocksToCreate = pageData.blocks.map((block, index) => ({
+            page_id: newPage.id,
+            type: block.type,
+            content: block.content,
+            sort_order: index
+          }));
 
-      // Criar blocos
-      const blocksToCreate = result.blocks.map((block, index) => ({
-        page_id: newPage.id,
-        type: block.type,
-        content: block.content,
-        sort_order: index
-      }));
+          await createBlocksMutation.mutateAsync(blocksToCreate);
+        }
 
-      await createBlocksMutation.mutateAsync(blocksToCreate);
+        // Criar subpáginas recursivamente
+        if (pageData.subpages && pageData.subpages.length > 0) {
+          for (let i = 0; i < pageData.subpages.length; i++) {
+            await createPageWithSubpages(pageData.subpages[i], newPage.id, i);
+          }
+        }
+
+        return newPage;
+      };
+
+      const mainPage = await createPageWithSubpages(result);
+
+      const totalBlocks = result.blocks?.length || 0;
+      const totalSubpages = result.subpages?.length || 0;
 
       setStatus({ 
         type: 'success', 
-        message: `✓ Página "${result.title}" importada com sucesso! ${result.blocks.length} blocos criados.` 
+        message: `✓ Importação concluída! "${result.title}" + ${totalSubpages} subpáginas e ${totalBlocks} blocos criados.` 
       });
 
       setNotionUrl("");
       
       if (onImportComplete) {
-        onImportComplete(newPage);
+        onImportComplete(mainPage);
       }
 
     } catch (error) {
