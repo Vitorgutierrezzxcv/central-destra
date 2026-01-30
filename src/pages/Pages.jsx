@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileText, Plus } from "lucide-react";
+import { FileText, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTree from "../components/pages/PageTree";
 import PageEditor from "../components/pages/PageEditor";
@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function Pages() {
   const [selectedPage, setSelectedPage] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -66,7 +67,7 @@ export default function Pages() {
   return (
     <div className="flex h-screen bg-white">
       {/* Sidebar */}
-      <div className="w-80 flex-shrink-0">
+      <div className={`flex-shrink-0 transition-all duration-300 ${sidebarOpen ? 'w-80' : 'w-0'} overflow-hidden`}>
         <PageTree
           pages={pages}
           onSelectPage={setSelectedPage}
@@ -76,6 +77,20 @@ export default function Pages() {
           recents={recents}
         />
       </div>
+
+      {/* Toggle Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="flex-shrink-0 h-screen rounded-none border-l hover:bg-slate-100"
+      >
+        {sidebarOpen ? (
+          <ChevronLeft className="w-4 h-4" />
+        ) : (
+          <ChevronRight className="w-4 h-4" />
+        )}
+      </Button>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
