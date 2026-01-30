@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FileText, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, Plus, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTree from "../components/pages/PageTree";
 import PageEditor from "../components/pages/PageEditor";
 import NotionImporter from "../components/pages/NotionImporter";
 import { Card, CardContent } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Pages() {
   const [selectedPage, setSelectedPage] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: user } = useQuery({
@@ -93,7 +95,34 @@ export default function Pages() {
       </Button>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto w-full min-w-0">
+      <div className="flex-1 overflow-auto w-full min-w-0 flex flex-col">
+        {/* Mobile Header */}
+        <div className="lg:hidden flex items-center gap-2 p-3 border-b bg-white sticky top-0 z-10">
+          <Sheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Menu className="w-4 h-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 p-0">
+              <PageTree
+                pages={pages}
+                onSelectPage={(page) => {
+                  setSelectedPage(page);
+                  setMobileSheetOpen(false);
+                }}
+                selectedPageId={selectedPage?.id}
+                onCreatePage={handleCreatePage}
+                favorites={favorites}
+                recents={recents}
+              />
+            </SheetContent>
+          </Sheet>
+          <h1 className="text-sm font-semibold text-slate-900">{selectedPage?.title || 'Páginas'}</h1>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-auto">
         {selectedPage ? (
           <PageEditor
             page={selectedPage}
@@ -102,15 +131,15 @@ export default function Pages() {
             currentUser={user}
           />
         ) : (
-          <div className="flex items-center justify-center h-full p-6">
+          <div className="flex items-center justify-center min-h-full p-4 md:p-6">
             <div className="max-w-2xl w-full space-y-6">
               <Card>
-                <CardContent className="p-12 text-center">
-                  <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                <CardContent className="p-8 md:p-12 text-center">
+                  <FileText className="w-12 md:w-16 h-12 md:h-16 text-slate-300 mx-auto mb-4" />
+                  <h2 className="text-xl md:text-2xl font-bold text-slate-900 mb-2">
                     Bem-vindo às Páginas
                   </h2>
-                  <p className="text-slate-600 mb-6">
+                  <p className="text-sm md:text-base text-slate-600 mb-6">
                     Crie documentos, wikis e bases de conhecimento organizadas em uma estrutura de páginas e subpáginas.
                   </p>
                   <Button
@@ -118,7 +147,7 @@ export default function Pages() {
                     className="bg-blue-600 hover:bg-blue-700"
                     size="lg"
                   >
-                    <Plus className="w-5 h-5 mr-2" />
+                    <Plus className="w-4 md:w-5 h-4 md:h-5 mr-2" />
                     Criar Primeira Página
                   </Button>
                 </CardContent>
@@ -128,7 +157,8 @@ export default function Pages() {
             </div>
           </div>
         )}
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+        </div>
+        );
+        }
