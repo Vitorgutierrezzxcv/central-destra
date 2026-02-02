@@ -405,11 +405,17 @@ export default function PiermontDashboard() {
                 
                 const progress = (currentValue / goal.target_value) * 100;
                 
+                const formatGoalValue = (value, type) => {
+                  if (type === 'sales_count') return value.toFixed(0);
+                  if (type === 'profit_margin') return `${value.toFixed(1)}%`;
+                  return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                };
+                
                 return (
                   <div key={goal.id}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="text-black font-medium">{goal.metric_type}</span>
-                      <span className="text-gray-600">{currentValue.toFixed(0)} / {goal.target_value}</span>
+                      <span className="text-black font-medium">{goal.name}</span>
+                      <span className="text-gray-600">{formatGoalValue(currentValue, goal.metric_type)} / {formatGoalValue(goal.target_value, goal.metric_type)}</span>
                     </div>
                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
@@ -576,11 +582,11 @@ export default function PiermontDashboard() {
               <div className="bg-gray-50 p-4 rounded border border-gray-200 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Total</span>
-                  <span className="font-bold text-black">R$ {calculateSale.total.toFixed(2)}</span>
+                  <span className="font-bold text-black">R$ {calculateSale.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Lucro</span>
-                  <span className="font-bold text-black">R$ {calculateSale.profit.toFixed(2)} ({calculateSale.margin.toFixed(1)}%)</span>
+                  <span className="font-bold text-black">R$ {calculateSale.profit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({calculateSale.margin.toFixed(1)}%)</span>
                 </div>
               </div>
               <div className="flex justify-end gap-2">
@@ -697,6 +703,10 @@ export default function PiermontDashboard() {
             </DialogHeader>
             <form onSubmit={(e) => { e.preventDefault(); createGoalMutation.mutate(goalFormData); }} className="space-y-4">
               <div>
+                <Label className="text-black">Nome da Meta*</Label>
+                <Input value={goalFormData.name || ''} onChange={(e) => setGoalFormData({...goalFormData, name: e.target.value})} className="border-black" placeholder="Ex: Meta de Faturamento Janeiro" required />
+              </div>
+              <div>
                 <Label className="text-black">Métrica*</Label>
                 <Select value={goalFormData.metric_type} onValueChange={(v) => setGoalFormData({...goalFormData, metric_type: v})} required>
                   <SelectTrigger className="border-black">
@@ -783,15 +793,15 @@ export default function PiermontDashboard() {
                 <div className="text-sm font-semibold text-black">Resumo</div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Faturamento</span>
-                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_revenue || 0).toFixed(2)}</span>
+                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_revenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Gastos</span>
-                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_expenses || 0).toFixed(2)}</span>
+                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_expenses || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm border-t border-gray-300 pt-2">
                   <span className="text-gray-600">Lucro Estimado</span>
-                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_revenue || 0) * (parseFloat(bulkData.avg_profit_margin || 0) / 100) - parseFloat(bulkData.total_expenses || 0)).toFixed(2)}</span>
+                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_revenue || 0) * (parseFloat(bulkData.avg_profit_margin || 0) / 100) - parseFloat(bulkData.total_expenses || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
