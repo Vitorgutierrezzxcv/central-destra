@@ -15,8 +15,12 @@ import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function PiermontDashboard() {
-  const [period, setPeriod] = useState("month");
+  const [period, setPeriod] = useState(() => localStorage.getItem('piermont_period') || "month");
   const [customDate, setCustomDate] = useState({ from: null, to: null });
+
+  React.useEffect(() => {
+    localStorage.setItem('piermont_period', period);
+  }, [period]);
   const [showSaleForm, setShowSaleForm] = useState(false);
   const [showProductForm, setShowProductForm] = useState(false);
   const [showExpenseForm, setShowExpenseForm] = useState(false);
@@ -213,6 +217,7 @@ export default function PiermontDashboard() {
     if (period === "day") return { start: startOfDay(now), end: endOfDay(now) };
     if (period === "week") return { start: startOfWeek(now, { locale: ptBR }), end: endOfWeek(now, { locale: ptBR }) };
     if (period === "month") return { start: startOfMonth(now), end: endOfMonth(now) };
+    if (period === "last_month") return { start: startOfMonth(subMonths(now, 1)), end: endOfMonth(subMonths(now, 1)) };
     if (period === "custom" && customDate.from && customDate.to) {
       return { start: startOfDay(customDate.from), end: endOfDay(customDate.to) };
     }
@@ -224,6 +229,7 @@ export default function PiermontDashboard() {
     if (period === "day") return { start: startOfDay(subDays(now, 1)), end: endOfDay(subDays(now, 1)) };
     if (period === "week") return { start: startOfWeek(subWeeks(now, 1), { locale: ptBR }), end: endOfWeek(subWeeks(now, 1), { locale: ptBR }) };
     if (period === "month") return { start: startOfMonth(subMonths(now, 1)), end: endOfMonth(subMonths(now, 1)) };
+    if (period === "last_month") return { start: startOfMonth(subMonths(now, 2)), end: endOfMonth(subMonths(now, 2)) };
     return null;
   };
 
@@ -246,7 +252,7 @@ export default function PiermontDashboard() {
     const revenue = currentSales.reduce((sum, s) => sum + (s.total_amount || 0), 0);
     const profit = currentSales.reduce((sum, s) => sum + (s.profit || 0), 0);
     const totalExpenses = currentExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-    const salesCount = currentSales.length;
+    const salesCount = currentSales.reduce((sum, s) => sum + (s.quantity || 0), 0);
     const netProfit = profit - totalExpenses;
     const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
 
@@ -334,6 +340,7 @@ export default function PiermontDashboard() {
                 <SelectItem value="day">Hoje</SelectItem>
                 <SelectItem value="week">Esta Semana</SelectItem>
                 <SelectItem value="month">Este Mês</SelectItem>
+                <SelectItem value="last_month">Mês Passado</SelectItem>
                 <SelectItem value="custom">Personalizado</SelectItem>
               </SelectContent>
             </Select>
