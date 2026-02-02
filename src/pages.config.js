@@ -57,12 +57,16 @@ import FinanceVariableExpenses from './pages/FinanceVariableExpenses';
 import Home from './pages/Home';
 import Lancamentos from './pages/Lancamentos';
 import Opportunities from './pages/Opportunities';
+import Pages from './pages/Pages';
 import ProjectDetail from './pages/ProjectDetail';
 import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import Pages from './pages/Pages';
+import PiermontDashboard from './pages/PiermontDashboard';
+import PiermontProducts from './pages/PiermontProducts';
+import PiermontSales from './pages/PiermontSales';
+import PiermontExpenses from './pages/PiermontExpenses';
 import __Layout from './Layout.jsx';
 
 
@@ -77,12 +81,16 @@ export const PAGES = {
     "Home": Home,
     "Lancamentos": Lancamentos,
     "Opportunities": Opportunities,
+    "Pages": Pages,
     "ProjectDetail": ProjectDetail,
     "Projects": Projects,
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "Pages": Pages,
+    "PiermontDashboard": PiermontDashboard,
+    "PiermontProducts": PiermontProducts,
+    "PiermontSales": PiermontSales,
+    "PiermontExpenses": PiermontExpenses,
 }
 
 export const pagesConfig = {
