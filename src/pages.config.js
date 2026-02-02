@@ -67,6 +67,7 @@ import PiermontDashboard from './pages/PiermontDashboard';
 import PiermontProducts from './pages/PiermontProducts';
 import PiermontSales from './pages/PiermontSales';
 import PiermontExpenses from './pages/PiermontExpenses';
+import PiermontInventory from './pages/PiermontInventory';
 import __Layout from './Layout.jsx';
 
 
@@ -91,6 +92,7 @@ export const PAGES = {
     "PiermontProducts": PiermontProducts,
     "PiermontSales": PiermontSales,
     "PiermontExpenses": PiermontExpenses,
+    "PiermontInventory": PiermontInventory,
 }
 
 export const pagesConfig = {
