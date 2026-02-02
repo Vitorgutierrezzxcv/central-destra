@@ -58,16 +58,16 @@ import Home from './pages/Home';
 import Lancamentos from './pages/Lancamentos';
 import Opportunities from './pages/Opportunities';
 import Pages from './pages/Pages';
+import PiermontDashboard from './pages/PiermontDashboard';
+import PiermontExpenses from './pages/PiermontExpenses';
+import PiermontInventory from './pages/PiermontInventory';
+import PiermontProducts from './pages/PiermontProducts';
+import PiermontSales from './pages/PiermontSales';
 import ProjectDetail from './pages/ProjectDetail';
 import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import PiermontDashboard from './pages/PiermontDashboard';
-import PiermontProducts from './pages/PiermontProducts';
-import PiermontSales from './pages/PiermontSales';
-import PiermontExpenses from './pages/PiermontExpenses';
-import PiermontInventory from './pages/PiermontInventory';
 import __Layout from './Layout.jsx';
 
 
@@ -83,16 +83,16 @@ export const PAGES = {
     "Lancamentos": Lancamentos,
     "Opportunities": Opportunities,
     "Pages": Pages,
+    "PiermontDashboard": PiermontDashboard,
+    "PiermontExpenses": PiermontExpenses,
+    "PiermontInventory": PiermontInventory,
+    "PiermontProducts": PiermontProducts,
+    "PiermontSales": PiermontSales,
     "ProjectDetail": ProjectDetail,
     "Projects": Projects,
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "PiermontDashboard": PiermontDashboard,
-    "PiermontProducts": PiermontProducts,
-    "PiermontSales": PiermontSales,
-    "PiermontExpenses": PiermontExpenses,
-    "PiermontInventory": PiermontInventory,
 }
 
 export const pagesConfig = {

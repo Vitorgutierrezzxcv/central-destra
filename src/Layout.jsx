@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Store, TrendingUp } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -69,6 +69,16 @@ const piermontNav = [
     title: "Produtos",
     url: createPageUrl("PiermontProducts"),
     icon: Package,
+  },
+  {
+    title: "Vendas",
+    url: createPageUrl("PiermontSales"),
+    icon: TrendingUp,
+  },
+  {
+    title: "Gastos",
+    url: createPageUrl("PiermontExpenses"),
+    icon: Store,
   },
   {
     title: "Estoque",
