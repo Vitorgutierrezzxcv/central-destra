@@ -30,6 +30,10 @@ export default function PiermontDashboard() {
   const [expenseFormData, setExpenseFormData] = useState({ expense_date: format(new Date(), 'yyyy-MM-dd') });
   const [goalFormData, setGoalFormData] = useState({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
   const [showBulkImport, setShowBulkImport] = useState(false);
+  const [showSalesDetail, setShowSalesDetail] = useState(false);
+  const [showExpensesDetail, setShowExpensesDetail] = useState(false);
+  const [editingSale, setEditingSale] = useState(null);
+  const [editingExpense, setEditingExpense] = useState(null);
   const [bulkData, setBulkData] = useState({
     month: format(subMonths(new Date(), 1), 'yyyy-MM'),
     total_revenue: '',
@@ -123,6 +127,38 @@ export default function PiermontDashboard() {
     mutationFn: (id) => base44.entities.EcommerceGoal.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
+    },
+  });
+
+  const updateSaleMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Sale.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      setEditingSale(null);
+      setSaleFormData({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+    },
+  });
+
+  const deleteSaleMutation = useMutation({
+    mutationFn: (id) => base44.entities.Sale.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+    },
+  });
+
+  const updateExpenseMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.EcommerceExpense.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
+      setEditingExpense(null);
+      setExpenseFormData({ expense_date: format(new Date(), 'yyyy-MM-dd') });
+    },
+  });
+
+  const deleteExpenseMutation = useMutation({
+    mutationFn: (id) => base44.entities.EcommerceExpense.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
     },
   });
 
@@ -298,7 +334,7 @@ export default function PiermontDashboard() {
     return products.filter(p => p.active && p.stock_quantity <= (p.min_stock_alert || 0)).slice(0, 10);
   }, [products]);
 
-  const MetricCard = ({ title, value, change, icon: Icon, format = "currency" }) => {
+  const MetricCard = ({ title, value, change, icon: Icon, format = "currency", onClick }) => {
     const isPositive = change >= 0;
     const formatted = format === "currency" 
       ? `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
@@ -306,7 +342,7 @@ export default function PiermontDashboard() {
       : `${value.toFixed(1)}%`;
 
     return (
-      <Card className="border-black bg-white">
+      <Card className={`border-black bg-white ${onClick ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`} onClick={onClick}>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xs font-medium text-gray-600">{title}</CardTitle>
           <Icon className="h-4 w-4 text-black" />
@@ -402,18 +438,21 @@ export default function PiermontDashboard() {
             value={metrics.revenue} 
             change={metrics.changes.revenue}
             icon={DollarSign}
+            onClick={() => setShowSalesDetail(true)}
           />
           <MetricCard 
             title="Lucro Líquido" 
             value={metrics.netProfit} 
             change={metrics.changes.profit}
             icon={TrendingUp}
+            onClick={() => setShowExpensesDetail(true)}
           />
           <MetricCard 
             title="Margem de Lucro" 
             value={metrics.profitMargin} 
             icon={Percent}
             format="percent"
+            onClick={() => setShowSalesDetail(true)}
           />
           <MetricCard 
             title="Vendas" 
@@ -421,6 +460,7 @@ export default function PiermontDashboard() {
             change={metrics.changes.sales}
             icon={ShoppingCart}
             format="number"
+            onClick={() => setShowSalesDetail(true)}
           />
         </div>
 
@@ -573,9 +613,17 @@ export default function PiermontDashboard() {
         <Dialog open={showSaleForm} onOpenChange={setShowSaleForm}>
           <DialogContent className="border-black">
             <DialogHeader>
-              <DialogTitle className="text-black">Nova Venda</DialogTitle>
+              <DialogTitle className="text-black">{editingSale ? 'Editar Venda' : 'Nova Venda'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); createSaleMutation.mutate({ ...saleFormData, total_amount: calculateSale.total, total_cost: calculateSale.cost, profit: calculateSale.profit, profit_margin: calculateSale.margin }); }} className="space-y-4">
+            <form onSubmit={(e) => { 
+              e.preventDefault(); 
+              const saleData = { ...saleFormData, total_amount: calculateSale.total, total_cost: calculateSale.cost, profit: calculateSale.profit, profit_margin: calculateSale.margin };
+              if (editingSale) {
+                updateSaleMutation.mutate({ id: editingSale.id, data: saleData });
+              } else {
+                createSaleMutation.mutate(saleData);
+              }
+            }} className="space-y-4">
               <div>
                 <Label className="text-black">Produto*</Label>
                 <Select value={saleFormData.product_id} onValueChange={handleProductChange}>
@@ -635,8 +683,8 @@ export default function PiermontDashboard() {
                 </div>
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setShowSaleForm(false)} className="border-black">Cancelar</Button>
-                <Button type="submit" className="bg-black hover:bg-gray-800">Registrar</Button>
+                <Button type="button" variant="outline" onClick={() => { setShowSaleForm(false); setEditingSale(null); }} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">{editingSale ? 'Atualizar' : 'Registrar'}</Button>
               </div>
             </form>
           </DialogContent>
@@ -699,9 +747,16 @@ export default function PiermontDashboard() {
         <Dialog open={showExpenseForm} onOpenChange={setShowExpenseForm}>
           <DialogContent className="border-black">
             <DialogHeader>
-              <DialogTitle className="text-black">Novo Gasto</DialogTitle>
+              <DialogTitle className="text-black">{editingExpense ? 'Editar Gasto' : 'Novo Gasto'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); createExpenseMutation.mutate(expenseFormData); }} className="space-y-4">
+            <form onSubmit={(e) => { 
+              e.preventDefault(); 
+              if (editingExpense) {
+                updateExpenseMutation.mutate({ id: editingExpense.id, data: expenseFormData });
+              } else {
+                createExpenseMutation.mutate(expenseFormData);
+              }
+            }} className="space-y-4">
               <div>
                 <Label className="text-black">Descrição*</Label>
                 <Input value={expenseFormData.description || ''} onChange={(e) => setExpenseFormData({...expenseFormData, description: e.target.value})} className="border-black" required />
@@ -733,8 +788,8 @@ export default function PiermontDashboard() {
                 <Input type="date" value={expenseFormData.expense_date || ''} onChange={(e) => setExpenseFormData({...expenseFormData, expense_date: e.target.value})} className="border-black" required />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setShowExpenseForm(false)} className="border-black">Cancelar</Button>
-                <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+                <Button type="button" variant="outline" onClick={() => { setShowExpenseForm(false); setEditingExpense(null); }} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">{editingExpense ? 'Atualizar' : 'Criar'}</Button>
               </div>
             </form>
           </DialogContent>
@@ -793,6 +848,83 @@ export default function PiermontDashboard() {
                 <Button type="submit" className="bg-black hover:bg-gray-800">{editingGoal ? 'Atualizar' : 'Criar'}</Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Sales Detail Dialog */}
+        <Dialog open={showSalesDetail} onOpenChange={setShowSalesDetail}>
+          <DialogContent className="border-black max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-black">Vendas do Período</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              {currentSales.map(sale => (
+                <Card key={sale.id} className="border-black">
+                  <CardContent className="pt-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="font-bold text-black">{sale.product_name}</div>
+                        <div className="text-sm text-gray-600">
+                          {format(new Date(sale.sale_date), 'dd/MM/yyyy')} • {sale.quantity} un
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="text-xs text-gray-600">Total</div>
+                          <div className="font-bold text-black">R$ {sale.total_amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => { setEditingSale(sale); setSaleFormData(sale); setShowSalesDetail(false); setShowSaleForm(true); }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteSaleMutation.mutate(sale.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Expenses Detail Dialog */}
+        <Dialog open={showExpensesDetail} onOpenChange={setShowExpensesDetail}>
+          <DialogContent className="border-black max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-black">Gastos do Período</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              {currentExpenses.map(expense => (
+                <Card key={expense.id} className="border-black">
+                  <CardContent className="pt-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="font-bold text-black">{expense.description}</div>
+                        <div className="text-sm text-gray-600">
+                          {format(new Date(expense.expense_date), 'dd/MM/yyyy')}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <div className="font-bold text-black">R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => { setEditingExpense(expense); setExpenseFormData(expense); setShowExpensesDetail(false); setShowExpenseForm(true); }}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => deleteExpenseMutation.mutate(expense.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </DialogContent>
         </Dialog>
 
