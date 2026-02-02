@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Store, TrendingUp } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Store, TrendingUp, Wallet } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -78,12 +78,12 @@ const piermontNav = [
   {
     title: "Gastos",
     url: createPageUrl("PiermontExpenses"),
-    icon: Store,
+    icon: Wallet,
   },
   {
     title: "Estoque",
     url: createPageUrl("PiermontInventory"),
-    icon: Package,
+    icon: Store,
   },
 ];
 
@@ -92,8 +92,9 @@ export default function Layout({ children, currentPageName }) {
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
   // Determine which navigation to show based on current page
-  const isInCRM = location.pathname.includes('Companies');
-  const isInPiermont = location.pathname.includes('Piermont');
+  const currentPath = location.pathname.toLowerCase();
+  const isInCRM = currentPath.includes('companies');
+  const isInPiermont = currentPath.includes('piermont');
 
   return (
     <SidebarProvider>
