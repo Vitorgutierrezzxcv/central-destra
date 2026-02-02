@@ -25,6 +25,14 @@ export default function PiermontDashboard() {
   const [productFormData, setProductFormData] = useState({ active: true, stock_quantity: 0 });
   const [expenseFormData, setExpenseFormData] = useState({ expense_date: format(new Date(), 'yyyy-MM-dd') });
   const [goalFormData, setGoalFormData] = useState({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [bulkData, setBulkData] = useState({
+    month: format(subMonths(new Date(), 1), 'yyyy-MM'),
+    total_revenue: '',
+    total_sales_count: '',
+    total_expenses: '',
+    avg_profit_margin: ''
+  });
 
   const queryClient = useQueryClient();
 
@@ -91,6 +99,57 @@ export default function PiermontDashboard() {
       queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
       setShowGoalForm(false);
       setGoalFormData({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+    },
+  });
+
+  const bulkImportMutation = useMutation({
+    mutationFn: async (data) => {
+      const monthDate = new Date(data.month + '-15');
+      const monthStart = startOfMonth(monthDate);
+      const monthEnd = endOfMonth(monthDate);
+      
+      // Criar venda consolidada
+      if (data.total_revenue && data.total_sales_count) {
+        const avgSaleValue = parseFloat(data.total_revenue) / parseInt(data.total_sales_count);
+        await base44.entities.Sale.create({
+          product_id: 'bulk_import',
+          product_name: `Vendas ${format(monthDate, 'MMMM/yyyy', { locale: ptBR })}`,
+          quantity: parseInt(data.total_sales_count),
+          unit_price: avgSaleValue,
+          total_amount: parseFloat(data.total_revenue),
+          total_cost: parseFloat(data.total_revenue) * (1 - parseFloat(data.avg_profit_margin || 0) / 100),
+          profit: parseFloat(data.total_revenue) * (parseFloat(data.avg_profit_margin || 0) / 100),
+          profit_margin: parseFloat(data.avg_profit_margin || 0),
+          sale_date: format(monthEnd, 'yyyy-MM-dd'),
+          payment_method: 'credit_card',
+          status: 'completed',
+          notes: 'Importação em massa'
+        });
+      }
+
+      // Criar gasto consolidado
+      if (data.total_expenses) {
+        await base44.entities.EcommerceExpense.create({
+          description: `Gastos ${format(monthDate, 'MMMM/yyyy', { locale: ptBR })}`,
+          category: 'other',
+          amount: parseFloat(data.total_expenses),
+          expense_date: format(monthEnd, 'yyyy-MM-dd'),
+          recurring: false,
+          notes: 'Importação em massa'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
+      setShowBulkImport(false);
+      setBulkData({
+        month: format(subMonths(new Date(), 1), 'yyyy-MM'),
+        total_revenue: '',
+        total_sales_count: '',
+        total_expenses: '',
+        avg_profit_margin: ''
+      });
     },
   });
 
@@ -275,22 +334,29 @@ export default function PiermontDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Button onClick={() => setShowSaleForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="text-xs">Nova Venda</span>
-          </Button>
-          <Button onClick={() => setShowProductForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
-            <Package className="h-5 w-5" />
-            <span className="text-xs">Novo Produto</span>
-          </Button>
-          <Button onClick={() => setShowExpenseForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
-            <TrendingDown className="h-5 w-5" />
-            <span className="text-xs">Novo Gasto</span>
-          </Button>
-          <Button onClick={() => setShowGoalForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
-            <Target className="h-5 w-5" />
-            <span className="text-xs">Nova Meta</span>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <Button onClick={() => setShowSaleForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+              <ShoppingCart className="h-5 w-5" />
+              <span className="text-xs">Nova Venda</span>
+            </Button>
+            <Button onClick={() => setShowProductForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+              <Package className="h-5 w-5" />
+              <span className="text-xs">Novo Produto</span>
+            </Button>
+            <Button onClick={() => setShowExpenseForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+              <TrendingDown className="h-5 w-5" />
+              <span className="text-xs">Novo Gasto</span>
+            </Button>
+            <Button onClick={() => setShowGoalForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+              <Target className="h-5 w-5" />
+              <span className="text-xs">Nova Meta</span>
+            </Button>
+          </div>
+          
+          <Button onClick={() => setShowBulkImport(true)} className="w-full bg-black hover:bg-gray-800 text-white h-auto py-3 flex items-center justify-center gap-2">
+            <Plus className="h-5 w-5" />
+            <span>Importar Mês Completo</span>
           </Button>
         </div>
 
@@ -670,6 +736,68 @@ export default function PiermontDashboard() {
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setShowGoalForm(false)} className="border-black">Cancelar</Button>
                 <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Import Dialog */}
+        <Dialog open={showBulkImport} onOpenChange={setShowBulkImport}>
+          <DialogContent className="border-black max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-black">Importar Mês Completo</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); bulkImportMutation.mutate(bulkData); }} className="space-y-4">
+              <div>
+                <Label className="text-black">Mês de Referência*</Label>
+                <Input type="month" value={bulkData.month} onChange={(e) => setBulkData({...bulkData, month: e.target.value})} className="border-black" required />
+              </div>
+              
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="font-semibold text-black mb-3">Vendas do Período</h3>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-black">Faturamento Total (R$)*</Label>
+                    <Input type="number" step="0.01" value={bulkData.total_revenue} onChange={(e) => setBulkData({...bulkData, total_revenue: e.target.value})} className="border-black" placeholder="0.00" required />
+                  </div>
+                  <div>
+                    <Label className="text-black">Quantidade de Vendas*</Label>
+                    <Input type="number" value={bulkData.total_sales_count} onChange={(e) => setBulkData({...bulkData, total_sales_count: e.target.value})} className="border-black" placeholder="0" required />
+                  </div>
+                  <div>
+                    <Label className="text-black">Margem de Lucro Média (%)</Label>
+                    <Input type="number" step="0.1" value={bulkData.avg_profit_margin} onChange={(e) => setBulkData({...bulkData, avg_profit_margin: e.target.value})} className="border-black" placeholder="0.0" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-4">
+                <h3 className="font-semibold text-black mb-3">Gastos do Período</h3>
+                <div>
+                  <Label className="text-black">Total de Gastos (R$)</Label>
+                  <Input type="number" step="0.01" value={bulkData.total_expenses} onChange={(e) => setBulkData({...bulkData, total_expenses: e.target.value})} className="border-black" placeholder="0.00" />
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded border border-gray-200 space-y-2">
+                <div className="text-sm font-semibold text-black">Resumo</div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Faturamento</span>
+                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_revenue || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Gastos</span>
+                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_expenses || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm border-t border-gray-300 pt-2">
+                  <span className="text-gray-600">Lucro Estimado</span>
+                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_revenue || 0) * (parseFloat(bulkData.avg_profit_margin || 0) / 100) - parseFloat(bulkData.total_expenses || 0)).toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowBulkImport(false)} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">Importar</Button>
               </div>
             </form>
           </DialogContent>
