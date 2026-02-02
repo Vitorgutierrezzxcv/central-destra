@@ -76,7 +76,7 @@ const allModules = [
     icon: Store,
     color: "bg-black",
     defaultPage: "PiermontDashboard",
-    pages: ["PiermontDashboard", "PiermontProducts", "PiermontSales", "PiermontExpenses"]
+    pages: ["PiermontDashboard", "PiermontProducts", "PiermontSales", "PiermontExpenses", "PiermontInventory"]
   }
 ];
 
