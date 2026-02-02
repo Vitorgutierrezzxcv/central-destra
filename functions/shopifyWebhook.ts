@@ -20,16 +20,28 @@ Deno.serve(async (req) => {
 
         // Process each line item
         for (const item of lineItems) {
-            // Try to find matching product by name or SKU
-            const product = products.find(p => 
-                p.name.toLowerCase() === item.title.toLowerCase() || 
-                p.sku === item.sku
-            );
+            // Try to find matching product by SKU first
+            let product = products.find(p => p.sku === item.sku);
+            
+            // If not found by SKU, find by similar name
+            if (!product) {
+                const itemTitle = item.title.toLowerCase();
+                product = products.reduce((best, p) => {
+                    const productName = p.name.toLowerCase();
+                    // Calculate similarity (simple substring matching)
+                    const similarity = productName.includes(itemTitle) || itemTitle.includes(productName)
+                        ? Math.max(itemTitle.length, productName.length) - Math.abs(itemTitle.length - productName.length)
+                        : 0;
+                    return (!best || similarity > best.similarity) ? { product: p, similarity } : best;
+                }, null)?.product;
+            }
 
             if (!product) {
                 console.warn(`Produto não encontrado: ${item.title} (SKU: ${item.sku})`);
                 continue;
             }
+            
+            console.log(`Produto encontrado: ${product.name} para item ${item.title}`);
 
             const quantity = item.quantity;
             const unitPrice = parseFloat(item.price);
