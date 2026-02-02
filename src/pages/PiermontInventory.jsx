@@ -154,7 +154,7 @@ export default function PiermontInventory() {
         {!selectedProduct ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map(product => {
-              const isLowStock = product.stock_quantity <= (product.min_stock_alert || 0);
+              const isLowStock = product.stock_quantity < (product.min_stock_alert || 0);
               const productSuppliersList = suppliers.filter(s => s.product_id === product.id);
 
               return (
