@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, TrendingDown } from "lucide-react";
+import { Plus, TrendingDown, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 const categoryLabels = {
@@ -21,6 +21,7 @@ const categoryLabels = {
 
 export default function PiermontExpenses() {
   const [showForm, setShowForm] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
   const [formData, setFormData] = useState({
     expense_date: format(new Date(), 'yyyy-MM-dd'),
     recurring: false
@@ -38,13 +39,46 @@ export default function PiermontExpenses() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
       setShowForm(false);
+      setEditingExpense(null);
       setFormData({ expense_date: format(new Date(), 'yyyy-MM-dd'), recurring: false });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.EcommerceExpense.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
+      setShowForm(false);
+      setEditingExpense(null);
+      setFormData({ expense_date: format(new Date(), 'yyyy-MM-dd'), recurring: false });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.EcommerceExpense.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createMutation.mutate(formData);
+    if (editingExpense) {
+      updateMutation.mutate({ id: editingExpense.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const openForm = (expense = null) => {
+    if (expense) {
+      setEditingExpense(expense);
+      setFormData(expense);
+    } else {
+      setEditingExpense(null);
+      setFormData({ expense_date: format(new Date(), 'yyyy-MM-dd'), recurring: false });
+    }
+    setShowForm(true);
   };
 
   const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
@@ -56,9 +90,9 @@ export default function PiermontExpenses() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-black pb-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-black">Gastos</h1>
-            <div className="text-sm text-gray-600 mt-1">Total: R$ {totalExpenses.toFixed(2)}</div>
+            <div className="text-sm text-gray-600 mt-1">Total: R$ {totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
           </div>
-          <Button onClick={() => setShowForm(true)} className="bg-black hover:bg-gray-800">
+          <Button onClick={() => openForm()} className="bg-black hover:bg-gray-800">
             <Plus className="h-4 w-4 mr-2" />
             Novo Gasto
           </Button>
@@ -80,8 +114,18 @@ export default function PiermontExpenses() {
                       <div className="text-sm text-gray-500 mt-1">{expense.notes}</div>
                     )}
                   </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-black">R$ {expense.amount?.toFixed(2)}</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-black">R$ {expense.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => openForm(expense)} className="hover:bg-gray-100">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(expense.id)} className="hover:bg-gray-100">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -93,7 +137,7 @@ export default function PiermontExpenses() {
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogContent className="border-black">
             <DialogHeader>
-              <DialogTitle className="text-black">Novo Gasto</DialogTitle>
+              <DialogTitle className="text-black">{editingExpense ? 'Editar Gasto' : 'Novo Gasto'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -158,7 +202,7 @@ export default function PiermontExpenses() {
                   Cancelar
                 </Button>
                 <Button type="submit" className="bg-black hover:bg-gray-800">
-                  Criar
+                  {editingExpense ? 'Atualizar' : 'Criar'}
                 </Button>
               </div>
             </form>

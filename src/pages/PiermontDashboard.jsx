@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { TrendingUp, TrendingDown, DollarSign, Package, ShoppingCart, Percent, Calendar as CalendarIcon, Plus, Target } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Package, ShoppingCart, Percent, Calendar as CalendarIcon, Plus, Target, Edit, Trash2 } from "lucide-react";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -93,12 +93,32 @@ export default function PiermontDashboard() {
     },
   });
 
+  const [editingGoal, setEditingGoal] = useState(null);
+
   const createGoalMutation = useMutation({
     mutationFn: (data) => base44.entities.EcommerceGoal.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
       setShowGoalForm(false);
+      setEditingGoal(null);
       setGoalFormData({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+    },
+  });
+
+  const updateGoalMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.EcommerceGoal.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
+      setShowGoalForm(false);
+      setEditingGoal(null);
+      setGoalFormData({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+    },
+  });
+
+  const deleteGoalMutation = useMutation({
+    mutationFn: (id) => base44.entities.EcommerceGoal.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
     },
   });
 
@@ -413,9 +433,19 @@ export default function PiermontDashboard() {
                 
                 return (
                   <div key={goal.id}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-black font-medium">{goal.name}</span>
-                      <span className="text-gray-600">{formatGoalValue(currentValue, goal.metric_type)} / {formatGoalValue(goal.target_value, goal.metric_type)}</span>
+                    <div className="flex justify-between text-sm mb-1 items-start">
+                      <div className="flex-1">
+                        <span className="text-black font-medium">{goal.name}</span>
+                        <div className="text-gray-600 text-xs">{formatGoalValue(currentValue, goal.metric_type)} / {formatGoalValue(goal.target_value, goal.metric_type)}</div>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditingGoal(goal); setGoalFormData(goal); setShowGoalForm(true); }}>
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteGoalMutation.mutate(goal.id)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div 
@@ -699,9 +729,9 @@ export default function PiermontDashboard() {
         <Dialog open={showGoalForm} onOpenChange={setShowGoalForm}>
           <DialogContent className="border-black">
             <DialogHeader>
-              <DialogTitle className="text-black">Nova Meta</DialogTitle>
+              <DialogTitle className="text-black">{editingGoal ? 'Editar Meta' : 'Nova Meta'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); createGoalMutation.mutate(goalFormData); }} className="space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); editingGoal ? updateGoalMutation.mutate({ id: editingGoal.id, data: goalFormData }) : createGoalMutation.mutate(goalFormData); }} className="space-y-4">
               <div>
                 <Label className="text-black">Nome da Meta*</Label>
                 <Input value={goalFormData.name || ''} onChange={(e) => setGoalFormData({...goalFormData, name: e.target.value})} className="border-black" placeholder="Ex: Meta de Faturamento Janeiro" required />
@@ -744,8 +774,8 @@ export default function PiermontDashboard() {
                 <Input type="date" value={goalFormData.start_date || ''} onChange={(e) => setGoalFormData({...goalFormData, start_date: e.target.value})} className="border-black" required />
               </div>
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setShowGoalForm(false)} className="border-black">Cancelar</Button>
-                <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+                <Button type="button" variant="outline" onClick={() => { setShowGoalForm(false); setEditingGoal(null); }} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">{editingGoal ? 'Atualizar' : 'Criar'}</Button>
               </div>
             </form>
           </DialogContent>

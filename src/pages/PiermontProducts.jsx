@@ -123,12 +123,12 @@ export default function PiermontProducts() {
                 <CardContent className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Preço</span>
-                    <span className="font-bold text-black">R$ {product.product_price?.toFixed(2)}</span>
+                    <span className="font-bold text-black">R$ {product.product_price?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Custo Total</span>
                     <span className="text-black">
-                      R$ {((product.product_cost || 0) + (product.packaging_cost || 0) + (product.shipping_cost || 0)).toFixed(2)}
+                      R$ {((product.product_cost || 0) + (product.packaging_cost || 0) + (product.shipping_cost || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">

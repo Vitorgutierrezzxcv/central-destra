@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, ShoppingCart } from "lucide-react";
+import { Plus, ShoppingCart, Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 export default function PiermontSales() {
   const [showForm, setShowForm] = useState(false);
+  const [editingSale, setEditingSale] = useState(null);
   const [formData, setFormData] = useState({
     sale_date: format(new Date(), 'yyyy-MM-dd'),
     status: 'completed'
@@ -45,7 +46,25 @@ export default function PiermontSales() {
       queryClient.invalidateQueries({ queryKey: ['sales'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       setShowForm(false);
+      setEditingSale(null);
       setFormData({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+    },
+  });
+
+  const updateSaleMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Sale.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      setShowForm(false);
+      setEditingSale(null);
+      setFormData({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+    },
+  });
+
+  const deleteSaleMutation = useMutation({
+    mutationFn: (id) => base44.entities.Sale.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
     },
   });
 
@@ -78,13 +97,30 @@ export default function PiermontSales() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createSaleMutation.mutate({
+    const saleData = {
       ...formData,
       total_amount: calculateSale.total,
       total_cost: calculateSale.cost,
       profit: calculateSale.profit,
       profit_margin: calculateSale.margin,
-    });
+    };
+    
+    if (editingSale) {
+      updateSaleMutation.mutate({ id: editingSale.id, data: saleData });
+    } else {
+      createSaleMutation.mutate(saleData);
+    }
+  };
+
+  const openForm = (sale = null) => {
+    if (sale) {
+      setEditingSale(sale);
+      setFormData(sale);
+    } else {
+      setEditingSale(null);
+      setFormData({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+    }
+    setShowForm(true);
   };
 
   return (
@@ -93,7 +129,7 @@ export default function PiermontSales() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-black pb-4 mb-6">
           <h1 className="text-3xl font-bold text-black">Vendas</h1>
-          <Button onClick={() => setShowForm(true)} className="bg-black hover:bg-gray-800">
+          <Button onClick={() => openForm()} className="bg-black hover:bg-gray-800">
             <Plus className="h-4 w-4 mr-2" />
             Nova Venda
           </Button>
@@ -111,18 +147,28 @@ export default function PiermontSales() {
                       {format(new Date(sale.sale_date), 'dd/MM/yyyy')} • {sale.quantity} un • {sale.payment_method}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div>
-                      <div className="text-gray-600 text-xs">Total</div>
-                      <div className="font-bold text-black">R$ {sale.total_amount?.toFixed(2)}</div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <div>
+                        <div className="text-gray-600 text-xs">Total</div>
+                        <div className="font-bold text-black">R$ {sale.total_amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600 text-xs">Lucro</div>
+                        <div className="font-bold text-black">R$ {sale.profit?.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      </div>
+                      <div>
+                        <div className="text-gray-600 text-xs">Margem</div>
+                        <div className="font-bold text-black">{sale.profit_margin?.toFixed(1)}%</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="text-gray-600 text-xs">Lucro</div>
-                      <div className="font-bold text-black">R$ {sale.profit?.toFixed(2)}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600 text-xs">Margem</div>
-                      <div className="font-bold text-black">{sale.profit_margin?.toFixed(1)}%</div>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="icon" onClick={() => openForm(sale)} className="hover:bg-gray-100">
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => deleteSaleMutation.mutate(sale.id)} className="hover:bg-gray-100">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -135,7 +181,7 @@ export default function PiermontSales() {
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogContent className="border-black">
             <DialogHeader>
-              <DialogTitle className="text-black">Nova Venda</DialogTitle>
+              <DialogTitle className="text-black">{editingSale ? 'Editar Venda' : 'Nova Venda'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -220,15 +266,15 @@ export default function PiermontSales() {
               <div className="bg-gray-50 p-4 rounded border border-gray-200 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Total</span>
-                  <span className="font-bold text-black">R$ {calculateSale.total.toFixed(2)}</span>
+                  <span className="font-bold text-black">R$ {calculateSale.total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Custo</span>
-                  <span className="text-gray-600">R$ {calculateSale.cost.toFixed(2)}</span>
+                  <span className="text-gray-600">R$ {calculateSale.cost.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm border-t border-gray-300 pt-2">
                   <span className="font-bold text-black">Lucro</span>
-                  <span className="font-bold text-black">R$ {calculateSale.profit.toFixed(2)} ({calculateSale.margin.toFixed(1)}%)</span>
+                  <span className="font-bold text-black">R$ {calculateSale.profit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({calculateSale.margin.toFixed(1)}%)</span>
                 </div>
               </div>
 
@@ -237,7 +283,7 @@ export default function PiermontSales() {
                   Cancelar
                 </Button>
                 <Button type="submit" className="bg-black hover:bg-gray-800">
-                  Registrar Venda
+                  {editingSale ? 'Atualizar' : 'Registrar Venda'}
                 </Button>
               </div>
             </form>
