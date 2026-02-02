@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { TrendingUp, TrendingDown, DollarSign, Package, ShoppingCart, Percent, Calendar as CalendarIcon } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Package, ShoppingCart, Percent, Calendar as CalendarIcon, Plus, Target } from "lucide-react";
 import { format, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -14,6 +14,16 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, R
 export default function PiermontDashboard() {
   const [period, setPeriod] = useState("month");
   const [customDate, setCustomDate] = useState({ from: null, to: null });
+  const [showSaleForm, setShowSaleForm] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [saleFormData, setSaleFormData] = useState({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+  const [productFormData, setProductFormData] = useState({ active: true, stock_quantity: 0 });
+  const [expenseFormData, setExpenseFormData] = useState({ expense_date: format(new Date(), 'yyyy-MM-dd') });
+  const [goalFormData, setGoalFormData] = useState({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+
+  const queryClient = useQueryClient();
 
   const { data: sales = [] } = useQuery({
     queryKey: ['sales'],
@@ -34,6 +44,79 @@ export default function PiermontDashboard() {
     queryKey: ['ecommerce-goals'],
     queryFn: () => base44.entities.EcommerceGoal.filter({ active: true }),
   });
+
+  const createSaleMutation = useMutation({
+    mutationFn: async (saleData) => {
+      const sale = await base44.entities.Sale.create(saleData);
+      const product = products.find(p => p.id === saleData.product_id);
+      if (product) {
+        await base44.entities.Product.update(product.id, {
+          stock_quantity: (product.stock_quantity || 0) - saleData.quantity
+        });
+      }
+      return sale;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sales'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setShowSaleForm(false);
+      setSaleFormData({ sale_date: format(new Date(), 'yyyy-MM-dd'), status: 'completed' });
+    },
+  });
+
+  const createProductMutation = useMutation({
+    mutationFn: (data) => base44.entities.Product.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setShowProductForm(false);
+      setProductFormData({ active: true, stock_quantity: 0 });
+    },
+  });
+
+  const createExpenseMutation = useMutation({
+    mutationFn: (data) => base44.entities.EcommerceExpense.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-expenses'] });
+      setShowExpenseForm(false);
+      setExpenseFormData({ expense_date: format(new Date(), 'yyyy-MM-dd') });
+    },
+  });
+
+  const createGoalMutation = useMutation({
+    mutationFn: (data) => base44.entities.EcommerceGoal.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ecommerce-goals'] });
+      setShowGoalForm(false);
+      setGoalFormData({ start_date: format(new Date(), 'yyyy-MM-dd'), active: true });
+    },
+  });
+
+  const handleProductChange = (productId) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      setSaleFormData({
+        ...saleFormData,
+        product_id: productId,
+        product_name: product.name,
+        unit_price: product.product_price,
+      });
+    }
+  };
+
+  const calculateSale = useMemo(() => {
+    const quantity = saleFormData.quantity || 0;
+    const unitPrice = saleFormData.unit_price || 0;
+    const product = products.find(p => p.id === saleFormData.product_id);
+    
+    if (!product) return { total: 0, cost: 0, profit: 0, margin: 0 };
+
+    const totalAmount = quantity * unitPrice;
+    const totalCost = quantity * ((product.product_cost || 0) + (product.packaging_cost || 0) + (product.shipping_cost || 0));
+    const profit = totalAmount - totalCost;
+    const margin = totalAmount > 0 ? (profit / totalAmount) * 100 : 0;
+
+    return { total: totalAmount, cost: totalCost, profit, margin };
+  }, [saleFormData, products]);
 
   const getDateRange = () => {
     const now = new Date();
@@ -186,6 +269,26 @@ export default function PiermontDashboard() {
               </Popover>
             )}
           </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Button onClick={() => setShowSaleForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+            <ShoppingCart className="h-5 w-5" />
+            <span className="text-xs">Nova Venda</span>
+          </Button>
+          <Button onClick={() => setShowProductForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+            <Package className="h-5 w-5" />
+            <span className="text-xs">Novo Produto</span>
+          </Button>
+          <Button onClick={() => setShowExpenseForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+            <TrendingDown className="h-5 w-5" />
+            <span className="text-xs">Novo Gasto</span>
+          </Button>
+          <Button onClick={() => setShowGoalForm(true)} variant="outline" className="border-black hover:bg-gray-100 h-auto py-4 flex-col gap-2">
+            <Target className="h-5 w-5" />
+            <span className="text-xs">Nova Meta</span>
+          </Button>
         </div>
 
         {/* Metrics Grid */}
@@ -345,6 +448,229 @@ export default function PiermontDashboard() {
             </CardContent>
           </Card>
         )}
+
+        {/* Sale Form Dialog */}
+        <Dialog open={showSaleForm} onOpenChange={setShowSaleForm}>
+          <DialogContent className="border-black">
+            <DialogHeader>
+              <DialogTitle className="text-black">Nova Venda</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); createSaleMutation.mutate({ ...saleFormData, total_amount: calculateSale.total, total_cost: calculateSale.cost, profit: calculateSale.profit, profit_margin: calculateSale.margin }); }} className="space-y-4">
+              <div>
+                <Label className="text-black">Produto*</Label>
+                <Select value={saleFormData.product_id} onValueChange={handleProductChange}>
+                  <SelectTrigger className="border-black">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.filter(p => p.active).map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name} (Est: {p.stock_quantity})</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Quantidade*</Label>
+                  <Input type="number" min="1" value={saleFormData.quantity || ''} onChange={(e) => setSaleFormData({...saleFormData, quantity: parseInt(e.target.value)})} className="border-black" required />
+                </div>
+                <div>
+                  <Label className="text-black">Preço Unitário*</Label>
+                  <Input type="number" step="0.01" value={saleFormData.unit_price || ''} onChange={(e) => setSaleFormData({...saleFormData, unit_price: parseFloat(e.target.value)})} className="border-black" required />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Data*</Label>
+                  <Input type="date" value={saleFormData.sale_date || ''} onChange={(e) => setSaleFormData({...saleFormData, sale_date: e.target.value})} className="border-black" required />
+                </div>
+                <div>
+                  <Label className="text-black">Pagamento</Label>
+                  <Select value={saleFormData.payment_method} onValueChange={(v) => setSaleFormData({...saleFormData, payment_method: v})}>
+                    <SelectTrigger className="border-black">
+                      <SelectValue placeholder="Método" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pix">PIX</SelectItem>
+                      <SelectItem value="credit_card">Cartão Crédito</SelectItem>
+                      <SelectItem value="debit_card">Cartão Débito</SelectItem>
+                      <SelectItem value="boleto">Boleto</SelectItem>
+                      <SelectItem value="cash">Dinheiro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label className="text-black">Cliente</Label>
+                <Input value={saleFormData.customer_name || ''} onChange={(e) => setSaleFormData({...saleFormData, customer_name: e.target.value})} className="border-black" />
+              </div>
+              <div className="bg-gray-50 p-4 rounded border border-gray-200 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Total</span>
+                  <span className="font-bold text-black">R$ {calculateSale.total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Lucro</span>
+                  <span className="font-bold text-black">R$ {calculateSale.profit.toFixed(2)} ({calculateSale.margin.toFixed(1)}%)</span>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowSaleForm(false)} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">Registrar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Product Form Dialog */}
+        <Dialog open={showProductForm} onOpenChange={setShowProductForm}>
+          <DialogContent className="border-black max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-black">Novo Produto</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); createProductMutation.mutate(productFormData); }} className="space-y-4">
+              <div>
+                <Label className="text-black">Nome*</Label>
+                <Input value={productFormData.name || ''} onChange={(e) => setProductFormData({...productFormData, name: e.target.value})} className="border-black" required />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Preço Venda*</Label>
+                  <Input type="number" step="0.01" value={productFormData.product_price || ''} onChange={(e) => setProductFormData({...productFormData, product_price: parseFloat(e.target.value)})} className="border-black" required />
+                </div>
+                <div>
+                  <Label className="text-black">Custo Produto*</Label>
+                  <Input type="number" step="0.01" value={productFormData.product_cost || ''} onChange={(e) => setProductFormData({...productFormData, product_cost: parseFloat(e.target.value)})} className="border-black" required />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Embalagem</Label>
+                  <Input type="number" step="0.01" value={productFormData.packaging_cost || ''} onChange={(e) => setProductFormData({...productFormData, packaging_cost: parseFloat(e.target.value)})} className="border-black" />
+                </div>
+                <div>
+                  <Label className="text-black">Frete</Label>
+                  <Input type="number" step="0.01" value={productFormData.shipping_cost || ''} onChange={(e) => setProductFormData({...productFormData, shipping_cost: parseFloat(e.target.value)})} className="border-black" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Estoque</Label>
+                  <Input type="number" value={productFormData.stock_quantity || ''} onChange={(e) => setProductFormData({...productFormData, stock_quantity: parseInt(e.target.value)})} className="border-black" />
+                </div>
+                <div>
+                  <Label className="text-black">Alerta Mínimo</Label>
+                  <Input type="number" value={productFormData.min_stock_alert || ''} onChange={(e) => setProductFormData({...productFormData, min_stock_alert: parseInt(e.target.value)})} className="border-black" />
+                </div>
+              </div>
+              <div>
+                <Label className="text-black">Link Compra</Label>
+                <Input type="url" value={productFormData.purchase_link || ''} onChange={(e) => setProductFormData({...productFormData, purchase_link: e.target.value})} className="border-black" placeholder="https://..." />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowProductForm(false)} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Expense Form Dialog */}
+        <Dialog open={showExpenseForm} onOpenChange={setShowExpenseForm}>
+          <DialogContent className="border-black">
+            <DialogHeader>
+              <DialogTitle className="text-black">Novo Gasto</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); createExpenseMutation.mutate(expenseFormData); }} className="space-y-4">
+              <div>
+                <Label className="text-black">Descrição*</Label>
+                <Input value={expenseFormData.description || ''} onChange={(e) => setExpenseFormData({...expenseFormData, description: e.target.value})} className="border-black" required />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Categoria*</Label>
+                  <Select value={expenseFormData.category} onValueChange={(v) => setExpenseFormData({...expenseFormData, category: v})} required>
+                    <SelectTrigger className="border-black">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="marketing">Marketing</SelectItem>
+                      <SelectItem value="shipping">Frete</SelectItem>
+                      <SelectItem value="packaging">Embalagem</SelectItem>
+                      <SelectItem value="platform_fees">Taxas</SelectItem>
+                      <SelectItem value="taxes">Impostos</SelectItem>
+                      <SelectItem value="other">Outros</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-black">Valor*</Label>
+                  <Input type="number" step="0.01" value={expenseFormData.amount || ''} onChange={(e) => setExpenseFormData({...expenseFormData, amount: parseFloat(e.target.value)})} className="border-black" required />
+                </div>
+              </div>
+              <div>
+                <Label className="text-black">Data*</Label>
+                <Input type="date" value={expenseFormData.expense_date || ''} onChange={(e) => setExpenseFormData({...expenseFormData, expense_date: e.target.value})} className="border-black" required />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowExpenseForm(false)} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Goal Form Dialog */}
+        <Dialog open={showGoalForm} onOpenChange={setShowGoalForm}>
+          <DialogContent className="border-black">
+            <DialogHeader>
+              <DialogTitle className="text-black">Nova Meta</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={(e) => { e.preventDefault(); createGoalMutation.mutate(goalFormData); }} className="space-y-4">
+              <div>
+                <Label className="text-black">Métrica*</Label>
+                <Select value={goalFormData.metric_type} onValueChange={(v) => setGoalFormData({...goalFormData, metric_type: v})} required>
+                  <SelectTrigger className="border-black">
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="revenue">Faturamento (R$)</SelectItem>
+                    <SelectItem value="profit">Lucro (R$)</SelectItem>
+                    <SelectItem value="sales_count">Vendas (qtd)</SelectItem>
+                    <SelectItem value="profit_margin">Margem (%)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-black">Período*</Label>
+                  <Select value={goalFormData.period} onValueChange={(v) => setGoalFormData({...goalFormData, period: v})} required>
+                    <SelectTrigger className="border-black">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Diário</SelectItem>
+                      <SelectItem value="weekly">Semanal</SelectItem>
+                      <SelectItem value="monthly">Mensal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-black">Valor Alvo*</Label>
+                  <Input type="number" step="0.01" value={goalFormData.target_value || ''} onChange={(e) => setGoalFormData({...goalFormData, target_value: parseFloat(e.target.value)})} className="border-black" required />
+                </div>
+              </div>
+              <div>
+                <Label className="text-black">Início*</Label>
+                <Input type="date" value={goalFormData.start_date || ''} onChange={(e) => setGoalFormData({...goalFormData, start_date: e.target.value})} className="border-black" required />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setShowGoalForm(false)} className="border-black">Cancelar</Button>
+                <Button type="submit" className="bg-black hover:bg-gray-800">Criar</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
