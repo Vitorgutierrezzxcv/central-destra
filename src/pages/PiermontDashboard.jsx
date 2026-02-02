@@ -125,21 +125,29 @@ export default function PiermontDashboard() {
   const bulkImportMutation = useMutation({
     mutationFn: async (data) => {
       const monthDate = new Date(data.month + '-15');
-      const monthStart = startOfMonth(monthDate);
       const monthEnd = endOfMonth(monthDate);
       
+      // Converter valores de centavos para reais
+      const revenue = parseFloat(data.total_revenue || 0) / 100;
+      const expenses = parseFloat(data.total_expenses || 0) / 100;
+      const margin = parseFloat(data.avg_profit_margin || 0);
+      const salesCount = parseInt(data.total_sales_count || 0);
+      
       // Criar venda consolidada
-      if (data.total_revenue && data.total_sales_count) {
-        const avgSaleValue = parseFloat(data.total_revenue) / parseInt(data.total_sales_count);
+      if (revenue > 0 && salesCount > 0) {
+        const avgSaleValue = revenue / salesCount;
+        const profitValue = revenue * (margin / 100);
+        const costValue = revenue - profitValue;
+        
         await base44.entities.Sale.create({
           product_id: 'bulk_import',
           product_name: `Vendas ${format(monthDate, 'MMMM/yyyy', { locale: ptBR })}`,
-          quantity: parseInt(data.total_sales_count),
+          quantity: salesCount,
           unit_price: avgSaleValue,
-          total_amount: parseFloat(data.total_revenue),
-          total_cost: parseFloat(data.total_revenue) * (1 - parseFloat(data.avg_profit_margin || 0) / 100),
-          profit: parseFloat(data.total_revenue) * (parseFloat(data.avg_profit_margin || 0) / 100),
-          profit_margin: parseFloat(data.avg_profit_margin || 0),
+          total_amount: revenue,
+          total_cost: costValue,
+          profit: profitValue,
+          profit_margin: margin,
           sale_date: format(monthEnd, 'yyyy-MM-dd'),
           payment_method: 'credit_card',
           status: 'completed',
@@ -148,11 +156,11 @@ export default function PiermontDashboard() {
       }
 
       // Criar gasto consolidado
-      if (data.total_expenses) {
+      if (expenses > 0) {
         await base44.entities.EcommerceExpense.create({
           description: `Gastos ${format(monthDate, 'MMMM/yyyy', { locale: ptBR })}`,
           category: 'other',
-          amount: parseFloat(data.total_expenses),
+          amount: expenses,
           expense_date: format(monthEnd, 'yyyy-MM-dd'),
           recurring: false,
           notes: 'Importação em massa'
@@ -488,7 +496,7 @@ export default function PiermontDashboard() {
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-600">Receita</span>
-                    <span className="font-bold text-black">R$ {metrics.revenue.toFixed(2)}</span>
+                    <span className="font-bold text-black">R$ {metrics.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full">
                     <div className="h-full bg-black rounded-full" style={{ width: '100%' }} />
@@ -497,7 +505,7 @@ export default function PiermontDashboard() {
                 <div>
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-600">Gastos</span>
-                    <span className="font-bold text-black">R$ {metrics.totalExpenses.toFixed(2)}</span>
+                    <span className="font-bold text-black">R$ {metrics.totalExpenses.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                   <div className="h-2 bg-gray-200 rounded-full">
                     <div 
@@ -509,7 +517,7 @@ export default function PiermontDashboard() {
                 <div className="pt-4 border-t border-gray-200">
                   <div className="flex justify-between">
                     <span className="font-bold text-black">Lucro Líquido</span>
-                    <span className="font-bold text-black">R$ {metrics.netProfit.toFixed(2)}</span>
+                    <span className="font-bold text-black">R$ {metrics.netProfit.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                   </div>
                 </div>
               </div>
@@ -798,15 +806,48 @@ export default function PiermontDashboard() {
                 <div className="space-y-3">
                   <div>
                     <Label className="text-black">Faturamento Total (R$)*</Label>
-                    <Input type="number" step="0.01" value={bulkData.total_revenue} onChange={(e) => setBulkData({...bulkData, total_revenue: e.target.value})} className="border-black" placeholder="0.00" required />
+                    <Input 
+                      type="text" 
+                      value={bulkData.total_revenue} 
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        setBulkData({...bulkData, total_revenue: value});
+                      }} 
+                      className="border-black" 
+                      placeholder="14873,85" 
+                      required 
+                    />
+                    <div className="text-xs text-gray-500 mt-1">
+                      Digite apenas números (ex: 14873,85 → digite 1487385)
+                    </div>
                   </div>
                   <div>
                     <Label className="text-black">Quantidade de Vendas*</Label>
-                    <Input type="number" value={bulkData.total_sales_count} onChange={(e) => setBulkData({...bulkData, total_sales_count: e.target.value})} className="border-black" placeholder="0" required />
+                    <Input 
+                      type="number" 
+                      value={bulkData.total_sales_count} 
+                      onChange={(e) => setBulkData({...bulkData, total_sales_count: e.target.value})} 
+                      className="border-black" 
+                      placeholder="50" 
+                      required 
+                    />
                   </div>
                   <div>
-                    <Label className="text-black">Margem de Lucro Média (%)</Label>
-                    <Input type="number" step="0.1" value={bulkData.avg_profit_margin} onChange={(e) => setBulkData({...bulkData, avg_profit_margin: e.target.value})} className="border-black" placeholder="0.0" />
+                    <Label className="text-black">Margem de Lucro Média (%)*</Label>
+                    <Input 
+                      type="text" 
+                      value={bulkData.avg_profit_margin} 
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d,]/g, '').replace(',', '.');
+                        setBulkData({...bulkData, avg_profit_margin: value});
+                      }} 
+                      className="border-black" 
+                      placeholder="35,5" 
+                      required 
+                    />
+                    <div className="text-xs text-gray-500 mt-1">
+                      Digite com vírgula (ex: 35,5)
+                    </div>
                   </div>
                 </div>
               </div>
@@ -815,23 +856,47 @@ export default function PiermontDashboard() {
                 <h3 className="font-semibold text-black mb-3">Gastos do Período</h3>
                 <div>
                   <Label className="text-black">Total de Gastos (R$)</Label>
-                  <Input type="number" step="0.01" value={bulkData.total_expenses} onChange={(e) => setBulkData({...bulkData, total_expenses: e.target.value})} className="border-black" placeholder="0.00" />
+                  <Input 
+                    type="text" 
+                    value={bulkData.total_expenses} 
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      setBulkData({...bulkData, total_expenses: value});
+                    }} 
+                    className="border-black" 
+                    placeholder="5420,00" 
+                  />
+                  <div className="text-xs text-gray-500 mt-1">
+                    Digite apenas números (ex: 5420,00 → digite 542000)
+                  </div>
                 </div>
               </div>
 
               <div className="bg-gray-50 p-4 rounded border border-gray-200 space-y-2">
-                <div className="text-sm font-semibold text-black">Resumo</div>
+                <div className="text-sm font-semibold text-black mb-2">Resumo</div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Faturamento</span>
-                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_revenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-gray-600">Faturamento Bruto</span>
+                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_revenue || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Gastos</span>
-                  <span className="font-bold text-black">R$ {parseFloat(bulkData.total_expenses || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-gray-600">Quantidade de Vendas</span>
+                  <span className="font-bold text-black">{parseInt(bulkData.total_sales_count || 0)} vendas</span>
                 </div>
-                <div className="flex justify-between text-sm border-t border-gray-300 pt-2">
-                  <span className="text-gray-600">Lucro Estimado</span>
-                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_revenue || 0) * (parseFloat(bulkData.avg_profit_margin || 0) / 100) - parseFloat(bulkData.total_expenses || 0)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Margem de Lucro</span>
+                  <span className="font-bold text-black">{parseFloat(bulkData.avg_profit_margin || 0).toFixed(1)}%</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Lucro Bruto</span>
+                  <span className="font-bold text-black">R$ {((parseFloat(bulkData.total_revenue || 0) / 100) * (parseFloat(bulkData.avg_profit_margin || 0) / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Gastos Operacionais</span>
+                  <span className="font-bold text-black">R$ {(parseFloat(bulkData.total_expenses || 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+                <div className="flex justify-between text-sm border-t border-gray-300 pt-2 mt-2">
+                  <span className="text-gray-600 font-semibold">Lucro Líquido</span>
+                  <span className="font-bold text-black text-base">R$ {((parseFloat(bulkData.total_revenue || 0) / 100) * (parseFloat(bulkData.avg_profit_margin || 0) / 100) - (parseFloat(bulkData.total_expenses || 0) / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
