@@ -7,7 +7,8 @@ import {
   Grid3x3,
   Wallet,
   Target,
-  FileText
+  FileText,
+  Store
 } from "lucide-react";
 import {
   Dialog,
@@ -67,6 +68,15 @@ const allModules = [
     color: "bg-indigo-600",
     defaultPage: "Pages",
     pages: ["Pages"]
+  },
+  {
+    id: "piermont",
+    name: "Piermont",
+    description: "E-commerce completo",
+    icon: Store,
+    color: "bg-black",
+    defaultPage: "PiermontDashboard",
+    pages: ["PiermontDashboard", "PiermontProducts", "PiermontSales", "PiermontExpenses"]
   }
 ];
 
@@ -105,6 +115,11 @@ export default function AppSwitcher({ isMobile = false }) {
         currentPath.includes('financepayroll') || 
         currentPath.includes('financesummary')) {
       return modules.find(m => m.id === 'finance');
+    }
+    
+    // Check if in Piermont pages
+    if (currentPath.includes('piermont')) {
+      return modules.find(m => m.id === 'piermont');
     }
     
     // Default to TaskFlow or first available
