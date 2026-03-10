@@ -188,6 +188,7 @@ export default function ClientPortalDeliveries() {
                       onFeedback={(del) => { setFeedbackDelivery(del); setFeedbackForm({ approval_status: "approved", score: 5, comment: "" }); }}
                       user={user}
                       existingFeedback={feedbacks.find(f => f.delivery_id === d.id)}
+                      canApprove={canApprove}
                     />
                   ))}
                 </div>
