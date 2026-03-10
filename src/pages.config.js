@@ -49,6 +49,7 @@
  */
 import Backlog from './pages/Backlog';
 import ClientPortalAccount from './pages/ClientPortalAccount';
+import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import ClientPortalCalendar from './pages/ClientPortalCalendar';
 import ClientPortalDashboard from './pages/ClientPortalDashboard';
@@ -80,13 +81,13 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import ClientPortalActivate from './pages/ClientPortalActivate';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Backlog": Backlog,
     "ClientPortalAccount": ClientPortalAccount,
+    "ClientPortalActivate": ClientPortalActivate,
     "ClientPortalAdmin": ClientPortalAdmin,
     "ClientPortalCalendar": ClientPortalCalendar,
     "ClientPortalDashboard": ClientPortalDashboard,
@@ -118,7 +119,6 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "ClientPortalActivate": ClientPortalActivate,
 }
 
 export const pagesConfig = {

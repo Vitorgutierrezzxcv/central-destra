@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import BottomTabBar from "./components/mobile/BottomTabBar";
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +23,6 @@ import {
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
-import BottomTabBar from "./components/mobile/BottomTabBar";
 
 const taskFlowNav = [
   {
@@ -175,22 +175,17 @@ export default function Layout({ children, currentPageName }) {
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header
-            className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 md:hidden sticky top-0 z-10 mobile-header"
-            style={{ paddingTop: "max(12px, env(safe-area-inset-top, 0px))", paddingBottom: "12px" }}
-          >
+          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
             <div className="flex items-center justify-between gap-4">
-              <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" />
+              <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
               <AppSwitcher isMobile={true} />
-              <div className="w-11" />
+              <div className="w-10" />
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto scroll-container content-with-tab-bar md:pb-0">
+          <div className="flex-1 overflow-auto">
             {children}
           </div>
-
-          <BottomTabBar />
         </main>
       </div>
     </SidebarProvider>

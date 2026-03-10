@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Pencil, Upload, LogOut, Loader2 } from "lucide-react";
+import { Pencil, Upload, LogOut, Loader2, Trash2, AlertTriangle } from "lucide-react";
 
 export default function UserProfile() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
