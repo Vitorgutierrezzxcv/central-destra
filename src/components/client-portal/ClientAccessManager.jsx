@@ -22,18 +22,41 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
   });
   const [selectedProjects, setSelectedProjects] = useState([]);
 
+  const [inviteError, setInviteError] = useState("");
+
   const saveMutation = useMutation({
     mutationFn: async (data) => {
-      const saved = isEdit
-        ? await base44.entities.ClientContact.update(contact.id, data)
-        : await base44.entities.ClientContact.create({ ...data, invited_at: new Date().toISOString() });
+      setInviteError("");
+      if (isEdit) {
+        return base44.entities.ClientContact.update(contact.id, data);
+      }
 
-      // Criar acesso aos projetos selecionados
+      // 1. Criar ClientContact
+      const saved = await base44.entities.ClientContact.create({
+        ...data,
+        status: "pending_invite",
+        invited_at: new Date().toISOString()
+      });
+
+      // 2. Convidar usuário para a plataforma com role correto
+      await base44.users.inviteUser(data.email, data.access_level || "client_user");
+
+      // 3. Criar UserProfile vinculando email → empresa → contato
+      await base44.entities.UserProfile.create({
+        user_email: data.email,
+        display_name: data.name,
+        full_name: data.name,
+        portal_type: "client",
+        linked_company_id: data.company_id,
+        linked_client_contact_id: saved.id
+      });
+
+      // 4. Criar acesso aos projetos selecionados
       for (const pid of selectedProjects) {
         await base44.entities.ProjectClientAccess.create({
           project_id: pid,
           company_id: data.company_id,
-          client_contact_id: saved.id || contact.id,
+          client_contact_id: saved.id,
           can_view: true,
           can_comment: true,
           can_approve: data.access_level === "client_approver",
