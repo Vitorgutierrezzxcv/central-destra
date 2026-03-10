@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Plus, Trash2, UserCheck, UserX, Shield, ShieldCheck, RefreshCw,
-  ChevronDown, ChevronUp, Edit2, Save, X
+  ChevronDown, ChevronUp, Edit2, Save, X, Copy, CheckCheck, Link2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+
+function getPortalLink() {
+  return `${window.location.origin}/ClientPortalLogin`;
+}
 
 // Formulário para criar/editar contato
 function ContactFormDialog({ open, onClose, contact, companies, projects }) {
