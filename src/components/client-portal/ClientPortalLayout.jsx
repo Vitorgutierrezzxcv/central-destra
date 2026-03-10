@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
-  Star, GitBranch, ListChecks, LogOut, Menu, X
+  Star, GitBranch, ListChecks, LogOut, Menu, X, User, ChevronDown, Layers
 } from "lucide-react";
+import { ClientPortalProvider, useClientPortal } from "./ClientPortalContext";
+import ClientPortalGuard from "./ClientPortalGuard";
 
 const navItems = [
   { label: "Dashboard", page: "ClientPortalDashboard", icon: LayoutDashboard },
@@ -16,19 +18,24 @@ const navItems = [
   { label: "Arquivos", page: "ClientPortalFiles", icon: FolderOpen },
   { label: "Timeline", page: "ClientPortalTimeline", icon: GitBranch },
   { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
+  { label: "Minha Conta", page: "ClientPortalAccount", icon: User },
 ];
+
+// Public portal pages that don't need sidebar
+const AUTH_PAGES = ["clientportallogin", "clientportalfirstaccess", "clientportalforgotpassword"];
+const ALL_PORTAL_PAGES = [...navItems.map(n => n.page.toLowerCase()), "clientportalprojectselect", ...AUTH_PAGES];
 
 export default function ClientPortalLayout({ children, currentPageName }) {
   const location = useLocation();
-  const [user, setUser] = useState(null);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const currentPage = location.pathname.toLowerCase();
 
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
-
-  const isClientPortalPage = navItems.some(n => location.pathname.toLowerCase().includes(n.page.toLowerCase()));
+  const isClientPortalPage = ALL_PORTAL_PAGES.some(p => currentPage.includes(p));
   if (!isClientPortalPage) return children;
+
+  const isAuthPage = AUTH_PAGES.some(p => currentPage.includes(p));
+  if (isAuthPage) return children; // Auth pages render standalone
+
+  const isProjectSelect = currentPage.includes("clientportalprojectselect");
 
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex">
