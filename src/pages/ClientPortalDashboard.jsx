@@ -20,19 +20,19 @@ export default function ClientPortalDashboard() {
   });
 
   const { data: deliveries = [] } = useQuery({
-    queryKey: ["client_deliveries", activeProject?.id],
+    queryKey: ["cp_deliveries", activeProject?.id],
     queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: meetings = [] } = useQuery({
-    queryKey: ["client_meetings", activeProject?.id],
+    queryKey: ["cp_meetings", activeProject?.id],
     queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: onboarding = [] } = useQuery({
-    queryKey: ["client_onboarding", activeProject?.id],
+    queryKey: ["cp_onboarding", activeProject?.id],
     queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
