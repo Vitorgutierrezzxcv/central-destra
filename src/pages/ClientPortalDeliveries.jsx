@@ -75,7 +75,7 @@ function DeliveryCard({ delivery, onFeedback, user, existingFeedback, canApprove
             <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
             Avaliado: {existingFeedback.score}/5
           </div>
-        ) : canApprove && (
+        ) : canAct && (
           <Button
             size="sm"
             onClick={() => onFeedback(delivery)}
