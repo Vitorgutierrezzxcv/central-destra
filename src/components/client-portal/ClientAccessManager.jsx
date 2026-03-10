@@ -52,7 +52,9 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
     }
   }, [open, contact, allAccess]);
 
-  const companyProjects = projects.filter(p => p.company_id === form.company_id);
+  const companyProjects = form.company_id
+    ? projects.filter(p => p.company_id === form.company_id || !p.company_id)
+    : projects;
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
