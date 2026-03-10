@@ -237,7 +237,7 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
 }
 
 // ---- Card de contato ----
-function ContactCard({ contact, companies, projects, allAccess, invites }) {
+function ContactCard({ contact, companies, projects, allAccess, allProjects, invites }) {
   const qc = useQueryClient();
   const [expanded, setExpanded] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
