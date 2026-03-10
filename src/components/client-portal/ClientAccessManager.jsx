@@ -255,8 +255,7 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
   const sc = statusConfig[contact.status] || statusConfig.draft;
   const StatusIcon = sc.icon;
 
-  const canSendInvite = contact.status !== "active" && contact.status !== "disabled";
-  const canResend = contact.status === "invite_sent" || contact.status === "active";
+
 
   return (
     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
