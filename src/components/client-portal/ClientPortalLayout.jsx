@@ -40,7 +40,7 @@ export default function ClientPortalLayout({ children, currentPageName }) {
 
     if (!isClientPortalPage) return; // not our concern
 
-    if (!user && !isLoginPage) {
+    if (!user && !isLoginPage && !isActivatePage) {
       // Not logged in → go to portal login
       navigate(createPageUrl("ClientPortalLogin"), { replace: true });
       return;
