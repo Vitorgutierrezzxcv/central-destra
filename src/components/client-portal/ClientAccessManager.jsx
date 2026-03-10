@@ -174,7 +174,6 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
   const companyProjects = projects.filter(p => p.company_id === contact.company_id);
   const accessedIds = contactAccess.map(a => a.project_id);
   const availableProjects = companyProjects.filter(p => !accessedIds.includes(p.id));
-  const lastInvite = contactInvites[0];
 
   const contactInvites = invites
     .filter(i => i.client_contact_id === contact.id)
