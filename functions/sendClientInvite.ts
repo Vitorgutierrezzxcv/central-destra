@@ -61,7 +61,6 @@ Deno.serve(async (req) => {
 
   // Atualizar status do contato
   await base44.asServiceRole.entities.ClientContact.update(contact.id, {
-    status: 'invite_sent',
     invited_at: new Date().toISOString()
   });
 
