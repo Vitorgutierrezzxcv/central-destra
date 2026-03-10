@@ -101,6 +101,50 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
     );
   };
 
+  // Tela de sucesso com link
+  if (createdLink) {
+    return (
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-emerald-700">
+              <CheckCheck className="w-5 h-5" />
+              Cliente cadastrado com sucesso!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-2 space-y-4">
+            <p className="text-sm text-slate-600">
+              O convite foi enviado para <strong>{form.email}</strong>. Compartilhe o link abaixo para que o cliente acesse o portal:
+            </p>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-slate-500 mb-2 font-medium uppercase tracking-wider flex items-center gap-1.5">
+                <Link2 className="w-3.5 h-3.5" /> Link de Acesso
+              </p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 text-xs text-slate-800 bg-white border border-slate-200 rounded-lg px-3 py-2 truncate font-mono">
+                  {createdLink}
+                </code>
+                <Button
+                  size="sm"
+                  onClick={handleCopy}
+                  className={`flex-shrink-0 ${copied ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"} text-white`}
+                >
+                  {copied ? <><CheckCheck className="w-3.5 h-3.5 mr-1" /> Copiado</> : <><Copy className="w-3.5 h-3.5 mr-1" /> Copiar</>}
+                </Button>
+              </div>
+            </div>
+            <p className="text-xs text-slate-400">
+              O cliente usará o email e a senha definida no convite para entrar.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={onClose} className="w-full bg-slate-900 hover:bg-slate-800 text-white">Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
