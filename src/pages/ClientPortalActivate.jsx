@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { validateInviteToken } from "@/functions/validateInviteToken";
-import { acceptInviteToken } from "@/functions/acceptInviteToken";
 import { base44 } from "@/api/base44Client";
+
+const validateInviteToken = (payload) => base44.asServiceRole.functions.invoke("validateInviteToken", payload);
+const acceptInviteToken = (payload) => base44.asServiceRole.functions.invoke("acceptInviteToken", payload);
 import { Building2, CheckCircle2, XCircle, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
