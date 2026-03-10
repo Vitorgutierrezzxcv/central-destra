@@ -24,27 +24,19 @@ import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
 import ClientPortalLayout from "./components/client-portal/ClientPortalLayout";
 
+const CLIENT_PORTAL_PAGES = [
+  "clientportaldashboard", "clientportalproject", "clientportaldeliveries",
+  "clientportalonboarding", "clientportalcalendar", "clientportalfiles",
+  "clientportalsatisfaction", "clientportaltimeline", "clientportallogin",
+  "clientportalfirstaccess", "clientportalforgotpassword",
+  "clientportalprojectselect", "clientportalaccount"
+];
+
 const taskFlowNav = [
-  {
-    title: "Visão Geral",
-    url: createPageUrl("Dashboard"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Projetos",
-    url: createPageUrl("Projects"),
-    icon: FolderKanban,
-  },
-  {
-    title: "Tarefas",
-    url: createPageUrl("Tasks"),
-    icon: ListTodo,
-  },
-  {
-    title: "Backlog",
-    url: createPageUrl("Backlog"),
-    icon: Package,
-  },
+  { title: "Visão Geral", url: createPageUrl("Dashboard"), icon: LayoutDashboard },
+  { title: "Projetos", url: createPageUrl("Projects"), icon: FolderKanban },
+  { title: "Tarefas", url: createPageUrl("Tasks"), icon: ListTodo },
+  { title: "Backlog", url: createPageUrl("Backlog"), icon: Package },
 ];
 
 const taskFlowQuickActions = [
@@ -53,20 +45,14 @@ const taskFlowQuickActions = [
 ];
 
 const crmNav = [
-  {
-    title: "Cadastro",
-    url: createPageUrl("Companies"),
-    icon: Building2,
-  },
+  { title: "Cadastro", url: createPageUrl("Companies"), icon: Building2 },
 ];
-
-const CLIENT_PORTAL_PAGES = ["clientportaldashboard", "clientportalproject", "clientportaldeliveries", "clientportalonboarding", "clientportalcalendar", "clientportalfiles", "clientportalsatisfaction", "clientportaltimeline"];
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
-  // Render client portal with its own layout
+  // Client portal: use its own layout
   const isClientPortal = CLIENT_PORTAL_PAGES.some(p => location.pathname.toLowerCase().includes(p));
   if (isClientPortal) {
     return (
@@ -76,7 +62,6 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Determine which navigation to show based on current page
   const isInCRM = location.pathname.includes('Companies');
   const isInClientPortalAdmin = location.pathname.toLowerCase().includes('clientportaladmin');
 
@@ -93,7 +78,7 @@ export default function Layout({ children, currentPageName }) {
                 <SidebarMenu>
                   {isInClientPortalAdmin ? (
                     <SidebarMenuItem>
-                      <SidebarMenuButton asChild className={`rounded-lg mb-1 transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md`}>
+                      <SidebarMenuButton asChild className="rounded-lg mb-1 transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md">
                         <Link to={createPageUrl("ClientPortalAdmin")} className="flex items-center gap-3 px-3 py-2.5">
                           <Users2 className="w-5 h-5" />
                           <span className="font-medium">Central do Cliente</span>
@@ -120,15 +105,9 @@ export default function Layout({ children, currentPageName }) {
                           const isActive = location.pathname === item.url;
                           return (
                             <SidebarMenuItem key={item.title}>
-                              <SidebarMenuButton 
-                                asChild 
-                                className={`
-                                  rounded-lg transition-all duration-200
-                                  ${isActive 
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
-                                    : 'hover:bg-slate-100 text-slate-700'
-                                  }
-                                `}
+                              <SidebarMenuButton
+                                asChild
+                                className={`rounded-lg transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' : 'hover:bg-slate-100 text-slate-700'}`}
                               >
                                 <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
                                   <item.icon className="w-4 h-4" />
@@ -138,20 +117,12 @@ export default function Layout({ children, currentPageName }) {
                             </SidebarMenuItem>
                           );
                         })}
-                        
-                        {/* Quick Actions inside TaskFlow */}
                         <div className="mt-3 pt-3 border-t border-slate-200">
                           <div className="px-3 pb-2">
-                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                              Ações Rápidas
-                            </span>
+                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ações Rápidas</span>
                           </div>
                           {taskFlowQuickActions.map(action => (
-                            <Link 
-                              key={action.title}
-                              to={action.url}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}
-                            >
+                            <Link key={action.title} to={action.url} className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}>
                               <action.icon className="w-4 h-4" />
                               {action.title}
                             </Link>
@@ -159,20 +130,14 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
-                  ) : !isInClientPortalAdmin && (
+                  ) : (
                     crmNav.map((item) => {
                       const isActive = location.pathname === item.url;
                       return (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton 
-                            asChild 
-                            className={`
-                              rounded-lg mb-1 transition-all duration-200
-                              ${isActive 
-                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
-                                : 'hover:bg-slate-100 text-slate-700'
-                              }
-                            `}
+                          <SidebarMenuButton
+                            asChild
+                            className={`rounded-lg mb-1 transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' : 'hover:bg-slate-100 text-slate-700'}`}
                           >
                             <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
                               <item.icon className="w-5 h-5" />
@@ -187,7 +152,7 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupContent>
             </SidebarGroup>
 
-            <div className="mt-auto space-y-3"> 
+            <div className="mt-auto space-y-3">
               <div className="px-3">
                 <AppSwitcher />
               </div>
