@@ -19,10 +19,10 @@ const statusConfig = {
   rejected: { label: "Reprovado", color: "bg-rose-500/20 text-rose-300 border-rose-500/30", icon: XCircle },
 };
 
-function DeliveryCard({ delivery, onFeedback, user, existingFeedback }) {
+function DeliveryCard({ delivery, onFeedback, user, existingFeedback, canApprove }) {
   const cfg = statusConfig[delivery.status] || statusConfig.pending_delivery;
   const Icon = cfg.icon;
-  const canApprove = ["delivered", "under_review"].includes(delivery.status);
+  const canAct = canApprove && ["delivered", "under_review"].includes(delivery.status);
 
   return (
     <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
