@@ -91,7 +91,16 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {!isInCRM ? (
+                  {isInClientPortalAdmin ? (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild className={`rounded-lg mb-1 transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md`}>
+                        <Link to={createPageUrl("ClientPortalAdmin")} className="flex items-center gap-3 px-3 py-2.5">
+                          <Users2 className="w-5 h-5" />
+                          <span className="font-medium">Central do Cliente</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : !isInCRM ? (
                     <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
