@@ -5,7 +5,6 @@ import { base44 } from "@/api/base44Client";
 /**
  * Hook central do portal do cliente.
  * Carrega user → userProfile → company → projectAccess → projects
- * Qualquer componente do portal pode usar este hook para obter contexto completo.
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
@@ -18,7 +17,10 @@ export function useClientPortal() {
       .catch(() => setUserLoading(false));
   }, []);
 
-  // Perfil estendido do usuário (com linked_company_id, linked_client_contact_id)
+  const isClientRole =
+    user?.role === "client_user" || user?.role === "client_approver";
+
+  // Perfil estendido (linked_company_id, linked_client_contact_id)
   const { data: userProfile } = useQuery({
     queryKey: ["userProfile", user?.email],
     queryFn: () =>
@@ -27,10 +29,10 @@ export function useClientPortal() {
     enabled: !!user?.email
   });
 
-  const companyId = userProfile?.linked_company_id;
-  const contactId = userProfile?.linked_client_contact_id;
+  // company_id: vem do perfil ou do user.linked_company_id (fallback legado)
+  const companyId = userProfile?.linked_company_id || user?.linked_company_id || null;
+  const contactId = userProfile?.linked_client_contact_id || user?.linked_client_contact_id || null;
 
-  // Empresa
   const { data: company } = useQuery({
     queryKey: ["client_company", companyId],
     queryFn: () =>
@@ -60,7 +62,7 @@ export function useClientPortal() {
     enabled: !!companyId
   });
 
-  // Filtra projetos: se há acesso explícito, usa; senão mostra todos da empresa
+  // Se há acesso explícito por projeto, filtra; senão mostra todos da empresa
   const authorizedIds = projectAccess.length > 0
     ? projectAccess.map(pa => pa.project_id)
     : null;
@@ -69,17 +71,13 @@ export function useClientPortal() {
     ? allCompanyProjects.filter(p => authorizedIds.includes(p.id))
     : allCompanyProjects;
 
-  const isClientRole =
-    user?.role === "client_user" || user?.role === "client_approver";
   const isApprover =
     user?.role === "client_approver" ||
     projectAccess.some(pa => pa.can_approve);
 
-  // Permissões por projeto
   const getProjectPermissions = (projectId) => {
     const access = projectAccess.find(pa => pa.project_id === projectId);
     if (!access) {
-      // fallback: permissões padrão se sem registro explícito
       return {
         can_view: true,
         can_comment: true,
@@ -93,8 +91,8 @@ export function useClientPortal() {
   };
 
   const canAccessProject = (projectId) => {
-    if (!isClientRole) return true; // internos podem tudo
-    if (!authorizedIds) return true; // sem restrição explícita
+    if (!isClientRole) return true;
+    if (!authorizedIds) return true;
     return authorizedIds.includes(projectId);
   };
 
