@@ -81,6 +81,7 @@ import ClientPortalLogin from './pages/ClientPortalLogin';
 import ClientPortalFirstAccess from './pages/ClientPortalFirstAccess';
 import ClientPortalForgotPassword from './pages/ClientPortalForgotPassword';
 import ClientPortalProjectSelect from './pages/ClientPortalProjectSelect';
+import ClientPortalAccount from './pages/ClientPortalAccount';
 import __Layout from './Layout.jsx';
 
 
@@ -119,6 +120,7 @@ export const PAGES = {
     "ClientPortalFirstAccess": ClientPortalFirstAccess,
     "ClientPortalForgotPassword": ClientPortalForgotPassword,
     "ClientPortalProjectSelect": ClientPortalProjectSelect,
+    "ClientPortalAccount": ClientPortalAccount,
 }
 
 export const pagesConfig = {
