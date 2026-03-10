@@ -86,7 +86,7 @@ const allModules = [
     icon: Building2,
     color: "bg-blue-700",
     defaultPage: "ClientPortalAdmin",
-    pages: ["ClientPortalAdmin", "ClientPortalDashboard", "ClientPortalProject", "ClientPortalDeliveries", "ClientPortalOnboarding", "ClientPortalCalendar", "ClientPortalFiles", "ClientPortalSatisfaction", "ClientPortalTimeline"]
+    pages: ["ClientPortalAdmin", "ClientPortalDashboard", "ClientPortalProject", "ClientPortalDeliveries", "ClientPortalOnboarding", "ClientPortalCalendar", "ClientPortalFiles", "ClientPortalSatisfaction", "ClientPortalTimeline", "ClientPortalProjects", "ClientPortalAccount", "ClientPortalLogin"]
   }
 ];
 
