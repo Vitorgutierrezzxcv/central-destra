@@ -97,19 +97,19 @@ export default function ClientPortalDeliveries() {
   const qc = useQueryClient();
 
   const { data: tasks = [] } = useQuery({
-    queryKey: ["client_tasks_deliveries", activeProject?.id],
+    queryKey: ["cp_tasks_del", activeProject?.id],
     queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: deliveries = [] } = useQuery({
-    queryKey: ["client_deliveries_list", activeProject?.id],
+    queryKey: ["cp_deliveries_list", activeProject?.id],
     queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: feedbacks = [] } = useQuery({
-    queryKey: ["client_feedbacks", activeProject?.id],
+    queryKey: ["cp_feedbacks", activeProject?.id],
     queryFn: () => base44.entities.DeliveryFeedback.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
