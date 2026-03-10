@@ -178,23 +178,51 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
     .filter(i => i.client_contact_id === contact.id)
     .sort((a, b) => new Date(b.sent_at || 0) - new Date(a.sent_at || 0))[0];
 
+  const contactInvites = invites
+    .filter(i => i.client_contact_id === contact.id)
+    .sort((a, b) => new Date(b.sent_at || 0) - new Date(a.sent_at || 0));
+
   const handleSendInvite = async () => {
+    if (contactAccess.length === 0) {
+      setSendError("Vincule pelo menos 1 projeto antes de enviar o convite.");
+      return;
+    }
     setSending(true);
     setSendError("");
     try {
-      const res = await sendClientInvite({ client_contact_id: contact.id });
-      if (res.data?.success) {
-        const link = `${window.location.origin}/ClientPortalActivate?token=${res.data.token}`;
+      const res = await callFn("sendClientInvite", { client_contact_id: contact.id });
+      const data = res?.data || res;
+      if (data?.success) {
+        const link = `${window.location.origin}/ClientPortalActivate?token=${data.token}`;
         setInviteLink(link);
         qc.invalidateQueries({ queryKey: ["admin_client_contacts"] });
         qc.invalidateQueries({ queryKey: ["admin_invites"] });
       } else {
-        setSendError("Erro ao enviar o convite.");
+        setSendError(data?.error || "Erro ao enviar o convite.");
       }
     } catch (e) {
-      setSendError(e?.message || "Erro ao enviar o convite.");
+      setSendError(e?.message || "Não foi possível enviar o convite. Verifique a configuração do serviço.");
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleCancelInvite = async (inviteId) => {
+    try {
+      await callFn("cancelClientInvite", { invite_id: inviteId });
+      qc.invalidateQueries({ queryKey: ["admin_invites"] });
+      qc.invalidateQueries({ queryKey: ["admin_client_contacts"] });
+    } catch (e) {
+      setSendError("Erro ao cancelar convite.");
+    }
+  };
+
+  const handleDeleteInvite = async (inviteId) => {
+    try {
+      await callFn("deleteClientInvite", { invite_id: inviteId });
+      qc.invalidateQueries({ queryKey: ["admin_invites"] });
+    } catch (e) {
+      setSendError("Erro ao apagar convite.");
     }
   };
 
