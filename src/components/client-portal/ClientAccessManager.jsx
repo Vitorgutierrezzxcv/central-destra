@@ -155,6 +155,9 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
             </div>
           )}
         </div>
+        {inviteError && (
+          <div className="px-1 py-2 text-sm text-rose-500 bg-rose-50 rounded-lg px-3">{inviteError}</div>
+        )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button
@@ -162,7 +165,7 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
             disabled={!form.name || !form.email || !form.company_id || saveMutation.isPending}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            {saveMutation.isPending ? "Salvando..." : isEdit ? "Salvar" : "Criar e Convidar"}
+            {saveMutation.isPending ? "Enviando convite..." : isEdit ? "Salvar" : "Criar e Convidar"}
           </Button>
         </DialogFooter>
       </DialogContent>
