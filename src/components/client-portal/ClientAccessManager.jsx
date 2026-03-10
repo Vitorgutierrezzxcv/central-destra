@@ -68,7 +68,8 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
     onError: (err) => setError(err?.message || "Erro ao salvar contato.")
   });
 
-  const companyProjects = projects.filter(p => p.company_id === form.company_id && p.client_portal_enabled);
+  // Mostrar todos os projetos da empresa (sem filtrar por client_portal_enabled)
+  const companyProjects = projects.filter(p => p.company_id === form.company_id);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
