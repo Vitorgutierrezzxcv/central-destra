@@ -559,7 +559,7 @@ export default function ClientAccessManager({ companies, projects }) {
       ) : (
         <div className="space-y-3">
           {contacts.map(contact => (
-            <ContactCard key={contact.id} contact={contact} companies={companies} projects={projects} allAccess={allAccess} invites={invites} />
+            <ContactCard key={contact.id} contact={contact} companies={companies} projects={projects} allProjects={projects} allAccess={allAccess} invites={invites} />
           ))}
         </div>
       )}
