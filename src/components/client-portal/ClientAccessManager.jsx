@@ -564,7 +564,7 @@ export default function ClientAccessManager({ companies, projects }) {
         </div>
       )}
 
-      <ContactFormDialog open={showCreate} onClose={() => setShowCreate(false)} companies={companies} projects={projects} />
+      <ContactFormDialog open={showCreate} onClose={() => setShowCreate(false)} companies={companies} projects={projects} allAccess={allAccess} />
     </div>
   );
 }
