@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Store, TrendingUp, Wallet } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +22,7 @@ import {
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
+import ClientPortalLayout from "./components/client-portal/ClientPortalLayout";
 
 const taskFlowNav = [
   {
@@ -59,42 +60,12 @@ const crmNav = [
   },
 ];
 
-const piermontNav = [
-  {
-    title: "Dashboard",
-    url: createPageUrl("PiermontDashboard"),
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Produtos",
-    url: createPageUrl("PiermontProducts"),
-    icon: Package,
-  },
-  {
-    title: "Vendas",
-    url: createPageUrl("PiermontSales"),
-    icon: TrendingUp,
-  },
-  {
-    title: "Gastos",
-    url: createPageUrl("PiermontExpenses"),
-    icon: Wallet,
-  },
-  {
-    title: "Estoque",
-    url: createPageUrl("PiermontInventory"),
-    icon: Store,
-  },
-];
-
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
   // Determine which navigation to show based on current page
-  const currentPath = location.pathname.toLowerCase();
-  const isInCRM = currentPath.includes('companies');
-  const isInPiermont = currentPath.includes('piermont');
+  const isInCRM = location.pathname.includes('Companies');
 
   return (
     <SidebarProvider>
@@ -107,30 +78,7 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {isInPiermont ? (
-                    piermontNav.map((item) => {
-                      const isActive = location.pathname === item.url;
-                      return (
-                        <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton 
-                            asChild 
-                            className={`
-                              rounded-lg mb-1 transition-all duration-200
-                              ${isActive 
-                                ? 'bg-black text-white shadow-md hover:shadow-lg' 
-                                : 'hover:bg-slate-100 text-slate-700'
-                              }
-                            `}
-                          >
-                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
-                              <item.icon className="w-5 h-5" />
-                              <span className="font-medium">{item.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      );
-                    })
-                  ) : !isInCRM ? (
+                  {!isInCRM ? (
                     <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
