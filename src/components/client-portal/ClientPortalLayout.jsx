@@ -31,18 +31,46 @@ export default function ClientPortalLayout({ children, currentPageName }) {
   const isClientPortalPage = CLIENT_PORTAL_SLUGS.some(p =>
     location.pathname.toLowerCase().includes(p)
   );
+  const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin");
 
-  // Proteção de rota: cliente só acessa portal do cliente
+  // Auth guard
   useEffect(() => {
-    if (!userLoading && user && isClientRole) {
+    if (userLoading) return;
+
+    if (!isClientPortalPage) return; // not our concern
+
+    if (!user && !isLoginPage) {
+      // Not logged in → go to portal login
+      navigate(createPageUrl("ClientPortalLogin"), { replace: true });
+      return;
+    }
+
+    if (user && isClientRole) {
       const isOnInternalPage = !isClientPortalPage;
       if (isOnInternalPage) {
         navigate(createPageUrl("ClientPortalDashboard"), { replace: true });
       }
     }
-  }, [user, userLoading, isClientRole, isClientPortalPage]);
+  }, [user, userLoading, isClientRole, isClientPortalPage, isLoginPage]);
 
   if (!isClientPortalPage) return children;
+
+  // Show spinner while checking auth (but not on login page)
+  if (userLoading && !isLoginPage) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-white" />
+          </div>
+          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // Login page has its own full-page layout
+  if (isLoginPage) return children;
 
   // Esconde "Projetos" se só tem 1 projeto
   const visibleNav = navItems.filter(n => {
