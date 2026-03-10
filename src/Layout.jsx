@@ -175,17 +175,22 @@ export default function Layout({ children, currentPageName }) {
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
+          <header
+            className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 md:hidden sticky top-0 z-10 mobile-header"
+            style={{ paddingTop: "max(12px, env(safe-area-inset-top, 0px))", paddingBottom: "12px" }}
+          >
             <div className="flex items-center justify-between gap-4">
-              <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
+              <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center" />
               <AppSwitcher isMobile={true} />
-              <div className="w-10" />
+              <div className="w-11" />
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto scroll-container content-with-tab-bar md:pb-0">
             {children}
           </div>
+
+          <BottomTabBar />
         </main>
       </div>
     </SidebarProvider>
