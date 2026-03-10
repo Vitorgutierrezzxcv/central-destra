@@ -72,6 +72,9 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
       qc.invalidateQueries({ queryKey: ["admin_client_contacts"] });
       qc.invalidateQueries({ queryKey: ["admin_project_access"] });
       onClose();
+    },
+    onError: (err) => {
+      setInviteError(err?.message || "Erro ao criar contato. Verifique os dados e tente novamente.");
     }
   });
 
