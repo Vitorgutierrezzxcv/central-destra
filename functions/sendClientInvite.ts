@@ -29,13 +29,17 @@ Deno.serve(async (req) => {
     project = projs[0];
   }
 
-  // Cancelar convites anteriores pendentes
+  // Cancelar/superseder convites anteriores ativos
   const oldInvites = await base44.asServiceRole.entities.ClientInvite.filter({
-    client_contact_id: contact.id,
-    invite_status: 'sent'
+    client_contact_id: contact.id
   });
   for (const inv of oldInvites) {
-    await base44.asServiceRole.entities.ClientInvite.update(inv.id, { invite_status: 'cancelled' });
+    if (['sent', 'pending'].includes(inv.invite_status)) {
+      await base44.asServiceRole.entities.ClientInvite.update(inv.id, {
+        invite_status: 'superseded',
+        cancelled_at: new Date().toISOString()
+      });
+    }
   }
 
   // Gerar token único
