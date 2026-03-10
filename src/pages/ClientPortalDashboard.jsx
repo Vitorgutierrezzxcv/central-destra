@@ -30,6 +30,20 @@ export default function ClientPortalDashboard() {
     ? projects.find(p => p.id === urlProjectId)
     : (projects.find(p => p.status === "active") || projects[0]);
 
+  // Proteção: verificar se o projeto é acessível
+  if (!userLoading && urlProjectId && !canAccessProject(urlProjectId)) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center p-6">
+        <div className="text-center">
+          <p className="text-rose-400 mb-4">Você não tem acesso a este projeto.</p>
+          <Link to={createPageUrl("ClientPortalProjects")}>
+            <Button className="bg-blue-600 text-white">Ver meus projetos</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_tasks", activeProject?.id],
     queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
