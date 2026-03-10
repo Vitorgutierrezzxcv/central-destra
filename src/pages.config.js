@@ -48,6 +48,15 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Backlog from './pages/Backlog';
+import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import ClientPortalCalendar from './pages/ClientPortalCalendar';
+import ClientPortalDashboard from './pages/ClientPortalDashboard';
+import ClientPortalDeliveries from './pages/ClientPortalDeliveries';
+import ClientPortalFiles from './pages/ClientPortalFiles';
+import ClientPortalOnboarding from './pages/ClientPortalOnboarding';
+import ClientPortalProject from './pages/ClientPortalProject';
+import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
+import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import Companies from './pages/Companies';
 import Dashboard from './pages/Dashboard';
 import FinanceFixedExpenses from './pages/FinanceFixedExpenses';
@@ -68,20 +77,23 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import ClientPortalDashboard from './pages/ClientPortalDashboard';
-import ClientPortalProject from './pages/ClientPortalProject';
-import ClientPortalDeliveries from './pages/ClientPortalDeliveries';
-import ClientPortalOnboarding from './pages/ClientPortalOnboarding';
-import ClientPortalCalendar from './pages/ClientPortalCalendar';
-import ClientPortalFiles from './pages/ClientPortalFiles';
-import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
-import ClientPortalTimeline from './pages/ClientPortalTimeline';
-import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import ClientPortalLogin from './pages/ClientPortalLogin';
+import ClientPortalProjects from './pages/ClientPortalProjects';
+import ClientPortalAccount from './pages/ClientPortalAccount';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Backlog": Backlog,
+    "ClientPortalAdmin": ClientPortalAdmin,
+    "ClientPortalCalendar": ClientPortalCalendar,
+    "ClientPortalDashboard": ClientPortalDashboard,
+    "ClientPortalDeliveries": ClientPortalDeliveries,
+    "ClientPortalFiles": ClientPortalFiles,
+    "ClientPortalOnboarding": ClientPortalOnboarding,
+    "ClientPortalProject": ClientPortalProject,
+    "ClientPortalSatisfaction": ClientPortalSatisfaction,
+    "ClientPortalTimeline": ClientPortalTimeline,
     "Companies": Companies,
     "Dashboard": Dashboard,
     "FinanceFixedExpenses": FinanceFixedExpenses,
@@ -102,15 +114,9 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "ClientPortalDashboard": ClientPortalDashboard,
-    "ClientPortalProject": ClientPortalProject,
-    "ClientPortalDeliveries": ClientPortalDeliveries,
-    "ClientPortalOnboarding": ClientPortalOnboarding,
-    "ClientPortalCalendar": ClientPortalCalendar,
-    "ClientPortalFiles": ClientPortalFiles,
-    "ClientPortalSatisfaction": ClientPortalSatisfaction,
-    "ClientPortalTimeline": ClientPortalTimeline,
-    "ClientPortalAdmin": ClientPortalAdmin,
+    "ClientPortalLogin": ClientPortalLogin,
+    "ClientPortalProjects": ClientPortalProjects,
+    "ClientPortalAccount": ClientPortalAccount,
 }
 
 export const pagesConfig = {
