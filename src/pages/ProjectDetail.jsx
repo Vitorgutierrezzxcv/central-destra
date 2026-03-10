@@ -31,6 +31,8 @@ import TaskTableView from "../components/project-detail/TaskTableView"; // New i
 import TaskFormDialog from "../components/tasks/TaskFormDialog"; // Changed from TaskForm to TaskFormDialog
 import ProjectForm from "../components/projects/ProjectForm";
 import AddModuleDialog from "../components/project-detail/AddModuleDialog";
+import MobilePageHeader from "../components/layout/MobilePageHeader";
+import PullToRefresh from "../components/mobile/PullToRefresh";
 
 export default function ProjectDetail() {
   const navigate = useNavigate();
