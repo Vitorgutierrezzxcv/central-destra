@@ -72,11 +72,14 @@ export default function ClientPortalLayout({ children, currentPageName }) {
   // Login page has its own full-page layout
   if (isLoginPage) return children;
 
-  // Esconde "Projetos" se só tem 1 projeto
+  // Esconde "Projetos" se só tem 1 projeto; esconde nav toda se não é cliente
   const visibleNav = navItems.filter(n => {
     if (n.page === "ClientPortalProjects") return projects.length > 1;
     return true;
   });
+
+  // Não tem usuário autenticado — não renderizar sidebar (login vai cuidar disso)
+  const showSidebar = !!user && isClientRole;
 
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex">
