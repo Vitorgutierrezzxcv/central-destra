@@ -91,21 +91,10 @@ function DeliveryCard({ delivery, onFeedback, user, existingFeedback }) {
 }
 
 export default function ClientPortalDeliveries() {
-  const [user, setUser] = useState(null);
+  const { user, selectedProject: activeProject, canApprove } = useClientPortal();
   const [feedbackDelivery, setFeedbackDelivery] = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ approval_status: "approved", score: 5, comment: "" });
   const qc = useQueryClient();
-
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
-
-  const { data: projects = [] } = useQuery({
-    queryKey: ["client_projects", user?.company_id],
-    queryFn: () => base44.entities.Project.filter({ company_id: user.company_id, client_portal_enabled: true }),
-    enabled: !!user?.company_id
-  });
-  const activeProject = projects.find(p => p.status === "active") || projects[0];
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_tasks_deliveries", activeProject?.id],
