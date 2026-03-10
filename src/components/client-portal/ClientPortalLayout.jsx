@@ -70,8 +70,8 @@ export default function ClientPortalLayout({ children, currentPageName }) {
     );
   }
 
-  // Login page has its own full-page layout
-  if (isLoginPage) return children;
+  // Login/Activate pages have their own full-page layout
+  if (isLoginPage || isActivatePage) return children;
 
   // Esconde "Projetos" se só tem 1 projeto; esconde nav toda se não é cliente
   const visibleNav = navItems.filter(n => {
