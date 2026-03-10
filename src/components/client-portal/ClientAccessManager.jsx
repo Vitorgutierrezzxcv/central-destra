@@ -294,16 +294,8 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
           {/* Convite */}
           <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
             <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
-              <Send className="w-3.5 h-3.5" /> Status do Convite
+              <Send className="w-3.5 h-3.5" /> Convite de Acesso
             </p>
-
-            {lastInvite && (
-              <div className="text-xs text-slate-500 space-y-0.5">
-                {lastInvite.sent_at && <p>Enviado em: <strong>{new Date(lastInvite.sent_at).toLocaleString("pt-BR")}</strong></p>}
-                {lastInvite.expires_at && <p>Expira em: <strong>{new Date(lastInvite.expires_at).toLocaleDateString("pt-BR")}</strong></p>}
-                {lastInvite.accepted_at && <p className="text-emerald-600">Aceito em: <strong>{new Date(lastInvite.accepted_at).toLocaleString("pt-BR")}</strong></p>}
-              </div>
-            )}
 
             {sendError && (
               <div className="flex items-center gap-2 text-xs text-rose-600 bg-rose-50 rounded-lg px-3 py-2">
@@ -323,7 +315,9 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
                   </Button>
                 </div>
               </div>
-            ) : (
+            ) : null}
+
+            <div className="flex gap-2 flex-wrap">
               <Button
                 size="sm"
                 onClick={handleSendInvite}
@@ -332,12 +326,60 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
               >
                 {sending ? (
                   <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Enviando...</>
-                ) : canResend ? (
+                ) : lastInvite?.invite_status === 'sent' ? (
                   <><RefreshCw className="w-3.5 h-3.5" /> Reenviar Convite</>
                 ) : (
                   <><Send className="w-3.5 h-3.5" /> Enviar Convite</>
                 )}
               </Button>
+            </div>
+
+            {/* Histórico de convites */}
+            {contactInvites.length > 0 && (
+              <div className="space-y-2 pt-1">
+                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Histórico</p>
+                {contactInvites.map(inv => {
+                  const statusColors = {
+                    sent: "bg-amber-50 text-amber-700 border-amber-200",
+                    accepted: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    cancelled: "bg-slate-100 text-slate-500 border-slate-200",
+                    expired: "bg-red-50 text-red-500 border-red-200",
+                    superseded: "bg-slate-100 text-slate-400 border-slate-200",
+                  };
+                  const statusLabels = {
+                    sent: "Enviado", accepted: "Aceito", cancelled: "Cancelado",
+                    expired: "Expirado", superseded: "Substituído", pending: "Pendente"
+                  };
+                  return (
+                    <div key={inv.id} className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-100 rounded-lg">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded border font-medium ${statusColors[inv.invite_status] || "bg-slate-100 text-slate-500"}`}>
+                            {statusLabels[inv.invite_status] || inv.invite_status}
+                          </span>
+                          {inv.sent_at && <span className="text-[10px] text-slate-400">{new Date(inv.sent_at).toLocaleDateString("pt-BR")}</span>}
+                        </div>
+                        {inv.accepted_at && <p className="text-[10px] text-emerald-600 mt-0.5">Aceito: {new Date(inv.accepted_at).toLocaleDateString("pt-BR")}</p>}
+                        {inv.expires_at && inv.invite_status === 'sent' && <p className="text-[10px] text-slate-400 mt-0.5">Expira: {new Date(inv.expires_at).toLocaleDateString("pt-BR")}</p>}
+                      </div>
+                      <div className="flex gap-1 flex-shrink-0">
+                        {inv.invite_status === 'sent' && (
+                          <Button size="sm" variant="ghost" onClick={() => handleCancelInvite(inv.id)}
+                            className="h-7 w-7 p-0 text-amber-500 hover:text-amber-700 hover:bg-amber-50" title="Cancelar convite">
+                            <Ban className="w-3 h-3" />
+                          </Button>
+                        )}
+                        {inv.invite_status !== 'accepted' && (
+                          <Button size="sm" variant="ghost" onClick={() => handleDeleteInvite(inv.id)}
+                            className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600 hover:bg-rose-50" title="Apagar convite">
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </div>
 
