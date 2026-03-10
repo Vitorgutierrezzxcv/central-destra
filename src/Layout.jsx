@@ -183,11 +183,12 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto pb-safe-bottom md:pb-0">
             {children}
           </div>
         </main>
       </div>
+      <BottomTabBar />
     </SidebarProvider>
   );
 }

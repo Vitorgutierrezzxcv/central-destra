@@ -18,6 +18,9 @@ import { Pencil, Upload, LogOut, Loader2, Trash2, AlertTriangle } from "lucide-r
 
 export default function UserProfile() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const [formData, setFormData] = useState({
     display_name: "",
     bio: "",
