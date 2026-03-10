@@ -391,12 +391,19 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
               </div>
             ) : null}
 
+            {contactAccess.length === 0 && (
+              <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+                Vincule pelo menos um projeto a este contato antes de enviar o convite.
+              </div>
+            )}
+
             <div className="flex gap-2 flex-wrap">
               <Button
                 size="sm"
                 onClick={handleSendInvite}
-                disabled={sending}
-                className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5 text-xs"
+                disabled={sending || contactAccess.length === 0}
+                className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5 text-xs disabled:opacity-50"
               >
                 {sending ? (
                   <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Enviando...</>
