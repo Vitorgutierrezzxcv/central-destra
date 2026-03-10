@@ -258,10 +258,6 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
   const lastInvite = contactInvites[0];
 
   const handleSendInvite = async () => {
-    if (contactAccess.length === 0) {
-      setSendError("Vincule pelo menos 1 projeto antes de enviar o convite.");
-      return;
-    }
     setSending(true);
     setSendError("");
     try {
