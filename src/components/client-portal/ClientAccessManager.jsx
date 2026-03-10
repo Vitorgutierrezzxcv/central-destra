@@ -514,7 +514,7 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
         </div>
       )}
 
-      <ContactFormDialog open={editOpen} onClose={() => setEditOpen(false)} contact={contact} companies={companies} projects={projects} />
+      <ContactFormDialog open={editOpen} onClose={() => setEditOpen(false)} contact={contact} companies={companies} projects={projects} allAccess={allAccess} />
     </div>
   );
 }
