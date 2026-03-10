@@ -1,38 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, Users, AlertCircle, ArrowRight, Star } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, FolderKanban } from "lucide-react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 export default function ClientPortalDashboard() {
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { user, userLoading, company, projects, canAccessProject } = useClientPortal();
 
+  // Lê project_id da URL para suporte à seleção de projeto
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlProjectId = urlParams.get("project_id");
+
+  // Se tem múltiplos projetos e nenhum selecionado, redireciona para a lista
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
+    if (!userLoading && projects.length > 1 && !urlProjectId) {
+      navigate(createPageUrl("ClientPortalProjects"), { replace: true });
+    }
+  }, [userLoading, projects, urlProjectId]);
 
-  const { data: company } = useQuery({
-    queryKey: ["client_company", user?.company_id],
-    queryFn: () => user?.company_id
-      ? base44.entities.Company.filter({ id: user.company_id })
-      : Promise.resolve([]),
-    enabled: !!user?.company_id,
-    select: d => d?.[0]
-  });
-
-  const { data: projects = [] } = useQuery({
-    queryKey: ["client_projects", user?.company_id],
-    queryFn: () => base44.entities.Project.filter({ company_id: user.company_id, client_portal_enabled: true }),
-    enabled: !!user?.company_id
-  });
-
-  const activeProject = projects.find(p => p.status === "active") || projects[0];
+  const activeProject = urlProjectId
+    ? projects.find(p => p.id === urlProjectId)
+    : (projects.find(p => p.status === "active") || projects[0]);
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_tasks", activeProject?.id],
