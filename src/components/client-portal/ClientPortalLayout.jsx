@@ -81,6 +81,14 @@ export default function ClientPortalLayout({ children, currentPageName }) {
   // Não tem usuário autenticado — não renderizar sidebar (login vai cuidar disso)
   const showSidebar = !!user && isClientRole;
 
+  if (!showSidebar) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A]">
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0B0F1A] flex">
       {/* Desktop Sidebar */}
