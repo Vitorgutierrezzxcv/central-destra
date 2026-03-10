@@ -8,7 +8,8 @@ import {
   Wallet,
   Target,
   FileText,
-  Store
+  Store,
+  Building2
 } from "lucide-react";
 import {
   Dialog,
@@ -102,22 +103,18 @@ export default function AppSwitcher({ isMobile = false }) {
   const getCurrentModule = () => {
     const currentPath = location.pathname.toLowerCase();
     
-    // Check if in Pages module
+    if (currentPath.includes('clientportal')) {
+      return modules.find(m => m.id === 'client_portal_admin');
+    }
     if (currentPath.includes('pages')) {
       return modules.find(m => m.id === 'pages');
     }
-    
-    // Check if in Prospecting pages
     if (currentPath.includes('prospecting')) {
       return modules.find(m => m.id === 'prospecting');
     }
-    
-    // Check if in CRM pages
     if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
       return modules.find(m => m.id === 'crm');
     }
-    
-    // Check if in Finance pages
     if (currentPath.includes('lancamentos') || 
         currentPath.includes('financefixedexpenses') || 
         currentPath.includes('financevariableexpenses') || 
@@ -125,13 +122,10 @@ export default function AppSwitcher({ isMobile = false }) {
         currentPath.includes('financesummary')) {
       return modules.find(m => m.id === 'finance');
     }
-    
-    // Check if in Piermont pages
     if (currentPath.includes('piermont')) {
       return modules.find(m => m.id === 'piermont');
     }
     
-    // Default to TaskFlow or first available
     return modules.find(m => m.id === 'taskflow') || modules[0];
   };
 
