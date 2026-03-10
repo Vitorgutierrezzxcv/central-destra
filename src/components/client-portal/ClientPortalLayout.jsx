@@ -20,7 +20,7 @@ const navItems = [
   { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
 ];
 
-const CLIENT_PORTAL_SLUGS = navItems.map(n => n.page.toLowerCase()).concat(["clientportallogin", "clientportalaccount"]);
+const CLIENT_PORTAL_SLUGS = navItems.map(n => n.page.toLowerCase()).concat(["clientportallogin", "clientportalaccount", "clientportalactivate"]);
 
 export default function ClientPortalLayout({ children, currentPageName }) {
   const location = useLocation();
