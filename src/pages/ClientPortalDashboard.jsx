@@ -1,7 +1,7 @@
-import React from "react";
-import { useClientPortal } from "@/components/client-portal/ClientPortalContext";
+import React, { useState, useEffect } from "react";
+import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, FolderOpen } from "lucide-react";
+import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, Users, AlertCircle, ArrowRight, Star } from "lucide-react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
@@ -11,28 +11,49 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
 export default function ClientPortalDashboard() {
-  const { user, company, selectedProject: activeProject, projects } = useClientPortal();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const { data: company } = useQuery({
+    queryKey: ["client_company", user?.company_id],
+    queryFn: () => user?.company_id
+      ? base44.entities.Company.filter({ id: user.company_id })
+      : Promise.resolve([]),
+    enabled: !!user?.company_id,
+    select: d => d?.[0]
+  });
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["client_projects", user?.company_id],
+    queryFn: () => base44.entities.Project.filter({ company_id: user.company_id, client_portal_enabled: true }),
+    enabled: !!user?.company_id
+  });
+
+  const activeProject = projects.find(p => p.status === "active") || projects[0];
 
   const { data: tasks = [] } = useQuery({
-    queryKey: ["cp_tasks", activeProject?.id],
+    queryKey: ["client_tasks", activeProject?.id],
     queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: deliveries = [] } = useQuery({
-    queryKey: ["cp_deliveries", activeProject?.id],
+    queryKey: ["client_deliveries", activeProject?.id],
     queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: meetings = [] } = useQuery({
-    queryKey: ["cp_meetings", activeProject?.id],
+    queryKey: ["client_meetings", activeProject?.id],
     queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: onboarding = [] } = useQuery({
-    queryKey: ["cp_onboarding", activeProject?.id],
+    queryKey: ["client_onboarding", activeProject?.id],
     queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });

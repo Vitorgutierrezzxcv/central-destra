@@ -77,11 +77,6 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
-import ClientPortalLogin from './pages/ClientPortalLogin';
-import ClientPortalFirstAccess from './pages/ClientPortalFirstAccess';
-import ClientPortalForgotPassword from './pages/ClientPortalForgotPassword';
-import ClientPortalProjectSelect from './pages/ClientPortalProjectSelect';
-import ClientPortalAccount from './pages/ClientPortalAccount';
 import __Layout from './Layout.jsx';
 
 
@@ -116,11 +111,6 @@ export const PAGES = {
     "ClientPortalSatisfaction": ClientPortalSatisfaction,
     "ClientPortalTimeline": ClientPortalTimeline,
     "ClientPortalAdmin": ClientPortalAdmin,
-    "ClientPortalLogin": ClientPortalLogin,
-    "ClientPortalFirstAccess": ClientPortalFirstAccess,
-    "ClientPortalForgotPassword": ClientPortalForgotPassword,
-    "ClientPortalProjectSelect": ClientPortalProjectSelect,
-    "ClientPortalAccount": ClientPortalAccount,
 }
 
 export const pagesConfig = {

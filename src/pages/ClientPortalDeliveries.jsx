@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useClientPortal } from "@/components/client-portal/ClientPortalContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Clock, AlertCircle, XCircle, MessageSquare, Paperclip, Star, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
@@ -19,10 +18,10 @@ const statusConfig = {
   rejected: { label: "Reprovado", color: "bg-rose-500/20 text-rose-300 border-rose-500/30", icon: XCircle },
 };
 
-function DeliveryCard({ delivery, onFeedback, user, existingFeedback, canApprove }) {
+function DeliveryCard({ delivery, onFeedback, user, existingFeedback }) {
   const cfg = statusConfig[delivery.status] || statusConfig.pending_delivery;
   const Icon = cfg.icon;
-  const canAct = canApprove && ["delivered", "under_review"].includes(delivery.status);
+  const canApprove = ["delivered", "under_review"].includes(delivery.status);
 
   return (
     <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all">
@@ -75,7 +74,7 @@ function DeliveryCard({ delivery, onFeedback, user, existingFeedback, canApprove
             <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
             Avaliado: {existingFeedback.score}/5
           </div>
-        ) : canAct && (
+        ) : canApprove && (
           <Button
             size="sm"
             onClick={() => onFeedback(delivery)}
@@ -91,25 +90,36 @@ function DeliveryCard({ delivery, onFeedback, user, existingFeedback, canApprove
 }
 
 export default function ClientPortalDeliveries() {
-  const { user, selectedProject: activeProject, canApprove } = useClientPortal();
+  const [user, setUser] = useState(null);
   const [feedbackDelivery, setFeedbackDelivery] = useState(null);
   const [feedbackForm, setFeedbackForm] = useState({ approval_status: "approved", score: 5, comment: "" });
   const qc = useQueryClient();
 
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => {});
+  }, []);
+
+  const { data: projects = [] } = useQuery({
+    queryKey: ["client_projects", user?.company_id],
+    queryFn: () => base44.entities.Project.filter({ company_id: user.company_id, client_portal_enabled: true }),
+    enabled: !!user?.company_id
+  });
+  const activeProject = projects.find(p => p.status === "active") || projects[0];
+
   const { data: tasks = [] } = useQuery({
-    queryKey: ["cp_tasks_del", activeProject?.id],
+    queryKey: ["client_tasks_deliveries", activeProject?.id],
     queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: deliveries = [] } = useQuery({
-    queryKey: ["cp_deliveries_list", activeProject?.id],
+    queryKey: ["client_deliveries_list", activeProject?.id],
     queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: feedbacks = [] } = useQuery({
-    queryKey: ["cp_feedbacks", activeProject?.id],
+    queryKey: ["client_feedbacks", activeProject?.id],
     queryFn: () => base44.entities.DeliveryFeedback.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
@@ -188,7 +198,6 @@ export default function ClientPortalDeliveries() {
                       onFeedback={(del) => { setFeedbackDelivery(del); setFeedbackForm({ approval_status: "approved", score: 5, comment: "" }); }}
                       user={user}
                       existingFeedback={feedbacks.find(f => f.delivery_id === d.id)}
-                      canApprove={canApprove}
                     />
                   ))}
                 </div>
