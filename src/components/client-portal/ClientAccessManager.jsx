@@ -38,8 +38,8 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
         invited_at: new Date().toISOString()
       });
 
-      // 2. Convidar usuário para a plataforma com role correto
-      await base44.users.inviteUser(data.email, data.access_level || "client_user");
+      // 2. Convidar usuário para a plataforma (role base é "user"; o acesso de cliente é controlado pelo UserProfile)
+      await base44.users.inviteUser(data.email, "user");
 
       // 3. Criar UserProfile vinculando email → empresa → contato
       await base44.entities.UserProfile.create({
