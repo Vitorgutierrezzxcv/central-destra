@@ -77,6 +77,15 @@ const allModules = [
     color: "bg-black",
     defaultPage: "PiermontDashboard",
     pages: ["PiermontDashboard", "PiermontProducts", "PiermontSales", "PiermontExpenses", "PiermontInventory"]
+  },
+  {
+    id: "client_portal_admin",
+    name: "Central do Cliente",
+    description: "Portal e acompanhamento",
+    icon: Building2,
+    color: "bg-blue-700",
+    defaultPage: "ClientPortalAdmin",
+    pages: ["ClientPortalAdmin", "ClientPortalDashboard", "ClientPortalProject", "ClientPortalDeliveries", "ClientPortalOnboarding", "ClientPortalCalendar", "ClientPortalFiles", "ClientPortalSatisfaction", "ClientPortalTimeline"]
   }
 ];
 
