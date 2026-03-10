@@ -60,9 +60,21 @@ const crmNav = [
   },
 ];
 
+const CLIENT_PORTAL_PAGES = ["clientportaldashboard", "clientportalproject", "clientportaldeliveries", "clientportalonboarding", "clientportalcalendar", "clientportalfiles", "clientportalsatisfaction", "clientportaltimeline"];
+
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
+
+  // Render client portal with its own layout
+  const isClientPortal = CLIENT_PORTAL_PAGES.some(p => location.pathname.toLowerCase().includes(p));
+  if (isClientPortal) {
+    return (
+      <ClientPortalLayout currentPageName={currentPageName}>
+        {children}
+      </ClientPortalLayout>
+    );
+  }
 
   // Determine which navigation to show based on current page
   const isInCRM = location.pathname.includes('Companies');
