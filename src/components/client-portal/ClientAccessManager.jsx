@@ -26,39 +26,80 @@ const statusConfig = {
 };
 
 // ---- Formulário de criação/edição ----
-function ContactFormDialog({ open, onClose, contact, companies, projects }) {
+function ContactFormDialog({ open, onClose, contact, companies, projects, allAccess = [] }) {
   const qc = useQueryClient();
   const isEdit = !!contact?.id;
-  const [form, setForm] = useState(contact || {
+
+  const [form, setForm] = useState(() => contact || {
     name: "", email: "", role: "", phone: "", company_id: "", access_level: "client_user", status: "draft"
   });
-  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState(() => {
+    if (!contact?.id) return [];
+    return allAccess.filter(a => a.client_contact_id === contact.id).map(a => a.project_id);
+  });
   const [error, setError] = useState("");
+
+  // Sync when dialog opens with fresh data
+  React.useEffect(() => {
+    if (open) {
+      setForm(contact || { name: "", email: "", role: "", phone: "", company_id: "", access_level: "client_user", status: "draft" });
+      if (contact?.id) {
+        setSelectedProjects(allAccess.filter(a => a.client_contact_id === contact.id).map(a => a.project_id));
+      } else {
+        setSelectedProjects([]);
+      }
+      setError("");
+    }
+  }, [open, contact, allAccess]);
+
+  const companyProjects = projects.filter(p => p.company_id === form.company_id);
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
       setError("");
+
+      // Validate: must have at least 1 project
+      if (selectedProjects.length === 0) {
+        throw new Error("Vincule pelo menos um projeto antes de salvar o contato.");
+      }
+
+      let contactId;
       if (isEdit) {
-        return base44.entities.ClientContact.update(contact.id, data);
+        await base44.entities.ClientContact.update(contact.id, data);
+        contactId = contact.id;
+      } else {
+        const saved = await base44.entities.ClientContact.create({ ...data, status: "draft" });
+        contactId = saved.id;
       }
-      const saved = await base44.entities.ClientContact.create({
-        ...data, status: "draft"
-      });
+
+      // Diff: existing vs selected
+      const existingAccess = allAccess.filter(a => a.client_contact_id === contactId);
+      const existingProjectIds = existingAccess.map(a => a.project_id);
+
+      // Remove deselected projects
+      for (const acc of existingAccess) {
+        if (!selectedProjects.includes(acc.project_id)) {
+          await base44.entities.ProjectClientAccess.delete(acc.id);
+        }
+      }
+
+      // Add newly selected projects
       for (const pid of selectedProjects) {
-        await base44.entities.ProjectClientAccess.create({
-          project_id: pid,
-          company_id: data.company_id,
-          client_contact_id: saved.id,
-          can_view: true,
-          can_comment: true,
-          can_approve: data.access_level === "client_approver",
-          can_rate: true,
-          can_view_files: true,
-          can_view_calendar: true,
-          is_active: true
-        });
+        if (!existingProjectIds.includes(pid)) {
+          await base44.entities.ProjectClientAccess.create({
+            project_id: pid,
+            company_id: data.company_id,
+            client_contact_id: contactId,
+            can_view: true,
+            can_comment: true,
+            can_approve: data.access_level === "client_approver",
+            can_rate: true,
+            can_view_files: true,
+            can_view_calendar: true,
+            is_active: true
+          });
+        }
       }
-      return saved;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin_client_contacts"] });
@@ -68,8 +109,11 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
     onError: (err) => setError(err?.message || "Erro ao salvar contato.")
   });
 
-  // Mostrar todos os projetos da empresa (sem filtrar por client_portal_enabled)
-  const companyProjects = projects.filter(p => p.company_id === form.company_id);
+  const toggleProject = (pid) => {
+    setSelectedProjects(prev =>
+      prev.includes(pid) ? prev.filter(id => id !== pid) : [...prev, pid]
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -99,12 +143,64 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
 
           <div>
             <Label className="text-xs">Empresa *</Label>
-            <Select value={form.company_id} onValueChange={v => { setForm(f => ({ ...f, company_id: v })); setSelectedProjects([]); }}>
+            <Select value={form.company_id} onValueChange={v => {
+              setForm(f => ({ ...f, company_id: v }));
+              setSelectedProjects([]);
+            }}>
               <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
               <SelectContent>
                 {companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* PROJETOS LIBERADOS — sempre visível quando empresa selecionada */}
+          <div>
+            <Label className="text-xs font-semibold">
+              Projetos Liberados *
+              {selectedProjects.length > 0 && (
+                <span className="ml-2 text-blue-600">({selectedProjects.length} selecionado{selectedProjects.length > 1 ? "s" : ""})</span>
+              )}
+            </Label>
+            {!form.company_id ? (
+              <p className="text-xs text-slate-400 mt-2 py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                Selecione uma empresa para carregar os projetos.
+              </p>
+            ) : companyProjects.length === 0 ? (
+              <p className="text-xs text-slate-400 mt-2 py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                Nenhum projeto encontrado para esta empresa.
+              </p>
+            ) : (
+              <div className="mt-2 space-y-2">
+                {companyProjects.map(p => {
+                  const checked = selectedProjects.includes(p.id);
+                  return (
+                    <label
+                      key={p.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                        checked ? "border-blue-300 bg-blue-50" : "border-slate-200 hover:bg-slate-50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleProject(p.id)}
+                        className="rounded accent-blue-600"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium text-slate-700">{p.name}</span>
+                        {p.status && (
+                          <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{p.status}</span>
+                        )}
+                        {p.current_phase && (
+                          <p className="text-xs text-slate-400 truncate">{p.current_phase}</p>
+                        )}
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div>
@@ -117,25 +213,6 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
               </SelectContent>
             </Select>
           </div>
-
-          {!isEdit && form.company_id && companyProjects.length > 0 && (
-            <div>
-              <Label className="text-xs">Projetos Liberados</Label>
-              <div className="mt-1 space-y-2">
-                {companyProjects.map(p => (
-                  <label key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
-                    <input type="checkbox" checked={selectedProjects.includes(p.id)} onChange={() =>
-                      setSelectedProjects(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])
-                    } className="rounded" />
-                    <span className="text-sm font-medium text-slate-700">{p.name}</span>
-                  </label>
-                ))}
-                {companyProjects.length === 0 && (
-                  <p className="text-xs text-slate-400 py-2">Nenhum projeto com portal ativo nesta empresa.</p>
-                )}
-              </div>
-            </div>
-          )}
 
           {error && (
             <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 rounded-lg px-3 py-2">
@@ -151,7 +228,7 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
             disabled={!form.name || !form.email || !form.company_id || saveMutation.isPending}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            {saveMutation.isPending ? "Salvando..." : isEdit ? "Salvar" : "Criar Contato"}
+            {saveMutation.isPending ? "Salvando..." : isEdit ? "Salvar Alterações" : "Criar Contato"}
           </Button>
         </DialogFooter>
       </DialogContent>
