@@ -279,11 +279,23 @@ export default function ProjectDetail() {
     teal: "bg-[#456C8D]",
   };
 
+  const handleRefresh = () => {
+    queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+    queryClient.invalidateQueries({ queryKey: ['project-tasks', projectId] });
+  };
+
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+    <>
+      <MobilePageHeader
+        title={project?.name || "Projeto"}
+        subtitle={project?.description}
+        backUrl={createPageUrl("Projects")}
+      />
+    <PullToRefresh onRefresh={handleRefresh} className="min-h-screen">
+    <div className="bg-white p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 md:mb-8">
+        {/* Header - hidden on mobile since MobilePageHeader handles it */}
+        <div className="hidden md:flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6 md:mb-8">
           <Button
             variant="outline"
             size="icon"
