@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { base44 as base44sdk } from "@/api/base44Client";
-const sendClientInvite = (payload) => base44sdk.asServiceRole.functions.invoke("sendClientInvite", payload);
+
+const callFn = (name, payload) => base44.functions.invoke(name, payload);
 import {
   Plus, Trash2, UserCheck, UserX, Shield, RefreshCw,
   ChevronDown, ChevronUp, Edit2, Save, X, Send, Copy, CheckCheck,
