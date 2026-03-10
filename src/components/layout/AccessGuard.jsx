@@ -75,7 +75,20 @@ export function useUserAccess() {
   const allowedModules = user?.allowed_modules || [];
   const hasFullAccess = !allowedModules || allowedModules.length === 0;
 
+  const isClientRole = user?.role === "client_user" || user?.role === "client_approver";
+  const isInternalRole = !isClientRole;
+
   const canAccess = (module) => {
+    if (module === "client_portal_admin") {
+      // Admin e internal_team podem ver o painel de admin
+      return !isClientRole || hasFullAccess;
+    }
+    if (module === "clientportal") {
+      // Clientes só acessam o portal do cliente
+      return isClientRole || !isClientRole; // todos podem
+    }
+    // Clientes não acessam módulos internos
+    if (isClientRole) return false;
     return hasFullAccess || allowedModules.includes(module);
   };
 
