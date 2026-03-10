@@ -172,10 +172,19 @@ export default function UserProfile() {
           variant="outline"
           size="sm"
           onClick={handleLogout}
-          className="w-full text-slate-600 hover:text-red-600 hover:border-red-300"
+          className="w-full text-slate-600 hover:text-red-600 hover:border-red-300 mb-2"
         >
           <LogOut className="w-4 h-4 mr-2" />
           Sair
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => { setDeleteConfirmText(""); setIsDeleteDialogOpen(true); }}
+          className="w-full text-slate-400 hover:text-red-500 text-xs"
+        >
+          <Trash2 className="w-3 h-3 mr-1.5" />
+          Excluir conta
         </Button>
       </div>
 
