@@ -27,7 +27,7 @@ export default function ClientPortalDashboard() {
   }, [projects, selectedProjectId]);
 
   // Se tem mais de 1 projeto e nenhum selecionado, vai para seletor
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userLoading && projects.length > 1 && !selectedProjectId) {
       navigate(createPageUrl("ClientPortalProjects"), { replace: true });
     }
