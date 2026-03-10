@@ -79,6 +79,7 @@ import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import ClientPortalLogin from './pages/ClientPortalLogin';
 import ClientPortalFirstAccess from './pages/ClientPortalFirstAccess';
+import ClientPortalForgotPassword from './pages/ClientPortalForgotPassword';
 import __Layout from './Layout.jsx';
 
 
@@ -115,6 +116,7 @@ export const PAGES = {
     "ClientPortalAdmin": ClientPortalAdmin,
     "ClientPortalLogin": ClientPortalLogin,
     "ClientPortalFirstAccess": ClientPortalFirstAccess,
+    "ClientPortalForgotPassword": ClientPortalForgotPassword,
 }
 
 export const pagesConfig = {
