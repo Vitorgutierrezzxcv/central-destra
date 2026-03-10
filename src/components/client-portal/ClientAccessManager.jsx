@@ -178,6 +178,7 @@ function ContactCard({ contact, companies, projects, allAccess, invites }) {
   const contactInvites = invites
     .filter(i => i.client_contact_id === contact.id)
     .sort((a, b) => new Date(b.sent_at || 0) - new Date(a.sent_at || 0));
+  const lastInvite = contactInvites[0];
 
   const handleSendInvite = async () => {
     if (contactAccess.length === 0) {
