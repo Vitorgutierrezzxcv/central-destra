@@ -32,6 +32,7 @@ export default function ClientPortalLayout({ children, currentPageName }) {
     location.pathname.toLowerCase().includes(p)
   );
   const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin");
+  const isActivatePage = location.pathname.toLowerCase().includes("clientportalactivate");
 
   // Auth guard
   useEffect(() => {
