@@ -48,13 +48,16 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Backlog from './pages/Backlog';
+import ClientPortalAccount from './pages/ClientPortalAccount';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import ClientPortalCalendar from './pages/ClientPortalCalendar';
 import ClientPortalDashboard from './pages/ClientPortalDashboard';
 import ClientPortalDeliveries from './pages/ClientPortalDeliveries';
 import ClientPortalFiles from './pages/ClientPortalFiles';
+import ClientPortalLogin from './pages/ClientPortalLogin';
 import ClientPortalOnboarding from './pages/ClientPortalOnboarding';
 import ClientPortalProject from './pages/ClientPortalProject';
+import ClientPortalProjects from './pages/ClientPortalProjects';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import Companies from './pages/Companies';
@@ -77,21 +80,22 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import ClientPortalLogin from './pages/ClientPortalLogin';
-import ClientPortalProjects from './pages/ClientPortalProjects';
-import ClientPortalAccount from './pages/ClientPortalAccount';
+import ClientPortalActivate from './pages/ClientPortalActivate';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Backlog": Backlog,
+    "ClientPortalAccount": ClientPortalAccount,
     "ClientPortalAdmin": ClientPortalAdmin,
     "ClientPortalCalendar": ClientPortalCalendar,
     "ClientPortalDashboard": ClientPortalDashboard,
     "ClientPortalDeliveries": ClientPortalDeliveries,
     "ClientPortalFiles": ClientPortalFiles,
+    "ClientPortalLogin": ClientPortalLogin,
     "ClientPortalOnboarding": ClientPortalOnboarding,
     "ClientPortalProject": ClientPortalProject,
+    "ClientPortalProjects": ClientPortalProjects,
     "ClientPortalSatisfaction": ClientPortalSatisfaction,
     "ClientPortalTimeline": ClientPortalTimeline,
     "Companies": Companies,
@@ -114,9 +118,7 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "ClientPortalLogin": ClientPortalLogin,
-    "ClientPortalProjects": ClientPortalProjects,
-    "ClientPortalAccount": ClientPortalAccount,
+    "ClientPortalActivate": ClientPortalActivate,
 }
 
 export const pagesConfig = {
