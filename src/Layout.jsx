@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Users2 } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -60,25 +60,12 @@ const crmNav = [
   },
 ];
 
-const CLIENT_PORTAL_PAGES = ["clientportaldashboard", "clientportalproject", "clientportaldeliveries", "clientportalonboarding", "clientportalcalendar", "clientportalfiles", "clientportalsatisfaction", "clientportaltimeline"];
-
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
 
-  // Render client portal with its own layout
-  const isClientPortal = CLIENT_PORTAL_PAGES.some(p => location.pathname.toLowerCase().includes(p));
-  if (isClientPortal) {
-    return (
-      <ClientPortalLayout currentPageName={currentPageName}>
-        {children}
-      </ClientPortalLayout>
-    );
-  }
-
   // Determine which navigation to show based on current page
   const isInCRM = location.pathname.includes('Companies');
-  const isInClientPortalAdmin = location.pathname.toLowerCase().includes('clientportaladmin');
 
   return (
     <SidebarProvider>
@@ -91,16 +78,7 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {isInClientPortalAdmin ? (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild className={`rounded-lg mb-1 transition-all duration-200 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md`}>
-                        <Link to={createPageUrl("ClientPortalAdmin")} className="flex items-center gap-3 px-3 py-2.5">
-                          <Users2 className="w-5 h-5" />
-                          <span className="font-medium">Central do Cliente</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ) : !isInCRM ? (
+                  {!isInCRM ? (
                     <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
@@ -159,7 +137,7 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
-                  ) : !isInClientPortalAdmin && (
+                  ) : (
                     crmNav.map((item) => {
                       const isActive = location.pathname === item.url;
                       return (
