@@ -77,6 +77,7 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import ClientPortalLogin from './pages/ClientPortalLogin';
 import __Layout from './Layout.jsx';
 
 
@@ -111,6 +112,7 @@ export const PAGES = {
     "ClientPortalSatisfaction": ClientPortalSatisfaction,
     "ClientPortalTimeline": ClientPortalTimeline,
     "ClientPortalAdmin": ClientPortalAdmin,
+    "ClientPortalLogin": ClientPortalLogin,
 }
 
 export const pagesConfig = {
