@@ -14,7 +14,7 @@ export default function ClientPortalDashboard() {
   const { user, company, selectedProject: activeProject, projects } = useClientPortal();
 
   const { data: tasks = [] } = useQuery({
-    queryKey: ["client_tasks", activeProject?.id],
+    queryKey: ["cp_tasks", activeProject?.id],
     queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
