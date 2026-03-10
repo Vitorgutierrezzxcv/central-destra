@@ -25,8 +25,15 @@ function ContactFormDialog({ open, onClose, contact, companies, projects }) {
     name: "", email: "", role: "", phone: "", company_id: "", access_level: "client_user", status: "pending_invite"
   });
   const [selectedProjects, setSelectedProjects] = useState([]);
-
   const [inviteError, setInviteError] = useState("");
+  const [createdLink, setCreatedLink] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(createdLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
