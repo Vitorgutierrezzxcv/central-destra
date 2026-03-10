@@ -225,7 +225,7 @@ export default function ClientPortalDashboard() {
                 { label: "Tarefas & Entregas", page: "ClientPortalDeliveries", icon: CheckCircle2 },
                 { label: "Onboarding", page: "ClientPortalOnboarding", icon: Clock },
                 { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
-                { label: "Arquivos", page: "ClientPortalFiles", icon: Star },
+                { label: "Arquivos", page: "ClientPortalFiles", icon: FolderKanban },
                 { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
               ].map((link, i) => (
                 <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
