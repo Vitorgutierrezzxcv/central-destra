@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { useClientPortal } from "@/components/client-portal/ClientPortalContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Clock, AlertCircle, XCircle, MessageSquare, Paperclip, Star, ThumbsUp, ThumbsDown, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
