@@ -68,6 +68,14 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
+import ClientPortalDashboard from './pages/ClientPortalDashboard';
+import ClientPortalProject from './pages/ClientPortalProject';
+import ClientPortalDeliveries from './pages/ClientPortalDeliveries';
+import ClientPortalOnboarding from './pages/ClientPortalOnboarding';
+import ClientPortalCalendar from './pages/ClientPortalCalendar';
+import ClientPortalFiles from './pages/ClientPortalFiles';
+import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
+import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import __Layout from './Layout.jsx';
 
 
@@ -93,6 +101,14 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
+    "ClientPortalDashboard": ClientPortalDashboard,
+    "ClientPortalProject": ClientPortalProject,
+    "ClientPortalDeliveries": ClientPortalDeliveries,
+    "ClientPortalOnboarding": ClientPortalOnboarding,
+    "ClientPortalCalendar": ClientPortalCalendar,
+    "ClientPortalFiles": ClientPortalFiles,
+    "ClientPortalSatisfaction": ClientPortalSatisfaction,
+    "ClientPortalTimeline": ClientPortalTimeline,
 }
 
 export const pagesConfig = {
