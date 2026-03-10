@@ -159,7 +159,7 @@ export default function Layout({ children, currentPageName }) {
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
-                  ) : (
+                  ) : !isInClientPortalAdmin && (
                     crmNav.map((item) => {
                       const isActive = location.pathname === item.url;
                       return (
