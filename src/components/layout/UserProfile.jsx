@@ -101,6 +101,17 @@ export default function UserProfile() {
     base44.auth.logout();
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETAR") return;
+    setDeletingAccount(true);
+    try {
+      await base44.auth.updateMe({ status: "deleted" });
+      base44.auth.logout();
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="p-4 border-t border-slate-200">
