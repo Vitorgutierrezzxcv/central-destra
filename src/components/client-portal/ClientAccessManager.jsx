@@ -5,8 +5,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 const callFn = (name, payload) => base44.functions.invoke(name, payload);
 import {
   Plus, Trash2, UserCheck, UserX, Shield, RefreshCw,
-  ChevronDown, ChevronUp, Edit2, Save, X, Send, Copy, CheckCheck,
-  Link2, Clock, CheckCircle2, AlertTriangle, XCircle
+  ChevronDown, ChevronUp, Edit2, Send, Copy, CheckCheck,
+  Clock, CheckCircle2, AlertTriangle, XCircle, Ban
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
