@@ -66,18 +66,36 @@ export default function FinanceEntries() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.FinancialEntry.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["financial_entries"] }),
+    onMutate: async (id) => {
+      await qc.cancelQueries({ queryKey: ["financial_entries"] });
+      const prev = qc.getQueryData(["financial_entries"]);
+      qc.setQueryData(["financial_entries"], old => (old || []).filter(e => e.id !== id));
+      return { prev };
+    },
+    onError: (_err, _data, ctx) => qc.setQueryData(["financial_entries"], ctx?.prev),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["financial_entries"] }),
   });
 
   const saveMutation = useMutation({
     mutationFn: (data) => data.id
       ? base44.entities.FinancialEntry.update(data.id, data)
       : base44.entities.FinancialEntry.create(data),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["financial_entries"] });
-      setShowForm(false);
-      setEditing(null);
+    onMutate: async (data) => {
+      await qc.cancelQueries({ queryKey: ["financial_entries"] });
+      const prev = qc.getQueryData(["financial_entries"]);
+      if (data.id) {
+        qc.setQueryData(["financial_entries"], old =>
+          (old || []).map(e => e.id === data.id ? { ...e, ...data } : e)
+        );
+      } else {
+        const temp = { id: `temp-${Date.now()}`, ...data, created_date: new Date().toISOString() };
+        qc.setQueryData(["financial_entries"], old => [temp, ...(old || [])]);
+      }
+      return { prev };
     },
+    onError: (_err, _data, ctx) => qc.setQueryData(["financial_entries"], ctx?.prev),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["financial_entries"] }),
+    onSuccess: () => { setShowForm(false); setEditing(null); },
   });
 
   const months = [...new Set(entries.map(e => {
