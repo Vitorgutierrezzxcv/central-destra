@@ -34,7 +34,35 @@
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
+
+/* SF Pro system font stack - uses system SF Pro when available, falls back to Inter */
+:root {
+  /* === DESTRA DESIGN TOKENS === */
+
+  /* Colors */
+  --destra-dark:        #131A20;
+  --destra-muted:       #456C8D;
+  --destra-accent:      #6FA6FF;
+  --destra-surface:     #EAEAEA;
+  --destra-white:       #FFFFFF;
+  --destra-bg:          #F8F9FB;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Inter", sans-serif;
+
+  /* Radius */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 2px rgba(19,26,32,0.04);
+  --shadow-sm:   0 1px 4px rgba(19,26,32,0.06), 0 0 0 1px rgba(19,26,32,0.04);
+  --shadow-md:   0 4px 12px rgba(19,26,32,0.08);
+  --shadow-lg:   0 8px 24px rgba(19,26,32,0.10);
+}
 
 :root {
   --destra-light: #EAEAEA;
