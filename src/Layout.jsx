@@ -71,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Determine which navigation to show based on current page
   const isInCRM = location.pathname.includes('Companies');
+  const isInFinance = location.pathname.toLowerCase().includes('finance') || location.pathname.toLowerCase().includes('lancamentos');
 
   return (
     <SidebarProvider>
