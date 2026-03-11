@@ -671,6 +671,7 @@ function ProspectingContent() {
         </Tabs>
       </div>
     </div>
+    </PullToRefresh>
   );
 }
 
