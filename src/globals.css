@@ -8,6 +8,31 @@ html, body {
   font-weight: 300;
   color: #131A20;
   background-color: #F8F9FB;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Destra light CSS overrides — always force light tokens */
+:root {
+  --background: 0 0% 97%;
+  --foreground: 220 20% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 220 20% 10%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --primary: 218 100% 71%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 220 15% 96%;
+  --muted-foreground: 213 20% 48%;
+  --radius: 0.625rem;
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 213 20% 48%;
+  --sidebar-primary: 220 20% 10%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 15% 97%;
+  --sidebar-accent-foreground: 220 20% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 218 100% 71%;
 }
 
 /* Override dark mode - Destra is always light */
