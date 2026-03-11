@@ -193,5 +193,6 @@ export default function Companies() {
         )}
       </div>
     </div>
+    </PullToRefresh>
   );
 }
