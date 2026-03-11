@@ -310,8 +310,13 @@ function ProspectingContent() {
     setShowLeadsModal(true);
   };
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['prospect-leads'] });
+  };
+
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">
