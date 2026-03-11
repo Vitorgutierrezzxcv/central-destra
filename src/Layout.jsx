@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
-import BottomTabBar from "./components/mobile/BottomTabBar";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Wallet, TrendingUp, TrendingDown, RefreshCw, BarChart3, Lock, CreditCard } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -183,12 +182,11 @@ export default function Layout({ children, currentPageName }) {
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto pb-16 md:pb-0">
+          <div className="flex-1 overflow-auto">
             {children}
           </div>
         </main>
       </div>
-      <BottomTabBar />
     </SidebarProvider>
   );
 }
