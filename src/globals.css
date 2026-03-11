@@ -2,28 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force light mode globally — Destra design system */
+/* Destra design system base */
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Inter", sans-serif;
   font-weight: 300;
-  color: #131A20;
-  background-color: #F8F9FB;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Destra light CSS overrides — always force light tokens */
+/* ===================== */
+/* LIGHT MODE TOKENS     */
+/* ===================== */
 :root {
+  color: #131A20;
+  background-color: #F8F9FB;
+
   --background: 0 0% 97%;
   --foreground: 220 20% 10%;
   --card: 0 0% 100%;
   --card-foreground: 220 20% 10%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 20% 10%;
   --primary: 218 100% 71%;
   --primary-foreground: 0 0% 100%;
+  --secondary: 220 15% 96%;
+  --secondary-foreground: 220 20% 10%;
   --muted: 220 15% 96%;
   --muted-foreground: 213 20% 48%;
+  --accent: 220 15% 97%;
+  --accent-foreground: 220 20% 10%;
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 218 100% 71%;
   --radius: 0.625rem;
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 213 20% 48%;
@@ -35,35 +47,40 @@ html, body {
   --sidebar-ring: 218 100% 71%;
 }
 
-/* Override dark mode - Destra is always light regardless of OS setting */
+/* ===================== */
+/* DARK MODE TOKENS      */
+/* ===================== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: 0 0% 97%;
-    --foreground: 220 20% 10%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
+    color: #E8EEF4;
+    background-color: #0D1117;
+
+    --background: 216 28% 7%;
+    --foreground: 210 25% 92%;
+    --card: 216 24% 10%;
+    --card-foreground: 210 25% 92%;
+    --popover: 216 24% 10%;
+    --popover-foreground: 210 25% 92%;
     --primary: 218 100% 71%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 15% 96%;
-    --secondary-foreground: 220 20% 10%;
-    --muted: 220 15% 96%;
-    --muted-foreground: 213 20% 48%;
-    --accent: 220 15% 97%;
-    --accent-foreground: 220 20% 10%;
-    --destructive: 0 70% 50%;
+    --primary-foreground: 216 28% 7%;
+    --secondary: 216 18% 16%;
+    --secondary-foreground: 210 25% 92%;
+    --muted: 216 18% 14%;
+    --muted-foreground: 213 18% 55%;
+    --accent: 216 18% 16%;
+    --accent-foreground: 210 25% 92%;
+    --destructive: 0 65% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
+    --border: 216 18% 18%;
+    --input: 216 18% 18%;
     --ring: 218 100% 71%;
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 213 20% 48%;
-    --sidebar-primary: 220 20% 10%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 97%;
-    --sidebar-accent-foreground: 220 20% 10%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar-background: 216 24% 8%;
+    --sidebar-foreground: 213 18% 60%;
+    --sidebar-primary: 218 100% 71%;
+    --sidebar-primary-foreground: 216 28% 7%;
+    --sidebar-accent: 216 18% 14%;
+    --sidebar-accent-foreground: 210 25% 92%;
+    --sidebar-border: 216 18% 18%;
     --sidebar-ring: 218 100% 71%;
   }
 }
