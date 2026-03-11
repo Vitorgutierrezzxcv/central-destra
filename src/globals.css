@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force light mode globally — Destra design system */
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Inter", sans-serif;
+  font-weight: 300;
+  color: #131A20;
+  background-color: #F8F9FB;
+}
+
+/* Override dark mode - Destra is always light */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: 222 47% 11%;
