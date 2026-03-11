@@ -134,8 +134,13 @@ export default function FinanceEntries() {
     setEditing(null);
   };
 
+  const handleRefresh = async () => {
+    await qc.invalidateQueries({ queryKey: ["financial_entries"] });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6">
+    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
