@@ -254,8 +254,14 @@ export default function Tasks() {
     return aDate - bDate;
   });
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    await queryClient.invalidateQueries({ queryKey: ['projects'] });
+  };
+
   return (
-    <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
+    <PullToRefresh onRefresh={handleRefresh}>
+    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col gap-4 mb-6 md:mb-8">
           <div>
