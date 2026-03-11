@@ -84,7 +84,24 @@ export default function Layout({ children, currentPageName }) {
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {!isInCRM ? (
+                  {isInFinance ? (
+                    financeNav.map((item) => {
+                      const isActive = location.pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                            asChild
+                            className={`rounded-lg mb-1 transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-md' : 'hover:bg-slate-100 text-slate-700'}`}
+                          >
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                              <item.icon className="w-5 h-5" />
+                              <span className="font-medium">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })
+                  ) : !isInCRM ? (
                     <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
                       <CollapsibleTrigger asChild>
                         <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
