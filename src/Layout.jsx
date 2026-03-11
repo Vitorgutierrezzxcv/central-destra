@@ -183,7 +183,7 @@ export default function Layout({ children, currentPageName }) {
                         </SidebarMenuItem>
                       );
                     })
-                  )}
+                  ) : null}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
