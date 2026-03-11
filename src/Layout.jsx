@@ -52,11 +52,17 @@ const taskFlowQuickActions = [
 ];
 
 const crmNav = [
-  {
-    title: "Cadastro",
-    url: createPageUrl("Companies"),
-    icon: Building2,
-  },
+  { title: "Cadastro", url: createPageUrl("Companies"), icon: Building2 },
+];
+
+const financeNav = [
+  { title: "Dashboard", url: createPageUrl("FinanceDashboard"), icon: LayoutDashboard },
+  { title: "Lançamentos", url: createPageUrl("FinanceEntries"), icon: ListTodo },
+  { title: "Recorrências", url: createPageUrl("FinanceRecurrences"), icon: RefreshCw },
+  { title: "Contas & Cartões", url: createPageUrl("FinanceAccounts"), icon: CreditCard },
+  { title: "Fluxo de Caixa", url: createPageUrl("FinanceCashFlow"), icon: TrendingUp },
+  { title: "Relatórios", url: createPageUrl("FinanceReports"), icon: BarChart3 },
+  { title: "Fechamento", url: createPageUrl("FinanceMonthlyClosing"), icon: Lock },
 ];
 
 export default function Layout({ children, currentPageName }) {
