@@ -1,9 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Clock, AlertCircle, TrendingUp } from "lucide-react";
-import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -18,70 +16,56 @@ export default function StatsCards({ pendingTasks, inProgressTasks, completedTas
       title: "Pendentes",
       value: pendingTasks,
       icon: Clock,
-      bgColor: "bg-white border border-[#EAEAEA]",
-      iconColor: "text-[#456C8D]",
-      delay: 0,
+      accent: "#456C8D",
+      bg: "#F0F4F8",
       filterStatus: "pending"
     },
     {
       title: "Em Andamento",
       value: inProgressTasks,
       icon: TrendingUp,
-      bgColor: "bg-white border border-[#EAEAEA]",
-      iconColor: "text-[#6FA6FF]",
-      delay: 0.1,
+      accent: "#6FA6FF",
+      bg: "#EBF3FF",
       filterStatus: "in_progress"
     },
     {
       title: "Concluídas",
       value: completedTasks,
       icon: CheckCircle2,
-      bgColor: "bg-white border border-[#EAEAEA]",
-      iconColor: "text-[#131A20]",
-      delay: 0.2,
+      accent: "#131A20",
+      bg: "#EAEAEA",
       filterStatus: "completed"
     },
     {
       title: "Atrasadas",
       value: overdueTasks,
       icon: AlertCircle,
-      bgColor: "bg-white border border-[#EAEAEA]",
-      iconColor: "text-red-500",
-      delay: 0.3,
+      accent: "#C0392B",
+      bg: "#FEF0EE",
       filterStatus: "overdue"
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
       {cards.map((card) => (
-        <motion.div
+        <Link
           key={card.title}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: card.delay }}
+          to={`${createPageUrl("Tasks")}?status=${card.filterStatus}&assignedTo=${user?.email || ''}`}
+          className="block"
         >
-          <Link 
-            to={`${createPageUrl("Tasks")}?status=${card.filterStatus}&assignedTo=${user?.email || ''}`}
-            className="block"
-          >
-            <Card className={`${card.bgColor} shadow-sm hover:shadow-md transition-all rounded-xl md:rounded-2xl overflow-hidden cursor-pointer hover:scale-105`}>
-              <CardContent className="p-3 md:p-6">
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-2 md:mb-4">
-                  <div className="bg-[#EAEAEA] rounded-xl p-2 md:p-3 mb-2 md:mb-0 w-fit">
-                    <card.icon className={`w-4 h-4 md:w-6 md:h-6 ${card.iconColor}`} />
-                  </div>
-                  <div className="md:text-right">
-                    <div className={`text-2xl md:text-4xl font-semibold ${card.iconColor}`}>
-                      {card.value}
-                    </div>
-                  </div>
-                </div>
-                <p className="text-[#456C8D] font-medium text-xs md:text-sm">{card.title}</p>
-              </CardContent>
-            </Card>
-          </Link>
-        </motion.div>
+          <div className="bg-white border border-[#EAEAEA] rounded-xl p-4 hover:border-[#6FA6FF]/40 hover:shadow-sm transition-all group cursor-pointer">
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: card.bg }}>
+                <card.icon className="w-4 h-4" style={{ color: card.accent }} />
+              </div>
+            </div>
+            <div className="text-2xl font-light text-[#131A20] mb-0.5" style={{ fontVariantNumeric: 'tabular-nums' }}>
+              {card.value}
+            </div>
+            <p className="text-xs text-[#456C8D] font-light">{card.title}</p>
+          </div>
+        </Link>
       ))}
     </div>
   );

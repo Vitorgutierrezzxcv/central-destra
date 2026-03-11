@@ -1,18 +1,15 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar as CalendarIcon, Plus, TrendingUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isBefore, isSameDay, format } from "date-fns";
+import { isBefore, isSameDay, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import { Plus, Calendar, ArrowRight } from "lucide-react";
 
 import TasksCalendar from "../components/dashboard/TasksCalendar";
-import TasksList from "../components/dashboard/TasksList";
 import NotesBlock from "../components/dashboard/NotesBlock";
 import StatsCards from "../components/dashboard/StatsCards";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
@@ -21,7 +18,6 @@ import UserPerformanceRanking from "../components/dashboard/UserPerformanceRanki
 import AccessGuard from "../components/layout/AccessGuard";
 
 function DashboardContent() {
-  const [viewMode, setViewMode] = useState("week");
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const { data: user, isLoading: loadingUser } = useQuery({
@@ -29,101 +25,82 @@ function DashboardContent() {
     queryFn: () => base44.auth.me(),
   });
 
-  const { data: tasks, isLoading: loadingTasks } = useQuery({
+  const { data: tasks = [], isLoading: loadingTasks } = useQuery({
     queryKey: ['my-tasks', user?.email],
     queryFn: () => base44.entities.Task.filter({ assigned_to: user.email }),
-    initialData: [],
     enabled: !!user,
   });
 
-  const { data: projects, isLoading: loadingProjects } = useQuery({
+  const { data: projects = [], isLoading: loadingProjects } = useQuery({
     queryKey: ['projects'],
     queryFn: () => base44.entities.Project.list(),
-    initialData: [],
   });
 
   if (loadingUser || loadingTasks || loadingProjects) {
     return (
-      <div className="min-h-screen bg-white p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <Skeleton className="h-12 w-48 md:w-64 mb-6 md:mb-8 rounded-lg" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 md:h-32 rounded-xl" />)}
+      <div className="min-h-screen bg-[#F8F9FB] p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <Skeleton className="h-10 w-56 rounded-lg" />
+          <div className="grid grid-cols-4 gap-4">
+            {[1,2,3,4].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
           </div>
-          <Skeleton className="h-64 md:h-96 rounded-xl" />
+          <Skeleton className="h-72 rounded-xl" />
         </div>
       </div>
     );
   }
 
-  const getDateRange = () => {
-    const today = new Date();
-    switch (viewMode) {
-      case "day":
-        return { start: startOfDay(selectedDate), end: endOfDay(selectedDate) };
-      case "week":
-        return { start: startOfWeek(selectedDate, { locale: ptBR }), end: endOfWeek(selectedDate, { locale: ptBR }) };
-      case "month":
-        return { start: startOfMonth(selectedDate), end: endOfMonth(selectedDate) };
-      default:
-        return { start: startOfWeek(today, { locale: ptBR }), end: endOfWeek(today, { locale: ptBR }) };
-    }
-  };
-
-  const { start, end } = getDateRange();
-
-  const filteredTasks = tasks.filter(task => {
-    const taskDate = task.start_date ? new Date(task.start_date) : task.end_date ? new Date(task.end_date) : null;
-    if (!taskDate) return false;
-    return taskDate >= start && taskDate <= end;
-  });
-
   const now = new Date();
-  const pendingTasks = tasks.filter(t => t.status === 'pending').length;
+  const pendingTasks   = tasks.filter(t => t.status === 'pending').length;
   const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
-  
-  const overdueTasks = tasks.filter(t => {
+  const overdueTasks   = tasks.filter(t => {
     if (t.status === 'completed') return false;
     if (!t.end_date) return false;
     return isBefore(new Date(t.end_date), now) && !isSameDay(new Date(t.end_date), now);
   }).length;
 
   const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Bom dia";
-    if (hour < 18) return "Boa tarde";
+    const h = new Date().getHours();
+    if (h < 12) return "Bom dia";
+    if (h < 18) return "Boa tarde";
     return "Boa noite";
   };
 
   const displayName = user?.display_name || user?.full_name?.split(' ')[0] || 'Usuário';
 
   return (
-    <div className="min-h-screen bg-white p-3 md:p-6 lg:p-8 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8F9FB] p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto w-full">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <p className="text-[#456C8D] text-base md:text-lg mb-1">{greeting()},</p>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-[#131A20] mb-4 md:mb-4">
-            {displayName}!
-          </h1>
-          <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
-            <Link to={createPageUrl("Projects")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-white text-[#131A20] hover:bg-white/80 shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11 border border-[#EAEAEA]">
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base font-medium">Novo Projeto</span>
+
+        {/* Page Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <p className="text-[#456C8D] text-sm font-light mb-1">{greeting()},</p>
+            <h1 className="text-2xl md:text-3xl font-normal text-[#131A20] tracking-tight">
+              {displayName}
+            </h1>
+            <p className="text-[#456C8D] text-sm font-light mt-1">
+              {format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link to={createPageUrl("Projects")}>
+              <Button variant="outline" size="sm" className="h-9 border-[#EAEAEA] text-[#131A20] hover:bg-[#EAEAEA] font-normal text-sm rounded-lg">
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                Projeto
               </Button>
             </Link>
-            <Link to={createPageUrl("Tasks")} className="flex-1 sm:flex-initial">
-              <Button className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white shadow-md rounded-lg px-4 md:px-6 h-10 md:h-11">
-                <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-                <span className="text-sm md:text-base font-medium">Nova Tarefa</span>
+            <Link to={createPageUrl("Tasks")}>
+              <Button size="sm" className="h-9 bg-[#6FA6FF] hover:bg-[#456C8D] text-white font-normal text-sm rounded-lg border-0">
+                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                Tarefa
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <StatsCards
           pendingTasks={pendingTasks}
           inProgressTasks={inProgressTasks}
@@ -131,78 +108,71 @@ function DashboardContent() {
           overdueTasks={overdueTasks}
         />
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-4 md:gap-6 mb-6">
-          {/* Left Column - Today's Tasks & Projects */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            {/* Today's Schedule */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white overflow-hidden">
-              <CardHeader className="bg-[#6FA6FF]/10 border-none p-4 md:pb-4">
-                <div className="flex items-center justify-between">
+        {/* Main Grid */}
+        <div className="grid lg:grid-cols-3 gap-5 mt-6">
+          {/* Left */}
+          <div className="lg:col-span-2 space-y-5">
+
+            {/* Today */}
+            <div className="bg-white border border-[#EAEAEA] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-[#6FA6FF]/10 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-4 h-4 text-[#6FA6FF]" />
+                  </div>
                   <div>
-                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20] mb-1">
-                      Hoje
-                    </CardTitle>
-                    <p className="text-xs md:text-sm text-[#456C8D]">
-                      {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
+                    <h2 className="text-sm font-medium text-[#131A20]">Hoje</h2>
+                    <p className="text-xs text-[#456C8D] font-light">
+                      {format(new Date(), "dd 'de' MMMM", { locale: ptBR })}
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl p-2 md:p-3 shadow-sm">
-                    <CalendarIcon className="w-5 h-5 md:w-6 md:h-6 text-[#6FA6FF]" />
-                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-4 md:pt-6">
-                <UpcomingTasks tasks={tasks} projects={projects} />
-              </CardContent>
-            </Card>
+                <Link to={createPageUrl("Tasks")}>
+                  <button className="text-xs text-[#6FA6FF] hover:text-[#456C8D] flex items-center gap-1 transition-colors font-light">
+                    Ver todas
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </Link>
+              </div>
+              <UpcomingTasks tasks={tasks} projects={projects} />
+            </div>
 
-            {/* Projects Overview */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
-              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl md:text-2xl font-semibold text-[#131A20]">Projetos</CardTitle>
-                    <p className="text-xs md:text-sm text-[#456C8D] mt-1">
-                      {projects.filter(p => p.status === 'active').length} ativo(s)
-                    </p>
-                  </div>
-                  <Link to={createPageUrl("Projects")}>
-                    <Button variant="ghost" size="sm" className="rounded-lg text-xs md:text-sm h-8 md:h-9 text-[#6FA6FF] hover:bg-[#6FA6FF]/10">
-                      Ver todos
-                    </Button>
-                  </Link>
+            {/* Projects */}
+            <div className="bg-white border border-[#EAEAEA] rounded-xl p-5">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-sm font-medium text-[#131A20]">Projetos Ativos</h2>
+                  <p className="text-xs text-[#456C8D] font-light mt-0.5">
+                    {projects.filter(p => p.status === 'active').length} em andamento
+                  </p>
                 </div>
-              </CardHeader>
-              <CardContent className="p-4 md:pt-6">
-                <ProjectProgress projects={projects} tasks={tasks} />
-              </CardContent>
-            </Card>
+                <Link to={createPageUrl("Projects")}>
+                  <button className="text-xs text-[#6FA6FF] hover:text-[#456C8D] flex items-center gap-1 transition-colors font-light">
+                    Ver todos
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </Link>
+              </div>
+              <ProjectProgress projects={projects} tasks={tasks} />
+            </div>
 
-            {/* User Performance Ranking */}
+            {/* Ranking */}
             <UserPerformanceRanking />
           </div>
 
-          {/* Right Column - Calendar & Notes */}
-          <div className="space-y-4 md:space-y-6">
+          {/* Right */}
+          <div className="space-y-5">
             {/* Calendar */}
-            <Card className="shadow-md border border-[#EAEAEA] rounded-xl md:rounded-2xl bg-white">
-              <CardHeader className="border-b border-[#EAEAEA] p-4 md:p-6">
-                <CardTitle className="text-lg md:text-xl font-semibold text-[#131A20] flex items-center gap-2">
-                  <CalendarIcon className="w-4 h-4 md:w-5 md:h-5 text-[#6FA6FF]" />
-                  Calendário
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 md:pt-6">
-                <TasksCalendar
-                  tasks={tasks}
-                  selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
-              </CardContent>
-            </Card>
+            <div className="bg-white border border-[#EAEAEA] rounded-xl p-5">
+              <h2 className="text-sm font-medium text-[#131A20] mb-4">Calendário</h2>
+              <TasksCalendar
+                tasks={tasks}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
+              />
+            </div>
 
-            {/* Notes Block */}
+            {/* Notes */}
             <NotesBlock userEmail={user?.email} />
           </div>
         </div>
