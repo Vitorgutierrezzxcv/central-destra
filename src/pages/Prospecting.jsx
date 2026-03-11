@@ -118,12 +118,29 @@ function ProspectingContent() {
 
   const createLeadMutation = useMutation({
     mutationFn: (leadData) => base44.entities.ProspectLead.create(leadData),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
+    onMutate: async (leadData) => {
+      await queryClient.cancelQueries({ queryKey: ['prospect-leads'] });
+      const prev = queryClient.getQueryData(['prospect-leads']);
+      const temp = { id: `temp-${Date.now()}`, ...leadData, created_date: new Date().toISOString() };
+      queryClient.setQueryData(['prospect-leads'], old => [temp, ...(old || [])]);
+      return { prev };
+    },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['prospect-leads'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
   });
 
   const updateLeadMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.ProspectLead.update(id, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ['prospect-leads'] });
+      const prev = queryClient.getQueryData(['prospect-leads']);
+      queryClient.setQueryData(['prospect-leads'], old =>
+        (old || []).map(l => l.id === id ? { ...l, ...data } : l)
+      );
+      return { prev };
+    },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['prospect-leads'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['prospect-leads'] }),
   });
 
   const deleteLeadMutation = useMutation({
