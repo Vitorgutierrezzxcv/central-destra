@@ -81,6 +81,7 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
+import FinanceDashboard from './pages/FinanceDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -119,6 +120,7 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
+    "FinanceDashboard": FinanceDashboard,
 }
 
 export const pagesConfig = {
