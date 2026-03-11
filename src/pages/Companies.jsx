@@ -23,27 +23,43 @@ export default function Companies() {
 
   const createCompanyMutation = useMutation({
     mutationFn: (companyData) => base44.entities.Company.create(companyData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
-      setShowForm(false);
-      setEditingCompany(null);
+    onMutate: async (companyData) => {
+      await queryClient.cancelQueries({ queryKey: ['companies'] });
+      const prev = queryClient.getQueryData(['companies']);
+      const temp = { id: `temp-${Date.now()}`, ...companyData, created_date: new Date().toISOString() };
+      queryClient.setQueryData(['companies'], old => [temp, ...(old || [])]);
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['companies'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['companies'] }),
+    onSuccess: () => { setShowForm(false); setEditingCompany(null); },
   });
 
   const updateCompanyMutation = useMutation({
     mutationFn: ({ id, companyData }) => base44.entities.Company.update(id, companyData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
-      setShowForm(false);
-      setEditingCompany(null);
+    onMutate: async ({ id, companyData }) => {
+      await queryClient.cancelQueries({ queryKey: ['companies'] });
+      const prev = queryClient.getQueryData(['companies']);
+      queryClient.setQueryData(['companies'], old =>
+        (old || []).map(c => c.id === id ? { ...c, ...companyData } : c)
+      );
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['companies'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['companies'] }),
+    onSuccess: () => { setShowForm(false); setEditingCompany(null); },
   });
 
   const deleteCompanyMutation = useMutation({
     mutationFn: (id) => base44.entities.Company.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companies'] });
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['companies'] });
+      const prev = queryClient.getQueryData(['companies']);
+      queryClient.setQueryData(['companies'], old => (old || []).filter(c => c.id !== id));
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['companies'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['companies'] }),
   });
 
   const handleSubmit = (companyData) => {
