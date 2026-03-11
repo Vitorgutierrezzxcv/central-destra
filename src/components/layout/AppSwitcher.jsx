@@ -1,25 +1,11 @@
 import React, { useState } from "react";
-import { 
-  Check, 
-  FolderKanban, 
-  Users, 
-  ChevronDown,
-  Grid3x3,
-  Wallet,
-  Target,
-  FileText,
-  Store,
-  Building2
+import {
+  FolderKanban, Users, ChevronDown, Grid3x3,
+  Wallet, Target, FileText, Store, Building2, Check
 } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useUserAccess } from "./AccessGuard";
@@ -28,18 +14,16 @@ const allModules = [
   {
     id: "taskflow",
     name: "TaskFlow",
-    description: "Gestão de Projetos e Tarefas",
+    description: "Projetos e Tarefas",
     icon: FolderKanban,
-    color: "bg-[#6FA6FF]",
     defaultPage: "Dashboard",
     pages: ["Dashboard", "Projects", "Tasks", "Backlog", "ProjectDetail"]
   },
   {
     id: "crm",
     name: "CRM",
-    description: "Gestão de Clientes e Vendas",
+    description: "Clientes e Vendas",
     icon: Users,
-    color: "bg-[#456C8D]",
     defaultPage: "Companies",
     pages: ["Companies", "Opportunities"]
   },
@@ -48,16 +32,14 @@ const allModules = [
     name: "Finanças",
     description: "Controle Financeiro",
     icon: Wallet,
-    color: "bg-[#131A20]",
     defaultPage: "FinanceDashboard",
     pages: ["FinanceDashboard", "FinanceEntries", "FinanceAccounts", "FinanceCashFlow", "FinanceRecurrences", "FinanceReports", "FinanceMonthlyClosing", "Lancamentos", "FinanceFixedExpenses", "FinanceVariableExpenses", "FinancePayroll", "FinanceSummary"]
   },
   {
     id: "prospecting",
     name: "Prospecção",
-    description: "Métricas de Social Selling",
+    description: "Social Selling",
     icon: Target,
-    color: "bg-[#6FA6FF]",
     defaultPage: "Prospecting",
     pages: ["Prospecting"]
   },
@@ -66,16 +48,14 @@ const allModules = [
     name: "Páginas",
     description: "Wiki e Documentação",
     icon: FileText,
-    color: "bg-indigo-600",
     defaultPage: "Pages",
     pages: ["Pages"]
   },
   {
     id: "piermont",
     name: "Piermont",
-    description: "E-commerce completo",
+    description: "E-commerce",
     icon: Store,
-    color: "bg-black",
     defaultPage: "PiermontDashboard",
     pages: ["PiermontDashboard", "PiermontProducts", "PiermontSales", "PiermontExpenses", "PiermontInventory"]
   },
@@ -84,7 +64,6 @@ const allModules = [
     name: "Central do Cliente",
     description: "Portal e acompanhamento",
     icon: Building2,
-    color: "bg-blue-700",
     defaultPage: "ClientPortalAdmin",
     pages: ["ClientPortalAdmin", "ClientPortalDashboard", "ClientPortalProject", "ClientPortalDeliveries", "ClientPortalOnboarding", "ClientPortalCalendar", "ClientPortalFiles", "ClientPortalSatisfaction", "ClientPortalTimeline", "ClientPortalProjects", "ClientPortalAccount", "ClientPortalLogin"]
   }
@@ -92,85 +71,30 @@ const allModules = [
 
 export default function AppSwitcher({ isMobile = false }) {
   const [showDialog, setShowDialog] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { canAccess, hasFullAccess } = useUserAccess();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const { canAccess } = useUserAccess();
 
-  // Filter modules based on user access
   const modules = allModules.filter(module => canAccess(module.id));
 
-  // Determine active module based on current page
   const getCurrentModule = () => {
-    const currentPath = location.pathname.toLowerCase();
-    
-    if (currentPath.includes('clientportal')) {
-      return modules.find(m => m.id === 'client_portal_admin');
-    }
-    if (currentPath.includes('pages')) {
-      return modules.find(m => m.id === 'pages');
-    }
-    if (currentPath.includes('prospecting')) {
-      return modules.find(m => m.id === 'prospecting');
-    }
-    if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
-      return modules.find(m => m.id === 'crm');
-    }
-    if (currentPath.includes('lancamentos') || currentPath.includes('finance')) {
-      return modules.find(m => m.id === 'finance');
-    }
-    if (currentPath.includes('piermont')) {
-      return modules.find(m => m.id === 'piermont');
-    }
-    
+    const path = location.pathname.toLowerCase();
+    if (path.includes('clientportal'))              return modules.find(m => m.id === 'client_portal_admin');
+    if (path.includes('pages'))                     return modules.find(m => m.id === 'pages');
+    if (path.includes('prospecting'))               return modules.find(m => m.id === 'prospecting');
+    if (path.includes('companies') || path.includes('opportunit')) return modules.find(m => m.id === 'crm');
+    if (path.includes('lancamentos') || path.includes('finance'))  return modules.find(m => m.id === 'finance');
+    if (path.includes('piermont'))                  return modules.find(m => m.id === 'piermont');
     return modules.find(m => m.id === 'taskflow') || modules[0];
   };
 
   const activeModule = getCurrentModule();
+  if (!activeModule) return null;
   const ActiveIcon = activeModule.icon;
 
   const handleModuleClick = (module) => {
-    if (module.id !== activeModule.id) {
-      navigate(createPageUrl(module.defaultPage));
-      setShowDialog(false);
-    } else {
-      setShowDialog(false);
-    }
-  };
-
-  const ModuleCard = ({ module }) => {
-    const Icon = module.icon;
-    const isActive = module.id === activeModule.id;
-    
-    return (
-      <button
-        onClick={() => handleModuleClick(module)}
-        className={`
-          relative w-full p-3 rounded-xl border transition-all text-left
-          ${isActive 
-            ? 'border-[#6FA6FF] bg-[#6FA6FF]/5' 
-            : 'border-[#EAEAEA] hover:border-[#6FA6FF]/50 bg-white'
-          }
-        `}
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl ${module.color} flex items-center justify-center flex-shrink-0`}>
-            <Icon className="w-5 h-5 text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="font-medium text-[#131A20] text-sm">{module.name}</h3>
-              {isActive && (
-                <Badge className="bg-[#6FA6FF] text-white border-none text-[10px] px-1.5 py-0">
-                  <Check className="w-2.5 h-2.5 mr-0.5" />
-                  Ativo
-                </Badge>
-              )}
-            </div>
-            <p className="text-xs text-[#456C8D] truncate">{module.description}</p>
-          </div>
-        </div>
-      </button>
-    );
+    if (module.id !== activeModule.id) navigate(createPageUrl(module.defaultPage));
+    setShowDialog(false);
   };
 
   if (isMobile) {
@@ -179,55 +103,69 @@ export default function AppSwitcher({ isMobile = false }) {
         {modules.map(module => {
           const Icon = module.icon;
           const isActive = module.id === activeModule.id;
-
           return (
             <button
               key={module.id}
               onClick={() => handleModuleClick(module)}
-              className={`
-                w-12 h-12 rounded-full flex items-center justify-center transition-all
-                ${isActive 
-                  ? `${module.color} shadow-md scale-110` 
-                  : 'bg-[#EAEAEA] hover:bg-[#6FA6FF]/20'
-                }
-              `}
+              className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                isActive ? 'bg-[#131A20]' : 'bg-[#EAEAEA] hover:bg-[#6FA6FF]/20'
+              }`}
             >
-              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#456C8D]'}`} />
+              <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#456C8D]'}`} />
             </button>
           );
         })}
       </>
     );
-    }
+  }
 
   return (
     <div className="w-full">
-      <button 
+      <button
         onClick={() => setShowDialog(true)}
-        className="flex items-center gap-3 w-full hover:bg-[#EAEAEA] p-3 rounded-xl transition-all group border border-[#EAEAEA] bg-white"
+        className="flex items-center gap-2.5 w-full hover:bg-[#F8F9FB] p-2.5 rounded-lg transition-colors group"
       >
-        <div className={`w-10 h-10 ${activeModule.color} rounded-xl flex items-center justify-center flex-shrink-0`}>
-          <ActiveIcon className="w-5 h-5 text-white" />
+        <div className="w-8 h-8 bg-[#131A20] rounded-lg flex items-center justify-center flex-shrink-0">
+          <ActiveIcon className="w-4 h-4 text-white" />
         </div>
         <div className="flex-1 text-left min-w-0">
-          <h2 className="font-medium text-[#131A20] text-sm leading-tight">{activeModule.name}</h2>
-          <p className="text-xs text-[#456C8D] truncate">{activeModule.description}</p>
+          <p className="text-sm font-normal text-[#131A20] leading-tight truncate">{activeModule.name}</p>
+          <p className="text-[10px] text-[#456C8D] font-light truncate">{activeModule.description}</p>
         </div>
-        <ChevronDown className="w-5 h-5 text-[#456C8D] group-hover:text-[#131A20] transition-colors flex-shrink-0" />
+        <ChevronDown className="w-3.5 h-3.5 text-[#456C8D] flex-shrink-0" />
       </button>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-md bg-white border border-[#EAEAEA]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#131A20]">Escolha um Módulo</DialogTitle>
-            <DialogDescription className="text-[#456C8D]">
-              Alterne entre diferentes áreas do sistema
-            </DialogDescription>
+        <DialogContent className="sm:max-w-sm bg-white border border-[#EAEAEA] rounded-xl p-0 overflow-hidden">
+          <DialogHeader className="px-5 pt-5 pb-3 border-b border-[#EAEAEA]">
+            <DialogTitle className="text-base font-normal text-[#131A20]">Módulos</DialogTitle>
+            <p className="text-xs text-[#456C8D] font-light">Navegue entre as áreas do sistema</p>
           </DialogHeader>
-          <div className="space-y-3 py-4">
-            {modules.map(module => (
-              <ModuleCard key={module.id} module={module} />
-            ))}
+          <div className="p-3 space-y-1 max-h-96 overflow-y-auto">
+            {modules.map(module => {
+              const Icon = module.icon;
+              const isActive = module.id === activeModule.id;
+              return (
+                <button
+                  key={module.id}
+                  onClick={() => handleModuleClick(module)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left ${
+                    isActive ? 'bg-[#F8F9FB] border border-[#6FA6FF]/20' : 'hover:bg-[#F8F9FB] border border-transparent'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    isActive ? 'bg-[#131A20]' : 'bg-[#EAEAEA]'
+                  }`}>
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#456C8D]'}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-normal text-[#131A20]">{module.name}</p>
+                    <p className="text-xs text-[#456C8D] font-light">{module.description}</p>
+                  </div>
+                  {isActive && <Check className="w-3.5 h-3.5 text-[#6FA6FF] flex-shrink-0" />}
+                </button>
+              );
+            })}
           </div>
         </DialogContent>
       </Dialog>
