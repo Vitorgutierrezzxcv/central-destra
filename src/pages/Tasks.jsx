@@ -57,23 +57,41 @@ export default function Tasks() {
 
   const createTaskMutation = useMutation({
     mutationFn: (taskData) => base44.entities.Task.create(taskData),
-    onSuccess: () => {
-      // Invalidation handled by handleSubmit for all related tasks
+    onMutate: async (taskData) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      const prev = queryClient.getQueryData(['tasks']);
+      const tempTask = { id: `temp-${Date.now()}`, ...taskData, created_date: new Date().toISOString() };
+      queryClient.setQueryData(['tasks'], old => [tempTask, ...(old || [])]);
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['tasks'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
   const updateTaskMutation = useMutation({
     mutationFn: ({ id, taskData }) => base44.entities.Task.update(id, taskData),
-    onSuccess: () => {
-      // Invalidation handled by handleSubmit for all related tasks
+    onMutate: async ({ id, taskData }) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      const prev = queryClient.getQueryData(['tasks']);
+      queryClient.setQueryData(['tasks'], old =>
+        (old || []).map(t => t.id === id ? { ...t, ...taskData } : t)
+      );
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['tasks'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
   const deleteTaskMutation = useMutation({
     mutationFn: (id) => base44.entities.Task.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      const prev = queryClient.getQueryData(['tasks']);
+      queryClient.setQueryData(['tasks'], old => (old || []).filter(t => t.id !== id));
+      return { prev };
     },
+    onError: (_err, _data, ctx) => queryClient.setQueryData(['tasks'], ctx?.prev),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
   });
 
   const handleSubmit = async (taskData, subtasks = []) => {
