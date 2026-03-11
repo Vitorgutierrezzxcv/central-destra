@@ -1,19 +1,15 @@
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
-
 import { cn } from "@/lib/utils"
+import { useIsMobile } from "@/components/ui/use-mobile"
+import { Drawer, DrawerContent } from "@/components/ui/drawer"
 
 const DropdownMenu = DropdownMenuPrimitive.Root
-
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger
-
 const DropdownMenuGroup = DropdownMenuPrimitive.Group
-
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal
-
 const DropdownMenuSub = DropdownMenuPrimitive.Sub
-
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup
 
 const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, ...props }, ref) => (
@@ -29,8 +25,7 @@ const DropdownMenuSubTrigger = React.forwardRef(({ className, inset, children, .
     <ChevronRight className="ml-auto" />
   </DropdownMenuPrimitive.SubTrigger>
 ))
-DropdownMenuSubTrigger.displayName =
-  DropdownMenuPrimitive.SubTrigger.displayName
+DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName
 
 const DropdownMenuSubContent = React.forwardRef(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.SubContent
@@ -41,22 +36,82 @@ const DropdownMenuSubContent = React.forwardRef(({ className, ...props }, ref) =
     )}
     {...props} />
 ))
-DropdownMenuSubContent.displayName =
-  DropdownMenuPrimitive.SubContent.displayName
+DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName
 
-const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
-      {...props} />
-  </DropdownMenuPrimitive.Portal>
-))
+// Mobile-aware DropdownMenu that uses a bottom drawer on mobile
+function MobileDropdownContent({ open, onOpenChange, children, className }) {
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className={cn("px-0 pb-safe", className)}>
+        <div className="overflow-y-auto max-h-[60vh] p-2 pb-4">
+          {children}
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
+// Smart DropdownMenu: on mobile uses Drawer, on desktop uses Radix popover
+function SmartDropdownMenu({ children, ...props }) {
+  const isMobile = useIsMobile();
+  const [open, setOpen] = React.useState(false);
+
+  if (!isMobile) {
+    return (
+      <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen} {...props}>
+        {children}
+      </DropdownMenuPrimitive.Root>
+    );
+  }
+
+  // On mobile, pass open/setOpen context to children
+  return (
+    <DropdownMenuPrimitive.Root open={open} onOpenChange={setOpen} {...props}>
+      {children}
+    </DropdownMenuPrimitive.Root>
+  );
+}
+
+const DropdownMenuContent = React.forwardRef(({ className, sideOffset = 4, children, ...props }, ref) => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    // On mobile, render as a bottom sheet via portal with slide-up animation
+    return (
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.Content
+          ref={ref}
+          sideOffset={sideOffset}
+          className={cn(
+            "z-50 min-w-[8rem] overflow-hidden bg-popover text-popover-foreground shadow-xl",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:slide-out-to-bottom-4",
+            "fixed bottom-0 left-0 right-0 w-full rounded-t-2xl border-t border-border p-2 pb-8",
+            className
+          )}
+          {...props}>
+          <div className="w-10 h-1 bg-muted-foreground/20 rounded-full mx-auto mb-3" />
+          {children}
+        </DropdownMenuPrimitive.Content>
+      </DropdownMenuPrimitive.Portal>
+    );
+  }
+
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        className={cn(
+          "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          className
+        )}
+        {...props} />
+    </DropdownMenuPrimitive.Portal>
+  );
+})
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
 const DropdownMenuItem = React.forwardRef(({ className, inset, ...props }, ref) => (
@@ -88,8 +143,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(({ className, children, checke
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ))
-DropdownMenuCheckboxItem.displayName =
-  DropdownMenuPrimitive.CheckboxItem.displayName
+DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName
 
 const DropdownMenuRadioItem = React.forwardRef(({ className, children, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
@@ -125,16 +179,9 @@ const DropdownMenuSeparator = React.forwardRef(({ className, ...props }, ref) =>
 ))
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
-const DropdownMenuShortcut = ({
-  className,
-  ...props
-}) => {
-  return (
-    (<span
-      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
-      {...props} />)
-  );
-}
+const DropdownMenuShortcut = ({ className, ...props }) => (
+  <span className={cn("ml-auto text-xs tracking-widest opacity-60", className)} {...props} />
+)
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut"
 
 export {
