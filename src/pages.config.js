@@ -82,6 +82,12 @@ import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
 import FinanceDashboard from './pages/FinanceDashboard';
+import FinanceEntries from './pages/FinanceEntries';
+import FinanceAccounts from './pages/FinanceAccounts';
+import FinanceCashFlow from './pages/FinanceCashFlow';
+import FinanceRecurrences from './pages/FinanceRecurrences';
+import FinanceReports from './pages/FinanceReports';
+import FinanceMonthlyClosing from './pages/FinanceMonthlyClosing';
 import __Layout from './Layout.jsx';
 
 
@@ -121,6 +127,12 @@ export const PAGES = {
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
     "FinanceDashboard": FinanceDashboard,
+    "FinanceEntries": FinanceEntries,
+    "FinanceAccounts": FinanceAccounts,
+    "FinanceCashFlow": FinanceCashFlow,
+    "FinanceRecurrences": FinanceRecurrences,
+    "FinanceReports": FinanceReports,
+    "FinanceMonthlyClosing": FinanceMonthlyClosing,
 }
 
 export const pagesConfig = {
