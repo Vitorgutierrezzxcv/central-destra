@@ -314,5 +314,6 @@ export default function FinanceEntries() {
         />
       )}
     </div>
+    </PullToRefresh>
   );
 }
