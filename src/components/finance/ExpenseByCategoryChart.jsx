@@ -1,8 +1,7 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
-const COLORS = ["#6366f1","#10b981","#f59e0b","#ef4444","#8b5cf6","#3b82f6","#ec4899","#14b8a6","#f97316","#84cc16"];
+const COLORS = ["#131A20", "#456C8D", "#6FA6FF", "#7C9CBF", "#A8C4E5", "#C5D8EF", "#D4E6F8", "#E6EFF8"];
 const fmt = (v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
 
 export default function ExpenseByCategoryChart({ entries }) {
@@ -19,43 +18,47 @@ export default function ExpenseByCategoryChart({ entries }) {
 
   if (data.length === 0) {
     return (
-      <Card className="border-0 shadow-sm h-full">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">Por Categoria</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-40">
-          <p className="text-slate-400 text-sm">Nenhuma despesa no período</p>
-        </CardContent>
-      </Card>
+      <div className="bg-white border border-[#EAEAEA] rounded-xl p-5 h-full flex flex-col">
+        <h3 className="text-sm font-normal text-[#131A20] mb-1">Por Categoria</h3>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-sm text-[#456C8D] font-light">Nenhuma despesa no período</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="border-0 shadow-sm h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">Despesas por Categoria</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={220}>
-          <PieChart>
-            <Pie data={data} cx="50%" cy="45%" innerRadius={55} outerRadius={80} paddingAngle={3} dataKey="value">
-              {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-            </Pie>
-            <Tooltip formatter={(v) => fmt(v)} />
-          </PieChart>
-        </ResponsiveContainer>
-        <div className="space-y-1.5 mt-2">
-          {data.slice(0, 5).map((d, i) => (
-            <div key={d.name} className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
-                <span className="text-slate-600 truncate max-w-[120px]">{d.name}</span>
-              </div>
-              <span className="font-medium text-slate-700">{fmt(d.value)}</span>
+    <div className="bg-white border border-[#EAEAEA] rounded-xl p-5 h-full">
+      <h3 className="text-sm font-normal text-[#131A20] mb-1">Despesas por Categoria</h3>
+      <p className="text-xs text-[#456C8D] font-light mb-3">Distribuição do período</p>
+      <ResponsiveContainer width="100%" height={160}>
+        <PieChart>
+          <Pie data={data} cx="50%" cy="50%" innerRadius={45} outerRadius={65} paddingAngle={2} dataKey="value">
+            {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+          </Pie>
+          <Tooltip
+            formatter={(v) => fmt(v)}
+            contentStyle={{
+              background: '#fff',
+              border: '1px solid #EAEAEA',
+              borderRadius: 8,
+              fontSize: 11,
+              fontWeight: 300
+            }}
+          />
+        </PieChart>
+      </ResponsiveContainer>
+      <div className="space-y-1.5 mt-2">
+        {data.slice(0, 5).map((d, i) => (
+          <div key={d.name} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ background: COLORS[i % COLORS.length] }} />
+              <span className="text-[#456C8D] font-light truncate max-w-[100px]">{d.name}</span>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <span className="font-normal text-[#131A20]">{fmt(d.value)}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

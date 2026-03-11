@@ -1,14 +1,28 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { format, eachDayOfInterval, startOfMonth, endOfMonth, parseISO, isSameDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const fmt = (v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", notation: "compact" }).format(v || 0);
+const fmtFull = (v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v || 0);
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-white border border-[#EAEAEA] rounded-lg p-3 shadow-md text-xs">
+      <p className="text-[#456C8D] font-light mb-1.5">{label}</p>
+      {payload.map(p => (
+        <p key={p.name} className="font-normal" style={{ color: p.color }}>
+          {p.name}: {fmtFull(p.value)}
+        </p>
+      ))}
+    </div>
+  );
+};
 
 export default function CashFlowChart({ entries, selectedMonth }) {
   const monthStart = startOfMonth(parseISO(selectedMonth + "-01"));
-  const monthEnd = endOfMonth(parseISO(selectedMonth + "-01"));
+  const monthEnd   = endOfMonth(parseISO(selectedMonth + "-01"));
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const data = days.map(day => {
@@ -19,41 +33,52 @@ export default function CashFlowChart({ entries, selectedMonth }) {
     });
     const revenue = dayEntries.filter(e => e.type === "revenue").reduce((s, e) => s + (e.amount || 0), 0);
     const expense = dayEntries.filter(e => e.type === "expense").reduce((s, e) => s + (e.amount || 0), 0);
-    return {
-      day: format(day, "dd/MM"),
-      Receitas: revenue,
-      Despesas: expense,
-    };
+    return { day: format(day, "dd"), Receitas: revenue, Despesas: expense };
   });
 
   return (
-    <Card className="border-0 shadow-sm h-full">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">Fluxo do Mês</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-            <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={4} />
-            <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} width={55} />
-            <Tooltip formatter={(v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v)} />
-            <Legend />
-            <Area type="monotone" dataKey="Receitas" stroke="#10b981" fill="url(#colorRevenue)" strokeWidth={2} />
-            <Area type="monotone" dataKey="Despesas" stroke="#ef4444" fill="url(#colorExpense)" strokeWidth={2} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <div className="bg-white border border-[#EAEAEA] rounded-xl p-5 h-full">
+      <h3 className="text-sm font-normal text-[#131A20] mb-1">Fluxo do Mês</h3>
+      <p className="text-xs text-[#456C8D] font-light mb-4">Receitas vs. despesas diárias</p>
+      <ResponsiveContainer width="100%" height={220}>
+        <AreaChart data={data} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#F0F4F8" />
+          <XAxis
+            dataKey="day"
+            tick={{ fontSize: 10, fill: '#456C8D', fontWeight: 300 }}
+            axisLine={false}
+            tickLine={false}
+            interval={4}
+          />
+          <YAxis
+            tick={{ fontSize: 10, fill: '#456C8D', fontWeight: 300 }}
+            tickFormatter={fmt}
+            width={55}
+            axisLine={false}
+            tickLine={false}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ fontSize: 11, color: '#456C8D', fontWeight: 300 }}
+          />
+          <Area
+            type="monotone"
+            dataKey="Receitas"
+            stroke="#456C8D"
+            fill="#456C8D"
+            fillOpacity={0.08}
+            strokeWidth={1.5}
+          />
+          <Area
+            type="monotone"
+            dataKey="Despesas"
+            stroke="#6FA6FF"
+            fill="#6FA6FF"
+            fillOpacity={0.08}
+            strokeWidth={1.5}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
