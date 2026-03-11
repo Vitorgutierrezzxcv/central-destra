@@ -49,8 +49,8 @@ const allModules = [
     description: "Controle Financeiro",
     icon: Wallet,
     color: "bg-[#131A20]",
-    defaultPage: "Lancamentos",
-    pages: ["Lancamentos", "FinanceFixedExpenses", "FinanceVariableExpenses", "FinancePayroll", "FinanceSummary"]
+    defaultPage: "FinanceDashboard",
+    pages: ["FinanceDashboard", "FinanceEntries", "FinanceAccounts", "FinanceCashFlow", "FinanceRecurrences", "FinanceReports", "FinanceMonthlyClosing", "Lancamentos", "FinanceFixedExpenses", "FinanceVariableExpenses", "FinancePayroll", "FinanceSummary"]
   },
   {
     id: "prospecting",
@@ -115,11 +115,7 @@ export default function AppSwitcher({ isMobile = false }) {
     if (currentPath.includes('companies') || currentPath.includes('opportunities')) {
       return modules.find(m => m.id === 'crm');
     }
-    if (currentPath.includes('lancamentos') || 
-        currentPath.includes('financefixedexpenses') || 
-        currentPath.includes('financevariableexpenses') || 
-        currentPath.includes('financepayroll') || 
-        currentPath.includes('financesummary')) {
+    if (currentPath.includes('lancamentos') || currentPath.includes('finance')) {
       return modules.find(m => m.id === 'finance');
     }
     if (currentPath.includes('piermont')) {
