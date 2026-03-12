@@ -54,16 +54,21 @@ export default function StatsCards({ pendingTasks, inProgressTasks, completedTas
           to={`${createPageUrl("Tasks")}?status=${card.filterStatus}&assignedTo=${user?.email || ''}`}
           className="block"
         >
-          <div className="bg-white border border-[#EAEAEA] rounded-xl p-4 hover:border-[#6FA6FF]/40 hover:shadow-sm transition-all group cursor-pointer">
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: card.bg }}>
+          <div className="bg-white border border-[#EAEAEA] rounded-2xl p-5 hover:border-[#6FA6FF]/30 transition-all cursor-pointer group">
+            <div className="flex items-center justify-between mb-4">
+              <div
+                className="w-9 h-9 rounded-xl flex items-center justify-center"
+                style={{ background: card.bg }}
+              >
                 <card.icon className="w-4 h-4" style={{ color: card.accent }} />
               </div>
             </div>
-            <div className="text-2xl font-light text-[#131A20] mb-0.5" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            <div
+              className="text-3xl font-light text-[#131A20] tabular-nums mb-1"
+            >
               {card.value}
             </div>
-            <p className="text-xs text-[#456C8D] font-light">{card.title}</p>
+            <p className="text-xs font-light text-[#456C8D]">{card.title}</p>
           </div>
         </Link>
       ))}

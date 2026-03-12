@@ -33,42 +33,33 @@ export default function UserPerformanceRanking() {
   const maxTasks = Math.max(...rankedUsers.map(s => s.completedTasks), 1);
 
   return (
-    <div className="bg-white border border-[#EAEAEA] rounded-xl p-5">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-[#EAEAEA] rounded-lg flex items-center justify-center">
-            <Trophy className="w-4 h-4 text-[#131A20]" />
-          </div>
-          <div>
-            <h2 className="text-sm font-medium text-[#131A20]">Produtividade</h2>
-            <p className="text-xs text-[#456C8D] font-light">{rankedUsers.length} membros</p>
-          </div>
+    <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-sm font-normal text-[#131A20]">Produtividade da Equipe</h2>
+          <p className="text-xs text-[#456C8D] font-light mt-0.5">{rankedUsers.length} membros · {rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)} concluídas</p>
         </div>
-        <span className="text-xs text-[#456C8D] font-light">
-          {rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)} concluídas
-        </span>
+        <div className="w-8 h-8 bg-[#EAEAEA] rounded-xl flex items-center justify-center">
+          <Trophy className="w-4 h-4 text-[#131A20]" />
+        </div>
       </div>
 
       {/* Bar chart */}
-      <div className="flex items-end gap-2 h-28 mb-5 px-1">
-        {rankedUsers.slice(0, 5).map((stat, index) => {
+      <div className="flex items-end gap-1.5 h-24 mb-5">
+        {rankedUsers.slice(0, 6).map((stat, index) => {
           const displayName = stat.user.display_name || stat.user.full_name?.split(' ')[0] || 'User';
-          const height = Math.max((stat.completedTasks / maxTasks) * 100, 8);
-          const isLeader = index === 0;
+          const height = Math.max((stat.completedTasks / maxTasks) * 100, 6);
+          const barColor = index === 0 ? '#131A20' : index === 1 ? '#456C8D' : '#EAEAEA';
 
           return (
             <div key={stat.user.id} className="flex flex-col items-center gap-1 flex-1">
-              <span className="text-[10px] text-[#456C8D] font-light">{stat.completedTasks}</span>
+              <span className="text-[9px] text-[#456C8D] font-light">{stat.completedTasks}</span>
               <div
-                className="w-full rounded-t-md transition-all"
-                style={{
-                  height: `${height}%`,
-                  background: isLeader ? '#131A20' : index === 1 ? '#456C8D' : '#EAEAEA',
-                  minHeight: 6
-                }}
+                className="w-full rounded-t-lg transition-all"
+                style={{ height: `${height}%`, background: barColor, minHeight: 4 }}
               />
-              <span className="text-[10px] text-[#456C8D] font-light truncate w-full text-center">
-                {displayName.substring(0, 5)}
+              <span className="text-[9px] text-[#456C8D] font-light truncate w-full text-center">
+                {displayName.substring(0, 6)}
               </span>
             </div>
           );
@@ -76,7 +67,7 @@ export default function UserPerformanceRanking() {
       </div>
 
       {/* List */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         {rankedUsers.slice(0, 5).map((stat, index) => {
           const displayName = stat.user.display_name || stat.user.full_name || "Usuário";
           const initials = displayName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
@@ -84,9 +75,9 @@ export default function UserPerformanceRanking() {
           return (
             <div
               key={stat.user.id}
-              className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-[#F8F9FB] transition-colors"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#F7F7F7] transition-colors"
             >
-              <span className="text-xs font-light text-[#456C8D] w-4 text-center flex-shrink-0">
+              <span className="text-[11px] font-light text-[#456C8D] w-4 text-center flex-shrink-0">
                 {index + 1}
               </span>
               <Avatar className="w-7 h-7 flex-shrink-0">
@@ -102,9 +93,11 @@ export default function UserPerformanceRanking() {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-normal text-[#131A20] truncate">{displayName}</p>
-                <p className="text-xs text-[#456C8D] font-light">{stat.completedTasks} concluídas</p>
               </div>
-              <span className="text-sm font-light text-[#456C8D] flex-shrink-0">{stat.completionRate}%</span>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-xs font-light text-[#456C8D] tabular-nums">{stat.completedTasks} tasks</span>
+                <span className="text-xs font-normal text-[#131A20] tabular-nums">{stat.completionRate}%</span>
+              </div>
             </div>
           );
         })}

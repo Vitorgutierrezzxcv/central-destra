@@ -46,7 +46,7 @@ export default function UpcomingTasks({ tasks, projects }) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       {todayTasks.map((task) => {
         const project  = projects.find(p => p.id === task.project_id);
         const priority = priorityConfig[task.priority] || priorityConfig.medium;
@@ -58,22 +58,24 @@ export default function UpcomingTasks({ tasks, projects }) {
             to={`${createPageUrl("ProjectDetail")}?id=${task.project_id}`}
             className="block"
           >
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-[#EAEAEA] hover:border-[#6FA6FF]/30 hover:bg-[#F8F9FB] transition-all group">
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: priority.color }} />
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#EAEAEA] hover:bg-[#F7F7F7] transition-all">
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-px" style={{ background: isOverdue ? '#C0392B' : priority.color }} />
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-normal truncate ${isOverdue ? 'text-[#C0392B]' : 'text-[#131A20]'}`}>
                   {task.title}
                 </p>
                 {project && (
-                  <p className="text-xs text-[#456C8D] font-light truncate">{project.name}</p>
+                  <p className="text-xs text-[#456C8D] font-light truncate mt-0.5">{project.name}</p>
                 )}
               </div>
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 {isOverdue && (
-                  <span className="text-[10px] font-normal text-[#C0392B] bg-[#FEF0EE] px-1.5 py-0.5 rounded">Atrasada</span>
+                  <span className="text-[10px] font-light text-[#C0392B] bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">
+                    Atrasada
+                  </span>
                 )}
                 <span
-                  className="text-[10px] font-normal px-1.5 py-0.5 rounded"
+                  className="text-[10px] font-light px-2 py-0.5 rounded-full"
                   style={{ background: priority.bg, color: priority.color }}
                 >
                   {priority.label}

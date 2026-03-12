@@ -26,7 +26,7 @@ export default function ProjectProgress({ projects, tasks }) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {activeProjects.map((project) => {
         const { completed, total, percentage } = getProjectProgress(project.id);
         return (
@@ -35,26 +35,27 @@ export default function ProjectProgress({ projects, tasks }) {
             to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}
             className="block group"
           >
-            <div className="p-3 rounded-lg border border-[#EAEAEA] hover:border-[#6FA6FF]/30 hover:bg-[#F8F9FB] transition-all">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-[#131A20] flex items-center justify-center flex-shrink-0">
-                    <span className="text-white text-xs font-medium">
+            <div className="p-4 rounded-xl border border-[#EAEAEA] hover:border-[#EAEAEA] hover:bg-[#F7F7F7] transition-all">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-[#131A20] flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-xs font-normal">
                       {project.name[0]}
                     </span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-normal text-[#131A20] truncate">{project.name}</p>
-                    <p className="text-xs text-[#456C8D] font-light">{completed}/{total} tarefas</p>
+                    <p className="text-xs text-[#456C8D] font-light">{completed} / {total} tarefas</p>
                   </div>
                 </div>
-                <span className="text-xs font-normal text-[#456C8D] flex-shrink-0 ml-2">{percentage}%</span>
+                <span className="text-sm font-light text-[#131A20] flex-shrink-0 ml-2 tabular-nums">{percentage}%</span>
               </div>
-              <Progress
-                value={percentage}
-                className="h-1 bg-[#EAEAEA]"
-                style={{ '--tw-progress-bar': '#6FA6FF' }}
-              />
+              <div className="h-1 bg-[#EAEAEA] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#6FA6FF] rounded-full transition-all"
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
             </div>
           </Link>
         );
