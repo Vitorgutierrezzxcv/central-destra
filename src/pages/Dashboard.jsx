@@ -20,7 +20,7 @@ import PomodoroTimer from "../components/dashboard/PomodoroTimer";
 import TaskProgressWidget from "../components/dashboard/TaskProgressWidget";
 
 function DashboardContent() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(new Date()); // kept for compatibility
 
   const { data: user, isLoading: loadingUser } = useQuery({
     queryKey: ['currentUser'],
