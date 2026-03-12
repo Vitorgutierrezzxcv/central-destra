@@ -81,11 +81,11 @@ function DashboardContent() {
         {/* ── Page Header ─────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <p className="text-xs font-light text-[#456C8D] mb-0.5 uppercase tracking-wider">{greeting()}</p>
-            <h1 className="text-[26px] font-light text-[#131A20] tracking-tight leading-tight">
+            <p className="text-[#456C8D] mb-0.5 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
+            <h1 className="text-[#131A20] text-4xl font-light tracking-tight leading-tight">
               {displayName}
             </h1>
-            <p className="text-sm font-light text-[#456C8D] mt-0.5 capitalize">
+            <p className="text-[#456C8D] mt-0.5 text-base font-light capitalize">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
