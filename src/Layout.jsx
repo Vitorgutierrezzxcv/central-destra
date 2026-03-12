@@ -166,8 +166,9 @@ export default function Layout({ children, currentPageName }) {
             </SidebarGroup>
 
             <div className="mt-auto space-y-3"> 
-              <div className="px-3">
+              <div className="px-3 flex items-center justify-between">
                 <AppSwitcher />
+                <NotificationBell />
               </div>
               <UserProfile />
             </div>
