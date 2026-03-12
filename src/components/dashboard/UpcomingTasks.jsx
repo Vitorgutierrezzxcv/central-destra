@@ -15,12 +15,15 @@ const priorityConfig = {
 export default function UpcomingTasks({ tasks, projects }) {
   const now = startOfDay(new Date());
 
+  const in3Days = addDays(now, 3);
+
   const todayTasks = tasks
     .filter(task => {
       if (task.status === 'completed') return false;
       const endDate   = task.end_date   ? parseISO(task.end_date)   : null;
       const startDate = task.start_date ? parseISO(task.start_date) : null;
       if (endDate && (isBefore(endDate, now) || isToday(endDate))) return true;
+      if (endDate && isAfter(endDate, now) && !isAfter(endDate, in3Days)) return true;
       if (startDate && isToday(startDate)) return true;
       return false;
     })
