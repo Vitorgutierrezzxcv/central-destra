@@ -255,13 +255,32 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
                   </Badge>
                 )}
 
-                {task.end_date && (
-                  <Badge variant="outline" className="bg-white border-[#EAEAEA] flex items-center gap-1 text-xs text-[#456C8D]">
-                    <Clock className="w-3 h-3" />
-                    <span className="hidden sm:inline">Fim: </span>
-                    {task.end_date.split('-').reverse().slice(0, 2).join('/')}
-                  </Badge>
-                )}
+                {task.end_date && (() => {
+                  const endParsed = parseISO(task.end_date);
+                  const now = startOfDay(new Date());
+                  const in3Days = addDays(now, 3);
+                  const isOverdue = isBefore(endParsed, now) && !isToday(endParsed);
+                  const isDueSoon = !isOverdue && !isBefore(endParsed, now) && !isAfter(endParsed, in3Days);
+                  return (
+                    <>
+                      <Badge variant="outline" className={`flex items-center gap-1 text-xs ${isOverdue ? 'bg-red-50 border-red-200 text-red-600' : isDueSoon ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-white border-[#EAEAEA] text-[#456C8D]'}`}>
+                        <Clock className="w-3 h-3" />
+                        <span className="hidden sm:inline">Fim: </span>
+                        {task.end_date.split('-').reverse().slice(0, 2).join('/')}
+                      </Badge>
+                      {isDueSoon && task.status !== 'completed' && (
+                        <Badge className="bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium">
+                          ⚠ Prazo próximo
+                        </Badge>
+                      )}
+                      {isOverdue && task.status !== 'completed' && (
+                        <Badge className="bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+                          Atrasada
+                        </Badge>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
 
               {/* SubTask Display */}
