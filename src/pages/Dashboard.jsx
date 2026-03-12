@@ -135,6 +135,9 @@ function DashboardContent() {
           </Link>
         </div>
 
+        {/* ── Progress Bar Strip ──────────────────── */}
+        <TaskProgressWidget tasks={tasks} />
+
         {/* ── Main Grid ───────────────────────────── */}
         <div className="grid lg:grid-cols-3 gap-5 mt-5">
 
@@ -179,17 +182,8 @@ function DashboardContent() {
 
             {/* Team Ranking */}
             <UserPerformanceRanking />
-          </div>
 
-          {/* Right col */}
-          <div className="space-y-5">
-            {/* Progress widget */}
-            <TaskProgressWidget tasks={tasks} />
-
-            {/* Pomodoro */}
-            <PomodoroTimer />
-
-            {/* Calendar */}
+            {/* Calendar + Notes below ranking */}
             <div className="bg-white border border-[#EAEAEA] rounded-2xl p-5">
               <h2 className="text-sm font-normal text-[#131A20] mb-4">Calendário</h2>
               <TasksCalendar
@@ -199,6 +193,14 @@ function DashboardContent() {
             </div>
 
             <NotesBlock userEmail={user?.email} />
+          </div>
+
+          {/* Right col — highlighted Pomodoro column */}
+          <div className="lg:col-span-1">
+            <div className="bg-[#131A20] rounded-2xl p-6 flex flex-col h-full min-h-[520px]">
+              <p className="text-[#6FA6FF] text-[10px] font-light uppercase tracking-widest mb-5">Foco</p>
+              <PomodoroTimer dark />
+            </div>
           </div>
 
         </div>
