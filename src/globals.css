@@ -15,9 +15,9 @@ html, body {
 /* ===================== */
 :root {
   color: #131A20;
-  background-color: #F8F9FB;
+  background-color: #F7F7F7;
 
-  --background: 0 0% 97%;
+  --background: 0 0% 97.3%;
   --foreground: 220 20% 10%;
   --card: 0 0% 100%;
   --card-foreground: 220 20% 10%;
@@ -37,6 +37,7 @@ html, body {
   --input: 220 13% 91%;
   --ring: 218 100% 71%;
   --radius: 0.875rem;
+  /* Remove all gradient defaults */
   --sidebar-background: 0 0% 100%;
   --sidebar-foreground: 213 20% 48%;
   --sidebar-primary: 220 20% 10%;
