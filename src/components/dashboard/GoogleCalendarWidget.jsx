@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getGoogleCalendarEvents } from "@/functions/getGoogleCalendarEvents";
+import { base44 } from "@/api/base44Client";
 import { ChevronLeft, ChevronRight, Video, MapPin } from "lucide-react";
 import { format, isSameDay, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
