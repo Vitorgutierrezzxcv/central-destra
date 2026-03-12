@@ -22,18 +22,18 @@ function DashboardContent() {
 
   const { data: user, isLoading: loadingUser } = useQuery({
     queryKey: ['currentUser'],
-    queryFn: () => base44.auth.me(),
+    queryFn: () => base44.auth.me()
   });
 
   const { data: tasks = [], isLoading: loadingTasks } = useQuery({
     queryKey: ['my-tasks', user?.email],
     queryFn: () => base44.entities.Task.filter({ assigned_to: user.email }),
-    enabled: !!user,
+    enabled: !!user
   });
 
   const { data: projects = [], isLoading: loadingProjects } = useQuery({
     queryKey: ['projects'],
-    queryFn: () => base44.entities.Project.list(),
+    queryFn: () => base44.entities.Project.list()
   });
 
   if (loadingUser || loadingTasks || loadingProjects) {
@@ -42,19 +42,19 @@ function DashboardContent() {
         <div className="max-w-7xl mx-auto space-y-6">
           <Skeleton className="h-10 w-56 rounded-lg" />
           <div className="grid grid-cols-4 gap-4">
-            {[1,2,3,4].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
           </div>
           <Skeleton className="h-72 rounded-xl" />
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   const now = new Date();
-  const pendingTasks   = tasks.filter(t => t.status === 'pending').length;
-  const inProgressTasks = tasks.filter(t => t.status === 'in_progress').length;
-  const completedTasks = tasks.filter(t => t.status === 'completed').length;
-  const overdueTasks   = tasks.filter(t => {
+  const pendingTasks = tasks.filter((t) => t.status === 'pending').length;
+  const inProgressTasks = tasks.filter((t) => t.status === 'in_progress').length;
+  const completedTasks = tasks.filter((t) => t.status === 'completed').length;
+  const overdueTasks = tasks.filter((t) => {
     if (t.status === 'completed') return false;
     if (!t.end_date) return false;
     return isBefore(new Date(t.end_date), now) && !isSameDay(new Date(t.end_date), now);
@@ -69,7 +69,7 @@ function DashboardContent() {
 
   const displayName = user?.display_name || user?.full_name?.split(' ')[0] || 'Usuário';
 
-  const activeProjects = projects.filter(p => p.status === 'active').length;
+  const activeProjects = projects.filter((p) => p.status === 'active').length;
   const totalTasksCount = tasks.length;
 
   return (
@@ -95,7 +95,7 @@ function DashboardContent() {
               </Button>
             </Link>
             <Link to={createPageUrl("Tasks")}>
-              <Button size="sm" className="h-9 bg-[#6FA6FF] hover:bg-[#456C8D] text-white font-light text-sm rounded-xl border-0 shadow-none">
+              <Button size="sm" className="bg-slate-900 text-white px-3 text-sm font-light rounded-xl inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 hover:bg-[#456C8D] border-0 shadow-none">
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Nova Tarefa
               </Button>
@@ -108,19 +108,19 @@ function DashboardContent() {
           pendingTasks={pendingTasks}
           inProgressTasks={inProgressTasks}
           completedTasks={completedTasks}
-          overdueTasks={overdueTasks}
-        />
+          overdueTasks={overdueTasks} />
+
 
         {/* ── Executive Insight Block ─────────────── */}
         <div className="mt-5 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-[#6FA6FF] text-xs font-light uppercase tracking-widest mb-1">Visão Executiva</p>
             <p className="text-white text-lg font-light leading-snug">
-              {overdueTasks > 0
-                ? `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária`
-                : inProgressTasks > 0
-                ? `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento`
-                : `Tudo em dia · ${completedTasks} tarefas concluídas`}
+              {overdueTasks > 0 ?
+              `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
+              inProgressTasks > 0 ?
+              `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
+              `Tudo em dia · ${completedTasks} tarefas concluídas`}
             </p>
             <p className="text-[#456C8D] text-sm font-light mt-1">
               {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
@@ -186,22 +186,22 @@ function DashboardContent() {
               <TasksCalendar
                 tasks={tasks}
                 selectedDate={selectedDate}
-                onDateChange={setSelectedDate}
-              />
+                onDateChange={setSelectedDate} />
+
             </div>
             <NotesBlock userEmail={user?.email} />
           </div>
 
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function Dashboard() {
   return (
     <AccessGuard requiredModule="taskflow">
       <DashboardContent />
-    </AccessGuard>
-  );
+    </AccessGuard>);
+
 }
