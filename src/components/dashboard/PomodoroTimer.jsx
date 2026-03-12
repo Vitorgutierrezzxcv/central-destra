@@ -51,7 +51,7 @@ export default function PomodoroTimer({ dark = false, compact = false }) {
   // ── COMPACT / HORIZONTAL STRIP MODE ──────────────────────────
   if (compact) {
     return (
-      <div className="bg-slate-950 mb-5 px-4 py-3 rounded-2xl">
+      <div className="bg-slate-900 mb-5 px-4 py-3 rounded-2xl">
         {/* Row 1: label + timer + controls */}
         <div className="flex items-center justify-between gap-3">
           <span className="text-white font-light uppercase tracking-widest text-xs shrink-0">POMODORO</span>
