@@ -189,14 +189,8 @@ function DashboardContent() {
             {/* Team Ranking */}
             <UserPerformanceRanking />
 
-            {/* Calendar + Notes below ranking */}
-            <div className="bg-white border border-[#EAEAEA] rounded-2xl p-5">
-              <h2 className="text-sm font-normal text-[#131A20] mb-4">Calendário</h2>
-              <TasksCalendar
-                tasks={tasks}
-                selectedDate={selectedDate}
-                onDateChange={setSelectedDate} />
-            </div>
+            {/* Google Calendar */}
+            <GoogleCalendarWidget />
 
             <NotesBlock userEmail={user?.email} />
           </div>
