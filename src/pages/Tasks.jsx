@@ -12,7 +12,7 @@ import TaskItem from "../components/tasks/TaskItem";
 import TaskKanbanView from "../components/tasks/TaskKanbanView";
 import TaskTableView from "../components/tasks/TaskTableView";
 import DateRangeFilter from "../components/tasks/DateRangeFilter";
-import { parseISO, isWithinInterval, isBefore, isSameDay, startOfDay } from "date-fns";
+import { parseISO, isWithinInterval, isBefore, isSameDay, startOfDay, addDays } from "date-fns";
 
 export default function Tasks() {
   const [showForm, setShowForm] = useState(false);
@@ -22,9 +22,11 @@ export default function Tasks() {
     priority: "all", 
     project: "all",
     assignedTo: "all",
-    search: "" 
+    search: "",
+    dateRange: "all",
+    dateFrom: undefined,
+    dateTo: undefined
   });
-  const [dateRange, setDateRange] = useState({ start: null, end: null });
   
   const queryClient = useQueryClient();
 
@@ -178,12 +180,8 @@ export default function Tasks() {
     });
   };
 
-  const handleDateRangeChange = (start, end) => {
-    setDateRange({ start, end });
-  };
-
   const filteredTasks = tasks.filter(task => {
-    // Exclude subtasks from the main list view. Subtasks will be handled within their parent task's form/display.
+    // Exclude subtasks from the main list view
     if (task.parent_task_id) {
       return false;
     }
@@ -213,18 +211,17 @@ export default function Tasks() {
     
     // Date range filter
     let dateMatch = true;
-    if (dateRange.start && dateRange.end) {
-      const taskStartDate = task.start_date ? parseISO(task.start_date) : null;
+    if (filters.dateFrom || filters.dateTo) {
       const taskEndDate = task.end_date ? parseISO(task.end_date) : null;
-      const filterStart = parseISO(dateRange.start);
-      const filterEnd = parseISO(dateRange.end);
-      
-      dateMatch = (
-        (taskStartDate && isWithinInterval(taskStartDate, { start: filterStart, end: filterEnd })) ||
-        (taskEndDate && isWithinInterval(taskEndDate, { start: filterStart, end: filterEnd })) ||
-        (taskStartDate && taskEndDate && 
-          taskStartDate <= filterEnd && taskEndDate >= filterStart)
-      );
+      if (taskEndDate) {
+        if (filters.dateFrom && filters.dateTo) {
+          dateMatch = isWithinInterval(taskEndDate, { start: filters.dateFrom, end: filters.dateTo });
+        } else if (filters.dateFrom) {
+          dateMatch = !isBefore(taskEndDate, filters.dateFrom);
+        } else if (filters.dateTo) {
+          dateMatch = !isWithinInterval(taskEndDate, { start: addDays(filters.dateTo, 1), end: new Date('2999-12-31') });
+        }
+      }
     }
     
     return statusMatch && priorityMatch && projectMatch && assignedToMatch && searchMatch && dateMatch;
@@ -291,8 +288,6 @@ export default function Tasks() {
             />
           )}
         </AnimatePresence>
-
-        <DateRangeFilter onDateRangeChange={handleDateRangeChange} />
 
         <TaskFilters 
           onFilterChange={setFilters} 
