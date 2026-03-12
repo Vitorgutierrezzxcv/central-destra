@@ -10,7 +10,7 @@ export default function GoogleCalendarWidget() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { data: calendarData, isLoading } = useQuery({
     queryKey: ["userCalendarEvents", currentMonth.getFullYear(), currentMonth.getMonth()],
-    queryFn: () => base44.functions.invoke("getUserCalendarEvents", {}).then(r => r || { connected: false, events: [] }),
+    queryFn: () => base44.functions.invoke("getUserCalendarEvents", {}).then(r => r?.data ?? r ?? { connected: false, events: [] }),
     staleTime: 5 * 60 * 1000,
   });
 
