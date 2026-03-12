@@ -224,7 +224,7 @@ export default function CalendarSync() {
           </div>
 
           <div className="bg-white rounded-lg border border-slate-200 p-6 h-fit sticky top-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            <h3 className="text-lg font-light text-slate-900 mb-4">
               {selectedDate 
                 ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR })
                 : "Selecione uma data"
@@ -232,7 +232,7 @@ export default function CalendarSync() {
             </h3>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {selectedDateTasks.length === 0 ? (
-                <p className="text-slate-500 text-sm">Nenhuma tarefa neste dia</p>
+                <p className="text-slate-500 text-sm font-light">Nenhuma tarefa neste dia</p>
               ) : (
                 selectedDateTasks.map(task => {
                   const config = statusConfig[task.status];
