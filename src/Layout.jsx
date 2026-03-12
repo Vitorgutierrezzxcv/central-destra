@@ -22,7 +22,6 @@ import {
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
-import PageTransition from "./components/layout/PageTransition";
 
 const taskFlowNav = [
   {
@@ -103,7 +102,7 @@ export default function Layout({ children, currentPageName }) {
                                 className={`
                                   rounded-lg transition-all duration-200
                                   ${isActive 
-                                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' 
+                                    ? 'bg-[#131A20] text-white' 
                                     : 'hover:bg-slate-100 text-slate-700'
                                   }
                                 `}
@@ -147,7 +146,7 @@ export default function Layout({ children, currentPageName }) {
                             className={`
                               rounded-lg mb-1 transition-all duration-200
                               ${isActive 
-                                ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' 
+                                ? 'bg-[#131A20] text-white' 
                                 : 'hover:bg-slate-100 text-slate-700'
                               }
                             `}
@@ -184,9 +183,7 @@ export default function Layout({ children, currentPageName }) {
           </header>
 
           <div className="flex-1 overflow-auto">
-            <PageTransition>
-              {children}
-            </PageTransition>
+            {children}
           </div>
         </main>
       </div>
