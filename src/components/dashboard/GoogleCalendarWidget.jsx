@@ -4,8 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { ChevronLeft, ChevronRight, Video, MapPin, Calendar } from "lucide-react";
 import { format, isSameDay, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { googleCalendarAuth } from "@/functions/googleCalendarAuth";
-import { getUserCalendarEvents } from "@/functions/getUserCalendarEvents";
+import { base44 } from "@/api/base44Client";
 
 export default function GoogleCalendarWidget() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
