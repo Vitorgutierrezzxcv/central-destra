@@ -114,7 +114,7 @@ function DashboardContent() {
         {/* ── Executive + KPI Row ─────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-0">
           {/* Executive Insight — left half */}
-          <div className="lg:col-span-1 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col justify-between">
+          <div className="lg:col-span-1 rounded-2xl p-6 md:p-7 flex flex-col justify-between overflow-hidden" style={{backgroundImage: "url('https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/175ab0d54__1.jpg')", backgroundSize: "cover", backgroundPosition: "center"}}>
             <div>
               <p className="text-slate-50 mb-2 text-xs font-light uppercase tracking-widest">VISÃO EXECUTIVA</p>
               <p className="text-white text-xl font-light leading-snug">
