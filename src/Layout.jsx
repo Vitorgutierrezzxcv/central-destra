@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Calendar } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -22,7 +22,6 @@ import {
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
-import NotificationCenter from "./components/layout/NotificationCenter";
 
 const taskFlowNav = [
   {
@@ -39,6 +38,11 @@ const taskFlowNav = [
     title: "Tarefas",
     url: createPageUrl("Tasks"),
     icon: ListTodo,
+  },
+  {
+    title: "Calendário",
+    url: createPageUrl("CalendarSync"),
+    icon: Calendar,
   },
   {
     title: "Backlog",
@@ -175,13 +179,11 @@ export default function Layout({ children, currentPageName }) {
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 sticky top-0 z-10 flex items-center justify-between">
-            <div className="flex items-center gap-4 md:hidden">
+          <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
+            <div className="flex items-center justify-between gap-4">
               <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
               <AppSwitcher isMobile={true} />
-            </div>
-            <div className="ml-auto">
-              <NotificationCenter />
+              <div className="w-10" />
             </div>
           </header>
 

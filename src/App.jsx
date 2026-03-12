@@ -10,6 +10,7 @@ import { setupIframeMessaging } from './lib/iframe-messaging';
 import PageNotFound from './lib/PageNotFound';
 import GoogleCalendarCallback from './pages/GoogleCalendarCallback';
 import ClientPortalTasks from './pages/ClientPortalTasks';
+import CalendarSync from './pages/CalendarSync';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -56,6 +57,7 @@ const AuthenticatedApp = () => {
         ))}
         <Route path="/GoogleCalendarCallback" element={<GoogleCalendarCallback />} />
         <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
+        <Route path="/CalendarSync" element={<CalendarSync />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </LayoutWrapper>
