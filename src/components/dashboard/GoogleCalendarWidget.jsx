@@ -19,13 +19,6 @@ export default function GoogleCalendarWidget() {
   const connected = calendarData?.connected ?? false;
   const events = calendarData?.events || [];
 
-  const handleConnect = async () => {
-    setConnecting(true);
-    const res = await base44.functions.invoke("googleCalendarAuth", { redirect_origin: window.location.origin });
-    const authUrl = res?.data?.authUrl ?? res?.authUrl;
-    window.location.href = authUrl;
-  };
-
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
