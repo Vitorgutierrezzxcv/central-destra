@@ -51,7 +51,7 @@ export default function PomodoroTimer({ dark = false, compact = false }) {
   // ── COMPACT / HORIZONTAL STRIP MODE ──────────────────────────
   if (compact) {
     return (
-      <div className="bg-[#131A20] rounded-2xl px-4 py-3 mb-5">
+      <div className="bg-slate-950 mb-5 px-4 py-3 rounded-2xl">
         {/* Row 1: label + timer + controls */}
         <div className="flex items-center justify-between gap-3">
           <span className="text-white font-light uppercase tracking-widest text-xs shrink-0">POMODORO</span>
@@ -75,12 +75,12 @@ export default function PomodoroTimer({ dark = false, compact = false }) {
         {/* Row 2: mode tabs */}
         <div className="flex gap-1 mt-2.5">
           {Object.entries(MODES).map(([key, val]) =>
-            <button
-              key={key}
-              onClick={() => switchMode(key)}
-              className={`flex-1 py-1.5 rounded-lg text-[11px] font-light transition-all ${
-                mode === key ? "bg-white text-[#131A20]" : "bg-white/10 text-white/60 hover:bg-white/20"
-              }`}>
+          <button
+            key={key}
+            onClick={() => switchMode(key)}
+            className={`flex-1 py-1.5 rounded-lg text-[11px] font-light transition-all ${
+            mode === key ? "bg-white text-[#131A20]" : "bg-white/10 text-white/60 hover:bg-white/20"}`
+            }>
               {val.label}
             </button>
           )}
