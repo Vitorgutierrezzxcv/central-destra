@@ -14,9 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Pencil, Upload, LogOut, Loader2, Trash2, AlertTriangle } from "lucide-react";
+import { Pencil, Upload, LogOut, Loader2, Trash2, AlertTriangle, Menu } from "lucide-react";
+import UserMenu from "./UserMenu";
 
 export default function UserProfile() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
