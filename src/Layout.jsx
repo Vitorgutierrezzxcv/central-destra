@@ -1,179 +1,249 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { LayoutDashboard, FolderKanban, ListTodo, Package, Building2, TrendingUp, BarChart3, LogOut, Menu, Calendar, FileText, Users, X } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, TrendingUp, PanelLeftClose, PanelLeft } from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
+  useSidebar } from
+"@/components/ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger } from
+"@/components/ui/collapsible";
+import { Button } from "@/components/ui/button";
 
 import UserProfile from "./components/layout/UserProfile";
 import AppSwitcher from "./components/layout/AppSwitcher";
 
-const mainNav = [
-  {
-    title: "Visão Geral",
-    url: createPageUrl("Dashboard"),
-    icon: LayoutDashboard,
-    category: "TASKFLOW"
-  },
-  {
-    title: "Projetos",
-    url: createPageUrl("Projects"),
-    icon: FolderKanban,
-    category: "TASKFLOW"
-  },
-  {
-    title: "Tarefas",
-    url: createPageUrl("Tasks"),
-    icon: ListTodo,
-    category: "TASKFLOW"
-  },
-  {
-    title: "Backlog",
-    url: createPageUrl("Backlog"),
-    icon: Package,
-    category: "TASKFLOW"
-  },
-  {
-    title: "Calendário",
-    url: createPageUrl("CalendarSync"),
-    icon: Calendar,
-    category: "TASKFLOW"
-  },
-  {
-    title: "Empresas",
-    url: createPageUrl("Companies"),
-    icon: Building2,
-    category: "CRM"
-  },
-  {
-    title: "Prospectção",
-    url: createPageUrl("Prospecting"),
-    icon: TrendingUp,
-    category: "CRM"
-  },
-  {
-    title: "Oportunidades",
-    url: createPageUrl("Opportunities"),
-    icon: BarChart3,
-    category: "CRM"
-  },
-  {
-    title: "Relatórios",
-    url: createPageUrl("PerformanceReports"),
-    icon: FileText,
-    category: "ADMINISTRATIVO"
-  },
-  {
-    title: "Central do Cliente",
-    url: createPageUrl("ClientPortalTasks"),
-    icon: Users,
-    category: "ADMINISTRATIVO"
-  },
-];
+const taskFlowNav = [
+{
+  title: "Visão Geral",
+  url: createPageUrl("Dashboard"),
+  icon: LayoutDashboard
+},
+{
+  title: "Projetos",
+  url: createPageUrl("Projects"),
+  icon: FolderKanban
+},
+{
+  title: "Tarefas",
+  url: createPageUrl("Tasks"),
+  icon: ListTodo
+},
+{
+  title: "Backlog",
+  url: createPageUrl("Backlog"),
+  icon: Package
+}];
 
-export default function Layout({ children, currentPageName }) {
+
+const taskFlowQuickActions = [
+{ title: "Novo Projeto", url: createPageUrl("Projects"), icon: Plus, color: "bg-blue-50 hover:bg-blue-100 text-blue-700" },
+{ title: "Nova Tarefa", url: createPageUrl("Tasks"), icon: Plus, color: "bg-purple-50 hover:bg-purple-100 text-purple-700" }];
+
+
+const crmNav = [
+{
+  title: "Cadastro",
+  url: createPageUrl("Companies"),
+  icon: Building2
+},
+{
+  title: "Oportunidades",
+  url: createPageUrl("Opportunities"),
+  icon: TrendingUp
+}];
+
+
+function LayoutContent({ children }) {
   const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
+  const { open, setOpen } = useSidebar();
 
-  const handleLogout = async () => {
-    await base44.auth.logout();
+  // Determine which module is active based on current page
+  const getCurrentModule = () => {
+    const path = location.pathname;
+    if (path.includes('companies') || path.includes('opportunities')) {
+      return 'crm';
+    }
+    return 'taskflow';
   };
 
-  const groupedNav = mainNav.reduce((acc, item) => {
-    const existing = acc.find(g => g.category === item.category);
-    if (existing) {
-      existing.items.push(item);
-    } else {
-      acc.push({ category: item.category, items: [item] });
+  const currentModule = getCurrentModule();
+
+  // Auto-open TaskFlow when in TaskFlow pages and keep it open
+  React.useEffect(() => {
+    if (currentModule === 'taskflow') {
+      setIsTaskFlowOpen(true);
     }
-    return acc;
-  }, []);
+  }, [location.pathname, currentModule]);
 
   return (
-    <div className="min-h-screen flex w-full" style={{ backgroundColor: '#F8F9FB' }}>
-      {/* Backdrop */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 transition-opacity"
-          onClick={() => setIsMenuOpen(false)}
-        />
-      )}
+    <>
+      <Sidebar className="border-r border-slate-200 bg-white/80 backdrop-blur-sm">
+        <SidebarContent className="p-3 flex flex-col h-full">
+          {/* AppSwitcher moved to top */}
+          <div className="mb-6 px-3">
+            <AppSwitcher />
+          </div>
 
-      <main className="flex-1 flex flex-col w-full relative">
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-3 py-2">
+              Navegação
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {currentModule === 'taskflow' ?
+                <Collapsible open={isTaskFlowOpen} onOpenChange={setIsTaskFlowOpen}>
+                    <CollapsibleTrigger asChild>
+                      <button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-all mb-1 group">
+                        <div className="flex items-center gap-3">
+                          <FolderKanban className="w-5 h-5 text-blue-600" />
+                          <span className="font-semibold text-slate-900">TaskFlow</span>
+                        </div>
+                        {isTaskFlowOpen ?
+                      <ChevronDown className="w-4 h-4 text-slate-500 transition-transform" /> :
+
+                      <ChevronRight className="w-4 h-4 text-slate-500 transition-transform" />
+                      }
+                      </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="ml-3 mt-1 space-y-1">
+                      {taskFlowNav.map((item) => {
+                      const isActive = location.pathname === item.url;
+                      return (
+                        <SidebarMenuItem key={item.title}>
+                            <SidebarMenuButton
+                            asChild
+                            className={`
+                                rounded-lg transition-all duration-200
+                                ${isActive ?
+                            'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg' :
+                            'hover:bg-slate-100 text-slate-700'}
+                              `
+                            }>
+
+                              <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
+                                <item.icon className="w-4 h-4" />
+                                <span className="text-sm font-medium">{item.title}</span>
+                              </Link>
+                            </SidebarMenuButton>
+                          </SidebarMenuItem>);
+
+                    })}
+                      
+                      <div className="mt-3 pt-3 border-t border-slate-200">
+                        <div className="px-3 pb-2">
+                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                            Ações Rápidas
+                          </span>
+                        </div>
+                        {taskFlowQuickActions.map((action) =>
+                      <Link
+                        key={action.title}
+                        to={action.url}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg ${action.color} transition-colors text-sm font-medium`}>
+
+                            <action.icon className="w-4 h-4" />
+                            {action.title}
+                          </Link>
+                      )}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible> :
+
+                <>
+                    <div className="px-3 py-2 mb-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md">
+                          <Building2 className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="font-bold text-slate-900">CRM</span>
+                      </div>
+                    </div>
+                    {crmNav.map((item) => {
+                    const isActive = location.pathname === item.url;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                          <SidebarMenuButton
+                          asChild
+                          className={`
+                              rounded-lg mb-1 transition-all duration-200
+                              ${isActive ?
+                          'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-md hover:shadow-lg' :
+                          'hover:bg-slate-100 text-slate-700'}
+                            `
+                          }>
+
+                            <Link to={item.url} className="flex items-center gap-3 px-3 py-2.5">
+                              <item.icon className="w-5 h-5" />
+                              <span className="font-medium">{item.title}</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>);
+
+                  })}
+                  </>
+                }
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          {/* UserProfile stays at bottom */}
+          <div className="mt-auto"> 
+            <UserProfile />
+          </div>
+        </SidebarContent>
+      </Sidebar>
+
+      <main className="flex-1 flex flex-col relative">
+        {/* Toggle Button - Always visible */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setOpen(!open)} className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border hover:bg-accent hover:text-accent-foreground fixed bottom-4 left-4 z-50 bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-xl border-slate-200 rounded-full w-10 h-10 md:w-12 md:h-12 transition-all">
+
+
+          {open ?
+          <PanelLeftClose className="w-5 h-5 text-slate-700" /> :
+
+          <PanelLeft className="w-5 h-5 text-slate-700" />
+          }
+        </Button>
+
+        <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 px-4 py-3 md:hidden sticky top-0 z-10">
+          <div className="flex items-center justify-between gap-4">
+            <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
+            <AppSwitcher isMobile={true} />
+            <div className="w-10" />
+          </div>
+        </header>
+
         <div className="flex-1 overflow-auto">
           {children}
         </div>
-
-        {/* FAB Menu Button */}
-        <div className="fixed bottom-6 right-6 z-40">
-          {isMenuOpen && (
-            <div className="absolute bottom-20 right-0 bg-white rounded-3xl shadow-2xl border border-slate-100 w-96 max-h-[85vh] overflow-y-auto p-0 animate-in fade-in slide-in-from-bottom-4">
-              {/* User Profile Section */}
-              <div className="p-6 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                    VG
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-light text-slate-900 text-sm">Vitor Gutierrez</p>
-                    <p className="text-xs text-slate-500 truncate">comercial@vitorgutierrez.com</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Navigation Sections */}
-              <div className="divide-y divide-slate-100">
-                {groupedNav.map((group) => (
-                  <div key={group.category} className="p-6 space-y-3">
-                    <p className="text-xs font-light uppercase tracking-wider text-slate-400">{group.category}</p>
-                    <nav className="space-y-2">
-                      {group.items.map((item) => {
-                        const isActive = location.pathname === item.url;
-                        return (
-                          <Link
-                            key={item.title}
-                            to={item.url}
-                            onClick={() => setIsMenuOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all ${
-                              isActive
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                            }`}
-                          >
-                            <item.icon className="w-4 h-4 flex-shrink-0" />
-                            <span className="text-sm font-light">{item.title}</span>
-                          </Link>
-                        );
-                      })}
-                    </nav>
-                  </div>
-                ))}
-              </div>
-
-              {/* Footer */}
-              <div className="p-6 border-t border-slate-100">
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-2.5 w-full text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all text-sm font-light"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Sair
-                </button>
-              </div>
-            </div>
-          )}
-
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="w-14 h-14 rounded-full bg-slate-900 text-white shadow-lg hover:shadow-xl transition-all hover:scale-110 flex items-center justify-center"
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
-        </div>
       </main>
-    </div>
-  );
+    </>);
+
+}
+
+export default function Layout({ children, currentPageName }) {
+  return (
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-blue-50">
+        <LayoutContent>{children}</LayoutContent>
+      </div>
+    </SidebarProvider>);
+
 }
