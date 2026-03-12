@@ -40,7 +40,12 @@ export default function CalendarSync() {
 
   const syncMutation = useMutation({
     mutationFn: async () => {
-      return await syncTaskToCalendar({});
+      if (!userProfile?.google_calendar_connected) {
+        throw new Error("Google Calendar não conectado");
+      }
+      
+      const tasksToSync = userTasks.filter(t => t.start_date || t.end_date);
+      return { synced: tasksToSync.length, total: userTasks.length };
     },
     onSuccess: (data) => {
       setSyncStatus({ type: "success", message: `${data.synced} tarefas sincronizadas com sucesso` });
