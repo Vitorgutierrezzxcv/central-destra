@@ -134,7 +134,7 @@ function DashboardContent() {
               </button>
             </Link>
           </div>
-          {/* KPI Cards — right 1/3 */}
+          {/* KPI Cards — right half */}
           <div className="lg:col-span-1">
             <StatsCards
               pendingTasks={pendingTasks}
