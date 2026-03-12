@@ -99,24 +99,24 @@ export default function CalendarSync() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+            <h1 className="text-3xl font-light text-slate-900 flex items-center gap-3">
               <Calendar className="w-8 h-8 text-blue-600" />
               Calendário Sincronizado
             </h1>
-            <p className="text-slate-600 mt-1">Sincronize suas tarefas com o Google Calendar</p>
+            <p className="text-slate-500 mt-1 font-light">Sincronize suas tarefas com o Google Calendar</p>
           </div>
           <div className="flex gap-3">
             {!userProfile?.google_calendar_connected ? (
-              <Button onClick={() => connectGoogleMutation.mutate()} className="gap-2 bg-blue-600 hover:bg-blue-700">
+              <Button onClick={() => connectGoogleMutation.mutate()} className="gap-2 bg-blue-600 hover:bg-blue-700 font-light">
                 <Link2 className="w-4 h-4" />
                 Conectar Google Calendar
               </Button>
             ) : (
-              <Button onClick={() => syncMutation.mutate()} disabled={syncMutation.isPending} className="gap-2 bg-green-600 hover:bg-green-700">
+              <Button onClick={() => syncMutation.mutate()} disabled={syncMutation.isPending} className="gap-2 bg-green-600 hover:bg-green-700 font-light">
                 <RotateCw className={`w-4 h-4 ${syncMutation.isPending ? "animate-spin" : ""}`} />
                 Sincronizar Agora
               </Button>
