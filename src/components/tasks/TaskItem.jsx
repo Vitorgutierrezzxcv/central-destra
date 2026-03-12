@@ -287,6 +287,9 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
               {/* SubTask Display */}
               <SubTaskDisplay taskId={task.id} />
 
+              {/* Comments */}
+              <TaskComments taskId={task.id} />
+
               {/* Time Tracker */}
               <div className="mt-3">
                 {showFullTracker ? (
