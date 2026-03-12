@@ -156,8 +156,8 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <Card className={`border-l-4 ${status.borderColor} shadow-sm hover:shadow-md transition-all bg-white border border-[#EAEAEA]`}>
-        <CardContent className="p-4 md:p-5">
+      <Card className={`border-l-[3px] ${status.borderColor} bg-white border border-[#EAEAEA] rounded-2xl shadow-none hover:border-[#D0D0D0] transition-all`}>
+        <CardContent className="p-5">
           <div className="flex items-start gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -183,11 +183,11 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-2">
-                <h3 className={`text-base md:text-lg font-semibold ${task.status === 'completed' ? 'line-through text-[#456C8D]' : 'text-[#131A20]'}`}>
+                <h3 className={`text-base font-normal ${task.status === 'completed' ? 'line-through text-[#456C8D]' : 'text-[#131A20]'}`}>
                   {task.title}
                 </h3>
                 {task.assigned_to && assignedUserName && (
-                  <div className="flex items-center gap-2 bg-[#EAEAEA] px-2.5 py-1.5 rounded-full w-fit flex-shrink-0">
+                  <div className="flex items-center gap-2 bg-[#F7F7F7] border border-[#EAEAEA] px-2.5 py-1 rounded-full w-fit flex-shrink-0">
                     <Avatar className="w-5 h-5">
                       <AvatarFallback className="text-[10px] bg-[#6FA6FF] text-white">
                         {userInitials}

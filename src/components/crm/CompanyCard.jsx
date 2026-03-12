@@ -23,99 +23,75 @@ export default function CompanyCard({ company, onEdit, onDelete }) {
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl h-full bg-white">
-        <div className="h-24 md:h-28 bg-[#456C8D] p-4 md:p-5">
-          <div className="flex items-start justify-between">
-            <Badge className={`${status.color} border text-xs`}>
+      <Card className="relative overflow-hidden border border-[#EAEAEA] rounded-2xl h-full bg-white hover:border-[#D0D0D0] transition-all shadow-none">
+        <CardContent className="p-5">
+          {/* Header row */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3 min-w-0">
+              {company.logo_url ? (
+                <img
+                  src={company.logo_url}
+                  alt={company.name}
+                  className="w-11 h-11 rounded-xl object-cover border border-[#EAEAEA] flex-shrink-0"
+                />
+              ) : (
+                <div className="w-11 h-11 rounded-xl bg-[#F7F7F7] border border-[#EAEAEA] flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-5 h-5 text-[#456C8D]" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <h3 className="font-normal text-base text-[#131A20] truncate leading-snug">{company.name}</h3>
+                <p className="text-xs font-light text-[#456C8D] truncate mt-0.5">{company.segment}</p>
+              </div>
+            </div>
+            <div className="flex gap-0.5 flex-shrink-0 ml-2">
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-[#456C8D] hover:text-[#131A20] hover:bg-[#F7F7F7] rounded-xl" onClick={() => onEdit(company)}>
+                <Pencil className="w-3.5 h-3.5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-[#456C8D] hover:text-red-500 hover:bg-red-50 rounded-xl" onClick={() => onDelete(company.id)}>
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Status badge */}
+          <div className="mb-4">
+            <span className={`inline-flex items-center text-[11px] font-light px-2.5 py-1 rounded-full border ${status.color}`}>
               {status.label}
-            </Badge>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20"
-                onClick={() => onEdit(company)}
-              >
-                <Pencil className="w-4 h-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/20"
-                onClick={() => onDelete(company.id)}
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <CardContent className="p-4 md:p-5">
-          <div className="flex items-start gap-3 mb-4">
-            {company.logo_url ? (
-              <img 
-                src={company.logo_url} 
-                alt={company.name}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover border-2 border-[#EAEAEA]"
-              />
-            ) : (
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-[#EAEAEA] flex items-center justify-center border-2 border-[#EAEAEA]">
-                <Building2 className="w-8 h-8 md:w-10 md:h-10 text-[#456C8D]" />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg text-[#131A20] mb-1 line-clamp-2">
-                {company.name}
-              </h3>
-              <p className="text-sm text-[#456C8D] line-clamp-1">{company.segment}</p>
-            </div>
+            </span>
           </div>
 
-          <div className="space-y-2">
+          {/* Info rows */}
+          <div className="space-y-1.5">
             {company.average_revenue && (
-              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
-                <DollarSign className="w-4 h-4 text-[#6FA6FF]" />
-                <span className="font-medium">
-                  R$ {parseFloat(company.average_revenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês
-                </span>
+              <div className="flex items-center gap-2 text-xs text-[#456C8D] font-light">
+                <DollarSign className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>R$ {parseFloat(company.average_revenue).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}/mês</span>
               </div>
             )}
-            
             {companyAge !== null && companyAge >= 0 && (
-              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
-                <Calendar className="w-4 h-4 text-[#6FA6FF]" />
-                <span>{companyAge} {companyAge === 1 ? 'ano' : 'anos'} de fundação</span>
+              <div className="flex items-center gap-2 text-xs text-[#456C8D] font-light">
+                <Calendar className="w-3.5 h-3.5 flex-shrink-0" />
+                <span>{companyAge} {companyAge === 1 ? 'ano' : 'anos'}</span>
               </div>
             )}
-
             {company.phone && (
-              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
-                <Phone className="w-4 h-4 text-[#6FA6FF]" />
+              <div className="flex items-center gap-2 text-xs text-[#456C8D] font-light">
+                <Phone className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="truncate">{company.phone}</span>
               </div>
             )}
-
             {company.email && (
-              <div className="flex items-center gap-2 text-sm text-[#456C8D]">
-                <Mail className="w-4 h-4 text-[#6FA6FF]" />
+              <div className="flex items-center gap-2 text-xs text-[#456C8D] font-light">
+                <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="truncate">{company.email}</span>
               </div>
             )}
           </div>
 
-          {company.address && (
-            <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
-              <p className="text-xs text-[#456C8D] line-clamp-2">{company.address}</p>
-            </div>
-          )}
-
-          <div className="mt-4 pt-4 border-t border-[#EAEAEA]">
-            <span className="text-xs text-[#456C8D]">
-              Criado em {new Date(company.created_date).toLocaleDateString('pt-BR', { 
-                day: '2-digit', 
-                month: 'short',
-                year: 'numeric'
-              })}
+          <div className="mt-4 pt-3 border-t border-[#EAEAEA]">
+            <span className="text-[10px] font-light text-[#456C8D]">
+              Cadastrado {new Date(company.created_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
             </span>
           </div>
         </CardContent>
