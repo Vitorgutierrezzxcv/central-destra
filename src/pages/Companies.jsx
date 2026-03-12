@@ -95,42 +95,33 @@ export default function Companies() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#F7F7F7] p-5 md:p-7 lg:p-9">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#456C8D] rounded-xl md:rounded-2xl flex items-center justify-center">
-              <Building2 className="w-6 h-6 md:w-8 md:h-8 text-white" />
-            </div>
+        <div className="mb-7">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Cadastro de Empresas</h1>
-              <p className="text-sm md:text-base text-[#456C8D]">
-                {leadCount} lead{leadCount !== 1 ? 's' : ''} • {clientCount} cliente{clientCount !== 1 ? 's' : ''}
+              <h1 className="text-[26px] font-light text-[#131A20] tracking-tight">Empresas</h1>
+              <p className="text-sm font-light text-[#456C8D] mt-0.5">
+                {leadCount} lead{leadCount !== 1 ? 's' : ''} · {clientCount} cliente{clientCount !== 1 ? 's' : ''}
               </p>
             </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4 md:w-5 md:h-5" />
-              <Input
-                placeholder="Buscar empresas..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
-              />
-            </div>
-            <Button 
-              onClick={() => {
-                setEditingCompany(null);
-                setShowForm(true);
-              }}
-              className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg h-10 md:h-11 px-6"
+            <Button
+              onClick={() => { setEditingCompany(null); setShowForm(true); }}
+              className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-xl h-10 font-light shadow-none border-0"
             >
-              <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              <span className="text-sm md:text-base font-medium">Nova Empresa</span>
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Empresa
             </Button>
+          </div>
+          <div className="relative max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#456C8D] w-4 h-4" />
+            <Input
+              placeholder="Buscar empresas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 bg-white border-[#EAEAEA] h-10 text-sm rounded-xl focus:ring-[#6FA6FF]"
+            />
           </div>
         </div>
 
@@ -168,11 +159,11 @@ export default function Companies() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 md:py-24">
-            <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
-              <Building2 className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
+          <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#EAEAEA] rounded-2xl">
+            <div className="w-16 h-16 bg-[#F7F7F7] border border-[#EAEAEA] rounded-2xl flex items-center justify-center mb-5">
+              <Building2 className="w-8 h-8 text-[#456C8D]" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-lg font-normal text-[#131A20] mb-1.5">
               {searchTerm ? 'Nenhuma empresa encontrada' : 'Nenhuma empresa cadastrada'}
             </h3>
             <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">

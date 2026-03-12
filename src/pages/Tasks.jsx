@@ -261,22 +261,19 @@ export default function Tasks() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-    <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#F7F7F7] p-5 md:p-7 lg:p-9">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col gap-4 mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20] mb-2">Tarefas</h1>
-            <p className="text-sm md:text-base text-[#456C8D]">Organize e acompanhe todas as suas tarefas</p>
+            <h1 className="text-[26px] font-light text-[#131A20] tracking-tight">Tarefas</h1>
+            <p className="text-sm font-light text-[#456C8D] mt-0.5">Organize e acompanhe todas as suas tarefas</p>
           </div>
-          <Button 
-            onClick={() => {
-              setEditingTask(null);
-              setShowForm(true);
-            }}
-            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12"
+          <Button
+            onClick={() => { setEditingTask(null); setShowForm(true); }}
+            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-xl h-10 font-light shadow-none border-0"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            <span className="font-medium">Nova Tarefa</span>
+            <Plus className="w-4 h-4 mr-2" />
+            Nova Tarefa
           </Button>
         </div>
 
@@ -312,7 +309,7 @@ export default function Tasks() {
           </div>
         ) : filteredTasks.length > 0 ? (
           <Tabs defaultValue="grid" className="w-full">
-            <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-lg">
+            <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-xl">
               <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
                 <LayoutGrid className="w-4 h-4" />
                 <span className="hidden sm:inline">Grade</span>
@@ -367,7 +364,7 @@ export default function Tasks() {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="text-center py-12 md:py-16 bg-[#EAEAEA]/30 rounded-xl">
+          <div className="text-center py-16 bg-white border border-[#EAEAEA] rounded-2xl">
             <div className="w-16 h-16 md:w-24 md:h-24 bg-[#EAEAEA] rounded-full flex items-center justify-center mx-auto mb-4">
               <Plus className="w-8 h-8 md:w-12 md:h-12 text-[#456C8D]" />
             </div>
