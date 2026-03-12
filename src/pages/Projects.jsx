@@ -226,9 +226,9 @@ export default function Projects() {
 
                       {/* Responsável do Projeto */}
                       {project.project_owner_internal && (
-                        <div className="flex items-center gap-2 text-sm text-[#456C8D] bg-[#F7F7F7] p-2 rounded">
+                        <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 p-2 rounded font-light">
                           <User className="w-4 h-4" />
-                          <span className="font-medium">{getUserDisplayName(project.project_owner_internal)}</span>
+                          <span>{getUserDisplayName(project.project_owner_internal)}</span>
                         </div>
                       )}
 
