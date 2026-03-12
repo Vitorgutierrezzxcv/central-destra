@@ -297,11 +297,11 @@ export default function Tasks() {
         />
 
         {loadingTasks || loadingProjects ? (
-          <div className="space-y-3 md:space-y-4">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="h-32 md:h-36 bg-[#EAEAEA] rounded-xl animate-pulse" />
-            ))}
-          </div>
+           <div className="space-y-3 md:space-y-4">
+             {[1, 2, 3, 4, 5].map(i => (
+               <div key={i} className="h-32 md:h-36 bg-slate-200 rounded-xl animate-pulse" />
+             ))}
+           </div>
         ) : filteredTasks.length > 0 ? (
           <Tabs defaultValue="grid" className="w-full">
             <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-xl">
