@@ -31,11 +31,9 @@ async function getValidAccessToken(base44, profile) {
 }
 
 async function upsertCalendarEvent(accessToken, task, existingEventId) {
-  // Use end_date or start_date; Google all-day events need date + 1 day as end
   const dateStr = task.end_date || task.start_date;
   if (!dateStr) return null;
 
-  // For all-day events, end must be the next day
   const endDate = new Date(dateStr);
   endDate.setDate(endDate.getDate() + 1);
   const endDateStr = endDate.toISOString().split('T')[0];
@@ -49,7 +47,6 @@ async function upsertCalendarEvent(accessToken, task, existingEventId) {
 
   let res;
   if (existingEventId) {
-    // Update existing event
     res = await fetch(
       `https://www.googleapis.com/calendar/v3/calendars/primary/events/${existingEventId}`,
       {
@@ -58,8 +55,13 @@ async function upsertCalendarEvent(accessToken, task, existingEventId) {
         body: JSON.stringify(eventBody),
       }
     );
-  } else {
-    // Create new event
+    // If not found, fall through to create
+    if (res.status === 404) {
+      existingEventId = null;
+    }
+  }
+
+  if (!existingEventId) {
     res = await fetch(
       'https://www.googleapis.com/calendar/v3/calendars/primary/events',
       {
@@ -71,67 +73,74 @@ async function upsertCalendarEvent(accessToken, task, existingEventId) {
   }
 
   const data = await res.json();
-  if (!res.ok) {
-    // If event not found on update, create new
-    if (res.status === 404 && existingEventId) {
-      return upsertCalendarEvent(accessToken, task, null);
-    }
-    throw new Error(data.error?.message || 'Calendar API error');
-  }
+  if (!res.ok) throw new Error(data.error?.message || 'Calendar API error');
   return data.id;
+}
+
+async function syncTask(base44, task) {
+  if (!task.assigned_to || !task.end_date) return { skipped: true };
+
+  const profiles = await base44.asServiceRole.entities.UserProfile.filter({ user_email: task.assigned_to });
+  const profile = profiles[0];
+  if (!profile?.google_calendar_connected || !profile?.google_calendar_refresh_token) {
+    return { skipped: true, reason: 'no_calendar_connected' };
+  }
+
+  const accessToken = await getValidAccessToken(base44, profile);
+  const eventId = await upsertCalendarEvent(accessToken, task, task.gcal_event_id || null);
+
+  if (eventId && eventId !== task.gcal_event_id) {
+    await base44.asServiceRole.entities.Task.update(task.id, { gcal_event_id: eventId });
+  }
+
+  return { synced: true, eventId };
 }
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    // Allow both authenticated user calls and service-role automation calls
     const body = await req.json().catch(() => ({}));
 
-    // Can be called with a specific task_id (automation) or bulk (no task_id)
-    const { task_id, event, data: taskData } = body;
+    // Entity automation payload: { event, data, old_data }
+    if (body.event && body.data) {
+      const task = body.data;
+      const oldData = body.old_data || {};
 
-    let tasksToSync = [];
+      // Only sync if end_date exists and changed (or is a create event)
+      const endDateChanged = body.event.type === 'create' || task.end_date !== oldData.end_date;
+      const titleChanged = task.title !== oldData.title;
+      const descChanged = task.description !== oldData.description;
 
-    if (task_id && taskData) {
-      // Called from automation with event payload
-      const task = taskData;
-      if (task.assigned_to && (task.end_date || task.start_date)) {
-        tasksToSync = [task];
+      if (!task.end_date || (!endDateChanged && !titleChanged && !descChanged)) {
+        return Response.json({ ok: true, skipped: true });
       }
-    } else if (!task_id) {
-      // Bulk sync — called manually, requires admin
-      const user = await base44.auth.me();
-      if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden' }, { status: 403 });
-      }
-      const allTasks = await base44.asServiceRole.entities.Task.list();
-      tasksToSync = allTasks.filter(t => t.assigned_to && (t.end_date || t.start_date));
-    } else {
-      return Response.json({ synced: 0 });
+
+      const result = await syncTask(base44, task);
+      return Response.json({ ok: true, ...result });
     }
+
+    // Manual bulk sync — admin only
+    const user = await base44.auth.me();
+    if (!user || user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const allTasks = await base44.asServiceRole.entities.Task.list();
+    const tasksToSync = allTasks.filter(t => t.assigned_to && t.end_date);
 
     let synced = 0;
     const errors = [];
 
     for (const task of tasksToSync) {
       try {
-        const profiles = await base44.asServiceRole.entities.UserProfile.filter({ user_email: task.assigned_to });
-        const profile = profiles[0];
-        if (!profile?.google_calendar_connected || !profile?.google_calendar_refresh_token) continue;
-
-        const accessToken = await getValidAccessToken(base44, profile);
-        const eventId = await upsertCalendarEvent(accessToken, task, task.gcal_event_id || null);
-
-        if (eventId && eventId !== task.gcal_event_id) {
-          await base44.asServiceRole.entities.Task.update(task.id, { gcal_event_id: eventId });
-        }
-        synced++;
+        const result = await syncTask(base44, task);
+        if (result.synced) synced++;
       } catch (err) {
         errors.push({ task_id: task.id, error: err.message });
       }
     }
 
-    return Response.json({ synced, errors });
+    return Response.json({ synced, total: tasksToSync.length, errors });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
