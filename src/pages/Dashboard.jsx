@@ -169,6 +169,9 @@ function DashboardContent() {
               <UpcomingTasks tasks={tasks} projects={projects} />
             </div>
 
+            {/* Personal Tasks */}
+            <PersonalTasksBlock userEmail={user?.email} />
+
             {/* Active Projects */}
             <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
