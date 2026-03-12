@@ -85,7 +85,7 @@ function DashboardContent() {
             <h1 className="text-[#131A20] text-4xl font-light tracking-tight leading-tight">
               {displayName}
             </h1>
-            <p className="text-sm font-light text-[#456C8D] mt-0.5 capitalize">
+            <p className="text-[#456C8D] mb-4 text-sm font-light capitalize">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
