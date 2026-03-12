@@ -47,28 +47,18 @@ export default function StatsCards({ pendingTasks, inProgressTasks, completedTas
 
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+    <div className="flex flex-col gap-2">
       {cards.map((card) =>
       <Link
         key={card.title}
         to={`${createPageUrl("Tasks")}?status=${card.filterStatus}&assignedTo=${user?.email || ''}`}
         className="block">
-
-          <div className="bg-white border border-[#EAEAEA] rounded-2xl p-5 hover:border-[#6FA6FF]/30 transition-all cursor-pointer group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="bg-slate-200 rounded-xl w-9 h-9 flex items-center justify-center"
-
-            style={{ background: card.bg }}>
-
-                <card.icon className="w-4 h-4" style={{ color: card.accent }} />
-              </div>
+          <div className="bg-white border border-[#EAEAEA] rounded-xl px-4 py-2.5 hover:border-[#6FA6FF]/30 transition-all cursor-pointer flex items-center gap-3">
+            <div className="rounded-lg w-7 h-7 flex items-center justify-center shrink-0" style={{ background: card.bg }}>
+              <card.icon className="w-3.5 h-3.5" style={{ color: card.accent }} />
             </div>
-            <div
-            className="text-3xl font-light text-[#131A20] tabular-nums mb-1">
-
-              {card.value}
-            </div>
-            <p className="text-xs font-light text-[#456C8D]">{card.title}</p>
+            <p className="text-xs font-light text-[#456C8D] flex-1">{card.title}</p>
+            <span className="text-lg font-light text-[#131A20] tabular-nums">{card.value}</span>
           </div>
         </Link>
       )}
