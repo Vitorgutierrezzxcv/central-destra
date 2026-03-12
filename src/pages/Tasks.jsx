@@ -304,16 +304,16 @@ export default function Tasks() {
            </div>
         ) : filteredTasks.length > 0 ? (
           <Tabs defaultValue="grid" className="w-full">
-            <TabsList className="bg-[#EAEAEA] mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-xl">
-              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+            <TabsList className="bg-slate-100 mb-6 p-1 h-auto grid grid-cols-3 w-full sm:w-auto rounded-xl">
+              <TabsTrigger value="grid" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm font-light">
                 <LayoutGrid className="w-4 h-4" />
                 <span className="hidden sm:inline">Grade</span>
               </TabsTrigger>
-              <TabsTrigger value="kanban" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <TabsTrigger value="kanban" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm font-light">
                 <Kanban className="w-4 h-4" />
                 <span className="hidden sm:inline">Kanban</span>
               </TabsTrigger>
-              <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-[#6FA6FF] data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm">
+              <TabsTrigger value="table" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-lg px-3 py-2 text-xs sm:text-sm font-light">
                 <TableIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">Tabela</span>
               </TabsTrigger>
