@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Calendar, BarChart3 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +40,16 @@ const taskFlowNav = [
     icon: ListTodo,
   },
   {
+    title: "Calendário",
+    url: createPageUrl("CalendarSync"),
+    icon: Calendar,
+  },
+  {
+    title: "Relatórios",
+    url: createPageUrl("PerformanceReports"),
+    icon: BarChart3,
+  },
+  {
     title: "Backlog",
     url: createPageUrl("Backlog"),
     icon: Package,
@@ -62,12 +72,6 @@ const crmNav = [
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isTaskFlowOpen, setIsTaskFlowOpen] = useState(false);
-  
-  // Auto-expand TaskFlow if on a TaskFlow page
-  const isInTaskFlow = ['Dashboard', 'Projects', 'Tasks', 'CalendarSync', 'PerformanceReports', 'Backlog'].some(page => location.pathname.includes(page));
-  if (isInTaskFlow && !isTaskFlowOpen) {
-    // Don't auto-expand, user controls via click
-  }
 
   // Determine which navigation to show based on current page
   const isInCRM = location.pathname.includes('Companies');
