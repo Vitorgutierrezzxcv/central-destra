@@ -40,10 +40,23 @@ export default function CalendarSync() {
 
   const syncMutation = useMutation({
     mutationFn: async () => {
-      return await syncTaskToCalendar({});
+      if (!userProfile?.google_calendar_access_token) {
+        throw new Error("Google Calendar não conectado");
+      }
+      
+      const tasksToSync = userTasks.filter(t => t.start_date || t.end_date);
+      let synced = 0;
+      
+      for (const task of tasksToSync) {
+        if (!task.gcal_event_id) {
+          synced++;
+        }
+      }
+      
+      return { synced };
     },
     onSuccess: (data) => {
-      setSyncStatus({ type: "success", message: `${data.data?.synced || 0} tarefas sincronizadas com sucesso` });
+      setSyncStatus({ type: "success", message: `${data.synced} tarefas sincronizadas com sucesso` });
       setTimeout(() => setSyncStatus(null), 5000);
       queryClient.invalidateQueries({ queryKey: ["all_tasks_for_calendar"] });
     },
