@@ -138,9 +138,6 @@ function DashboardContent() {
           </Link>
         </div>
 
-        {/* ── Progress Bar Strip ──────────────────── */}
-        <TaskProgressWidget tasks={tasks} />
-
         {/* ── Main Grid ───────────────────────────── */}
         <div className="grid lg:grid-cols-3 gap-5 mt-5">
 
