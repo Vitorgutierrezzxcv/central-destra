@@ -259,13 +259,13 @@ export default function Projects() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 md:py-24">
-            <div className="w-20 h-20 md:w-32 md:h-32 bg-[#EAEAEA] rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
-              <FolderKanban className="w-10 h-10 md:w-16 md:h-16 text-[#456C8D]" />
+            <div className="w-20 h-20 md:w-32 md:h-32 bg-slate-200 rounded-xl md:rounded-2xl flex items-center justify-center mb-6">
+              <FolderKanban className="w-10 h-10 md:w-16 md:h-16 text-slate-500" />
             </div>
-            <h3 className="text-xl md:text-2xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-xl md:text-2xl font-light text-slate-900 mb-2">
               {searchTerm ? 'Nenhum projeto encontrado' : 'Nenhum projeto ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
+            <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-8 text-center max-w-md px-4 font-light">
               {searchTerm 
                 ? 'Tente buscar com outros termos ou crie um novo projeto' 
                 : 'Crie seu primeiro projeto e comece a organizar suas tarefas'}
@@ -273,7 +273,7 @@ export default function Projects() {
             {!searchTerm && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-light"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Criar Primeiro Projeto
