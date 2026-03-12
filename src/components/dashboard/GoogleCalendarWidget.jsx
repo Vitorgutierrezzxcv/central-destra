@@ -49,6 +49,10 @@ export default function GoogleCalendarWidget() {
         </div>
         {connected && (
           <div className="flex items-center gap-1">
+            <button onClick={() => refetch()} title="Atualizar"
+              className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#F7F7F7] transition-colors">
+              <RefreshCw className={`w-3.5 h-3.5 text-[#456C8D] ${isLoading ? "animate-spin" : ""}`} />
+            </button>
             <button onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
               className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[#F7F7F7] transition-colors">
               <ChevronLeft className="w-4 h-4 text-[#456C8D]" />
