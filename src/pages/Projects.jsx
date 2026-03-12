@@ -188,8 +188,8 @@ export default function Projects() {
             </div>
 
             {/* Detalhes de Tarefas Atrasadas */}
-            <div className="bg-white border border-[#EAEAEA] rounded-xl p-5 md:p-6">
-              <h2 className="text-lg md:text-xl font-semibold text-[#131A20] mb-4 flex items-center gap-2">
+             <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6">
+              <h2 className="text-lg md:text-xl font-light text-slate-900 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-red-600" />
                 Tarefas Atrasadas por Projeto
               </h2>
