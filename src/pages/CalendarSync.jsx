@@ -41,20 +41,15 @@ export default function CalendarSync() {
 
   const syncMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/functions/syncTaskToCalendar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({})
-      });
-      return res.json();
+      return await syncTaskToCalendar({});
     },
     onSuccess: (data) => {
-      setSyncStatus({ type: "success", message: `${data.synced} tarefas sincronizadas com sucesso` });
+      setSyncStatus({ type: "success", message: `${data.data?.synced || 0} tarefas sincronizadas com sucesso` });
       setTimeout(() => setSyncStatus(null), 5000);
       queryClient.invalidateQueries({ queryKey: ["all_tasks_for_calendar"] });
     },
     onError: (error) => {
-      setSyncStatus({ type: "error", message: "Erro ao sincronizar com Google Calendar" });
+      setSyncStatus({ type: "error", message: error.message || "Erro ao sincronizar com Google Calendar" });
     }
   });
 
