@@ -16,6 +16,8 @@ import ProjectProgress from "../components/dashboard/ProjectProgress";
 import UpcomingTasks from "../components/dashboard/UpcomingTasks";
 import UserPerformanceRanking from "../components/dashboard/UserPerformanceRanking";
 import AccessGuard from "../components/layout/AccessGuard";
+import PomodoroTimer from "../components/dashboard/PomodoroTimer";
+import TaskProgressWidget from "../components/dashboard/TaskProgressWidget";
 
 function DashboardContent() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -95,7 +97,7 @@ function DashboardContent() {
               </Button>
             </Link>
             <Link to={createPageUrl("Tasks")}>
-              <Button size="sm" className="bg-slate-900 text-white px-3 text-sm font-light rounded-xl inline-flex items-center justify-center gap-2 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-9 hover:bg-[#456C8D] border-0 shadow-none">
+              <Button size="sm" className="h-9 bg-[#131A20] hover:bg-[#456C8D] text-white font-light text-sm rounded-xl border-0 shadow-none">
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Nova Tarefa
               </Button>
@@ -181,14 +183,21 @@ function DashboardContent() {
 
           {/* Right col */}
           <div className="space-y-5">
-            <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
+            {/* Progress widget */}
+            <TaskProgressWidget tasks={tasks} />
+
+            {/* Pomodoro */}
+            <PomodoroTimer />
+
+            {/* Calendar */}
+            <div className="bg-white border border-[#EAEAEA] rounded-2xl p-5">
               <h2 className="text-sm font-normal text-[#131A20] mb-4">Calendário</h2>
               <TasksCalendar
                 tasks={tasks}
                 selectedDate={selectedDate}
                 onDateChange={setSelectedDate} />
-
             </div>
+
             <NotesBlock userEmail={user?.email} />
           </div>
 
