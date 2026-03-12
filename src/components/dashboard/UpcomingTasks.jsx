@@ -79,6 +79,11 @@ export default function UpcomingTasks({ tasks, projects }) {
                     Atrasada
                   </span>
                 )}
+                {isDueSoon && (
+                  <span className="text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                    ⚠ Prazo próximo
+                  </span>
+                )}
                 <span
                   className="text-[10px] font-light px-2 py-0.5 rounded-full"
                   style={{ background: priority.bg, color: priority.color }}
