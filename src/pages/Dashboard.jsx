@@ -173,16 +173,16 @@ function DashboardContent() {
             <PersonalTasksBlock userEmail={user?.email} />
 
             {/* Active Projects */}
-            <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
+             <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="text-sm font-normal text-[#131A20]">Projetos Ativos</h2>
-                  <p className="text-xs text-[#456C8D] font-light mt-0.5">
+                  <h2 className="text-sm font-normal text-slate-900">Projetos Ativos</h2>
+                  <p className="text-xs text-slate-500 font-light mt-0.5">
                     {activeProjects} em andamento
                   </p>
                 </div>
                 <Link to={createPageUrl("Projects")}>
-                  <button className="text-xs text-[#6FA6FF] hover:text-[#456C8D] flex items-center gap-1 transition-colors font-light">
+                  <button className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors font-light">
                     Ver todos <ArrowRight className="w-3 h-3" />
                   </button>
                 </Link>
