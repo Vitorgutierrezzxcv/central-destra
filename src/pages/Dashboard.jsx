@@ -76,29 +76,29 @@ function DashboardContent() {
   const totalTasksCount = tasks.length;
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-4 md:p-5 lg:p-6">
+    <div className="min-h-screen bg-white p-4 md:p-5 lg:p-6">
       <div className="w-full">
 
         {/* ── Page Header ─────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <p className="text-[#456C8D] mt-10 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
-            <h1 className="text-[#131A20] text-4xl font-light tracking-tight leading-tight">
+            <p className="text-slate-500 mt-10 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
+            <h1 className="text-slate-900 text-4xl font-light tracking-tight leading-tight">
               {displayName}
             </h1>
-            <p className="text-[#456C8D] mb-4 text-sm font-light capitalize">
+            <p className="text-slate-500 mb-4 text-sm font-light capitalize">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Link to={createPageUrl("Projects")}>
-              <Button variant="outline" size="sm" className="h-9 border-[#EAEAEA] bg-white text-[#131A20] hover:bg-[#F7F7F7] font-light text-sm rounded-xl">
+              <Button variant="outline" size="sm" className="h-9 border-slate-200 bg-white text-slate-900 hover:bg-slate-50 font-light text-sm rounded-xl">
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Projeto
               </Button>
             </Link>
             <Link to={createPageUrl("Tasks")}>
-              <Button size="sm" className="h-9 bg-[#131A20] hover:bg-[#456C8D] text-white font-light text-sm rounded-xl border-0 shadow-none">
+              <Button size="sm" className="h-9 bg-slate-900 hover:bg-slate-800 text-white font-light text-sm rounded-xl border-0 shadow-none">
                 <Plus className="w-3.5 h-3.5 mr-1.5" />
                 Nova Tarefa
               </Button>
