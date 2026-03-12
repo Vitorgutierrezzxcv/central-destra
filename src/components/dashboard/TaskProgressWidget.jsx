@@ -19,7 +19,7 @@ export default function TaskProgressWidget({ tasks }) {
   const barColor = percent >= 80 ? "#131A20" : percent >= 50 ? "#456C8D" : "#6FA6FF";
 
   return (
-    <div className="mt-5 bg-white border border-[#EAEAEA] rounded-2xl px-6 py-4 flex items-center gap-6">
+    <div className="mb-5 bg-white border border-[#EAEAEA] rounded-2xl px-6 py-4 flex items-center gap-6">
       <div className="flex items-baseline gap-1.5 shrink-0">
         <span className="text-2xl font-light text-[#131A20] tabular-nums leading-none">{percent}%</span>
         <span className="text-xs font-light text-[#456C8D]">concluído {label}</span>
