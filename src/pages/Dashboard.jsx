@@ -105,6 +105,9 @@ function DashboardContent() {
           </div>
         </div>
 
+        {/* ── Progress Bar Strip ──────────────────── */}
+        <TaskProgressWidget tasks={tasks} />
+
         {/* ── KPI Strip ───────────────────────────── */}
         <StatsCards
           pendingTasks={pendingTasks}
