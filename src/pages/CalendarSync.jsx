@@ -208,7 +208,7 @@ export default function CalendarSync() {
                           : "bg-white border-slate-200 hover:border-slate-300"
                       }`}
                     >
-                      <span className={`text-sm font-semibold ${isSelected ? "text-blue-700" : "text-slate-900"}`}>
+                      <span className={`text-sm font-light ${isSelected ? "text-blue-700" : "text-slate-900"}`}>
                         {date.getDate()}
                       </span>
                       {dayTasks.length > 0 && (
