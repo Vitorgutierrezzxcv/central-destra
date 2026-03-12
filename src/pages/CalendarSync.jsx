@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Calendar, RotateCw, AlertCircle, CheckCircle2, Clock, Link2, Settings } from "lucide-react";
+import { Calendar, RotateCw, AlertCircle, CheckCircle2, Clock, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
@@ -67,7 +67,6 @@ export default function CalendarSync() {
   const monthEnd = endOfMonth(viewDate);
   const daysInView = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Agrupar tarefas por responsável
   const tasksByAssignee = allTasks.reduce((acc, task) => {
     if (!task.assigned_to) return acc;
     if (!acc[task.assigned_to]) acc[task.assigned_to] = [];
@@ -75,7 +74,6 @@ export default function CalendarSync() {
     return acc;
   }, {});
 
-  // Tarefas do usuário atual
   const userTasks = userProfile ? tasksByAssignee[user?.email] || [] : [];
 
   const getTasksForDate = (date) => {
@@ -103,7 +101,6 @@ export default function CalendarSync() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
@@ -127,7 +124,6 @@ export default function CalendarSync() {
           </div>
         </div>
 
-        {/* Status Messages */}
         {syncStatus && (
           <div className={`p-4 rounded-lg border flex items-center gap-3 ${
             syncStatus.type === "success"
@@ -143,7 +139,6 @@ export default function CalendarSync() {
           </div>
         )}
 
-        {/* Connection Status */}
         <div className="bg-white border border-slate-200 rounded-lg p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${userProfile?.google_calendar_connected ? "bg-green-500" : "bg-slate-300"}`} />
@@ -160,7 +155,6 @@ export default function CalendarSync() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Calendar */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-6">
@@ -185,7 +179,6 @@ export default function CalendarSync() {
                 </div>
               </div>
 
-              {/* Days header */}
               <div className="grid grid-cols-7 gap-2 mb-4">
                 {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map(day => (
                   <div key={day} className="text-center text-sm font-semibold text-slate-600 py-2">
@@ -194,7 +187,6 @@ export default function CalendarSync() {
                 ))}
               </div>
 
-              {/* Calendar grid */}
               <div className="grid grid-cols-7 gap-2">
                 {Array.from({ length: daysInView[0]?.getDay() || 0 }).map((_, i) => (
                   <div key={`empty-${i}`} className="aspect-square" />
@@ -231,7 +223,6 @@ export default function CalendarSync() {
             </div>
           </div>
 
-          {/* Tasks for Selected Date */}
           <div className="bg-white rounded-lg border border-slate-200 p-6 h-fit sticky top-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">
               {selectedDate 
@@ -288,7 +279,6 @@ export default function CalendarSync() {
           </div>
         </div>
 
-        {/* Sync Stats */}
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-lg border border-slate-200 p-4">
             <p className="text-sm text-slate-600 mb-2">Total de Tarefas</p>
