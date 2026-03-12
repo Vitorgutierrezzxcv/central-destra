@@ -205,10 +205,10 @@ export default function Projects() {
 
                   if (overdueTasks.length === 0) {
                     return (
-                      <div key={project.id} className="flex items-center justify-between p-3 bg-[#F7F7F7] rounded-lg">
+                      <div key={project.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                         <div>
-                          <p className="font-medium text-[#131A20]">{project.name}</p>
-                          <p className="text-xs text-[#456C8D]">Nenhuma tarefa atrasada</p>
+                          <p className="font-light text-slate-900">{project.name}</p>
+                          <p className="text-xs text-slate-500 font-light">Nenhuma tarefa atrasada</p>
                         </div>
                         <CheckCircle2 className="w-5 h-5 text-green-600" />
                       </div>
@@ -216,9 +216,9 @@ export default function Projects() {
                   }
 
                   return (
-                    <div key={project.id} className="border border-[#EAEAEA] rounded-lg p-3 md:p-4 space-y-3">
+                    <div key={project.id} className="border border-slate-200 rounded-lg p-3 md:p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-medium text-[#131A20]">{project.name}</h3>
+                        <h3 className="font-light text-slate-900">{project.name}</h3>
                         <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-200">
                           {overdueTasks.length} atrasada{overdueTasks.length !== 1 ? 's' : ''}
                         </Badge>
