@@ -181,7 +181,7 @@ export default function CalendarSync() {
 
               <div className="grid grid-cols-7 gap-2 mb-4">
                 {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map(day => (
-                  <div key={day} className="text-center text-sm font-semibold text-slate-600 py-2">
+                  <div key={day} className="text-center text-sm font-light text-slate-600 py-2">
                     {day}
                   </div>
                 ))}
