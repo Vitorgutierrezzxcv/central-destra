@@ -21,6 +21,7 @@ import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
 import TimeTracker from "./TimeTracker";
 import SubTaskDisplay from "./SubTaskDisplay";
 import TaskComments from "./TaskComments";
+import TaskFileUpload from "./TaskFileUpload";
 
 const statusConfig = {
   pending: {
@@ -289,6 +290,9 @@ export default function TaskItem({ task, project, onEdit, onDelete, onStatusChan
 
               {/* Comments */}
               <TaskComments taskId={task.id} />
+
+              {/* File Upload */}
+              <TaskFileUpload task={task} />
 
               {/* Time Tracker */}
               <div className="mt-3">
