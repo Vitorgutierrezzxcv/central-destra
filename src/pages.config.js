@@ -63,8 +63,15 @@ import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalTimeline from './pages/ClientPortalTimeline';
 import Companies from './pages/Companies';
 import Dashboard from './pages/Dashboard';
+import FinanceAccounts from './pages/FinanceAccounts';
+import FinanceCashFlow from './pages/FinanceCashFlow';
+import FinanceDashboard from './pages/FinanceDashboard';
+import FinanceEntries from './pages/FinanceEntries';
 import FinanceFixedExpenses from './pages/FinanceFixedExpenses';
+import FinanceMonthlyClosing from './pages/FinanceMonthlyClosing';
 import FinancePayroll from './pages/FinancePayroll';
+import FinanceRecurrences from './pages/FinanceRecurrences';
+import FinanceReports from './pages/FinanceReports';
 import FinanceSummary from './pages/FinanceSummary';
 import FinanceVariableExpenses from './pages/FinanceVariableExpenses';
 import Home from './pages/Home';
@@ -81,13 +88,6 @@ import Projects from './pages/Projects';
 import Prospecting from './pages/Prospecting';
 import RecurringTasks from './pages/RecurringTasks';
 import Tasks from './pages/Tasks';
-import FinanceDashboard from './pages/FinanceDashboard';
-import FinanceEntries from './pages/FinanceEntries';
-import FinanceAccounts from './pages/FinanceAccounts';
-import FinanceCashFlow from './pages/FinanceCashFlow';
-import FinanceRecurrences from './pages/FinanceRecurrences';
-import FinanceReports from './pages/FinanceReports';
-import FinanceMonthlyClosing from './pages/FinanceMonthlyClosing';
 import __Layout from './Layout.jsx';
 
 
@@ -108,8 +108,15 @@ export const PAGES = {
     "ClientPortalTimeline": ClientPortalTimeline,
     "Companies": Companies,
     "Dashboard": Dashboard,
+    "FinanceAccounts": FinanceAccounts,
+    "FinanceCashFlow": FinanceCashFlow,
+    "FinanceDashboard": FinanceDashboard,
+    "FinanceEntries": FinanceEntries,
     "FinanceFixedExpenses": FinanceFixedExpenses,
+    "FinanceMonthlyClosing": FinanceMonthlyClosing,
     "FinancePayroll": FinancePayroll,
+    "FinanceRecurrences": FinanceRecurrences,
+    "FinanceReports": FinanceReports,
     "FinanceSummary": FinanceSummary,
     "FinanceVariableExpenses": FinanceVariableExpenses,
     "Home": Home,
@@ -126,13 +133,6 @@ export const PAGES = {
     "Prospecting": Prospecting,
     "RecurringTasks": RecurringTasks,
     "Tasks": Tasks,
-    "FinanceDashboard": FinanceDashboard,
-    "FinanceEntries": FinanceEntries,
-    "FinanceAccounts": FinanceAccounts,
-    "FinanceCashFlow": FinanceCashFlow,
-    "FinanceRecurrences": FinanceRecurrences,
-    "FinanceReports": FinanceReports,
-    "FinanceMonthlyClosing": FinanceMonthlyClosing,
 }
 
 export const pagesConfig = {

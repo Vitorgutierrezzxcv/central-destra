@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Plus, Calendar, ArrowRight } from "lucide-react";
 
-import TasksCalendar from "../components/dashboard/TasksCalendar";
+import GoogleCalendarWidget from "../components/dashboard/GoogleCalendarWidget";
 import NotesBlock from "../components/dashboard/NotesBlock";
 import StatsCards from "../components/dashboard/StatsCards";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
