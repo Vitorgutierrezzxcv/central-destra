@@ -115,20 +115,20 @@ function DashboardContent() {
         {/* ── Executive + KPI Row ─────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-0">
           {/* Executive Insight — left half */}
-          <div className="bg-slate-950 p-6 rounded-2xl border border-[#EAEAEA] lg:col-span-1 md:p-7 flex flex-col justify-between overflow-hidden">
-            <div>
-              <p className="text-slate-50 mb-2 text-xs font-light uppercase tracking-widest">VISÃO EXECUTIVA</p>
-              <p className="text-white text-xl font-light leading-snug">
-                {overdueTasks > 0 ?
-                `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
-                inProgressTasks > 0 ?
-                `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
-                `Tudo em dia · ${completedTasks} tarefas concluídas`}
-              </p>
-              <p className="text-slate-300 mt-2 text-sm font-light">
-                {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
-              </p>
-            </div>
+          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 lg:col-span-1 md:p-7 flex flex-col justify-between overflow-hidden">
+           <div>
+             <p className="text-slate-400 mb-2 text-xs font-light uppercase tracking-widest">VISÃO EXECUTIVA</p>
+             <p className="text-white text-xl font-light leading-snug">
+               {overdueTasks > 0 ?
+               `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
+               inProgressTasks > 0 ?
+               `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
+               `Tudo em dia · ${completedTasks} tarefas concluídas`}
+             </p>
+             <p className="text-slate-400 mt-2 text-sm font-light">
+               {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
+             </p>
+           </div>
             <Link to={createPageUrl("Tasks")} className="mt-4">
               <button className="flex items-center gap-2 text-sm font-light text-white/70 hover:text-white transition-colors">
                 Ver tarefas <ArrowRight className="w-4 h-4" />
