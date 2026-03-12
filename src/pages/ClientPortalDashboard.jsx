@@ -237,7 +237,8 @@ export default function ClientPortalDashboard() {
                 <div className="space-y-1">
                   {[
                     { label: "Projeto & Roadmap", page: "ClientPortalProject", icon: Building2 },
-                    { label: "Tarefas & Entregas", page: "ClientPortalDeliveries", icon: CheckCircle2 },
+                    { label: "Tarefas & Progresso", page: "ClientPortalTasks", icon: CheckCircle2 },
+                    { label: "Entregas", page: "ClientPortalDeliveries", icon: CheckCircle2 },
                     { label: "Onboarding", page: "ClientPortalOnboarding", icon: Clock },
                     { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
                     { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
