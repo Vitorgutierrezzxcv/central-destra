@@ -63,8 +63,8 @@ export default function UpcomingTasks({ tasks, projects }) {
             to={`${createPageUrl("ProjectDetail")}?id=${task.project_id}`}
             className="block"
           >
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-[#EAEAEA] hover:bg-[#F7F7F7] transition-all">
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-px" style={{ background: isOverdue ? '#C0392B' : priority.color }} />
+            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${isOverdue ? 'border-red-200 bg-red-50/50 hover:bg-red-50' : isDueSoon ? 'border-amber-200 bg-amber-50/50 hover:bg-amber-50' : 'border-[#EAEAEA] hover:bg-[#F7F7F7]'}`}>
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-px" style={{ background: isOverdue ? '#C0392B' : isDueSoon ? '#D97706' : priority.color }} />
               <div className="flex-1 min-w-0">
                 <p className={`text-sm font-normal truncate ${isOverdue ? 'text-[#C0392B]' : 'text-[#131A20]'}`}>
                   {task.title}
