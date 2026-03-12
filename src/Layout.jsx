@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Calendar } from "lucide-react";
+import { FolderKanban, ListTodo, LayoutDashboard, Plus, Package, Building2, ChevronDown, ChevronRight, Calendar, BarChart3 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -43,6 +43,11 @@ const taskFlowNav = [
     title: "Calendário",
     url: createPageUrl("CalendarSync"),
     icon: Calendar,
+  },
+  {
+    title: "Relatórios",
+    url: createPageUrl("PerformanceReports"),
+    icon: BarChart3,
   },
   {
     title: "Backlog",
