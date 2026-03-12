@@ -64,15 +64,9 @@ export default function GoogleCalendarWidget() {
             <Calendar className="w-6 h-6 text-[#6FA6FF]" />
           </div>
           <div>
-            <p className="text-sm font-normal text-[#131A20]">Conecte seu Google Calendar</p>
-            <p className="text-xs font-light text-[#456C8D] mt-1">Veja seus eventos aqui no dashboard</p>
+            <p className="text-sm font-normal text-[#131A20]">Calendário não disponível</p>
+            <p className="text-xs font-light text-[#456C8D] mt-1">Não foi possível carregar os eventos</p>
           </div>
-          <button
-            onClick={handleConnect}
-            disabled={connecting}
-            className="bg-[#131A20] hover:bg-[#456C8D] text-white text-xs font-light px-5 py-2.5 rounded-xl transition-colors disabled:opacity-60">
-            {connecting ? "Redirecionando..." : "Conectar Google Calendar"}
-          </button>
         </div>
       )}
 
