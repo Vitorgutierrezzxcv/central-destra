@@ -111,34 +111,37 @@ function DashboardContent() {
         {/* ── Pomodoro Compact Strip ─────────────── */}
         <PomodoroTimer compact />
 
-        {/* ── KPI Strip ───────────────────────────── */}
-        <StatsCards
-          pendingTasks={pendingTasks}
-          inProgressTasks={inProgressTasks}
-          completedTasks={completedTasks}
-          overdueTasks={overdueTasks} />
-
-
-        {/* ── Executive Insight Block ─────────────── */}
-        <div className="mt-5 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="text-[#6FA6FF] text-xs font-light uppercase tracking-widest mb-1">Visão Executiva</p>
-            <p className="text-white text-lg font-light leading-snug">
-              {overdueTasks > 0 ?
-              `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
-              inProgressTasks > 0 ?
-              `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
-              `Tudo em dia · ${completedTasks} tarefas concluídas`}
-            </p>
-            <p className="text-[#456C8D] text-sm font-light mt-1">
-              {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
-            </p>
+        {/* ── Executive + KPI Row ─────────────────── */}
+        <div className="grid lg:grid-cols-3 gap-4 mt-0">
+          {/* Executive Insight — left 2/3 */}
+          <div className="lg:col-span-2 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col justify-between">
+            <div>
+              <p className="text-[#6FA6FF] text-xs font-light uppercase tracking-widest mb-2">Visão Executiva</p>
+              <p className="text-white text-xl font-light leading-snug">
+                {overdueTasks > 0 ?
+                `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
+                inProgressTasks > 0 ?
+                `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
+                `Tudo em dia · ${completedTasks} tarefas concluídas`}
+              </p>
+              <p className="text-[#456C8D] text-sm font-light mt-2">
+                {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
+              </p>
+            </div>
+            <Link to={createPageUrl("Tasks")} className="mt-4">
+              <button className="flex items-center gap-2 text-sm font-light text-white/70 hover:text-white transition-colors">
+                Ver tarefas <ArrowRight className="w-4 h-4" />
+              </button>
+            </Link>
           </div>
-          <Link to={createPageUrl("Tasks")}>
-            <button className="flex items-center gap-2 text-sm font-light text-white/70 hover:text-white transition-colors whitespace-nowrap">
-              Ver tarefas <ArrowRight className="w-4 h-4" />
-            </button>
-          </Link>
+          {/* KPI Cards — right 1/3 */}
+          <div className="lg:col-span-1">
+            <StatsCards
+              pendingTasks={pendingTasks}
+              inProgressTasks={inProgressTasks}
+              completedTasks={completedTasks}
+              overdueTasks={overdueTasks} />
+          </div>
         </div>
 
         {/* ── Main Grid ───────────────────────────── */}
