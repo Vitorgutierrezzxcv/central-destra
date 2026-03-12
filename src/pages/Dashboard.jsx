@@ -112,7 +112,7 @@ function DashboardContent() {
         <PomodoroTimer compact />
 
         {/* ── Executive + KPI Row ─────────────────── */}
-        <div className="grid grid-cols-2 gap-4 mt-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-0">
           {/* Executive Insight — left half */}
           <div className="lg:col-span-1 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col justify-between">
             <div>
