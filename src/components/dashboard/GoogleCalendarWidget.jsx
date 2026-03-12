@@ -8,8 +8,6 @@ import { ptBR } from "date-fns/locale";
 export default function GoogleCalendarWidget() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [connecting, setConnecting] = useState(false);
-
   const { data: calendarData, isLoading } = useQuery({
     queryKey: ["userCalendarEvents", currentMonth.getFullYear(), currentMonth.getMonth()],
     queryFn: () => base44.functions.invoke("getUserCalendarEvents", {}).then(r => r || { connected: false, events: [] }),
