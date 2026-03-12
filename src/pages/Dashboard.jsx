@@ -116,7 +116,7 @@ function DashboardContent() {
           {/* Executive Insight — left half */}
           <div className="lg:col-span-1 bg-[#131A20] rounded-2xl p-6 md:p-7 flex flex-col justify-between">
             <div>
-              <p className="text-[#6FA6FF] text-xs font-light uppercase tracking-widest mb-2">Visão Executiva</p>
+              <p className="text-slate-50 mb-2 text-xs font-light uppercase tracking-widest">VISÃO EXECUTIVA</p>
               <p className="text-white text-xl font-light leading-snug">
                 {overdueTasks > 0 ?
                 `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
@@ -124,7 +124,7 @@ function DashboardContent() {
                 `${inProgressTasks} tarefa${inProgressTasks > 1 ? 's' : ''} em andamento` :
                 `Tudo em dia · ${completedTasks} tarefas concluídas`}
               </p>
-              <p className="text-[#456C8D] text-sm font-light mt-2">
+              <p className="text-slate-300 mt-2 text-sm font-light">
                 {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
               </p>
             </div>
