@@ -22,7 +22,7 @@ export default function GoogleCalendarWidget() {
   const handleConnect = async () => {
     setConnecting(true);
     const res = await base44.functions.invoke("googleCalendarAuth", { redirect_origin: window.location.origin });
-    const { authUrl } = res;
+    const authUrl = res?.data?.authUrl ?? res?.authUrl;
     window.location.href = authUrl;
   };
 
