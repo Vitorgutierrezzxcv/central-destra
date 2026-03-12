@@ -81,7 +81,7 @@ function DashboardContent() {
         {/* ── Page Header ─────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <p className="text-[#456C8D] mb-0.5 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
+            <p className="text-[#456C8D] mt-10 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
             <h1 className="text-[#131A20] text-4xl font-light tracking-tight leading-tight">
               {displayName}
             </h1>
