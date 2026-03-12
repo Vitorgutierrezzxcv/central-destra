@@ -359,16 +359,16 @@ export default function Tasks() {
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="text-center py-16 bg-white border border-[#EAEAEA] rounded-2xl">
-            <div className="w-16 h-16 md:w-24 md:h-24 bg-[#EAEAEA] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Plus className="w-8 h-8 md:w-12 md:h-12 text-[#456C8D]" />
+          <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Plus className="w-8 h-8 md:w-12 md:h-12 text-slate-500" />
             </div>
-            <h3 className="text-lg md:text-xl font-semibold text-[#131A20] mb-2">
+            <h3 className="text-lg md:text-xl font-light text-slate-900 mb-2">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-4 md:mb-6 px-4">
+            <p className="text-sm md:text-base text-slate-500 mb-4 md:mb-6 px-4 font-light">
               {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
@@ -376,7 +376,7 @@ export default function Tasks() {
             {!(Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end) && (
               <Button 
                 onClick={() => setShowForm(true)}
-                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-11 md:h-12"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg h-11 md:h-12 font-light"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Criar Primeira Tarefa
