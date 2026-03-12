@@ -11,7 +11,7 @@ export default function GoogleCalendarWidget() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["googleCalendarEvents", currentMonth.getFullYear(), currentMonth.getMonth()],
-    queryFn: () => getGoogleCalendarEvents({}).then(r => r.data?.events || []),
+    queryFn: () => base44.functions.invoke("getGoogleCalendarEvents", {}).then(r => r?.events || []),
     staleTime: 5 * 60 * 1000,
   });
 
