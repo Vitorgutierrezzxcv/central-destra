@@ -16,7 +16,7 @@ const colorClasses = {
   pink: "bg-[#6FA6FF]",
   red: "bg-[#456C8D]",
   indigo: "bg-[#6FA6FF]",
-  teal: "bg-[#456C8D]",
+  teal: "bg-[#456C8D]"
 };
 
 export default function ProjectCard({ project, stats, onEdit, onDelete }) {
@@ -26,12 +26,12 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ y: -4, scale: 1.02 }}
-      transition={{ duration: 0.2 }}
-    >
+      transition={{ duration: 0.2 }}>
+
       <Link to={`${createPageUrl("ProjectDetail")}?id=${project.id}`}>
         <Card className="relative overflow-hidden shadow-sm hover:shadow-md transition-all border border-[#EAEAEA] rounded-xl h-full bg-white">
           {/* Colored Header */}
-          <div className={`h-24 md:h-28 ${colorClasses[project.color] || colorClasses.blue} p-4 md:p-5`}>
+          <div className="bg-slate-950 p-4 h-24 md:h-28 md:p-5">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <h3 className="text-white font-bold text-lg md:text-xl mb-1 line-clamp-2">
@@ -49,8 +49,8 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit(project);
-                  }}
-                >
+                  }}>
+
                   <Pencil className="w-4 h-4" />
                 </Button>
                 <Button
@@ -60,8 +60,8 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(project.id);
-                  }}
-                >
+                  }}>
+
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -69,11 +69,11 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
           </div>
 
           <CardContent className="p-4 md:p-5">
-            {project.description && (
-              <p className="text-sm text-[#456C8D] mb-4 line-clamp-2 min-h-[40px]">
+            {project.description &&
+            <p className="text-sm text-[#456C8D] mb-4 line-clamp-2 min-h-[40px]">
                 {project.description}
               </p>
-            )}
+            }
             
             {/* Progress Section */}
             <div className="space-y-3">
@@ -81,27 +81,27 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
                 <span className="text-sm font-medium text-[#456C8D]">Progresso</span>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-[#131A20]">{stats.percentage}%</span>
-                  {stats.percentage === 100 && (
-                    <CheckCircle2 className="w-4 h-4 text-[#6FA6FF]" />
-                  )}
+                  {stats.percentage === 100 &&
+                  <CheckCircle2 className="w-4 h-4 text-[#6FA6FF]" />
+                  }
                 </div>
               </div>
               <Progress value={stats.percentage} className="h-2" />
               <div className="flex items-center justify-between text-xs text-[#456C8D]">
                 <span>{stats.completed} concluída{stats.completed !== 1 ? 's' : ''}</span>
-                <span>{stats.total - stats.completed} pendente{(stats.total - stats.completed) !== 1 ? 's' : ''}</span>
+                <span>{stats.total - stats.completed} pendente{stats.total - stats.completed !== 1 ? 's' : ''}</span>
               </div>
             </div>
 
             {/* Footer */}
             <div className="mt-4 pt-4 border-t border-[#EAEAEA] flex items-center justify-between">
               <span className="text-xs text-[#456C8D]">
-                {new Date(project.created_date).toLocaleDateString('pt-BR', { 
-                  day: '2-digit', 
-                  month: 'short' 
+                {new Date(project.created_date).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: 'short'
                 })}
               </span>
-              <div className="flex items-center gap-1 text-sm font-medium text-[#6FA6FF] hover:text-[#456C8D]">
+              <div className="text-gray-950 text-sm font-medium flex items-center gap-1 hover:text-[#456C8D]">
                 Ver detalhes
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -109,6 +109,6 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
           </CardContent>
         </Card>
       </Link>
-    </motion.div>
-  );
+    </motion.div>);
+
 }
