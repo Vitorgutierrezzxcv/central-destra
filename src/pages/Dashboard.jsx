@@ -152,16 +152,16 @@ function DashboardContent() {
           <div className="lg:col-span-2 space-y-5">
 
             {/* Today's tasks */}
-            <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
+             <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h2 className="text-sm font-normal text-[#131A20]">Hoje</h2>
-                  <p className="text-xs text-[#456C8D] font-light mt-0.5">
+                  <h2 className="text-sm font-normal text-slate-900">Hoje</h2>
+                  <p className="text-xs text-slate-500 font-light mt-0.5">
                     {format(new Date(), "dd 'de' MMMM", { locale: ptBR })}
                   </p>
                 </div>
                 <Link to={createPageUrl("Tasks")}>
-                  <button className="text-xs text-[#6FA6FF] hover:text-[#456C8D] flex items-center gap-1 transition-colors font-light">
+                  <button className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors font-light">
                     Ver todas <ArrowRight className="w-3 h-3" />
                   </button>
                 </Link>
