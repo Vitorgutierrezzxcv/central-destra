@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { googleCalendarCallback } from "@/functions/googleCalendarCallback";
+import { base44 } from "@/api/base44Client";
 
 export default function GoogleCalendarCallback() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function GoogleCalendarCallback() {
     }
 
     const redirectUri = `${window.location.origin}/GoogleCalendarCallback`;
-    googleCalendarCallback({ code, redirect_uri: redirectUri })
+    base44.functions.invoke("googleCalendarCallback", { code, redirect_uri: redirectUri })
       .then(() => {
         setStatus("success");
         setTimeout(() => navigate(createPageUrl("Dashboard")), 1500);
