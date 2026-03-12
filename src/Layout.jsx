@@ -179,7 +179,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex items-center justify-between gap-4">
               <SidebarTrigger className="hover:bg-slate-100 p-2 rounded-lg transition-colors" />
               <AppSwitcher isMobile={true} />
-              <div className="w-10" />
+              <NotificationBell />
             </div>
           </header>
 
