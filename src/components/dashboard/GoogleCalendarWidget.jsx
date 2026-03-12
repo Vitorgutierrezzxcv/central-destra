@@ -13,7 +13,7 @@ export default function GoogleCalendarWidget() {
 
   const { data: calendarData, isLoading } = useQuery({
     queryKey: ["userCalendarEvents", currentMonth.getFullYear(), currentMonth.getMonth()],
-    queryFn: () => getUserCalendarEvents({}).then(r => r.data || { connected: false, events: [] }),
+    queryFn: () => base44.functions.invoke("getUserCalendarEvents", {}).then(r => r || { connected: false, events: [] }),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -22,8 +22,8 @@ export default function GoogleCalendarWidget() {
 
   const handleConnect = async () => {
     setConnecting(true);
-    const res = await googleCalendarAuth({ redirect_origin: window.location.origin });
-    const { authUrl } = res.data;
+    const res = await base44.functions.invoke("googleCalendarAuth", { redirect_origin: window.location.origin });
+    const { authUrl } = res;
     window.location.href = authUrl;
   };
 
