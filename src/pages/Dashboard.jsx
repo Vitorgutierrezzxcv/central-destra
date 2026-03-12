@@ -75,8 +75,8 @@ function DashboardContent() {
   const totalTasksCount = tasks.length;
 
   return (
-    <div className="min-h-screen bg-[#F7F7F7] p-5 md:p-7 lg:p-9">
-      <div className="max-w-7xl mx-auto w-full">
+    <div className="min-h-screen bg-[#F7F7F7] p-4 md:p-5 lg:p-6">
+      <div className="w-full">
 
         {/* ── Page Header ─────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
