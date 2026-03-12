@@ -81,11 +81,11 @@ function DashboardContent() {
         {/* ── Page Header ─────────────────────────── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <p className="text-[#456C8D] mb-0.5 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
-            <h1 className="text-[#131A20] text-4xl font-light tracking-tight leading-tight">
+            <p className="text-xs font-light text-[#456C8D] mb-0.5 uppercase tracking-wider">{greeting()}</p>
+            <h1 className="text-[26px] font-light text-[#131A20] tracking-tight leading-tight">
               {displayName}
             </h1>
-            <p className="text-[#456C8D] mt-0.5 text-base font-light capitalize">
+            <p className="text-sm font-light text-[#456C8D] mt-0.5 capitalize">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
@@ -107,6 +107,9 @@ function DashboardContent() {
 
         {/* ── Progress Bar Strip ──────────────────── */}
         <TaskProgressWidget tasks={tasks} />
+
+        {/* ── Pomodoro Compact Strip ─────────────── */}
+        <PomodoroTimer compact />
 
         {/* ── KPI Strip ───────────────────────────── */}
         <StatsCards
@@ -139,7 +142,7 @@ function DashboardContent() {
         </div>
 
         {/* ── Main Grid ───────────────────────────── */}
-        <div className="grid lg:grid-cols-3 gap-5 mt-5">
+        <div className="grid lg:grid-cols-2 gap-5 mt-5">
 
           {/* Left col */}
           <div className="lg:col-span-2 space-y-5">
@@ -193,14 +196,6 @@ function DashboardContent() {
             </div>
 
             <NotesBlock userEmail={user?.email} />
-          </div>
-
-          {/* Right col — highlighted Pomodoro column */}
-          <div className="lg:col-span-1">
-            <div className="bg-[#131A20] rounded-2xl p-6 flex flex-col h-full min-h-[520px]">
-              <p className="text-[#6FA6FF] text-[10px] font-light uppercase tracking-widest mb-5">Foco</p>
-              <PomodoroTimer dark />
-            </div>
           </div>
 
         </div>
