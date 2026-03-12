@@ -258,16 +258,16 @@ export default function Tasks() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-    <div className="min-h-screen bg-[#F7F7F7] p-5 md:p-7 lg:p-9">
+    <div className="min-h-screen bg-white p-5 md:p-7 lg:p-9">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
           <div>
-            <h1 className="text-[26px] font-light text-[#131A20] tracking-tight">Tarefas</h1>
-            <p className="text-sm font-light text-[#456C8D] mt-0.5">Organize e acompanhe todas as suas tarefas</p>
+            <h1 className="text-[26px] font-light text-slate-900 tracking-tight">Tarefas</h1>
+            <p className="text-sm font-light text-slate-500 mt-0.5">Organize e acompanhe todas as suas tarefas</p>
           </div>
           <Button
             onClick={() => { setEditingTask(null); setShowForm(true); }}
-            className="w-full sm:w-auto bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-xl h-10 font-light shadow-none border-0"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 font-light shadow-none border-0"
           >
             <Plus className="w-4 h-4 mr-2" />
             Nova Tarefa
