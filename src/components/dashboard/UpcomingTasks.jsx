@@ -53,7 +53,9 @@ export default function UpcomingTasks({ tasks, projects }) {
       {todayTasks.map((task) => {
         const project  = projects.find(p => p.id === task.project_id);
         const priority = priorityConfig[task.priority] || priorityConfig.medium;
-        const isOverdue = task.end_date && isBefore(parseISO(task.end_date), now) && !isToday(parseISO(task.end_date));
+        const endDateParsed = task.end_date ? parseISO(task.end_date) : null;
+        const isOverdue = endDateParsed && isBefore(endDateParsed, now) && !isToday(endDateParsed);
+        const isDueSoon = !isOverdue && endDateParsed && !isBefore(endDateParsed, now) && !isAfter(endDateParsed, in3Days);
 
         return (
           <Link
