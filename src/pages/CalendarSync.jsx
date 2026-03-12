@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format, parseISO, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { syncTaskToCalendar } from "@/functions/syncTaskToCalendar";
 
 export default function CalendarSync() {
   const [viewDate, setViewDate] = useState(new Date());
