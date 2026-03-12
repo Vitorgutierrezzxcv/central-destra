@@ -166,11 +166,11 @@ export default function Projects() {
         </AnimatePresence>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-56 bg-[#EAEAEA] rounded-xl animate-pulse" />
-            ))}
-          </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+             {[1, 2, 3].map(i => (
+               <div key={i} className="h-56 bg-slate-200 rounded-xl animate-pulse" />
+             ))}
+           </div>
         ) : filteredProjects.length > 0 ? (
           <div className="space-y-4 md:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
