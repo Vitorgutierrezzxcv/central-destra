@@ -166,17 +166,17 @@ export default function Companies() {
             <h3 className="text-lg font-normal text-[#131A20] mb-1.5">
               {searchTerm ? 'Nenhuma empresa encontrada' : 'Nenhuma empresa cadastrada'}
             </h3>
-            <p className="text-sm md:text-base text-[#456C8D] mb-6 md:mb-8 text-center max-w-md px-4">
-              {searchTerm 
-                ? 'Tente buscar com outros termos ou cadastre uma nova empresa' 
+            <p className="text-sm font-light text-[#456C8D] mb-5 text-center max-w-xs px-4">
+              {searchTerm
+                ? 'Tente buscar com outros termos ou cadastre uma nova empresa'
                 : 'Cadastre sua primeira empresa e comece a gerenciar seus clientes'}
             </p>
             {!searchTerm && (
-              <Button 
+              <Button
                 onClick={() => setShowForm(true)}
-                className="bg-[#456C8D] hover:bg-[#131A20] text-white rounded-lg h-11 md:h-12 px-6 md:px-8 text-sm md:text-base font-medium"
+                className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-xl h-10 px-6 font-light shadow-none border-0"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-4 h-4 mr-2" />
                 Cadastrar Primeira Empresa
               </Button>
             )}
