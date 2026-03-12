@@ -20,6 +20,7 @@ import {
 import TaskDescriptionDisplay from "./TaskDescriptionDisplay";
 import TimeTracker from "./TimeTracker";
 import SubTaskDisplay from "./SubTaskDisplay";
+import TaskComments from "./TaskComments";
 
 const statusConfig = {
   pending: {
