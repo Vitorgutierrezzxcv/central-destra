@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2 } from "lucide-react";
-import { format, isToday, parseISO, isBefore, startOfDay } from "date-fns";
+import { format, isToday, parseISO, isBefore, startOfDay, addDays, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const priorityConfig = {
