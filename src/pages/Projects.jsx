@@ -237,18 +237,18 @@ export default function Projects() {
                         {overdueTasks.slice(0, 3).map(task => (
                           <div key={task.id} className="text-sm bg-red-50 border border-red-200 rounded p-2 flex items-start justify-between gap-2">
                             <div className="min-w-0">
-                              <p className="font-medium text-red-900 truncate">{task.title}</p>
-                              <p className="text-xs text-red-700">Prazo: {new Date(task.end_date).toLocaleDateString('pt-BR')}</p>
+                              <p className="font-light text-red-900 truncate">{task.title}</p>
+                              <p className="text-xs text-red-700 font-light">Prazo: {new Date(task.end_date).toLocaleDateString('pt-BR')}</p>
                             </div>
                             {task.assigned_to && (
-                              <span className="text-xs bg-red-200 text-red-900 px-2 py-1 rounded whitespace-nowrap flex-shrink-0">
+                              <span className="text-xs bg-red-200 text-red-900 px-2 py-1 rounded whitespace-nowrap flex-shrink-0 font-light">
                                 {getUserDisplayName(task.assigned_to)}
                               </span>
                             )}
                           </div>
                         ))}
                         {overdueTasks.length > 3 && (
-                          <p className="text-xs text-[#456C8D] py-1">+{overdueTasks.length - 3} tarefa{overdueTasks.length > 4 ? 's' : ''} atrasada{overdueTasks.length > 4 ? 's' : ''}</p>
+                          <p className="text-xs text-slate-500 py-1 font-light">+{overdueTasks.length - 3} tarefa{overdueTasks.length > 4 ? 's' : ''} atrasada{overdueTasks.length > 4 ? 's' : ''}</p>
                         )}
                       </div>
                     </div>
