@@ -117,12 +117,12 @@ export default function Projects() {
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#6FA6FF] rounded-xl md:rounded-2xl flex items-center justify-center">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center">
               <FolderKanban className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-[#131A20]">Projetos</h1>
-              <p className="text-sm md:text-base text-[#456C8D]">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-slate-900">Projetos</h1>
+              <p className="text-sm md:text-base text-slate-500 font-light">
                 {activeProjects} ativo{activeProjects !== 1 ? 's' : ''} • {completedProjects} concluído{completedProjects !== 1 ? 's' : ''}
               </p>
             </div>
@@ -130,12 +130,12 @@ export default function Projects() {
           
           <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#456C8D] w-4 h-4 md:w-5 md:h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-4 h-4 md:w-5 md:h-5" />
               <Input
                 placeholder="Buscar projetos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 md:pl-10 bg-white border-[#EAEAEA] h-10 md:h-11 text-sm md:text-base rounded-lg"
+                className="pl-9 md:pl-10 bg-white border-slate-200 h-10 md:h-11 text-sm md:text-base rounded-lg text-slate-900 font-light placeholder:text-slate-400"
               />
             </div>
             <Button 
@@ -143,7 +143,7 @@ export default function Projects() {
                 setEditingProject(null);
                 setShowForm(true);
               }}
-              className="bg-[#6FA6FF] hover:bg-[#456C8D] text-white rounded-lg h-10 md:h-11 px-6"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg h-10 md:h-11 px-6 font-light"
             >
               <Plus className="w-4 h-4 md:w-5 md:h-5 mr-2" />
               <span className="text-sm md:text-base font-medium">Novo Projeto</span>
