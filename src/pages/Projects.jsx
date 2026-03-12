@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Plus, Search, FolderKanban } from "lucide-react";
+import { Plus, Search, FolderKanban, AlertCircle, CheckCircle2, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { AnimatePresence } from "framer-motion";
 import ProjectCard from "../components/projects/ProjectCard";
 import ProjectForm from "../components/projects/ProjectForm";
@@ -23,6 +24,12 @@ export default function Projects() {
   const { data: tasks } = useQuery({
     queryKey: ['tasks'],
     queryFn: () => base44.entities.Task.list(),
+    initialData: [],
+  });
+
+  const { data: users } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list(),
     initialData: [],
   });
 
@@ -76,11 +83,24 @@ export default function Projects() {
   const getProjectStats = (projectId) => {
     const projectTasks = tasks.filter(t => t.project_id === projectId);
     const completed = projectTasks.filter(t => t.status === 'completed').length;
+    const now = new Date();
+    const overdue = projectTasks.filter(t => 
+      t.status !== 'completed' && 
+      t.end_date && 
+      new Date(t.end_date) < now
+    ).length;
     return {
       total: projectTasks.length,
       completed,
+      overdue,
       percentage: projectTasks.length > 0 ? Math.round((completed / projectTasks.length) * 100) : 0
     };
+  };
+
+  const getUserDisplayName = (email) => {
+    if (!email) return null;
+    const user = users.find(u => u.email === email);
+    return user ? (user.display_name || user.full_name || email.split('@')[0]) : email.split('@')[0];
   };
 
   const filteredProjects = projects.filter(project =>
@@ -152,18 +172,90 @@ export default function Projects() {
             ))}
           </div>
         ) : filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <AnimatePresence>
-              {filteredProjects.map(project => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  stats={getProjectStats(project.id)}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </AnimatePresence>
+          <div className="space-y-4 md:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              <AnimatePresence>
+                {filteredProjects.map(project => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    stats={getProjectStats(project.id)}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+
+            {/* Detalhes de Tarefas Atrasadas */}
+            <div className="bg-white border border-[#EAEAEA] rounded-xl p-5 md:p-6">
+              <h2 className="text-lg md:text-xl font-semibold text-[#131A20] mb-4 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5 text-red-600" />
+                Tarefas Atrasadas por Projeto
+              </h2>
+              <div className="space-y-3">
+                {filteredProjects.map(project => {
+                  const projectTasks = tasks.filter(t => t.project_id === project.id && !t.parent_task_id);
+                  const now = new Date();
+                  const overdueTasks = projectTasks.filter(t =>
+                    t.status !== 'completed' &&
+                    t.end_date &&
+                    new Date(t.end_date) < now
+                  );
+
+                  if (overdueTasks.length === 0) {
+                    return (
+                      <div key={project.id} className="flex items-center justify-between p-3 bg-[#F7F7F7] rounded-lg">
+                        <div>
+                          <p className="font-medium text-[#131A20]">{project.name}</p>
+                          <p className="text-xs text-[#456C8D]">Nenhuma tarefa atrasada</p>
+                        </div>
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={project.id} className="border border-[#EAEAEA] rounded-lg p-3 md:p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium text-[#131A20]">{project.name}</h3>
+                        <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-200">
+                          {overdueTasks.length} atrasada{overdueTasks.length !== 1 ? 's' : ''}
+                        </Badge>
+                      </div>
+
+                      {/* Responsável do Projeto */}
+                      {project.project_owner_internal && (
+                        <div className="flex items-center gap-2 text-sm text-[#456C8D] bg-[#F7F7F7] p-2 rounded">
+                          <User className="w-4 h-4" />
+                          <span className="font-medium">{getUserDisplayName(project.project_owner_internal)}</span>
+                        </div>
+                      )}
+
+                      {/* Lista de Tarefas Atrasadas */}
+                      <div className="space-y-2">
+                        {overdueTasks.slice(0, 3).map(task => (
+                          <div key={task.id} className="text-sm bg-red-50 border border-red-200 rounded p-2 flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="font-medium text-red-900 truncate">{task.title}</p>
+                              <p className="text-xs text-red-700">Prazo: {new Date(task.end_date).toLocaleDateString('pt-BR')}</p>
+                            </div>
+                            {task.assigned_to && (
+                              <span className="text-xs bg-red-200 text-red-900 px-2 py-1 rounded whitespace-nowrap flex-shrink-0">
+                                {getUserDisplayName(task.assigned_to)}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                        {overdueTasks.length > 3 && (
+                          <p className="text-xs text-[#456C8D] py-1">+{overdueTasks.length - 3} tarefa{overdueTasks.length > 4 ? 's' : ''} atrasada{overdueTasks.length > 4 ? 's' : ''}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 md:py-24">
