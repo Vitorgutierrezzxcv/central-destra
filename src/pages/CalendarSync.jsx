@@ -158,7 +158,7 @@ export default function CalendarSync() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-light text-slate-900">
                   {format(viewDate, "MMMM yyyy", { locale: ptBR })}
                 </h2>
                 <div className="flex gap-2">
