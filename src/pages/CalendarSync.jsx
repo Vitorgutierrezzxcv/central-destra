@@ -281,18 +281,18 @@ export default function CalendarSync() {
 
         <div className="grid grid-cols-3 gap-4">
           <div className="bg-white rounded-lg border border-slate-200 p-4">
-            <p className="text-sm text-slate-600 mb-2">Total de Tarefas</p>
-            <p className="text-2xl font-bold text-slate-900">{userTasks.length}</p>
+            <p className="text-sm text-slate-500 mb-2 font-light">Total de Tarefas</p>
+            <p className="text-2xl font-light text-slate-900">{userTasks.length}</p>
           </div>
           <div className="bg-white rounded-lg border border-slate-200 p-4">
-            <p className="text-sm text-slate-600 mb-2">Sincronizadas</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-sm text-slate-500 mb-2 font-light">Sincronizadas</p>
+            <p className="text-2xl font-light text-green-600">
               {userTasks.filter(t => t.gcal_event_id).length}
             </p>
           </div>
           <div className="bg-white rounded-lg border border-slate-200 p-4">
-            <p className="text-sm text-slate-600 mb-2">Pendentes</p>
-            <p className="text-2xl font-bold text-amber-600">
+            <p className="text-sm text-slate-500 mb-2 font-light">Pendentes</p>
+            <p className="text-2xl font-light text-amber-600">
               {userTasks.filter(t => !t.gcal_event_id && (t.start_date || t.end_date)).length}
             </p>
           </div>
