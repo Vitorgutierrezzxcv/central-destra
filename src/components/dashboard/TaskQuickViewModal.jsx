@@ -39,6 +39,112 @@ const TABS = [
   { id: "files",     label: "Anexos",     icon: Paperclip },
 ];
 
+function TaskEditForm({ task, projects, onSave, onCancel }) {
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    title: task.title || "",
+    description: task.description || "",
+    project_id: task.project_id || "",
+    assigned_to: task.assigned_to || "",
+    priority: task.priority || "medium",
+    status: task.status || "pending",
+    start_date: task.start_date || "",
+    end_date: task.end_date || "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    await onSave(form);
+    setSaving(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium text-[#456C8D]">Título *</Label>
+        <Input
+          value={form.title}
+          onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+          required
+          className="h-9 text-sm"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-medium text-[#456C8D]">Descrição</Label>
+        <textarea
+          value={form.description}
+          onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+          rows={3}
+          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#6FA6FF]"
+          placeholder="Detalhes da tarefa..."
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-[#456C8D]">Projeto</Label>
+          <Select value={form.project_id} onValueChange={v => setForm(f => ({ ...f, project_id: v }))}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              {projects.map(p => (
+                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-[#456C8D]">Prioridade</Label>
+          <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v }))}>
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Baixa</SelectItem>
+              <SelectItem value="medium">Média</SelectItem>
+              <SelectItem value="high">Alta</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-[#456C8D]">Data Início</Label>
+          <Input
+            type="date"
+            value={form.start_date}
+            onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))}
+            className="h-9 text-sm"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs font-medium text-[#456C8D]">Data Término</Label>
+          <Input
+            type="date"
+            value={form.end_date}
+            onChange={e => setForm(f => ({ ...f, end_date: e.target.value }))}
+            className="h-9 text-sm"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-2 pt-2">
+        <Button type="button" variant="outline" size="sm" onClick={onCancel} className="flex-1">
+          Cancelar
+        </Button>
+        <Button type="submit" size="sm" disabled={saving} className="flex-1 bg-[#6FA6FF] hover:bg-[#456C8D] text-white">
+          {saving ? <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />Salvando...</> : "Salvar"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 export default function TaskQuickViewModal({ task: initialTask, project, projects = [], onClose, onUpdate, onDelete }) {
   const [task, setTask] = useState(initialTask);
   const [activeTab, setActiveTab] = useState("details");
