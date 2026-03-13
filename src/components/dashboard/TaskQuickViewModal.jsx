@@ -45,7 +45,7 @@ export default function TaskQuickViewModal({ task, project, onClose }) {
     setCreatingNotion(true);
     setNotionError(null);
     try {
-      const res = await createNotionPage({
+      const res = await base44.functions.invoke("createNotionPage", {
         taskId: task.id,
         taskTitle: task.title,
         taskDescription: task.description || "",
