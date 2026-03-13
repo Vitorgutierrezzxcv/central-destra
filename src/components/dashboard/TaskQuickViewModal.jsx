@@ -30,6 +30,7 @@ const statusConfig = {
 
 const TABS = [
   { id: "details",   label: "Detalhes",   icon: FileText },
+  { id: "edit",      label: "Editar",     icon: Pencil },
   { id: "track",     label: "Rastrear",   icon: Clock },
   { id: "pomodoro",  label: "Pomodoro",   icon: Timer },
   { id: "comments",  label: "Comentários", icon: MessageSquare },
