@@ -319,10 +319,10 @@ export default function TaskQuickViewModal({ task: initialTask, project, project
 
             {/* EDITAR */}
             {activeTab === "edit" && (
-              <TaskForm
+              <TaskEditForm
                 task={task}
                 projects={projects}
-                onSubmit={async (taskData, subtasks) => {
+                onSave={async (taskData) => {
                   await base44.entities.Task.update(task.id, taskData);
                   setTask(prev => ({ ...prev, ...taskData }));
                   queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -330,7 +330,6 @@ export default function TaskQuickViewModal({ task: initialTask, project, project
                   setActiveTab("details");
                 }}
                 onCancel={() => setActiveTab("details")}
-                isLoading={false}
               />
             )}
 
