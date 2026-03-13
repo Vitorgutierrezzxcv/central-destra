@@ -10,11 +10,13 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import TimeTracker from "@/components/tasks/TimeTracker";
 import TaskComments from "@/components/tasks/TaskComments";
 import TaskFileUpload from "@/components/tasks/TaskFileUpload";
 import PomodoroTimer from "@/components/dashboard/PomodoroTimer";
-import TaskForm from "@/components/tasks/TaskForm";
 
 const priorityConfig = {
   low:    { label: "Baixa",  bg: "#F0F4F8", color: "#456C8D" },
