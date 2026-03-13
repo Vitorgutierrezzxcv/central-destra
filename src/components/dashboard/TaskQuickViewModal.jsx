@@ -37,7 +37,7 @@ const TABS = [
   { id: "files",     label: "Anexos",     icon: Paperclip },
 ];
 
-export default function TaskQuickViewModal({ task: initialTask, project, onClose, onUpdate, onDelete }) {
+export default function TaskQuickViewModal({ task: initialTask, project, projects = [], onClose, onUpdate, onDelete }) {
   const [task, setTask] = useState(initialTask);
   const [activeTab, setActiveTab] = useState("details");
   const [creatingNotion, setCreatingNotion] = useState(false);
