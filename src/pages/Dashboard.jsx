@@ -129,11 +129,11 @@ function DashboardContent() {
                {activeProjects} projeto{activeProjects !== 1 ? 's' : ''} ativo{activeProjects !== 1 ? 's' : ''} · {totalTasksCount} tarefa{totalTasksCount !== 1 ? 's' : ''} no total
              </p>
            </div>
-            <Link to={createPageUrl("Tasks")} className="mt-4">
-              <button className="flex items-center gap-2 text-sm font-light text-white/70 hover:text-white transition-colors">
-                Ver tarefas <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
+            <Link to={`${createPageUrl("Tasks")}${overdueTasks > 0 ? '?status=overdue' : ''}`} className="mt-4">
+               <button className="flex items-center gap-2 text-sm font-light text-white/70 hover:text-white transition-colors">
+                 Ver tarefas <ArrowRight className="w-4 h-4" />
+               </button>
+             </Link>
           </div>
           {/* KPI Cards — right half */}
           <div className="lg:col-span-1">
