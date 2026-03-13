@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { createNotionPage } from "@/functions/createNotionPage.js";
+import { createNotionPage } from "@/functions/createNotionPage";
 import { format, parseISO, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
