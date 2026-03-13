@@ -103,7 +103,9 @@ export default function UpcomingTasks({ tasks, projects }) {
         <TaskQuickViewModal
           task={selectedTask}
           project={selectedProject}
+          projects={projects}
           onClose={() => setSelectedTask(null)}
+          onUpdate={() => setSelectedTask(null)}
         />
       )}
     </>
