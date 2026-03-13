@@ -5,8 +5,8 @@ import { format, parseISO, isBefore, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
   X, Calendar, User, Clock, FileText, Loader2, CheckCircle2,
-  Trash2, Play, Timer, MessageSquare, Paperclip, ExternalLink,
-  CheckCheck, Circle, ArrowRightCircle
+  Trash2, Timer, MessageSquare, Paperclip, ExternalLink,
+  CheckCheck, Circle, ArrowRightCircle, Pencil
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import TimeTracker from "@/components/tasks/TimeTracker";
 import TaskComments from "@/components/tasks/TaskComments";
 import TaskFileUpload from "@/components/tasks/TaskFileUpload";
 import PomodoroTimer from "@/components/dashboard/PomodoroTimer";
+import TaskForm from "@/components/tasks/TaskForm";
 
 const priorityConfig = {
   low:    { label: "Baixa",  bg: "#F0F4F8", color: "#456C8D" },
