@@ -53,9 +53,9 @@ export default function TaskQuickViewModal({ task, project, onClose }) {
         priority: priority.label,
         endDate: task.end_date ? format(parseISO(task.end_date), "dd/MM/yyyy", { locale: ptBR }) : ""
       });
-      if (res.data.notionUrl) {
-        setNotionUrl(res.data.notionUrl);
-        window.open(res.data.notionUrl, "_blank");
+      if (res.notionUrl) {
+        setNotionUrl(res.notionUrl);
+        window.open(res.notionUrl, "_blank");
       }
     } catch (e) {
       setNotionError("Erro ao criar página no Notion.");
