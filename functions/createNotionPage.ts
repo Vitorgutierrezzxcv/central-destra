@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection("notion");
 
-    // Search for a parent page to put tasks under (use workspace root or find existing "Tarefas" page)
+    // Search for a parent page named "Tarefas"
     const searchRes = await fetch("https://api.notion.com/v1/search", {
       method: "POST",
       headers: {
@@ -28,12 +28,13 @@ Deno.serve(async (req) => {
     });
 
     const searchData = await searchRes.json();
-    
-    // Build page content
+
+    const parent = searchData.results && searchData.results.length > 0
+      ? { page_id: searchData.results[0].id }
+      : { type: "workspace", workspace: true };
+
     const pageBody = {
-      parent: searchData.results && searchData.results.length > 0
-        ? { page_id: searchData.results[0].id }
-        : { type: "workspace", workspace: true },
+      parent,
       icon: { type: "emoji", emoji: "📋" },
       properties: {
         title: {
@@ -53,44 +54,32 @@ Deno.serve(async (req) => {
         {
           object: "block",
           type: "heading_2",
-          heading_2: {
-            rich_text: [{ type: "text", text: { content: "Descrição" } }]
-          }
+          heading_2: { rich_text: [{ type: "text", text: { content: "Descrição" } }] }
         },
         {
           object: "block",
           type: "paragraph",
-          paragraph: {
-            rich_text: [{ type: "text", text: { content: taskDescription || "Adicione uma descrição aqui..." } }]
-          }
+          paragraph: { rich_text: [{ type: "text", text: { content: taskDescription || "Adicione uma descrição aqui..." } }] }
         },
         {
           object: "block",
           type: "heading_2",
-          heading_2: {
-            rich_text: [{ type: "text", text: { content: "Desenvolvimento" } }]
-          }
+          heading_2: { rich_text: [{ type: "text", text: { content: "Desenvolvimento" } }] }
         },
         {
           object: "block",
           type: "paragraph",
-          paragraph: {
-            rich_text: [{ type: "text", text: { content: "" } }]
-          }
+          paragraph: { rich_text: [{ type: "text", text: { content: "" } }] }
         },
         {
           object: "block",
           type: "heading_2",
-          heading_2: {
-            rich_text: [{ type: "text", text: { content: "Anotações" } }]
-          }
+          heading_2: { rich_text: [{ type: "text", text: { content: "Anotações" } }] }
         },
         {
           object: "block",
           type: "paragraph",
-          paragraph: {
-            rich_text: [{ type: "text", text: { content: "" } }]
-          }
+          paragraph: { rich_text: [{ type: "text", text: { content: "" } }] }
         }
       ]
     };
@@ -111,13 +100,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: pageData.message || "Erro ao criar página no Notion" }, { status: 500 });
     }
 
-    // Save the Notion page URL to the task
-    const notionUrl = pageData.url;
     if (taskId) {
       await base44.asServiceRole.entities.Task.update(taskId, { linked_page_id: pageData.id });
     }
 
-    return Response.json({ success: true, notionUrl, pageId: pageData.id });
+    return Response.json({ success: true, notionUrl: pageData.url, pageId: pageData.id });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
