@@ -5,7 +5,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import VisualEditAgent from '@/lib/VisualEditAgent'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
 import { setupIframeMessaging } from './lib/iframe-messaging';
 import PageNotFound from './lib/PageNotFound';
 import GoogleCalendarCallback from './pages/GoogleCalendarCallback';
@@ -20,6 +20,14 @@ import ClientPortalProjects from './pages/ClientPortalProjects';
 import ClientPortalLogin from './pages/ClientPortalLogin';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ClientPortalLayout from './components/client-portal/ClientPortalLayout';
+import ClientPortalDashboard from './pages/ClientPortalDashboard';
+import ClientPortalDeliveries from './pages/ClientPortalDeliveries';
+import ClientPortalCalendar from './pages/ClientPortalCalendar';
+import ClientPortalFiles from './pages/ClientPortalFiles';
+import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
+import ClientPortalActivate from './pages/ClientPortalActivate';
+import ClientPortalAdmin from './pages/ClientPortalAdmin';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -27,9 +35,10 @@ const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
 setupIframeMessaging();
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+const LayoutWrapper = ({ children, currentPageName }) => {
+  const content = children ?? <Outlet />;
+  return Layout ? <Layout currentPageName={currentPageName}>{content}</Layout> : <>{content}</>;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
@@ -56,25 +65,40 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <LayoutWrapper currentPageName={mainPageKey}>
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-        {Object.entries(Pages).map(([path, Page]) => (
-          <Route key={path} path={`/${path}`} element={<Page />} />
-        ))}
-        <Route path="/GoogleCalendarCallback" element={<GoogleCalendarCallback />} />
+    <Routes>
+      {/* ── Portal do Cliente (sem sidebar interna, com ClientPortalLayout) ── */}
+      <Route element={<ClientPortalLayout />}>
+        <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
+        <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
+        <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
+        <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
         <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
+        <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
+        <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
+        <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
+        <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
+        <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
+        <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
+        <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
+        <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
+      </Route>
+
+      {/* ── App interno (com sidebar Layout) ── */}
+      <Route element={<LayoutWrapper currentPageName={mainPageKey} />}>
+        <Route path="/" element={<MainPage />} />
+        {Object.entries(Pages)
+          .filter(([path]) => !path.startsWith("ClientPortal"))
+          .map(([path, Page]) => (
+            <Route key={path} path={`/${path}`} element={<Page />} />
+          ))}
+        <Route path="/GoogleCalendarCallback" element={<GoogleCalendarCallback />} />
         <Route path="/CalendarSync" element={<CalendarSync />} />
         <Route path="/PerformanceReports" element={<PerformanceReports />} />
-        <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
-        <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
-        <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
-        <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
-        <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
-        <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
-    </LayoutWrapper>
+        <Route path="/ClientPortalAdmin" element={<ClientPortalAdmin />} />
+      </Route>
+
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
   );
 };
 
