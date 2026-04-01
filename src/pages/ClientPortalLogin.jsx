@@ -1,148 +1,105 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
-import { Building2, Eye, EyeOff, Loader2, ShieldCheck, ArrowRight } from "lucide-react";
+import { Building2, Mail, ArrowRight, Loader2, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 export default function ClientPortalLogin() {
   const navigate = useNavigate();
-  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
 
-  // Se já está logado, redireciona
   useEffect(() => {
-    base44.auth.me()
-      .then(async user => {
-        if (user) {
-          const isClient = user.role === "client_user" || user.role === "client_approver";
-          if (isClient) {
-            // Verificar quantos projetos tem para decidir para onde ir
-            try {
-              const profiles = await base44.entities.UserProfile.filter({ user_email: user.email });
-              const profile = profiles?.[0];
-              if (profile?.linked_company_id) {
-                const projects = await base44.entities.Project.filter({
-                  company_id: profile.linked_company_id,
-                  client_portal_enabled: true
-                });
-                if (projects.length === 1) {
-                  navigate(`${createPageUrl("ClientPortalDashboard")}?project_id=${projects[0].id}`, { replace: true });
-                } else {
-                  navigate(createPageUrl("ClientPortalProjects"), { replace: true });
-                }
-              } else {
-                navigate(createPageUrl("ClientPortalDashboard"), { replace: true });
-              }
-            } catch {
-              navigate(createPageUrl("ClientPortalDashboard"), { replace: true });
-            }
-          } else {
-            navigate(createPageUrl("Dashboard"), { replace: true });
-          }
+    // Check if user is already logged in
+    base44.auth.isAuthenticated()
+      .then(authenticated => {
+        if (authenticated) {
+          navigate(createPageUrl("ClientPortalDashboard"), { replace: true });
+        } else {
+          setLoading(false);
         }
       })
-      .catch(() => {})
-      .finally(() => setCheckingAuth(false));
+      .catch(() => setLoading(false));
   }, []);
 
   const handleLogin = () => {
-    // Base44 gerencia autenticação — redireciona para login nativo com next para o portal
+    setRedirecting(true);
     base44.auth.redirectToLogin(createPageUrl("ClientPortalDashboard"));
   };
 
-  if (checkingAuth) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-white" />
-          </div>
-          <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] flex">
-      {/* Left — branding */}
-      <div className="hidden lg:flex flex-col w-1/2 bg-[#0D1221] border-r border-white/5 p-12 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/6 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-800/6 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative z-10 flex items-center gap-3 mb-auto">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg shadow-blue-900/50">
-            <Building2 className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p className="text-sm font-bold text-white tracking-widest">DESTRA</p>
-            <p className="text-xs text-slate-500 tracking-wider">PORTAL DO CLIENTE</p>
-          </div>
-        </div>
-
-        <div className="relative z-10 mt-auto">
-          <h2 className="text-4xl font-bold text-white leading-tight mb-4">
-            Acompanhe seu projeto<br />
-            <span className="text-blue-400">em tempo real.</span>
-          </h2>
-          <p className="text-slate-400 text-lg leading-relaxed mb-8">
-            Acesse entregas, aprovações, calendário e muito mais com total transparência.
-          </p>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { label: "Entregas", desc: "Revise e aprove" },
-              { label: "Progresso", desc: "Acompanhe tudo" },
-              { label: "Calendário", desc: "Reuniões e marcos" },
-              { label: "Arquivos", desc: "Documentos do projeto" }
-            ].map((item, i) => (
-              <div key={i} className="bg-white/4 border border-white/8 rounded-xl p-4">
-                <p className="text-sm font-semibold text-white">{item.label}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#0B0F1A] text-white flex flex-col items-center justify-center px-6 py-12">
+      {/* Background gradient */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-purple-600/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Right — form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10 justify-center">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-white tracking-widest">DESTRA</p>
-              <p className="text-[10px] text-slate-500 tracking-wider">PORTAL DO CLIENTE</p>
-            </div>
+      <div className="relative w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-900/40">
+            <Building2 className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-3xl font-bold text-white">Portal do Cliente</h1>
+          <p className="text-slate-400 mt-2 text-sm">Acompanhe seu projeto com a Destra</p>
+        </div>
 
-          <div className="mb-10">
-            <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo</h1>
-            <p className="text-slate-400 text-sm">Acesse o portal exclusivo do seu projeto.</p>
+        {/* Login Card */}
+        <div className="bg-[#0D1221] border border-white/8 rounded-2xl p-8 shadow-xl">
+          <div className="text-center mb-6">
+            <h2 className="text-lg font-semibold text-white mb-2">Acesse sua conta</h2>
+            <p className="text-slate-400 text-sm">
+              Use o e-mail e senha fornecidos pela equipe Destra para acessar o portal.
+            </p>
           </div>
 
           <Button
             onClick={handleLogin}
-            className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-base gap-3 transition-all shadow-lg shadow-blue-900/40"
+            disabled={redirecting}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-medium gap-3 rounded-xl"
           >
-            Entrar com sua conta
-            <ArrowRight className="w-4 h-4" />
+            {redirecting ? (
+              <><Loader2 className="w-5 h-5 animate-spin" />Redirecionando...</>
+            ) : (
+              <><Mail className="w-5 h-5" />Entrar com E-mail<ArrowRight className="w-4 h-4 ml-auto" /></>
+            )}
           </Button>
 
-          <div className="mt-10 p-4 bg-white/3 border border-white/8 rounded-2xl">
+          <div className="mt-6 p-4 bg-white/3 border border-white/8 rounded-xl">
             <div className="flex items-start gap-3">
-              <ShieldCheck className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-slate-400 leading-relaxed">
-                O acesso a este portal é controlado pela equipe Destra. Caso ainda não tenha recebido seu convite, entre em contato com o seu gestor de conta.
-              </p>
+              <AlertCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-medium text-slate-300 mb-1">Primeiro acesso?</p>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Você receberá um convite por e-mail da equipe Destra com as instruções de acesso. 
+                  Verifique sua caixa de entrada e spam.
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Lock className="w-3.5 h-3.5 text-slate-600" />
+            <p className="text-xs text-slate-600">Acesso seguro e criptografado</p>
+          </div>
+          <p className="text-xs text-slate-700">
+            © {new Date().getFullYear()} Destra. Todos os direitos reservados.
+          </p>
         </div>
       </div>
     </div>

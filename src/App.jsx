@@ -12,6 +12,12 @@ import GoogleCalendarCallback from './pages/GoogleCalendarCallback';
 import ClientPortalTasks from './pages/ClientPortalTasks';
 import CalendarSync from './pages/CalendarSync';
 import PerformanceReports from './pages/PerformanceReports';
+import ClientPortalTimeline from './pages/ClientPortalTimeline';
+import ClientPortalAccount from './pages/ClientPortalAccount';
+import ClientPortalOnboarding from './pages/ClientPortalOnboarding';
+import ClientPortalProject from './pages/ClientPortalProject';
+import ClientPortalProjects from './pages/ClientPortalProjects';
+import ClientPortalLogin from './pages/ClientPortalLogin';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -60,6 +66,12 @@ const AuthenticatedApp = () => {
         <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
         <Route path="/CalendarSync" element={<CalendarSync />} />
         <Route path="/PerformanceReports" element={<PerformanceReports />} />
+        <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
+        <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
+        <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
+        <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
+        <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
+        <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </LayoutWrapper>
