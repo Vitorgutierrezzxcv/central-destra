@@ -1,28 +1,37 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { getClientProfile, isLoggedIn } from "@/lib/clientPortalSession";
 
 /**
  * Hook central do portal do cliente.
- * Carrega user → userProfile → company → projectAccess → projects
+ * Usa auth própria do portal (clientPortalSession) — independente do Base44 auth.
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth
-      .me()
-      .then(u => { setUser(u); setUserLoading(false); })
-      .catch(() => setUserLoading(false));
+    const profile = getClientProfile();
+    if (profile) {
+      // Mapeia o perfil da sessão para o formato esperado
+      setUser({
+        email: profile.email,
+        full_name: profile.name,
+        role: "client_user",
+        linked_company_id: profile.linked_company_id || null,
+        linked_client_contact_id: profile.linked_client_contact_id || null,
+        ...profile
+      });
+    }
+    setUserLoading(false);
   }, []);
 
-  const isClientRole =
-    user?.role === "client_user" || user?.role === "client_approver";
+  const isClientRole = true; // sempre client no portal do cliente
 
-  // Perfil estendido (linked_company_id, linked_client_contact_id)
+  // Perfil estendido do portal — buscado pelo email da sessão local
   const { data: userProfile } = useQuery({
-    queryKey: ["userProfile", user?.email],
+    queryKey: ["cp_userProfile", user?.email],
     queryFn: () =>
       base44.entities.UserProfile.filter({ user_email: user.email })
         .then(d => d?.[0] || null),

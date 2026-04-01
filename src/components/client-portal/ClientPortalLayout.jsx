@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { base44 } from "@/api/base44Client";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
   Star, GitBranch, ListChecks, LogOut, Menu, X, FolderKanban, User, ChevronRight, Loader2
 } from "lucide-react";
 import { useClientPortal } from "./useClientPortal";
+import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
 
 const navItems = [
   { label: "Início",      page: "ClientPortalDashboard",  icon: LayoutDashboard },
@@ -24,13 +24,28 @@ export default function ClientPortalLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, userLoading, company, projects, isClientRole } = useClientPortal();
+  const { user, userLoading, company, projects } = useClientPortal();
 
   const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin");
   const isActivatePage = location.pathname.toLowerCase().includes("clientportalactivate");
 
-  // Loading state (não na login)
-  if (userLoading && !isLoginPage && !isActivatePage) {
+  // Login e Activate têm layout próprio
+  if (isLoginPage || isActivatePage) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A]">
+        <Outlet />
+      </div>
+    );
+  }
+
+  // Se não está logado no portal próprio, redireciona para o login do portal
+  if (!userLoading && !isLoggedIn()) {
+    navigate("/ClientPortalLogin", { replace: true });
+    return null;
+  }
+
+  // Loading state
+  if (userLoading) {
     return (
       <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -43,23 +58,10 @@ export default function ClientPortalLayout() {
     );
   }
 
-  // Login e Activate têm layout próprio
-  if (isLoginPage || isActivatePage) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A]">
-        <Outlet />
-      </div>
-    );
-  }
-
-  // Sem usuário logado — renderiza conteúdo (auth guard de cada página vai redirecionar)
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#0B0F1A]">
-        <Outlet />
-      </div>
-    );
-  }
+  const handleLogout = () => {
+    clearSession();
+    navigate("/ClientPortalLogin", { replace: true });
+  };
 
   // Filtra itens de navegação
   const visibleNav = navItems.filter(n => {
@@ -128,16 +130,16 @@ export default function ClientPortalLayout() {
               }`}
           >
             <div className="w-6 h-6 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 text-xs font-bold flex-shrink-0">
-              {user?.full_name?.charAt(0) || "U"}
+              {(user?.full_name || user?.name || "U").charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-white truncate">{user?.full_name || "Cliente"}</p>
+              <p className="text-xs font-medium text-white truncate">{user?.full_name || user?.name || "Cliente"}</p>
               <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
             </div>
             <User className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
           </Link>
           <button
-            onClick={() => base44.auth.logout()}
+            onClick={handleLogout}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-slate-500 hover:text-rose-400 hover:bg-rose-500/5 transition-all"
           >
             <LogOut className="w-3.5 h-3.5" />
@@ -204,7 +206,7 @@ export default function ClientPortalLayout() {
               </Link>
             </nav>
             <button
-              onClick={() => base44.auth.logout()}
+              onClick={handleLogout}
               className="w-full mt-3 mb-2 flex items-center gap-2 px-3 py-3 rounded-xl text-sm text-rose-400 hover:bg-rose-500/5"
             >
               <LogOut className="w-4 h-4" />

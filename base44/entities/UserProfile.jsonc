@@ -1,0 +1,75 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Nome de exibi\u00e7\u00e3o"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Nome completo"
+    },
+    "profile_photo_url": {
+      "type": "string",
+      "description": "URL da foto de perfil"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Biografia"
+    },
+    "portal_type": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "client"
+      ],
+      "default": "internal",
+      "description": "Tipo de portal do usu\u00e1rio"
+    },
+    "linked_company_id": {
+      "type": "string",
+      "description": "ID da empresa vinculada (para clientes)"
+    },
+    "linked_client_contact_id": {
+      "type": "string",
+      "description": "ID do ClientContact vinculado"
+    },
+    "google_calendar_access_token": {
+      "type": "string",
+      "description": "Access token do Google Calendar"
+    },
+    "google_calendar_refresh_token": {
+      "type": "string",
+      "description": "Refresh token do Google Calendar"
+    },
+    "google_calendar_token_expiry": {
+      "type": "string",
+      "description": "Expira\u00e7\u00e3o do access token (ISO)"
+    },
+    "google_calendar_connected": {
+      "type": "boolean",
+      "default": false,
+      "description": "Google Calendar conectado"
+    },
+    "portal_password_hash": {
+      "type": "string",
+      "description": "Hash bcrypt da senha do portal do cliente"
+    },
+    "portal_session_token": {
+      "type": "string",
+      "description": "Token de sess\u00e3o ativo do portal do cliente"
+    },
+    "portal_session_expires": {
+      "type": "string",
+      "description": "Expira\u00e7\u00e3o da sess\u00e3o (ISO)"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}
