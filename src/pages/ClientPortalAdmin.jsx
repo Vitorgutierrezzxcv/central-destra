@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Users, Building2, CheckCircle2, Clock, Star, AlertCircle, Globe, Eye, EyeOff, Settings, UserCog } from "lucide-react";
+import { Users, Building2, CheckCircle2, Clock, Star, AlertCircle, Globe, Eye, EyeOff, Settings, UserCog, UserPlus, Link2, Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -35,6 +35,22 @@ export default function ClientPortalAdmin() {
     queryKey: ["admin_all_meetings"],
     queryFn: () => base44.entities.ProjectMeeting.list()
   });
+
+  // Usuários sem empresa vinculada (novos cadastros aguardando vinculação)
+  const { data: allProfiles = [] } = useQuery({
+    queryKey: ["admin_all_user_profiles"],
+    queryFn: () => base44.entities.UserProfile.filter({ portal_type: "client" })
+  });
+
+  const { data: allAccess = [] } = useQuery({
+    queryKey: ["admin_all_access"],
+    queryFn: () => base44.entities.ProjectClientAccess.list()
+  });
+
+  // Clientes que não têm nenhum acesso vinculado
+  const unlinkedClients = allProfiles.filter(profile =>
+    !allAccess.some(a => a.user_email === profile.user_email)
+  );
 
   const togglePortalMutation = useMutation({
     mutationFn: ({ project, enabled }) =>
@@ -84,16 +100,76 @@ export default function ClientPortalAdmin() {
 
         {/* Tabs */}
         <Tabs defaultValue="access" className="w-full">
-          <TabsList className="bg-white border border-slate-200 p-1 rounded-xl mb-4">
+          <TabsList className="bg-white border border-slate-200 p-1 rounded-xl mb-4 flex-wrap gap-1">
             <TabsTrigger value="access" className="gap-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <UserCog className="w-4 h-4" />
               Acessos dos Clientes
+            </TabsTrigger>
+            <TabsTrigger value="new_clients" className="gap-2 rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white relative">
+              <UserPlus className="w-4 h-4" />
+              Novos Cadastros
+              {unlinkedClients.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {unlinkedClients.length}
+                </span>
+              )}
             </TabsTrigger>
             <TabsTrigger value="portals" className="gap-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <Settings className="w-4 h-4" />
               Portais & Projetos
             </TabsTrigger>
           </TabsList>
+
+          {/* Tab: Novos Cadastros */}
+          <TabsContent value="new_clients">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-purple-600" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-slate-900">Novos Clientes Cadastrados</h2>
+                  <p className="text-xs text-slate-500">Clientes que criaram conta mas ainda não foram vinculados a nenhum projeto.</p>
+                </div>
+              </div>
+
+              {unlinkedClients.length === 0 ? (
+                <div className="text-center py-12">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
+                  <p className="text-slate-500 text-sm">Todos os clientes já estão vinculados a projetos.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {unlinkedClients.map(profile => (
+                    <div key={profile.id} className="flex items-center gap-4 p-4 border border-purple-100 bg-purple-50/50 rounded-xl">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                        {(profile.full_name || profile.display_name || profile.user_email || "?")
+                          .split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-slate-900 truncate">
+                          {profile.full_name || profile.display_name || "—"}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate">{profile.user_email}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          Cadastrado em {new Date(profile.created_date).toLocaleDateString("pt-BR")}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs">Aguardando vinculação</Badge>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-start gap-3">
+                    <Link2 className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-blue-700 leading-relaxed">
+                      Para vincular um cliente a um projeto, acesse a aba <strong>Acessos dos Clientes</strong> e adicione o e-mail do cliente ao projeto correspondente.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
 
           {/* Tab: Acessos */}
           <TabsContent value="access">

@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
@@ -139,25 +140,61 @@ export default function ClientPortalDashboard() {
 
             {/* Progress */}
             <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="font-semibold text-white text-lg">{activeProject.name}</h2>
-                  <p className="text-slate-400 text-sm">{activeProject.current_phase || "Fase atual não definida"}</p>
-                </div>
-                {activeProject.estimated_end_date && (
-                  <div className="text-right">
-                    <p className="text-xs text-slate-400">Previsão de entrega</p>
-                    <p className="text-sm font-medium text-white">
-                      {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}
-                    </p>
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                {/* Pie Chart */}
+                <div className="flex-shrink-0 flex flex-col items-center">
+                  <div style={{ width: 160, height: 160 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={[
+                            { name: "Concluído", value: activeProject.progress_percentage || 0 },
+                            { name: "Restante", value: 100 - (activeProject.progress_percentage || 0) },
+                          ]}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={48}
+                          outerRadius={72}
+                          startAngle={90}
+                          endAngle={-270}
+                          dataKey="value"
+                          strokeWidth={0}
+                        >
+                          <Cell fill="#4F8EF7" />
+                          <Cell fill="rgba(255,255,255,0.06)" />
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
                   </div>
-                )}
-              </div>
-              <Progress value={activeProject.progress_percentage || 0} className="h-2 bg-white/10" />
-              <div className="flex justify-between mt-2">
-                <span className="text-xs text-slate-500">Início</span>
-                <span className="text-xs text-blue-400 font-medium">{activeProject.progress_percentage || 0}% concluído</span>
-                <span className="text-xs text-slate-500">Fim</span>
+                  <p className="text-2xl font-bold text-white -mt-[88px] relative z-10">{activeProject.progress_percentage || 0}%</p>
+                  <p className="text-xs text-slate-400 mt-10">concluído</p>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1">
+                  <h2 className="font-semibold text-white text-lg mb-1">{activeProject.name}</h2>
+                  <p className="text-slate-400 text-sm mb-4">{activeProject.current_phase || "Fase atual não definida"}</p>
+
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-white/4 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 mb-1">Tarefas concluídas</p>
+                      <p className="text-lg font-bold text-emerald-400">{completedTasks}</p>
+                    </div>
+                    <div className="bg-white/4 rounded-xl p-3">
+                      <p className="text-xs text-slate-500 mb-1">Em andamento</p>
+                      <p className="text-lg font-bold text-blue-400">{pendingTasks}</p>
+                    </div>
+                  </div>
+
+                  {activeProject.estimated_end_date && (
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <Clock className="w-3.5 h-3.5" />
+                      Previsão: <span className="text-white font-medium">
+                        {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

@@ -57,34 +57,47 @@ export default function ClientPortalLogin() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-[#0D1221] border border-white/8 rounded-2xl p-8 shadow-xl">
-          <div className="text-center mb-6">
-            <h2 className="text-lg font-semibold text-white mb-2">Acesse sua conta</h2>
-            <p className="text-slate-400 text-sm">
-              Use o e-mail e senha fornecidos pela equipe Destra para acessar o portal.
+        <div
+          className="rounded-3xl p-8 shadow-2xl"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            backdropFilter: "blur(40px) saturate(160%)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08)",
+          }}
+        >
+          <div className="text-center mb-7">
+            <h2 className="text-xl font-semibold text-white mb-2">Bem-vindo</h2>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Crie sua conta gratuitamente ou entre para acompanhar seu projeto em tempo real.
             </p>
           </div>
 
           <Button
             onClick={handleLogin}
             disabled={redirecting}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-base font-medium gap-3 rounded-xl"
+            className="w-full h-13 text-base font-semibold gap-3 rounded-2xl mb-3 transition-all active:scale-95"
+            style={{
+              background: "linear-gradient(135deg, #4F8EF7 0%, #6B6FFF 100%)",
+              boxShadow: "0 4px 24px rgba(79,142,247,0.4)",
+              border: "none",
+              height: "52px",
+            }}
           >
             {redirecting ? (
               <><Loader2 className="w-5 h-5 animate-spin" />Redirecionando...</>
             ) : (
-              <><Mail className="w-5 h-5" />Entrar com E-mail<ArrowRight className="w-4 h-4 ml-auto" /></>
+              <><Mail className="w-5 h-5" />Entrar / Criar Conta<ArrowRight className="w-4 h-4 ml-auto" /></>
             )}
           </Button>
 
-          <div className="mt-6 p-4 bg-white/3 border border-white/8 rounded-xl">
+          <div className="mt-6 p-4 rounded-2xl" style={{ background: "rgba(79,142,247,0.08)", border: "1px solid rgba(79,142,247,0.15)" }}>
             <div className="flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-medium text-slate-300 mb-1">Primeiro acesso?</p>
+                <p className="text-xs font-semibold text-slate-300 mb-1">Sem aprovação prévia</p>
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  Você receberá um convite por e-mail da equipe Destra com as instruções de acesso. 
-                  Verifique sua caixa de entrada e spam.
+                  Cadastre-se com seu e-mail e acesse imediatamente. Após o login, a equipe Destra vinculará você ao seu projeto.
                 </p>
               </div>
             </div>
