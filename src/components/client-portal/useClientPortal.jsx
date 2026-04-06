@@ -84,25 +84,22 @@ export function useClientPortal() {
     enabled: !!contactId
   });
 
-  // Todos os projetos da empresa com portal ativo
+  // Todos os projetos da empresa (com ou sem portal ativo)
   const { data: allCompanyProjects = [] } = useQuery({
     queryKey: ["client_all_projects", companyId],
-    queryFn: () =>
-      base44.entities.Project.filter({
-        company_id: companyId,
-        client_portal_enabled: true
-      }),
+    queryFn: () => base44.entities.Project.filter({ company_id: companyId }),
     enabled: !!companyId
   });
 
-  // Merge: se há acessos explícitos, filtra por eles; senão mostra todos da empresa
+  // Projetos explicitamente autorizados pelo access (busca independente para garantir)
   const authorizedProjectIds = projectAccess.length > 0
-    ? projectAccess.map(pa => pa.project_id)
+    ? projectAccess.filter(pa => pa.is_active !== false).map(pa => pa.project_id)
     : null;
 
+  // Se há acessos explícitos, mostra esses projetos; senão mostra todos com portal ativo
   const projects = authorizedProjectIds
     ? allCompanyProjects.filter(p => authorizedProjectIds.includes(p.id))
-    : allCompanyProjects;
+    : allCompanyProjects.filter(p => p.client_portal_enabled);
 
   const isApprover =
     user?.role === "client_approver" ||

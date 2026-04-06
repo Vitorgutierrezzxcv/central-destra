@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import PortalContentManager from "./PortalContentManager";
 
 const callFn = (name, payload) => base44.functions.invoke(name, payload);
 import {
   Plus, Trash2, UserCheck, UserX, Shield, RefreshCw,
   ChevronDown, ChevronUp, Edit2, Send, Copy, CheckCheck,
-  Clock, CheckCircle2, AlertTriangle, XCircle, Ban
+  Clock, CheckCircle2, AlertTriangle, XCircle, Ban, Settings
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -529,6 +530,14 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
                 })}
               </div>
             )}
+          </div>
+
+          {/* Portal Content Manager */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+              <Settings className="w-3.5 h-3.5" /> Conteúdo do Portal
+            </p>
+            <PortalContentManager contact={contact} projects={allProjects} companies={companies} />
           </div>
 
           {contact.activated_at && (

@@ -1,0 +1,52 @@
+{
+  "name": "ProjectClientAccess",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "ID do projeto"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa"
+    },
+    "client_contact_id": {
+      "type": "string",
+      "description": "ID do contato cliente"
+    },
+    "can_view": {
+      "type": "boolean",
+      "default": true
+    },
+    "can_comment": {
+      "type": "boolean",
+      "default": true
+    },
+    "can_approve": {
+      "type": "boolean",
+      "default": false
+    },
+    "can_rate": {
+      "type": "boolean",
+      "default": true
+    },
+    "can_view_files": {
+      "type": "boolean",
+      "default": true
+    },
+    "can_view_calendar": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Acesso ativo"
+    }
+  },
+  "required": [
+    "project_id",
+    "company_id",
+    "client_contact_id"
+  ]
+}

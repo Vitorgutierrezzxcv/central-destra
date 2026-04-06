@@ -147,6 +147,9 @@ export default function ClientPortalDashboard() {
                   <span>Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
                 )}
               </div>
+              {activeProject.description && (
+                <p className="text-sm text-slate-500 mt-3 pt-3 border-t border-slate-100">{activeProject.description}</p>
+              )}
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -226,7 +229,7 @@ export default function ClientPortalDashboard() {
                   {[
                     { label: "Projeto & Roadmap", page: "ClientPortalProject", icon: Building2 },
                     { label: "Tarefas & Progresso", page: "ClientPortalTasks", icon: CheckCircle2 },
-                    { label: "Entregas", page: "ClientPortalDeliveries", icon: CheckCircle2 },
+                    { label: "Entregas para Aprovar", page: "ClientPortalDeliveries", icon: AlertCircle },
                     { label: "Onboarding", page: "ClientPortalOnboarding", icon: Clock },
                     { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
                     { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },

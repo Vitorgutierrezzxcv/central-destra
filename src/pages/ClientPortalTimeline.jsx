@@ -40,11 +40,11 @@ export default function ClientPortalTimeline() {
     select: d => [...d].sort((a, b) => new Date(a.due_date || 0) - new Date(b.due_date || 0))
   });
 
-  const { data: events = [] } = useQuery({
-    queryKey: ["client_timeline_events", activeProject?.id],
-    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
+  const { data: tasks = [] } = useQuery({
+    queryKey: ["client_timeline_tasks", activeProject?.id],
+    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id,
-    select: d => [...d].sort((a, b) => new Date(b.event_date || b.created_date) - new Date(a.event_date || a.created_date))
+    select: d => [...d].sort((a, b) => new Date(a.end_date || a.start_date || 0) - new Date(b.end_date || b.start_date || 0))
   });
 
   if (userLoading) {
@@ -56,6 +56,7 @@ export default function ClientPortalTimeline() {
   }
 
   const completedMilestones = milestones.filter(m => m.status === "completed").length;
+  const completedTasks = tasks.filter(t => t.status === "completed").length;
   const projectProgress = activeProject?.progress_percentage || 0;
 
   return (
@@ -204,10 +205,44 @@ export default function ClientPortalTimeline() {
               </div>
             )}
 
-            {milestones.length === 0 && events.length === 0 && (
+            {/* Tasks Timeline */}
+            {tasks.length > 0 && (
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900 mb-5">Tarefas do Projeto</h2>
+                <div className="space-y-2">
+                  {tasks.map(task => {
+                    const tStatus = task.status === "completed" ? "completed" : task.status === "in_progress" ? "in_progress" : "pending";
+                    const cfg = statusConfig[tStatus] || statusConfig.pending;
+                    const Icon = cfg.icon;
+                    return (
+                      <div key={task.id} className={`bg-white border rounded-xl p-4 flex items-start gap-4 ${
+                        tStatus === "completed" ? "border-emerald-200" : tStatus === "in_progress" ? "border-blue-200" : "border-slate-200"
+                      }`}>
+                        <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${cfg.color}`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-800">{task.client_facing_title || task.title}</p>
+                          {task.client_facing_description && <p className="text-xs text-slate-500 mt-0.5">{task.client_facing_description}</p>}
+                          <div className="flex items-center gap-3 mt-1 flex-wrap">
+                            {task.start_date && <span className="text-xs text-slate-400">Início: {format(new Date(task.start_date), "dd/MM/yyyy", { locale: ptBR })}</span>}
+                            {task.end_date && <span className="text-xs text-slate-400">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy", { locale: ptBR })}</span>}
+                          </div>
+                        </div>
+                        <Badge className={`text-xs flex-shrink-0 ${
+                          tStatus === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
+                          tStatus === "in_progress" ? "bg-blue-100 text-blue-700 border-blue-200" :
+                          "bg-slate-100 text-slate-600 border-slate-200"
+                        }`}>{cfg.label}</Badge>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {milestones.length === 0 && tasks.length === 0 && (
               <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
                 <Target className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                <p className="text-slate-500">Nenhum marco ou atividade definida ainda.</p>
+                <p className="text-slate-500">Nenhum marco ou tarefa definida ainda.</p>
                 <p className="text-sm text-slate-400 mt-1">A equipe Destra atualizará a timeline em breve.</p>
               </div>
             )}
