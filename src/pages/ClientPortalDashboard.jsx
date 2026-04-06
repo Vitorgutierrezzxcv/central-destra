@@ -76,15 +76,16 @@ export default function ClientPortalDashboard() {
     select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
   });
 
-  const completedTasks   = tasks.filter(t => t.status === "completed").length;
-  const inProgressTasks  = tasks.filter(t => t.status === "in_progress").length;
-  const pendingApprovals = deliveries.filter(d => ["delivered", "under_review"].includes(d.status)).length;
-  const upcomingMeeting  = meetings.find(m => m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date()));
-  const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
-  const recentDeliveries = deliveries.filter(d => d.status === "approved").slice(0, 3);
-  const hasActions       = pendingApprovals > 0 || clientOnboarding.length > 0;
-  const progress         = activeProject?.progress_percentage || 0;
-  const firstName        = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
+  const completedTasks      = tasks.filter(t => t.status === "completed").length;
+  const inProgressTasks     = tasks.filter(t => t.status === "in_progress").length;
+  const pendingApprovals    = deliveries.filter(d => ["delivered", "under_review"].includes(d.status)).length;
+  const pendingApprovalTasks = tasks.filter(t => t.approval_required && t.status !== 'completed');
+  const upcomingMeeting     = meetings.find(m => m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date()));
+  const clientOnboarding    = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
+  const recentDeliveries    = deliveries.filter(d => d.status === "approved").slice(0, 3);
+  const hasActions          = pendingApprovals > 0 || clientOnboarding.length > 0;
+  const progress            = activeProject?.progress_percentage || 0;
+  const firstName           = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
 
   if (userLoading) {
     return (
@@ -207,7 +208,40 @@ export default function ClientPortalDashboard() {
 
 
 
-        {/* ── 4. PRÓXIMA REUNIÃO ── */}
+        {/* ── 4. TAREFAS PENDENTES DE APROVAÇÃO ── */}
+        {pendingApprovalTasks.length > 0 && (
+          <div className="pt-3">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Tarefas pendentes de aprovação</p>
+              <Link to={createPageUrl("ClientPortalDeliveries")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
+                Ver tudo →
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {pendingApprovalTasks.slice(0, 3).map(task => (
+                <Link
+                  key={task.id}
+                  to={createPageUrl("ClientPortalDeliveries")}
+                  className="block border border-amber-100 bg-amber-50/50 rounded-2xl px-4 py-3 hover:bg-amber-100/50 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full mt-1.5 bg-amber-400 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-light text-slate-900 leading-snug">{task.client_facing_title || task.title}</p>
+                      {task.delivery_date && (
+                        <p className="text-[10px] text-slate-500 font-light mt-1">
+                          Entrega: {format(new Date(task.delivery_date), "dd/MM/yyyy")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── 5. PRÓXIMA REUNIÃO ── */}
         <div className="pt-3">
           <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Próxima reunião</p>
           {upcomingMeeting ? (
@@ -247,7 +281,7 @@ export default function ClientPortalDashboard() {
           )}
         </div>
 
-        {/* ── 5. ENTREGAS RECENTES ── */}
+        {/* ── 6. ENTREGAS RECENTES ── */}
         {recentDeliveries.length > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -279,7 +313,7 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 6. TIMELINE RESUMIDA ── */}
+        {/* ── 7. TIMELINE RESUMIDA ── */}
         <div className="pt-4">
           <div className="flex items-center justify-between mb-3 px-1">
             <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Timeline de eventos</p>
@@ -316,7 +350,7 @@ export default function ClientPortalDashboard() {
           )}
         </div>
 
-        {/* ── 7. ARQUIVOS RECENTES ── */}
+        {/* ── 8. ARQUIVOS RECENTES ── */}
         {files.length > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -345,7 +379,7 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 8. NAVEGAÇÃO RÁPIDA ── */}
+        {/* ── 9. NAVEGAÇÃO RÁPIDA ── */}
         <div className="pt-6">
           <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Mais opções</p>
           <div className="border border-slate-100 rounded-2xl overflow-hidden">
