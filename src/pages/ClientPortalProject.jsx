@@ -120,7 +120,7 @@ export default function ClientPortalProject() {
       {/* Right Panel - Content */}
       <div className="md:w-7/12 bg-white flex flex-col overflow-y-auto">
         <div className="px-5 md:px-8 py-8 space-y-6 flex-1">
-        {/* Progress Card - Blue */}
+          {/* Progress Card - Blue */}
         <div className="border border-blue-200 bg-blue-50 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
             <div>
