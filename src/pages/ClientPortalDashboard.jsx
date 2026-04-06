@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import ProjectProgressIndicators from "@/components/client-portal/ProjectProgressIndicators";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
@@ -128,6 +129,9 @@ export default function ClientPortalDashboard() {
                 </div>
               ))}
             </div>
+
+            {/* Visual Progress Indicators */}
+            <ProjectProgressIndicators tasks={tasks} project={activeProject} />
 
             {/* Progress Card */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
