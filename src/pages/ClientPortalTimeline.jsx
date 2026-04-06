@@ -132,9 +132,9 @@ export default function ClientPortalTimeline() {
                     <div key={idx} className="flex flex-col items-center relative z-10">
                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
                       style={{
-                        backgroundColor: isCompleted || isActive ? "#6FA6FF" : "#1A2F48",
+                        backgroundColor: "white",
                         borderColor: isCompleted || isActive ? "#6FA6FF" : "white",
-                        color: isCompleted || isActive ? "white" : "#4B6A8B"
+                        color: isCompleted || isActive ? "#6FA6FF" : "#B0B0B0"
                       }}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
