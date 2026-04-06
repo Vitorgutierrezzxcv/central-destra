@@ -91,13 +91,13 @@ export default function ClientPortalAccount() {
         {/* Profile Card */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6">
           <div className="flex items-center gap-5 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-2xl font-bold text-white flex-shrink-0">
+            <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center text-2xl font-bold text-white flex-shrink-0">
               {initials}
             </div>
             <div>
               <h2 className="text-xl font-bold text-slate-900">{displayName}</h2>
               <p className="text-slate-500 text-sm">{user?.email}</p>
-              <Badge className="mt-1 bg-blue-100 text-blue-700 border-blue-200 text-xs">
+              <Badge className="mt-1 bg-slate-900 text-white border-slate-800 text-xs">
                 Portal do Cliente
               </Badge>
             </div>
@@ -152,7 +152,7 @@ export default function ClientPortalAccount() {
                     size="sm"
                     onClick={() => saveMutation.mutate()}
                     disabled={saveMutation.isPending}
-                    className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+                    className="bg-slate-900 hover:bg-slate-800 text-white gap-2"
                   >
                     {saveMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                     Salvar
@@ -178,7 +178,7 @@ export default function ClientPortalAccount() {
         {/* Security */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6">
           <div className="flex items-center gap-3 mb-4">
-            <Shield className="w-5 h-5 text-blue-500" />
+            <Shield className="w-5 h-5 text-slate-900" />
             <h2 className="font-semibold text-slate-900">Segurança</h2>
           </div>
           <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -196,7 +196,7 @@ export default function ClientPortalAccount() {
         {company && (
           <div className="bg-white border border-slate-200 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <Building2 className="w-5 h-5 text-blue-500" />
+              <Building2 className="w-5 h-5 text-slate-900" />
               <h2 className="font-semibold text-slate-900">Dados da Empresa</h2>
             </div>
             <div className="space-y-0">
