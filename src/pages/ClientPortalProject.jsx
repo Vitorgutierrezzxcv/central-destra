@@ -65,10 +65,9 @@ export default function ClientPortalProject() {
           <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
           <p className="text-slate-500">Nenhum projeto disponível.</p>
         </div>
-        </div>
-        </div>
-        );
-        }
+      </div>
+    );
+  }
 
   const statusCfg = statusLabels[activeProject.status] || statusLabels.active;
   const onboardingCfg = onboardingStatusLabels[activeProject.onboarding_status] || onboardingStatusLabels.not_started;
@@ -238,6 +237,7 @@ export default function ClientPortalProject() {
           </div>
         </div>
         </div>
-        </div>
-        );
-        }
+      </div>
+    </div>
+  );
+}
