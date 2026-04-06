@@ -71,10 +71,10 @@ export default function ClientPortalFiles() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
            Arquivos
          </p>
-        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
+        <h1 className="text-2xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
           Documentos<br />Compartilhados
         </h1>
-        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
+        <p className="text-base md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
           Todos os arquivos do seu projeto.
         </p>
       </div>

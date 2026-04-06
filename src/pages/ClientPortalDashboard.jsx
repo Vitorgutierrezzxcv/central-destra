@@ -148,13 +148,13 @@ export default function ClientPortalDashboard() {
              </p>
 
           {/* Saudação grande */}
-          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-4">
+          <h1 className="text-[2.5rem] md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-4">
             Olá,<br />
             <span className="font-light">{firstName}</span>
           </h1>
 
           {/* Subtítulo leve */}
-          <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
+          <p className="text-base md:text-[0.9rem] text-slate-400 font-light leading-relaxed">
             Acompanhe o andamento do seu<br />projeto em tempo real.
           </p>
         </div>

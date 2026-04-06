@@ -72,7 +72,7 @@ export default function ClientPortalTimeline() {
            {activeProject?.name || "Timeline"}
          </p>
         <div className="flex items-end justify-between gap-4 mb-8">
-          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+          <h1 className="text-2xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
             Timeline
           </h1>
           {activeProject && (
