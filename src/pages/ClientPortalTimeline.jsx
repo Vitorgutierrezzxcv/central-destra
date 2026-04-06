@@ -179,9 +179,60 @@ export default function ClientPortalTimeline() {
                      </div>
                      </div>
 
+                     {/* Phase Descriptions */}
+                     <div className="mt-12 space-y-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                     {[
+                     { 
+                     label: "Kickoff", 
+                     desc: "Alinhamento inicial",
+                     explanation: "Reunião de abertura do projeto onde alinhamos objetivos, escopo, equipe responsável e cronograma geral com todas as partes interessadas.",
+                     color: "#6FA6FF"
+                     },
+                     { 
+                     label: "Planejamento", 
+                     desc: "Estratégia e roadmap",
+                     explanation: "Detalhamento completo da estratégia, criação do roadmap visual, definição de milestones, tarefas e alocação de recursos.",
+                     color: "#00D4FF"
+                     },
+                     { 
+                     label: "Desenvolvimento", 
+                     desc: "Execução do projeto",
+                     explanation: "Fase principal onde ocorrem as atividades conforme o planejado. Acompanhamento do progresso com atualizações semanais.",
+                     color: "#00E5CC"
+                     },
+                     { 
+                     label: "Testes", 
+                     desc: "QA e validação",
+                     explanation: "Testes de qualidade, validação de funcionalidades, correção de eventuais problemas encontrados antes da entrega final.",
+                     color: "#0FC8B8"
+                     },
+                     { 
+                     label: "Entrega", 
+                     desc: "Finalização",
+                     explanation: "Entrega dos entregáveis finais, documentação completa, treinamento (se aplicável) e suporte inicial pós-launch.",
+                     color: "#06B6A4"
+                     }
+                     ].map((phase, idx) => (
+                     <div 
+                     key={idx}
+                     className="p-4 rounded-lg border border-slate-700 bg-slate-900/30 hover:bg-slate-900/50 transition-colors"
+                     style={{ borderLeftColor: phase.color, borderLeftWidth: '3px' }}
+                     >
+                     <div className="flex items-center gap-2 mb-2">
+                     <div 
+                       className="w-3 h-3 rounded-full flex-shrink-0"
+                       style={{ backgroundColor: phase.color }}
+                     />
+                     <h3 className="text-sm font-semibold text-white">{phase.label}</h3>
+                     </div>
+                     <p className="text-xs text-slate-300 font-light">{phase.explanation}</p>
+                     </div>
+                     ))}
+                     </div>
+                     </div>
 
-
-            {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
+                     {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
               <div className="flex flex-col items-center py-20">
                 <Target className="w-10 h-10 text-slate-600 mb-4" />
                 <p className="text-slate-400 font-light">Nenhum dado de timeline ainda.</p>
