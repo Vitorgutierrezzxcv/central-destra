@@ -1,0 +1,50 @@
+{
+  "name": "TicketMessage",
+  "type": "object",
+  "properties": {
+    "ticket_id": {
+      "type": "string",
+      "description": "ID do chamado"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Email do remetente"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Nome do remetente"
+    },
+    "sender_role": {
+      "type": "string",
+      "enum": [
+        "client",
+        "admin"
+      ],
+      "default": "client",
+      "description": "Papel do remetente"
+    },
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado da mensagem"
+    },
+    "attachment_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs dos anexos"
+    },
+    "attachment_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes dos anexos"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "sender_email",
+    "content"
+  ]
+}

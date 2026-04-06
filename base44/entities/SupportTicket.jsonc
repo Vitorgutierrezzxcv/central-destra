@@ -1,0 +1,78 @@
+{
+  "name": "SupportTicket",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "ID do projeto vinculado"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa"
+    },
+    "client_contact_id": {
+      "type": "string",
+      "description": "ID do contato cliente"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do chamado"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do problema"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "bug",
+        "duvida",
+        "solicitacao",
+        "entrega",
+        "outro"
+      ],
+      "default": "duvida",
+      "description": "Categoria do chamado"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium",
+      "description": "Prioridade do chamado"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "in_progress",
+        "waiting_client",
+        "resolved",
+        "closed"
+      ],
+      "default": "open",
+      "description": "Status do chamado"
+    },
+    "opened_by_email": {
+      "type": "string",
+      "description": "Email de quem abriu o chamado"
+    },
+    "opened_by_name": {
+      "type": "string",
+      "description": "Nome de quem abriu o chamado"
+    },
+    "resolved_at": {
+      "type": "string",
+      "description": "Data/hora de resolu\u00e7\u00e3o (ISO)"
+    }
+  },
+  "required": [
+    "project_id",
+    "title",
+    "category"
+  ]
+}

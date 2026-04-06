@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
-  Star, GitBranch, ListChecks, LogOut, Menu, X, FolderKanban, User, ChevronRight, Loader2
+  Star, GitBranch, ListChecks, LogOut, Menu, X, FolderKanban, User, ChevronRight, Loader2, MessageSquare
 } from "lucide-react";
 import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
@@ -18,6 +18,7 @@ const navItems = [
   { label: "Arquivos",    page: "ClientPortalFiles",      icon: FolderOpen },
   { label: "Timeline",    page: "ClientPortalTimeline",   icon: GitBranch },
   { label: "Avaliação",   page: "ClientPortalSatisfaction", icon: Star },
+  { label: "Chamados",    page: "ClientPortalTickets",     icon: MessageSquare },
 ];
 
 export default function ClientPortalLayout() {

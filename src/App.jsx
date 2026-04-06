@@ -10,6 +10,7 @@ import { setupIframeMessaging } from './lib/iframe-messaging';
 import PageNotFound from './lib/PageNotFound';
 import GoogleCalendarCallback from './pages/GoogleCalendarCallback';
 import ClientPortalTasks from './pages/ClientPortalTasks';
+import ClientPortalTickets from './pages/ClientPortalTickets';
 import CalendarSync from './pages/CalendarSync';
 import PerformanceReports from './pages/PerformanceReports';
 import ClientPortalTimeline from './pages/ClientPortalTimeline';
@@ -81,6 +82,7 @@ const AuthenticatedApp = () => {
         <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
         <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
         <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
+        <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
       </Route>
 
       {/* ── App interno (com sidebar Layout) ── */}

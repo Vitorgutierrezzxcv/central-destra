@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, Loader2 } from "lucide-react";
+import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, Loader2, MessageSquare } from "lucide-react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link, useNavigate } from "react-router-dom";
@@ -237,6 +237,7 @@ export default function ClientPortalDashboard() {
                     { label: "Onboarding", page: "ClientPortalOnboarding", icon: Clock },
                     { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
                     { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
+                    { label: "Chamados de Suporte", page: "ClientPortalTickets", icon: MessageSquare },
                   ].map((link, i) => (
                     <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group">
                       <link.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
