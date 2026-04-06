@@ -29,6 +29,7 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import ClientPortalFinancial from './pages/ClientPortalFinancial';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -83,6 +84,7 @@ const AuthenticatedApp = () => {
         <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
         <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
         <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
+        <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
       </Route>
 
       {/* ── App interno (com sidebar Layout) ── */}

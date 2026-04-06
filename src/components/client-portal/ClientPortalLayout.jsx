@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
   GitBranch, ListChecks, LogOut, X, FolderKanban, User, MessageSquare,
-  Star, Grid3X3, ChevronRight, Loader2
+  Star, Grid3X3, ChevronRight, Loader2, Receipt
 } from "lucide-react";
 import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
@@ -21,6 +21,7 @@ const navItems = [
   { label: "Arquivos",    page: "ClientPortalFiles",      icon: FolderOpen,      desc: "Documentos compartilhados" },
   { label: "Timeline",    page: "ClientPortalTimeline",   icon: GitBranch,       desc: "Linha do tempo" },
   { label: "Avaliação",   page: "ClientPortalSatisfaction", icon: Star,          desc: "Avaliar o projeto" },
+  { label: "Financeiro",  page: "ClientPortalFinancial",  icon: Receipt,         desc: "Faturas e contratos" },
   { label: "Chamados",    page: "ClientPortalTickets",    icon: MessageSquare,   desc: "Suporte e dúvidas" },
   { label: "Minha Conta", page: "ClientPortalAccount",   icon: User,            desc: "Configurações da conta" },
 ];
