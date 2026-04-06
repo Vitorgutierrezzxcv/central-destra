@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
 const colorOptions = [
   { value: "blue", label: "Blue", gradient: "from-blue-500 to-blue-600" },
@@ -24,7 +26,12 @@ const colorOptions = [
   { value: "teal", label: "Teal", gradient: "from-teal-500 to-teal-600" },
 ];
 
-export default function ProjectForm({ project, onSubmit, onCancel, isLoading, companies = [] }) {
+export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) {
+  const { data: companies = [] } = useQuery({
+    queryKey: ['companies'],
+    queryFn: () => base44.entities.Company.list('-name'),
+  });
+
   const [currentProject, setCurrentProject] = useState(project || {
     name: "",
     description: "",
