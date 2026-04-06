@@ -1,14 +1,15 @@
 import React, { useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, Loader2, MessageSquare } from "lucide-react";
+import {
+  TrendingUp, CheckCircle2, Clock, Calendar,
+  AlertCircle, ArrowRight, Star, Loader2, MessageSquare
+} from "lucide-react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
-import ProjectProgressIndicators from "@/components/client-portal/ProjectProgressIndicators";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
@@ -55,226 +56,187 @@ export default function ClientPortalDashboard() {
   });
 
   const completedTasks = tasks.filter(t => t.status === "completed").length;
-  const pendingTasks = tasks.filter(t => t.status !== "completed").length;
+  const inProgressTasks = tasks.filter(t => t.status === "in_progress").length;
   const pendingApprovals = deliveries.filter(d => ["delivered", "under_review"].includes(d.status)).length;
   const upcomingMeetings = meetings.filter(m =>
     m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date())
   );
   const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
+  const progress = activeProject?.progress_percentage || 0;
+  const firstName = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-[#f8f8f6] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">
-            <span className="text-white text-sm font-light">D</span>
-          </div>
-          <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
-        </div>
+      <div className="min-h-screen bg-[#f0efe9] flex items-center justify-center">
+        <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
-      {/* ── Hero Header ── */}
-      <div className="bg-white border-b border-slate-100 px-6 py-8 md:px-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-end justify-between gap-4">
+    <div className="min-h-screen bg-[#f0efe9]">
+      <div className="max-w-2xl mx-auto px-5 md:px-8 pt-10 pb-32 space-y-4">
+
+        {/* ── HERO ── */}
+        <div className="bg-[#0d1117] rounded-3xl px-8 pt-10 pb-8 text-white overflow-hidden relative">
+          {/* decorative circle */}
+          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/[0.03] pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-white/[0.03] pointer-events-none" />
+
+          {company && (
+            <p className="text-[10px] text-white/40 tracking-widest uppercase font-medium mb-6">
+              {company.name}
+            </p>
+          )}
+
+          <h1 className="text-4xl md:text-5xl font-extralight leading-tight tracking-tight mb-3">
+            Olá,<br />
+            <span className="font-light">{firstName}</span>
+          </h1>
+
+          <p className="text-white/50 text-base font-light leading-relaxed mb-8">
+            Acompanhe o andamento do<br />seu projeto em tempo real.
+          </p>
+
+          {activeProject && (
             <div>
-              {company && (
-                <div className="flex items-center gap-2 mb-3">
-                  {company.logo_url && (
-                    <img src={company.logo_url} alt={company.name} className="w-5 h-5 rounded object-cover opacity-70" />
-                  )}
-                  <span className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">{company.name}</span>
-                </div>
-              )}
-              <h1 className="text-2xl md:text-3xl font-extralight text-slate-900 tracking-tight">
-                Olá, {user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente"}
-              </h1>
-              <p className="text-slate-400 text-sm mt-1.5 font-light">
-                Acompanhe o progresso do seu projeto em tempo real.
+              <div className="flex items-end justify-between mb-3">
+                <p className="text-xs text-white/40 font-light">{activeProject.name}</p>
+                <span className="text-white/80 text-sm font-light">{progress}%</span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-[3px]">
+                <div
+                  className="h-[3px] rounded-full bg-white transition-all duration-1000"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── ACTION ALERTS ── */}
+        {pendingApprovals > 0 && (
+          <Link
+            to={createPageUrl("ClientPortalDeliveries")}
+            className="flex items-center justify-between gap-4 bg-[#0d1117] rounded-2xl px-6 py-5 group"
+          >
+            <div>
+              <p className="text-white text-sm font-medium">Sua ação é necessária</p>
+              <p className="text-white/50 text-xs font-light mt-0.5">
+                {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} aprovação
               </p>
             </div>
-            {activeProject && (
-              <div className="hidden md:block text-right">
-                <p className="text-[10px] text-slate-400 tracking-wider uppercase">{activeProject.current_phase || "Em andamento"}</p>
-                <p className="text-lg font-light text-slate-700 mt-0.5">{activeProject.name}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-5 md:px-10 py-8 space-y-8">
-        {!activeProject ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-5">
-              <Clock className="w-7 h-7 text-slate-300" />
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
+              <ArrowRight className="w-4 h-4 text-white" />
             </div>
-            <h3 className="text-slate-600 font-light text-lg mb-2">Nenhum projeto disponível</h3>
-            <p className="text-slate-400 text-sm font-light max-w-xs leading-relaxed">
+          </Link>
+        )}
+
+        {clientOnboarding.length > 0 && (
+          <Link
+            to={createPageUrl("ClientPortalOnboarding")}
+            className="flex items-center justify-between gap-4 bg-[#0d1117] rounded-2xl px-6 py-5 group"
+          >
+            <div>
+              <p className="text-white text-sm font-medium">Onboarding pendente</p>
+              <p className="text-white/50 text-xs font-light mt-0.5">
+                {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação
+              </p>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
+              <ArrowRight className="w-4 h-4 text-white" />
+            </div>
+          </Link>
+        )}
+
+        {/* ── STATS ── */}
+        {activeProject && (
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-2xl p-5 flex flex-col">
+              <span className="text-3xl font-extralight text-slate-900">{completedTasks}</span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mt-2">Concluídas</span>
+            </div>
+            <div className="bg-white rounded-2xl p-5 flex flex-col">
+              <span className="text-3xl font-extralight text-slate-900">{inProgressTasks}</span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mt-2">Andamento</span>
+            </div>
+            <div className="bg-white rounded-2xl p-5 flex flex-col">
+              <span className="text-3xl font-extralight text-slate-900">{tasks.length}</span>
+              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium mt-2">Total</span>
+            </div>
+          </div>
+        )}
+
+        {/* ── PRÓXIMA REUNIÃO ── */}
+        {upcomingMeetings.length > 0 && (
+          <div className="bg-white rounded-2xl p-6">
+            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-5">Próxima Reunião</p>
+            {(() => {
+              const m = upcomingMeetings[0];
+              return (
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-[#0d1117] flex flex-col items-center justify-center flex-shrink-0">
+                    <span className="text-xl font-light text-white leading-none">
+                      {format(new Date(m.start_datetime), "dd")}
+                    </span>
+                    <span className="text-[9px] text-white/50 uppercase tracking-widest mt-0.5">
+                      {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{m.title}</p>
+                    <p className="text-xs text-slate-400 font-light mt-0.5">
+                      {format(new Date(m.start_datetime), "HH:mm")} ·{" "}
+                      {format(new Date(m.start_datetime), "EEEE", { locale: ptBR })}
+                    </p>
+                  </div>
+                  {m.meeting_link && (
+                    <a href={m.meeting_link} target="_blank" rel="noreferrer"
+                      className="flex-shrink-0 px-4 py-2 bg-[#0d1117] text-white rounded-xl text-xs font-medium hover:opacity-80 transition-opacity">
+                      Entrar
+                    </a>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {/* ── QUICK LINKS ── */}
+        <div className="bg-white rounded-2xl overflow-hidden">
+          {[
+            { label: "Tarefas",    sub: "Progresso das atividades",    page: "ClientPortalTasks",      icon: CheckCircle2 },
+            { label: "Entregas",   sub: "Aprovações e revisões",       page: "ClientPortalDeliveries", icon: AlertCircle },
+            { label: "Calendário", sub: "Reuniões e datas",            page: "ClientPortalCalendar",   icon: Calendar },
+            { label: "Arquivos",   sub: "Documentos do projeto",       page: "ClientPortalFiles",      icon: Star },
+            { label: "Suporte",    sub: "Abrir ou ver chamados",       page: "ClientPortalTickets",    icon: MessageSquare },
+          ].map((link, i, arr) => (
+            <Link
+              key={i}
+              to={createPageUrl(link.page)}
+              className={`flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors group ${i < arr.length - 1 ? "border-b border-slate-50" : ""}`}
+            >
+              <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-100 transition-colors">
+                <link.icon className="w-4 h-4 text-slate-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-slate-900">{link.label}</p>
+                <p className="text-xs text-slate-400 font-light">{link.sub}</p>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 transition-colors group-hover:translate-x-0.5 flex-shrink-0" />
+            </Link>
+          ))}
+        </div>
+
+        {/* ── NO PROJECT ── */}
+        {!activeProject && !userLoading && (
+          <div className="bg-white rounded-2xl p-10 flex flex-col items-center text-center">
+            <Clock className="w-8 h-8 text-slate-200 mb-4" />
+            <p className="text-slate-600 font-light">Nenhum projeto disponível.</p>
+            <p className="text-slate-400 text-sm font-light mt-1 max-w-xs leading-relaxed">
               Entre em contato com a equipe Destra para ter acesso ao seu projeto.
             </p>
           </div>
-        ) : (
-          <>
-            {/* ── Progress Card ── */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-6 md:p-8">
-              <div className="flex items-start justify-between gap-4 mb-6">
-                <div>
-                  <h2 className="text-base font-medium text-slate-900">{activeProject.name}</h2>
-                  <p className="text-sm text-slate-400 font-light mt-0.5">{activeProject.current_phase || "Fase em andamento"}</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-3xl font-extralight text-slate-900">{activeProject.progress_percentage || 0}</span>
-                  <span className="text-lg text-slate-400 font-light">%</span>
-                </div>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5">
-                <div
-                  className="h-1.5 rounded-full bg-slate-900 transition-all duration-700"
-                  style={{ width: `${activeProject.progress_percentage || 0}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between mt-4 text-xs text-slate-400 font-light">
-                {activeProject.project_start_date && (
-                  <span>Início: {format(new Date(activeProject.project_start_date), "dd/MM/yyyy")}</span>
-                )}
-                {activeProject.estimated_end_date && (
-                  <span>Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}</span>
-                )}
-              </div>
-              {activeProject.description && (
-                <p className="text-sm text-slate-400 font-light mt-5 pt-5 border-t border-slate-50 leading-relaxed">
-                  {activeProject.description}
-                </p>
-              )}
-            </div>
-
-            {/* ── Stats ── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { label: "Progresso", value: `${activeProject?.progress_percentage || 0}%`, icon: TrendingUp },
-                { label: "Concluídas", value: completedTasks, icon: CheckCircle2 },
-                { label: "Em andamento", value: pendingTasks, icon: Clock },
-                { label: "Aguard. aprovação", value: pendingApprovals, icon: AlertCircle },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
-                  <stat.icon className="w-4 h-4 text-slate-300 mb-3" />
-                  <p className="text-2xl font-extralight text-slate-900">{stat.value}</p>
-                  <p className="text-[10px] text-slate-400 mt-1 tracking-wide uppercase font-medium">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Visual Progress */}
-            <ProjectProgressIndicators tasks={tasks} project={activeProject} />
-
-            {/* ── Action Alerts ── */}
-            <div className="space-y-3">
-              {pendingApprovals > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
-                      <AlertCircle className="w-4 h-4 text-slate-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">Sua ação é necessária</p>
-                      <p className="text-xs text-slate-400 font-light mt-0.5">
-                        {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} aprovação.
-                      </p>
-                    </div>
-                  </div>
-                  <Link to={createPageUrl("ClientPortalDeliveries")}
-                    className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors">
-                    Ver <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              )}
-
-              {clientOnboarding.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-slate-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">Pendências do Onboarding</p>
-                      <p className="text-xs text-slate-400 font-light mt-0.5">
-                        {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação.
-                      </p>
-                    </div>
-                  </div>
-                  <Link to={createPageUrl("ClientPortalOnboarding")}
-                    className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors">
-                    Ver <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* ── Grid: Meetings + Quick Links ── */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Upcoming Meetings */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-5">Próximas Reuniões</p>
-                {upcomingMeetings.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <Calendar className="w-8 h-8 text-slate-200 mx-auto mb-3" />
-                    <p className="text-sm text-slate-400 font-light">Nenhuma reunião agendada</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {upcomingMeetings.slice(0, 3).map(m => (
-                      <div key={m.id} className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-semibold text-slate-700 leading-none">
-                            {format(new Date(m.start_datetime), "dd")}
-                          </span>
-                          <span className="text-[8px] text-slate-400 uppercase tracking-wide mt-0.5">
-                            {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-slate-800 truncate font-medium">{m.title}</p>
-                          <p className="text-xs text-slate-400 font-light mt-0.5">{format(new Date(m.start_datetime), "HH:mm")}</p>
-                        </div>
-                        {m.meeting_link && (
-                          <a href={m.meeting_link} target="_blank" rel="noreferrer"
-                            className="text-xs text-slate-900 hover:text-slate-600 font-medium flex-shrink-0 flex items-center gap-1">
-                            Entrar <ArrowRight className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Quick Links */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-5">Acesso Rápido</p>
-                <div className="space-y-0.5">
-                  {[
-                    { label: "Tarefas & Progresso", page: "ClientPortalTasks", icon: CheckCircle2 },
-                    { label: "Entregas para Aprovar", page: "ClientPortalDeliveries", icon: AlertCircle },
-                    { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
-                    { label: "Arquivos", page: "ClientPortalFiles", icon: Star },
-                    { label: "Chamados de Suporte", page: "ClientPortalTickets", icon: MessageSquare },
-                  ].map((link, i) => (
-                    <Link key={i} to={createPageUrl(link.page)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group">
-                      <link.icon className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
-                      <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors font-light flex-1">{link.label}</span>
-                      <ArrowRight className="w-3 h-3 text-slate-200 group-hover:text-slate-400 transition-all group-hover:translate-x-0.5" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </>
         )}
       </div>
     </div>
