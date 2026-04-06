@@ -217,7 +217,6 @@ export default function ClientPortalTimeline() {
                      <div 
                      key={idx}
                      className="p-4 rounded-lg border border-slate-700 bg-slate-900/30 hover:bg-slate-900/50 transition-colors"
-                     style={{ borderLeftColor: phase.color, borderLeftWidth: '3px' }}
                      >
                      <div className="flex items-center gap-2 mb-2">
                      <div 
