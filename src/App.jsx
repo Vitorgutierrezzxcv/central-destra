@@ -44,6 +44,34 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
+  const currentPath = window.location.pathname;
+  const isClientPortalRoute = currentPath.startsWith('/ClientPortal');
+
+  // If accessing client portal routes, skip central auth check
+  if (isClientPortalRoute) {
+    return (
+      <Routes>
+        <Route element={<ClientPortalLayout />}>
+          <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
+          <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
+          <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
+          <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
+          <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
+          <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
+          <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
+          <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
+          <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
+          <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
+          <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
+          <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
+          <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
+          <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
+          <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
+        </Route>
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    );
+  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -59,8 +87,9 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to client portal login instead of central Destra login
-      return <ClientPortalLogin />;
+      // Redirect to login automatically
+      navigateToLogin();
+      return null;
     }
   }
 
