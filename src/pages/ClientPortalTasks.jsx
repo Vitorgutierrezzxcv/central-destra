@@ -33,7 +33,7 @@ export default function ClientPortalTasks() {
 
   const { data: tasks = [], isLoading: tasksLoading } = useQuery({
     queryKey: ["client_visible_tasks", activeProject?.id],
-    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id }),
+    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 

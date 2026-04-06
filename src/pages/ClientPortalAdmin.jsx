@@ -181,12 +181,7 @@ export default function ClientPortalAdmin() {
           {/* Tab: Portais */}
           <TabsContent value="portals">
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <div className="mb-5">
-                <h2 className="font-semibold text-slate-900">Projetos & Status do Portal</h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  O cliente vê automaticamente todos os projetos e tarefas da empresa vinculada. Tarefas concluídas ficam disponíveis para aprovação por 3 dias.
-                </p>
-              </div>
+              <h2 className="font-semibold text-slate-900 mb-4">Projetos & Status do Portal</h2>
               <div className="space-y-3">
                 {projects.length === 0 && (
                   <p className="text-slate-400 text-sm text-center py-8">Nenhum projeto cadastrado.</p>

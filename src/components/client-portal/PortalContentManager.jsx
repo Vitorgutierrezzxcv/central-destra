@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  Calendar, Flag, File, Plus, Trash2, Edit2, CheckCircle2,
+  Calendar, Flag, ClipboardList, File, Plus, Trash2, Edit2, CheckCircle2,
   Clock, Upload, Loader2, Package, FolderOpen, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -750,13 +750,12 @@ export default function PortalContentManager({ contact, projects, companies }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
-        <Package className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-        <div className="text-xs text-blue-700">
-          <p><strong>{contact.name}</strong> vê automaticamente as tarefas dos projetos vinculados à empresa.</p>
-          <p className="mt-1 text-blue-600">Tarefas concluídas ficam disponíveis para aprovação por 3 dias automaticamente.</p>
-          {accessedProjects.length === 0 && <p className="mt-1 text-amber-700 font-semibold">⚠️ Nenhum projeto liberado — vincule um projeto acima.</p>}
-        </div>
+      <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+        <Package className="w-4 h-4 text-blue-600 flex-shrink-0" />
+        <p className="text-xs text-blue-700">
+          Gerencie o conteúdo que <strong>{contact.name}</strong> vê no portal.
+          {accessedProjects.length === 0 && " ⚠️ Nenhum projeto liberado para este contato — vincule um projeto acima."}
+        </p>
       </div>
 
       {accessedProjects.length === 0 ? null : (
@@ -785,9 +784,10 @@ export default function PortalContentManager({ contact, projects, companies }) {
 
           {activeProjectId && (
             <Tabs defaultValue="project">
-              <TabsList className="w-full grid grid-cols-5 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
+              <TabsList className="w-full grid grid-cols-6 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
                 {[
                   { value: "project", label: "Projeto", icon: FolderOpen, color: "data-[state=active]:bg-slate-700" },
+                  { value: "tasks", label: "Tarefas", icon: ClipboardList, color: "data-[state=active]:bg-blue-600" },
                   { value: "meetings", label: "Reuniões", icon: Calendar, color: "data-[state=active]:bg-blue-600" },
                   { value: "milestones", label: "Timeline", icon: Flag, color: "data-[state=active]:bg-purple-600" },
                   { value: "onboarding", label: "Onboard.", icon: CheckCircle2, color: "data-[state=active]:bg-emerald-600" },
@@ -801,6 +801,7 @@ export default function PortalContentManager({ contact, projects, companies }) {
               </TabsList>
               <div className="mt-3">
                 <TabsContent value="project"><ProjectEditor project={activeProject} /></TabsContent>
+                <TabsContent value="tasks"><TasksVisibilityManager projectId={activeProjectId} /></TabsContent>
                 <TabsContent value="meetings"><MeetingsManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="milestones"><MilestonesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="onboarding"><OnboardingManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
