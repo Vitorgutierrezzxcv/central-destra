@@ -147,7 +147,7 @@ export default function ClientPortalCalendar() {
            Calendário
          </p>
         <h1 className="text-6xl md:text-[4rem] leading-[0.85] font-extralight text-slate-900 tracking-tight mb-3">
-          <span className="inline-block mr-2 text-slate-900 opacity-80">📍</span>Reuniões<br /><span className="text-7xl md:text-[4.5rem]">e Marcos</span>
+          Reuniões<br /><span className="text-7xl md:text-[4.5rem]">e Marcos</span>
         </h1>
         <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-2">
           Datas importantes e próximos eventos.
