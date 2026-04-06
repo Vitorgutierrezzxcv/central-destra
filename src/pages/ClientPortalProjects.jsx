@@ -30,12 +30,12 @@ export default function ClientPortalProjects() {
            <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
              Meus Projetos
            </p>
-          <h1 className="text-6xl md:text-5xl leading-[1.15] font-extralight tracking-tight mb-2">
-             Todos Seus<br />Projetos
+          <p className="text-sm md:text-base tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">Destra</p>
+          <h1 className="text-8xl md:text-7xl leading-[1.1] font-extralight tracking-tight mb-1">
+             Global
            </h1>
-           <p className="text-xl md:text-sm text-slate-300 font-light leading-relaxed max-w-md mb-6">
-            Acompanhe o progresso, prazos e entregas de cada um dos seus projetos em um só lugar.
-          </p>
+          <p className="text-lg md:text-base text-slate-300 font-light leading-relaxed max-w-md mb-6">Todos seus projetos em um só lugar</p>
+
         </div>
       </div>
 

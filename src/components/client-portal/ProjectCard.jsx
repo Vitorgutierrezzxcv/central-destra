@@ -22,10 +22,9 @@ export default function ProjectCard({ project, financialData }) {
       to={`${createPageUrl("ClientPortalProject")}?project_id=${project.id}`}
       className="block bg-slate-800/50 border border-slate-700 rounded-2xl px-5 md:px-6 py-5 md:py-6 hover:bg-slate-700/50 hover:border-slate-600 transition-all group active:scale-95"
     >
-      {/* Header com badge */}
+      {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <h2 className="text-lg md:text-xl font-medium text-white group-hover:text-slate-100 transition-colors flex-1">{project.name}</h2>
-        <Badge className={`${statusCfg.color} flex-shrink-0 text-[10px] border`}>{statusCfg.label}</Badge>
       </div>
 
       {/* Fase e descrição */}
