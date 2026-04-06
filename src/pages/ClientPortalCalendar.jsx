@@ -79,21 +79,21 @@ export default function ClientPortalCalendar() {
     return (
       <div className={`bg-white border rounded-2xl p-5 transition-all ${
         pastEvent ? "border-slate-100 opacity-70" :
-        isMeeting ? "border-[#0D4A99]/20 hover:shadow-sm" : "border-purple-200 hover:shadow-sm"
+        isMeeting ? "border-[#001A3D]/20 hover:shadow-sm" : "border-purple-200 hover:shadow-sm"
       }`}>
         <div className="flex items-start gap-4">
           <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center flex-shrink-0 text-center
-            ${isMeeting ? "bg-[#0D4A99]/10" : "bg-purple-50"}`}>
-            <span className={`text-lg font-bold leading-none ${isMeeting ? "text-[#0D4A99]" : "text-purple-700"}`}>
+            ${isMeeting ? "bg-[#001A3D]/10" : "bg-purple-50"}`}>
+            <span className={`text-lg font-bold leading-none ${isMeeting ? "text-[#001A3D]" : "text-purple-700"}`}>
               {format(event.date, "dd")}
             </span>
-            <span className={`text-[10px] uppercase font-medium ${isMeeting ? "text-[#0D4A99]" : "text-purple-500"}`}>
+            <span className={`text-[10px] uppercase font-medium ${isMeeting ? "text-[#001A3D]" : "text-purple-500"}`}>
               {format(event.date, "MMM", { locale: ptBR })}
             </span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center flex-wrap gap-2 mb-1">
-              <Badge className={`text-xs ${isMeeting ? "bg-[#0D4A99]/10 text-[#0D4A99] border-[#0D4A99]/20" : "bg-purple-100 text-purple-700 border-purple-200"}`}>
+              <Badge className={`text-xs ${isMeeting ? "bg-[#001A3D]/10 text-[#001A3D] border-[#001A3D]/20" : "bg-purple-100 text-purple-700 border-purple-200"}`}>
                 {isMeeting ? <Video className="w-3 h-3 mr-1" /> : <Target className="w-3 h-3 mr-1" />}
                 {event.label}
               </Badge>
@@ -129,7 +129,7 @@ export default function ClientPortalCalendar() {
             </div>
             {event.link && !pastEvent && (
               <a href={event.link} target="_blank" rel="noreferrer"
-                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0D4A99] rounded-lg text-xs text-white hover:bg-[#0A3A7A] transition-colors">
+                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#001A3D] rounded-lg text-xs text-white hover:bg-[#000F20] transition-colors">
                 <Video className="w-3 h-3" />
                 Entrar na reunião
               </a>
@@ -161,16 +161,12 @@ export default function ClientPortalCalendar() {
               key={f}
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
-                filter === f ? "bg-[#0D4A99] border-[#0D4A99] text-white" : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"}`}
+                filter === f ? "bg-[#001A3D] border-[#001A3D] text-white" : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"}`}
             >
               {f === "all" ? "Todos" : f === "upcoming" ? "Próximos" : "Passados"}
             </button>
-          ))}
-          <div className="ml-auto flex gap-3 items-center text-xs text-slate-400">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#0D4A99]" />Reuniões ({meetings.length})</span>
-            <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500" />Marcos ({milestones.length})</span>
-          </div>
-        </div>
+             ))}
+            </div>
 
         {displayed.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
