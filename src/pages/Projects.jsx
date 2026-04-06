@@ -33,6 +33,12 @@ export default function Projects() {
     initialData: [],
   });
 
+  const { data: companies } = useQuery({
+    queryKey: ['companies'],
+    queryFn: () => base44.entities.Company.list('-name'),
+    initialData: [],
+  });
+
   const createProjectMutation = useMutation({
     mutationFn: (projectData) => base44.entities.Project.create(projectData),
     onSuccess: () => {
@@ -103,9 +109,15 @@ export default function Projects() {
     return user ? (user.display_name || user.full_name || email.split('@')[0]) : email.split('@')[0];
   };
 
+  const getCompanyName = (companyId) => {
+    if (!companyId) return null;
+    return companies.find(c => c.id === companyId)?.name || null;
+  };
+
   const filteredProjects = projects.filter(project =>
     project.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    getCompanyName(project.company_id)?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const activeProjects = filteredProjects.filter(p => p.status === 'active').length;
@@ -161,6 +173,7 @@ export default function Projects() {
                 setEditingProject(null);
               }}
               isLoading={createProjectMutation.isPending || updateProjectMutation.isPending}
+              companies={companies}
             />
           )}
         </AnimatePresence>
@@ -182,6 +195,7 @@ export default function Projects() {
                     stats={getProjectStats(project.id)}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
+                    companyName={getCompanyName(project.company_id)}
                   />
                 ))}
               </AnimatePresence>

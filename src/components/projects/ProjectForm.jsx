@@ -4,14 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Loader2, X } from "lucide-react"; // X was already there, now add Loader2
+import { Loader2, X, Building2 } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // New imports for Select components
+} from "@/components/ui/select";
 
 const colorOptions = [
   { value: "blue", label: "Blue", gradient: "from-blue-500 to-blue-600" },
@@ -24,12 +24,13 @@ const colorOptions = [
   { value: "teal", label: "Teal", gradient: "from-teal-500 to-teal-600" },
 ];
 
-export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) {
+export default function ProjectForm({ project, onSubmit, onCancel, isLoading, companies = [] }) {
   const [currentProject, setCurrentProject] = useState(project || {
     name: "",
     description: "",
-    color: "blue", // Default color
-    status: "active" // Default status
+    color: "blue",
+    status: "active",
+    company_id: ""
   });
 
   const handleSubmit = (e) => {
@@ -82,6 +83,30 @@ export default function ProjectForm({ project, onSubmit, onCancel, isLoading }) 
             onChange={(e) => setCurrentProject({...currentProject, description: e.target.value})}
             className="min-h-[80px] md:min-h-[100px] resize-none border-[#EAEAEA] focus:border-[#6FA6FF]"
           />
+        </div>
+
+        {/* Empresa vinculada */}
+        <div className="space-y-2">
+          <Label htmlFor="company" className="text-sm font-medium flex items-center gap-1.5">
+            <Building2 className="w-4 h-4 text-slate-400" />
+            Empresa (CRM)
+          </Label>
+          <Select
+            value={currentProject.company_id || "none"}
+            onValueChange={(value) => setCurrentProject({ ...currentProject, company_id: value === "none" ? "" : value })}
+          >
+            <SelectTrigger id="company" className="h-10 md:h-11 border-[#EAEAEA] focus:border-[#6FA6FF]">
+              <SelectValue placeholder="Selecione uma empresa..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Nenhuma empresa</SelectItem>
+              {companies.map(c => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}{c.segment ? ` — ${c.segment}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

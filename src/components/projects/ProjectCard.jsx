@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Pencil, Trash2, ArrowRight, CheckCircle2, Building2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -19,7 +19,7 @@ const colorClasses = {
   teal: "bg-[#456C8D]",
 };
 
-export default function ProjectCard({ project, stats, onEdit, onDelete }) {
+export default function ProjectCard({ project, stats, onEdit, onDelete, companyName }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -95,12 +95,20 @@ export default function ProjectCard({ project, stats, onEdit, onDelete }) {
 
             {/* Footer */}
             <div className="mt-4 pt-4 border-t border-[#EAEAEA] flex items-center justify-between">
-              <span className="text-xs text-[#456C8D]">
-                {new Date(project.created_date).toLocaleDateString('pt-BR', { 
-                  day: '2-digit', 
-                  month: 'short' 
-                })}
-              </span>
+              <div className="flex flex-col gap-1">
+                {companyName && (
+                  <div className="flex items-center gap-1 text-xs text-[#456C8D] font-light">
+                    <Building2 className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate max-w-[120px]">{companyName}</span>
+                  </div>
+                )}
+                <span className="text-xs text-[#456C8D]">
+                  {new Date(project.created_date).toLocaleDateString('pt-BR', { 
+                    day: '2-digit', 
+                    month: 'short' 
+                  })}
+                </span>
+              </div>
               <div className="flex items-center gap-1 text-sm font-medium text-[#6FA6FF] hover:text-[#456C8D]">
                 Ver detalhes
                 <ArrowRight className="w-4 h-4" />

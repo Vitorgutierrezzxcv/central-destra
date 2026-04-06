@@ -21,6 +21,12 @@ export default function Companies() {
     initialData: [],
   });
 
+  const { data: projects } = useQuery({
+    queryKey: ['projects'],
+    queryFn: () => base44.entities.Project.list(),
+    initialData: [],
+  });
+
   const createCompanyMutation = useMutation({
     mutationFn: (companyData) => base44.entities.Company.create(companyData),
     onMutate: async (companyData) => {
@@ -154,6 +160,7 @@ export default function Companies() {
                   company={company}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  linkedProjects={projects.filter(p => p.company_id === company.id)}
                 />
               ))}
             </AnimatePresence>

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Building2, Calendar, DollarSign, Phone, Mail } from "lucide-react";
+import { Pencil, Trash2, Building2, Calendar, DollarSign, Phone, Mail, FolderKanban } from "lucide-react";
 
 const statusConfig = {
   lead: { label: "Lead", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" },
@@ -11,7 +11,13 @@ const statusConfig = {
   inactive: { label: "Inativo", color: "bg-[#EAEAEA] text-[#456C8D] border-[#EAEAEA]" }
 };
 
-export default function CompanyCard({ company, onEdit, onDelete }) {
+const statusProjectConfig = {
+  active: { label: "Ativo", color: "bg-blue-50 text-blue-600" },
+  completed: { label: "Concluído", color: "bg-green-50 text-green-600" },
+  archived: { label: "Arquivado", color: "bg-slate-100 text-slate-500" },
+};
+
+export default function CompanyCard({ company, onEdit, onDelete, linkedProjects = [] }) {
   const status = statusConfig[company.status] || statusConfig.lead;
   const companyAge = company.founded_year ? new Date().getFullYear() - company.founded_year : null;
 
@@ -89,7 +95,35 @@ export default function CompanyCard({ company, onEdit, onDelete }) {
             )}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#EAEAEA]">
+          {/* Projetos vinculados */}
+          {linkedProjects.length > 0 && (
+            <div className="mt-4 pt-3 border-t border-[#EAEAEA]">
+              <div className="flex items-center gap-1.5 mb-2">
+                <FolderKanban className="w-3.5 h-3.5 text-[#6FA6FF]" />
+                <span className="text-[11px] font-medium text-[#456C8D]">
+                  {linkedProjects.length} projeto{linkedProjects.length !== 1 ? 's' : ''} vinculado{linkedProjects.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="space-y-1">
+                {linkedProjects.slice(0, 3).map(p => {
+                  const ps = statusProjectConfig[p.status] || statusProjectConfig.active;
+                  return (
+                    <div key={p.id} className="flex items-center justify-between gap-2">
+                      <span className="text-[11px] font-light text-[#131A20] truncate">{p.name}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-light flex-shrink-0 ${ps.color}`}>
+                        {ps.label}
+                      </span>
+                    </div>
+                  );
+                })}
+                {linkedProjects.length > 3 && (
+                  <p className="text-[10px] text-[#456C8D] font-light">+{linkedProjects.length - 3} mais</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="mt-3 pt-3 border-t border-[#EAEAEA]">
             <span className="text-[10px] font-light text-[#456C8D]">
               Cadastrado {new Date(company.created_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
             </span>
