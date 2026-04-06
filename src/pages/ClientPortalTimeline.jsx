@@ -97,13 +97,11 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Summary */}
-            <div className="flex flex-row items-center justify-center gap-3 md:gap-8 text-sm font-light">
-              <span className="text-center text-white">{completedMilestones}/{milestones.length} marcos</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-center text-white">{completedTasks}/{tasks.length} tarefas</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-center text-white"><strong className="text-lg">{projectProgress}%</strong> concluído</span>
-            </div>
+             <div className="flex flex-row items-center justify-between w-full mt-1">
+               <span className="text-xs font-light text-slate-300">{completedMilestones}/{milestones.length} marcos</span>
+               <span className="text-xs font-light text-slate-300">{completedTasks}/{tasks.length} tarefas</span>
+               <span className="text-xs font-light text-slate-300">{projectProgress}% concluído</span>
+             </div>
 
             {/* Visual Progress Phases */}
             <div className="w-full px-1 md:px-0">
