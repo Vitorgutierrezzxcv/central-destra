@@ -66,27 +66,25 @@ export default function ClientPortalTimeline() {
   const projectProgress = activeProject?.progress_percentage || 0;
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
-        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">
-              {activeProject?.name || "Portal"}
-            </p>
-            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Timeline</h1>
-          </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          {activeProject?.name || "Timeline"}
+        </p>
+        <div className="flex items-end justify-between gap-4 mb-8">
+          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+            Timeline
+          </h1>
           {activeProject && (
             <div className="text-right">
               <span className="text-2xl font-extralight text-slate-900">{projectProgress}</span>
               <span className="text-sm text-slate-400 font-light">%</span>
-              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">concluído</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7 space-y-8">
+      <div className="max-w-lg mx-auto px-5 space-y-6 pb-20">
         {!activeProject ? (
           <div className="flex flex-col items-center py-20">
             <Target className="w-10 h-10 text-slate-200 mb-4" />

@@ -83,16 +83,20 @@ export default function ClientPortalSatisfaction() {
   const isValid = form.overall_score > 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-slate-900">Avaliação de Satisfação</h1>
-          <p className="text-slate-500 text-sm mt-1">Sua opinião é muito importante para nós.</p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          Avaliação
+        </p>
+        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
+          Sua<br />Opinião
+        </h1>
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
+          Avalie a qualidade do nosso trabalho.
+        </p>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 space-y-6">
+      <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
           <div className="bg-white border border-amber-200 rounded-2xl p-6 flex items-center gap-6">

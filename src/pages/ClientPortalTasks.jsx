@@ -232,14 +232,15 @@ export default function ClientPortalTasks() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
-        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">{activeProject.name}</p>
-            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Tarefas</h1>
-          </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          {activeProject?.name || "Tarefas"}
+        </p>
+        <div className="flex items-end justify-between gap-4 mb-8">
+          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+            Tarefas
+          </h1>
           <div className="text-right">
             <span className="text-2xl font-extralight text-slate-900">{counts.completed}</span>
             <span className="text-sm text-slate-400 font-light">/{counts.all}</span>
@@ -248,17 +249,15 @@ export default function ClientPortalTasks() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7">
-        {/* Progress bar */}
-        <div className="w-full bg-slate-100 rounded-full h-1 mb-7">
+      <div className="max-w-lg mx-auto px-5 space-y-6 pb-20">
+        <div className="w-full bg-slate-100 rounded-full h-1">
           <div
             className="h-1 rounded-full bg-slate-900 transition-all duration-700"
             style={{ width: counts.all > 0 ? `${(counts.completed / counts.all) * 100}%` : '0%' }}
           />
         </div>
 
-        {/* Filters */}
-        <div className="flex gap-2 mb-6 flex-wrap">
+        <div className="flex gap-2 flex-wrap">
           {[
             { key: "all", label: "Todas" },
             { key: "in_progress", label: "Em andamento" },
@@ -284,7 +283,6 @@ export default function ClientPortalTasks() {
           ))}
         </div>
 
-        {/* Task List */}
         {isLoading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />

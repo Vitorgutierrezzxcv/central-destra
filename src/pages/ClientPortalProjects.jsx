@@ -25,81 +25,58 @@ export default function ClientPortalProjects() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-slate-900">Meus Projetos</h1>
-          {company && (
-            <p className="text-slate-500 text-sm mt-1">{company.name} · {projects.length} projeto{projects.length !== 1 ? "s" : ""}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8">
-        {projects.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <Building2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500 font-medium">Nenhum projeto disponível</p>
-            <p className="text-slate-400 text-sm mt-1">Entre em contato com a equipe Destra.</p>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-7">
+          Meus Projetos
+        </p>
+        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
+          Seus<br />Projetos
+        </h1>
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
+          Acompanhe o andamento de todos os<br />seus projetos em um único lugar.
+          </p>
           </div>
-        ) : (
-          <div className="grid gap-4">
+
+          <div className="max-w-lg mx-auto px-5">
+        {projects.length === 0 ? (
+           <div className="py-20 flex flex-col items-center text-center">
+             <Building2 className="w-8 h-8 text-slate-200 mb-4" />
+             <p className="text-slate-400 font-light">Nenhum projeto disponível</p>
+           </div>
+         ) : (
+           <div className="space-y-3">
             {projects.map(project => {
               const statusCfg = statusConfig[project.status] || statusConfig.active;
               return (
                 <Link
                   key={project.id}
                   to={`${createPageUrl("ClientPortalProject")}?project_id=${project.id}`}
-                  className="block"
+                  className="block border border-slate-100 rounded-2xl px-5 py-4 hover:bg-slate-50 transition-colors"
                 >
-                  <div className="bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm rounded-2xl p-6 transition-all group cursor-pointer">
-                    <div className="flex items-start justify-between gap-4 mb-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">
-                          <Building2 className="w-6 h-6 text-blue-600" />
-                        </div>
-                        <div>
-                          <h2 className="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{project.name}</h2>
-                          {project.current_phase && (
-                            <p className="text-sm text-slate-500 mt-0.5">{project.current_phase}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h2 className="text-sm font-medium text-slate-900">{project.name}</h2>
                         <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
-                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                      </div>
+                      {project.current_phase && (
+                        <p className="text-[10px] text-slate-400 font-light">{project.current_phase}</p>
+                      )}
+                      {project.description && (
+                        <p className="text-xs text-slate-400 font-light mt-1 line-clamp-1">{project.description}</p>
+                      )}
+                      <div className="mt-3">
+                        <div className="flex justify-between text-xs text-slate-400 mb-1">
+                          <span>Progresso</span>
+                          <span className="font-medium">{project.progress_percentage || 0}%</span>
+                        </div>
+                        <Progress value={project.progress_percentage || 0} className="h-1.5" />
                       </div>
                     </div>
-
-                    {project.description && (
-                      <p className="text-sm text-slate-500 mb-4 line-clamp-2">{project.description}</p>
-                    )}
-
-                    <div className="mb-3">
-                      <div className="flex justify-between text-xs text-slate-400 mb-1.5">
-                        <span>Progresso</span>
-                        <span className="text-blue-600 font-semibold">{project.progress_percentage || 0}%</span>
-                      </div>
-                      <Progress value={project.progress_percentage || 0} className="h-2" />
-                    </div>
-
-                    <div className="flex items-center gap-4 flex-wrap text-xs text-slate-400">
-                      {project.project_start_date && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Início: {format(parseISO(project.project_start_date), "dd/MM/yyyy")}
-                        </span>
-                      )}
-                      {project.estimated_end_date && (
-                        <span className="flex items-center gap-1">
-                          <TrendingUp className="w-3 h-3" />
-                          Entrega: {format(parseISO(project.estimated_end_date), "dd/MM/yyyy")}
-                        </span>
-                      )}
-                      {project.service_type && (
-                        <span className="px-2 py-0.5 bg-slate-100 rounded-lg text-slate-500">{project.service_type}</span>
-                      )}
+                    <div className="text-right flex-shrink-0">
+                      <span className="text-lg font-extralight text-slate-900">{project.progress_percentage || 0}</span>
+                      <span className="text-xs text-slate-400 ml-0.5">%</span>
                     </div>
                   </div>
                 </Link>

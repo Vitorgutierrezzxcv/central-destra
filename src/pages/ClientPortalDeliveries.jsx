@@ -206,19 +206,15 @@ export default function ClientPortalDeliveries() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
-        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">
-              {activeProject?.name || "Portal"}
-            </p>
-            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Entregas</h1>
-            <p className="text-sm text-slate-400 font-light mt-1.5">
-              Acompanhe e aprove as entregas do seu projeto.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          {activeProject?.name || "Entregas"}
+        </p>
+        <div className="flex items-end justify-between gap-4 mb-8">
+          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+            Entregas
+          </h1>
           {pendingCount > 0 && (
             <div className="text-right">
               <span className="text-2xl font-extralight text-slate-900">{pendingCount}</span>
@@ -228,7 +224,7 @@ export default function ClientPortalDeliveries() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7 space-y-4">
+      <div className="max-w-lg mx-auto px-5 space-y-3 pb-20">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />

@@ -110,15 +110,15 @@ export default function ClientPortalTickets() {
   if (activeTicket) {
     const refreshedTicket = tickets.find(t => t.id === activeTicket.id) || activeTicket;
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col">
-        <div className="bg-white border-b border-slate-200 px-6 py-5">
-          <div className="max-w-3xl mx-auto">
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-            <h1 className="text-xl font-bold text-slate-900">Chamados de Suporte</h1>
-          </div>
+      <div className="min-h-screen bg-white flex flex-col">
+        <div className="max-w-lg mx-auto px-5 pt-14 pb-6 w-full">
+          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-2">
+            Chamados
+          </p>
+          <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Suporte</h1>
         </div>
-        <div className="flex-1 max-w-3xl w-full mx-auto px-4 md:px-6 py-6 flex flex-col">
-          <div className="flex-1 bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 500 }}>
+        <div className="flex-1 max-w-lg w-full mx-auto px-5 py-4 flex flex-col">
+           <div className="flex-1 border border-slate-100 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 400 }}>
             <TicketChat
               ticket={refreshedTicket}
               user={user}
@@ -131,24 +131,27 @@ export default function ClientPortalTickets() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-10">
+        <div className="flex items-end justify-between gap-4 mb-8">
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-            <h1 className="text-xl font-bold text-slate-900">Chamados de Suporte</h1>
-            <p className="text-slate-500 text-sm mt-0.5">Abra e acompanhe chamados do projeto.</p>
+            <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+              Chamados
+            </p>
+            <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+              Suporte
+            </h1>
           </div>
           {!showNew && (
-            <Button onClick={() => setShowNew(true)} className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+            <Button onClick={() => setShowNew(true)} className="bg-primary hover:bg-primary/90 text-white gap-2 h-11">
               <Plus className="w-4 h-4" />
-              Novo Chamado
+              Novo
             </Button>
           )}
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 space-y-6">
+      <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
         {!activeProject ? (
           <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
             <Ticket className="w-12 h-12 text-slate-300 mx-auto mb-3" />

@@ -141,16 +141,20 @@ export default function ClientPortalCalendar() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-slate-900">Calendário do Projeto</h1>
-          <p className="text-slate-500 text-sm mt-1">Reuniões, marcos e datas importantes.</p>
-        </div>
+    <div className="min-h-screen bg-white">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          Calendário
+        </p>
+        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
+          Reuniões<br />e Marcos
+        </h1>
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
+          Datas importantes e próximos eventos.
+        </p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6">
+      <div className="max-w-lg mx-auto px-5 space-y-3 pb-20">
         <div className="flex gap-2 flex-wrap">
           {["all", "upcoming", "past"].map(f => (
             <button
