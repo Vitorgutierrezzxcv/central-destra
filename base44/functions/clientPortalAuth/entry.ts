@@ -78,10 +78,27 @@ Deno.serve(async (req) => {
         return Response.json({ error: "Senha incorreta." }, { status: 401 });
       }
 
-      await base44.asServiceRole.entities.UserProfile.update(existing.id, {
+      // Tenta vincular ao ClientContact pelo email se ainda não vinculado
+      let linked_client_contact_id = existing.linked_client_contact_id || null;
+      let linked_company_id = existing.linked_company_id || null;
+
+      if (!linked_client_contact_id) {
+        const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
+        const contact = contacts?.[0];
+        if (contact) {
+          linked_client_contact_id = contact.id;
+          linked_company_id = contact.company_id || linked_company_id;
+        }
+      }
+
+      const updateData = {
         portal_session_token: newToken,
-        portal_session_expires: expiresAt
-      });
+        portal_session_expires: expiresAt,
+      };
+      if (linked_client_contact_id) updateData.linked_client_contact_id = linked_client_contact_id;
+      if (linked_company_id) updateData.linked_company_id = linked_company_id;
+
+      await base44.asServiceRole.entities.UserProfile.update(existing.id, updateData);
 
       return Response.json({
         success: true,
@@ -91,8 +108,8 @@ Deno.serve(async (req) => {
           id: existing.id,
           email: normalizedEmail,
           name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
-          linked_company_id: existing.linked_company_id || null,
-          linked_client_contact_id: existing.linked_client_contact_id || null,
+          linked_company_id: linked_company_id,
+          linked_client_contact_id: linked_client_contact_id,
           portal_type: "client"
         }
       });

@@ -308,11 +308,28 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   const toggleStatus = useMutation({
     mutationFn: () => base44.entities.ClientContact.update(contact.id, {
       status: contact.status === "active" ? "disabled" : "active"
     }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin_client_contacts"] })
+  });
+
+  const deleteContactMutation = useMutation({
+    mutationFn: async () => {
+      // Remove todos os acessos vinculados primeiro
+      for (const acc of contactAccess) {
+        await base44.entities.ProjectClientAccess.delete(acc.id);
+      }
+      await base44.entities.ClientContact.delete(contact.id);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin_client_contacts"] });
+      qc.invalidateQueries({ queryKey: ["admin_project_access"] });
+      setConfirmDelete(false);
+    }
   });
 
   const addProjectMutation = useMutation({
@@ -358,6 +375,12 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
             className={contact.status === "active" ? "text-rose-400 hover:text-rose-600 h-8 w-8 p-0" : "text-emerald-600 hover:text-emerald-700 h-8 w-8 p-0"}
           >
             {contact.status === "active" ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={e => { e.stopPropagation(); setConfirmDelete(true); }}
+            className="text-rose-400 hover:text-rose-600 hover:bg-rose-50 h-8 w-8 p-0"
+            title="Apagar contato"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
           </Button>
           {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
         </div>
@@ -522,6 +545,33 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
       )}
 
       <ContactFormDialog open={editOpen} onClose={() => setEditOpen(false)} contact={contact} companies={companies} projects={allProjects} allAccess={allAccess} />
+
+      {/* Confirm Delete Dialog */}
+      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-rose-600">Apagar Contato?</DialogTitle>
+          </DialogHeader>
+          <div className="py-2 space-y-2">
+            <p className="text-sm text-slate-700">
+              Tem certeza que deseja apagar <strong>{contact.name}</strong>?
+            </p>
+            <p className="text-xs text-slate-500">
+              Todos os acessos a projetos deste contato também serão removidos. Esta ação não pode ser desfeita.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(false)}>Cancelar</Button>
+            <Button
+              onClick={() => deleteContactMutation.mutate()}
+              disabled={deleteContactMutation.isPending}
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              {deleteContactMutation.isPending ? "Apagando..." : "Apagar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

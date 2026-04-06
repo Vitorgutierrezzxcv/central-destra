@@ -6,6 +6,11 @@ import { getClientProfile, isLoggedIn } from "@/lib/clientPortalSession";
 /**
  * Hook central do portal do cliente.
  * Usa auth própria do portal (clientPortalSession) — independente do Base44 auth.
+ * 
+ * Fluxo de resolução do contato/empresa:
+ * 1. Tenta pegar linked_client_contact_id do UserProfile
+ * 2. Fallback: busca ClientContact pelo email do usuário logado
+ * 3. Fallback: usa linked_company_id direto do UserProfile
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
@@ -14,7 +19,6 @@ export function useClientPortal() {
   useEffect(() => {
     const profile = getClientProfile();
     if (profile) {
-      // Mapeia o perfil da sessão para o formato esperado
       setUser({
         email: profile.email,
         full_name: profile.name,
@@ -27,9 +31,9 @@ export function useClientPortal() {
     setUserLoading(false);
   }, []);
 
-  const isClientRole = true; // sempre client no portal do cliente
+  const isClientRole = true;
 
-  // Perfil estendido do portal — buscado pelo email da sessão local
+  // Perfil estendido do portal
   const { data: userProfile } = useQuery({
     queryKey: ["cp_userProfile", user?.email],
     queryFn: () =>
@@ -38,9 +42,29 @@ export function useClientPortal() {
     enabled: !!user?.email
   });
 
-  // company_id: vem do perfil ou do user.linked_company_id (fallback legado)
-  const companyId = userProfile?.linked_company_id || user?.linked_company_id || null;
-  const contactId = userProfile?.linked_client_contact_id || user?.linked_client_contact_id || null;
+  // Busca ClientContact pelo email (fallback quando linked_client_contact_id não está preenchido)
+  const { data: clientContactByEmail } = useQuery({
+    queryKey: ["cp_clientContact_email", user?.email],
+    queryFn: () =>
+      base44.entities.ClientContact.filter({ email: user.email })
+        .then(d => d?.[0] || null),
+    enabled: !!user?.email
+  });
+
+  // Resolve o contactId: prioridade userProfile > sessão > busca por email
+  const contactId =
+    userProfile?.linked_client_contact_id ||
+    user?.linked_client_contact_id ||
+    clientContactByEmail?.id ||
+    null;
+
+  // Resolve o companyId: prioridade contact > userProfile > sessão
+  const companyIdFromContact = clientContactByEmail?.company_id || null;
+  const companyId =
+    userProfile?.linked_company_id ||
+    user?.linked_company_id ||
+    companyIdFromContact ||
+    null;
 
   const { data: company } = useQuery({
     queryKey: ["client_company", companyId],
@@ -49,7 +73,7 @@ export function useClientPortal() {
     enabled: !!companyId
   });
 
-  // Acessos explícitos a projetos (por ClientContact)
+  // Acessos explícitos a projetos pelo contactId
   const { data: projectAccess = [] } = useQuery({
     queryKey: ["client_project_access", contactId],
     queryFn: () =>
@@ -112,6 +136,7 @@ export function useClientPortal() {
     company,
     companyId,
     contactId,
+    clientContact: clientContactByEmail,
     projects,
     projectAccess,
     isClientRole,
