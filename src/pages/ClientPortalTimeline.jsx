@@ -108,13 +108,13 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="flex flex-row items-center justify-center gap-4 md:gap-1 w-full px-2 md:px-0">
-              <div className="flex flex-row items-center justify-center w-full relative">
-                {/* Background line for desktop and mobile */}
-                <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-700 -translate-y-1/2 z-0 rounded-full" />
+            <div className="flex flex-row items-center justify-between gap-1 w-full px-1 md:px-0">
+              <div className="flex flex-row items-center justify-between w-full relative">
+                {/* Background line - white */}
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white -translate-y-1/2 z-0 rounded-full" />
 
-                {/* Filled line - same color as progress */}
-                <div className="absolute top-1/2 left-0 h-1 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
+                {/* Filled line - blue */}
+                <div className="absolute top-1/2 left-0 h-0.5 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
                   style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
 
                 {[
@@ -129,19 +129,18 @@ export default function ClientPortalTimeline() {
                   const isActive = Math.floor(phaseProgress) === idx;
 
                   return (
-                    <div key={idx} className="flex flex-col flex-1 items-center relative z-10">
-                      <div className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center text-sm md:text-xs font-semibold border-3 transition-all flex-shrink-0 ${
-                        isCompleted || isActive ? "text-white shadow-lg" : "text-slate-400"
-                      }`}
+                    <div key={idx} className="flex flex-col items-center relative z-10">
+                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
                       style={{
                         backgroundColor: isCompleted || isActive ? "#6FA6FF" : "#1A2F48",
-                        borderColor: isCompleted || isActive ? "#6FA6FF" : "#0D1420"
+                        borderColor: isCompleted || isActive ? "#6FA6FF" : "white",
+                        color: isCompleted || isActive ? "white" : "#4B6A8B"
                       }}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
-                      <div className="mt-3 text-center">
-                        <p className="text-xs font-semibold text-white">{phase.label}</p>
-                        <p className="text-[10px] font-light mt-1 hidden md:block text-blue-200">{phase.desc}</p>
+                      <div className="mt-2 text-center">
+                        <p className="text-[10px] md:text-xs font-semibold text-white">{phase.label}</p>
+                        <p className="text-[8px] md:text-[10px] font-light mt-0.5 hidden md:block text-blue-200">{phase.desc}</p>
                       </div>
                     </div>
                   );
