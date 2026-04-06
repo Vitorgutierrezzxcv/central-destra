@@ -83,7 +83,7 @@ export default function ClientPortalTimeline() {
         </div>
       </div>
 
-      <div className="max-w-full w-full px-5 md:px-4 space-y-6 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 space-y-8 pb-20">
         {!activeProject ? (
           <div className="flex flex-col items-center py-20">
             <Target className="w-10 h-10 text-slate-200 mb-4" />
@@ -92,45 +92,65 @@ export default function ClientPortalTimeline() {
         ) : (
           <>
             {/* Progress bar */}
-            <div className="w-full bg-slate-100 rounded-full h-1">
-              <div className="h-1 rounded-full bg-slate-900 transition-all duration-700"
-                style={{ width: `${projectProgress}%` }} />
+            <div className="flex justify-center">
+              <div className="w-full max-w-xs bg-slate-100 rounded-full h-1.5">
+                <div className="h-1.5 rounded-full bg-slate-900 transition-all duration-700"
+                  style={{ width: `${projectProgress}%` }} />
+              </div>
             </div>
 
             {/* Summary */}
-            <div className="flex items-center gap-6 text-sm text-slate-400 font-light">
-              <span>{completedMilestones}/{milestones.length} marcos</span>
-              <span>{completedTasks}/{tasks.length} tarefas</span>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm text-slate-600 font-light">
+              <span className="text-center">{completedMilestones}/{milestones.length} marcos</span>
+              <span className="hidden md:inline">•</span>
+              <span className="text-center">{completedTasks}/{tasks.length} tarefas</span>
+              <span className="hidden md:inline">•</span>
+              <span className="text-center"><strong>{projectProgress}%</strong> concluído</span>
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="space-y-3">
-              {[
-                { label: "Kickoff", order: 0 },
-                { label: "Planejamento", order: 1 },
-                { label: "Desenvolvimento", order: 2 },
-                { label: "Testes", order: 3 },
-                { label: "Entrega", order: 4 }
-              ].map((phase, idx) => {
-                const phaseProgress = (projectProgress / 100) * 5;
-                const isCompleted = phaseProgress > phase.order;
-                const isActive = Math.floor(phaseProgress) === phase.order;
+            <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0 w-full">
+              <div className="flex flex-col md:flex-row items-center justify-center w-full relative">
+                {/* Background line for desktop */}
+                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -translate-y-1/2 z-0" />
 
-                return (
-                  <div key={phase.order} className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all flex-shrink-0 ${
-                      isCompleted ? "bg-emerald-500 border-emerald-500 text-white" :
-                      isActive ? "bg-blue-500 border-blue-500 text-white" :
-                      "bg-white border-slate-200 text-slate-400"
-                    }`}>
-                      {isCompleted ? "✓" : idx + 1}
+                {/* Filled line for desktop */}
+                <div className="hidden md:block absolute top-1/2 left-0 h-0.5 bg-emerald-500 -translate-y-1/2 z-0 transition-all duration-700"
+                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)` }} />
+
+                {/* Vertical line for mobile */}
+                <div className="md:hidden absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 -translate-x-1/2 z-0" />
+                <div className="md:hidden absolute left-1/2 top-0 w-0.5 bg-emerald-500 -translate-x-1/2 z-0 transition-all duration-700"
+                  style={{ height: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)` }} />
+
+                {[
+                  { label: "Kickoff", desc: "Alinhamento inicial" },
+                  { label: "Planejamento", desc: "Estratégia e roadmap" },
+                  { label: "Desenvolvimento", desc: "Execução do projeto" },
+                  { label: "Testes", desc: "QA e validação" },
+                  { label: "Entrega", desc: "Finalização" }
+                ].map((phase, idx) => {
+                  const phaseProgress = (projectProgress / 100) * 5;
+                  const isCompleted = phaseProgress > idx;
+                  const isActive = Math.floor(phaseProgress) === idx;
+
+                  return (
+                    <div key={idx} className="flex flex-col md:flex-1 items-center relative z-10">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all flex-shrink-0 ${
+                        isCompleted ? "bg-emerald-500 border-emerald-500 text-white shadow-md" :
+                        isActive ? "bg-blue-500 border-blue-500 text-white shadow-md" :
+                        "bg-white border-slate-200 text-slate-400"
+                      }`}>
+                        {isCompleted ? "✓" : idx + 1}
+                      </div>
+                      <div className="mt-3 text-center">
+                        <p className="text-xs md:text-sm font-semibold text-slate-800">{phase.label}</p>
+                        <p className="text-[10px] text-slate-400 font-light mt-1 hidden md:block">{phase.desc}</p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-slate-700">{phase.label}</p>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
 
