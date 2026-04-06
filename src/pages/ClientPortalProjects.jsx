@@ -52,31 +52,45 @@ export default function ClientPortalProjects() {
                 <Link
                   key={project.id}
                   to={`${createPageUrl("ClientPortalProject")}?project_id=${project.id}`}
-                  className="block border border-slate-100 rounded-2xl px-5 py-4 hover:bg-slate-50 transition-colors"
+                  className="block bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl px-6 py-5 hover:shadow-sm hover:border-slate-200 transition-all group"
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <h2 className="text-sm font-medium text-slate-900">{project.name}</h2>
-                        <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h2 className="text-lg font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">{project.name}</h2>
                       </div>
                       {project.current_phase && (
-                        <p className="text-[10px] text-slate-400 font-light">{project.current_phase}</p>
+                        <p className="text-[10px] text-slate-500 font-medium tracking-wider uppercase mb-2">{project.current_phase}</p>
                       )}
                       {project.description && (
-                        <p className="text-xs text-slate-400 font-light mt-1 line-clamp-1">{project.description}</p>
+                        <p className="text-sm text-slate-600 font-light leading-relaxed mb-4">{project.description}</p>
                       )}
-                      <div className="mt-3">
-                        <div className="flex justify-between text-xs text-slate-400 mb-1">
-                          <span>Progresso</span>
-                          <span className="font-medium">{project.progress_percentage || 0}%</span>
-                        </div>
-                        <Progress value={project.progress_percentage || 0} className="h-1.5" />
-                      </div>
                     </div>
-                    <div className="text-right flex-shrink-0">
-                      <span className="text-lg font-extralight text-slate-900">{project.progress_percentage || 0}</span>
-                      <span className="text-xs text-slate-400 ml-0.5">%</span>
+                    <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between text-xs text-slate-400 mb-2">
+                        <span className="font-medium">Progresso</span>
+                        <span className="font-semibold text-slate-700">{project.progress_percentage || 0}%</span>
+                      </div>
+                      <Progress value={project.progress_percentage || 0} className="h-2" />
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs text-slate-500 font-light">
+                      {project.project_start_date && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {format(parseISO(project.project_start_date), "dd/MM/yy")}
+                        </span>
+                      )}
+                      {project.estimated_end_date && (
+                        <span className="flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" />
+                          {format(parseISO(project.estimated_end_date), "dd/MM/yy")}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
