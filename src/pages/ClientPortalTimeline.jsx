@@ -115,7 +115,7 @@ export default function ClientPortalTimeline() {
 
                 {/* Filled line - blue */}
                 <div className="absolute top-1/2 left-0 h-0.5 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
-                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
+                  style={{ width: `calc((${Math.floor((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
 
                 {[
                   { label: "Kickoff", desc: "Alinhamento inicial" },
@@ -132,9 +132,9 @@ export default function ClientPortalTimeline() {
                     <div key={idx} className="flex flex-col items-center relative z-10">
                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
                       style={{
-                        backgroundColor: "white",
-                        borderColor: isCompleted || isActive ? "#6FA6FF" : "white",
-                        color: isCompleted || isActive ? "#6FA6FF" : "#B0B0B0"
+                        backgroundColor: isActive ? "#6FA6FF" : "white",
+                        borderColor: "#6FA6FF",
+                        color: isActive ? "white" : isCompleted ? "#6FA6FF" : "#B0B0B0"
                       }}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
