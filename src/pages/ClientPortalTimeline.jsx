@@ -108,8 +108,8 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="flex flex-row items-center justify-between gap-1 w-full px-1 md:px-0">
-              <div className="flex flex-row items-center justify-between w-full relative">
+            <div className="w-full px-1 md:px-0">
+              <div className="flex flex-row items-center justify-between w-full relative mb-6">
                 {/* Background line - white */}
                 <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white -translate-y-1/2 z-0 rounded-full" />
 
@@ -133,7 +133,7 @@ export default function ClientPortalTimeline() {
                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
                       style={{
                         backgroundColor: isActive ? "#6FA6FF" : "white",
-                        borderColor: "#6FA6FF",
+                        borderColor: isActive ? "#6FA6FF" : "white",
                         color: isActive ? "white" : isCompleted ? "#6FA6FF" : "#B0B0B0"
                       }}>
                         {isCompleted ? "✓" : idx + 1}
@@ -143,10 +143,25 @@ export default function ClientPortalTimeline() {
                         <p className="text-[8px] md:text-[10px] font-light mt-0.5 hidden md:block text-blue-200">{phase.desc}</p>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                    );
+                    })}
+                    </div>
+
+                    {/* Legends below the timeline */}
+                    <div className="flex flex-row items-start justify-between w-full">
+                    {[
+                    { label: "Kickoff" },
+                    { label: "Planejamento" },
+                    { label: "Desenvolvimento" },
+                    { label: "Testes" },
+                    { label: "Entrega" }
+                    ].map((phase, idx) => (
+                    <div key={idx} className="text-center flex-1">
+                    <p className="text-[9px] md:text-xs font-semibold text-white">{phase.label}</p>
+                    </div>
+                    ))}
+                    </div>
+                    </div>
 
 
 
