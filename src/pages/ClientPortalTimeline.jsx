@@ -111,7 +111,7 @@ export default function ClientPortalTimeline() {
 
                 {/* Filled line - blue */}
                 <div className="absolute top-1/2 left-0 h-0.5 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
-                  style={{ width: `${((projectProgress / 100) * 5 / 5) * 100}%`, background: "#6FA6FF" }} />
+                  style={{ width: `calc((${Math.floor((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
 
                 {[
                   { label: "Kickoff", desc: "Alinhamento inicial" },
