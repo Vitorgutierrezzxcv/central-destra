@@ -338,11 +338,11 @@ export default function ClientPortalOnboarding() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-0">
          
 
         
-        <div className="flex items-end justify-between gap-4 mb-1">
+        <div className="flex items-end justify-between gap-4 mb-0">
            <h1 className="text-6xl md:text-5xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
              Onboarding
             </h1>
@@ -373,7 +373,7 @@ export default function ClientPortalOnboarding() {
               <div className="rounded-2xl p-5 border" style={{ backgroundColor: "#050D1B", borderColor: "#020408" }}>
                 <p className="text-xs uppercase tracking-wider font-semibold mb-2 text-white">Itens Concluídos</p>
                 <p className="text-3xl font-extralight text-white">{completedAll}</p>
-                <p className="text-xs mt-1" style={{ color: "#6FA6FF" }}>de {items.length} itens</p>
+                <p className="text-xs mt-1 text-white">de {items.length} itens</p>
               </div>
               <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
                 <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Sua Responsabilidade</p>
