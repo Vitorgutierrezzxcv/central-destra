@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
-import { File, Download, FileText, Image, Video, Archive, Search, Loader2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { File, Download, FileText, Image, Video, Archive, Search, Loader2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import ClientFileUploadModal from "@/components/client-portal/ClientFileUploadModal";
 
 const categoryLabels = {
   contract: "Contrato", presentation: "Apresentação", report: "Relatório",
@@ -35,6 +37,8 @@ export default function ClientPortalFiles() {
   const { userLoading, projects, canAccessProject } = useClientPortal();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
   const selectedProjectId = urlParams.get("project_id");
@@ -81,15 +85,24 @@ export default function ClientPortalFiles() {
 
          <div className="max-w-lg mx-auto px-5 -mt-10 space-y-4 pb-20">
         {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar arquivos..."
-              className="pl-9 border-slate-200"
-            />
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Buscar arquivos..."
+                className="pl-9 border-slate-200"
+              />
+            </div>
+            <Button
+              onClick={() => setUploadModalOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2 flex-shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              Enviar
+            </Button>
           </div>
           <div className="flex gap-2 flex-wrap">
             {categories.map(cat => (
@@ -151,7 +164,14 @@ export default function ClientPortalFiles() {
             })}
           </div>
         )}
-      </div>
-    </div>
-  );
-}
+        </div>
+
+        <ClientFileUploadModal
+        projectId={activeProject?.id}
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUploadSuccess={() => queryClient.invalidateQueries({ queryKey: ["client_files"] })}
+        />
+        </div>
+        );
+        }
