@@ -85,13 +85,13 @@ export default function ClientPortalSatisfaction() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
-        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
           Avaliação
         </p>
-        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
-          Sua<br />Opinião
+        <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight mb-3">
+          Sua<br /><span className="text-[5.5rem]">Opinião</span>
         </h1>
-        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-8">
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-3">
           Avalie a qualidade do nosso trabalho.
         </p>
       </div>
