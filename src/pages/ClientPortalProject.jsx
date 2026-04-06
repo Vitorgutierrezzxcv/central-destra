@@ -88,32 +88,23 @@ export default function ClientPortalProject() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="max-w-full w-full px-5 md:px-4 pt-8 md:pt-12 pb-20">
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
-          {activeProject.name}
+          Projeto
         </p>
-        <div className="flex items-end justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
-              {activeProject.name}
-            </h1>
-            {activeProject.description && (
-              <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mt-3">
-                {activeProject.description}
-              </p>
-            )}
-          </div>
-        </div>
+        <h1 className="text-5xl md:text-6xl leading-[1.1] font-extralight text-primary tracking-tight mb-8">
+          {activeProject.name}
+        </h1>
       </div>
 
       {/* Content */}
       <div className="max-w-full w-full px-5 md:px-4 space-y-6 pb-20">
-        {/* Progress Bar */}
-         <div className="border border-slate-200 rounded-2xl p-6">
+        {/* Progress Card - Blue */}
+        <div className="border border-blue-200 bg-blue-50 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="font-semibold text-slate-900">Progresso Geral</h2>
               <p className="text-sm text-slate-500 mt-0.5">{activeProject.current_phase || "Fase atual não definida"}</p>
             </div>
-            <span className="text-3xl font-bold text-blue-600">{activeProject.progress_percentage || 0}%</span>
+            <span className="text-3xl font-bold text-primary">{activeProject.progress_percentage || 0}%</span>
           </div>
           <Progress value={activeProject.progress_percentage || 0} className="h-3" />
 
@@ -142,11 +133,11 @@ export default function ClientPortalProject() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Next Milestone */}
+          {/* Next Milestone - Blue */}
           {nextMilestone && (
-            <div className="bg-white border border-blue-200 rounded-2xl p-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-3">
-                <Flag className="w-4 h-4 text-blue-500" />
+                <Flag className="w-4 h-4 text-primary" />
                 <h3 className="font-semibold text-slate-900 text-sm">Próximo Marco</h3>
               </div>
               <p className="text-base font-semibold text-slate-900 mb-2">{nextMilestone.title}</p>
@@ -154,22 +145,22 @@ export default function ClientPortalProject() {
                 <p className="text-sm text-slate-500 mb-3">{nextMilestone.description}</p>
               )}
               {nextMilestone.due_date && (
-                <p className="text-xs text-blue-600 flex items-center gap-1">
+                <p className="text-xs text-primary flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {format(parseISO(nextMilestone.due_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </p>
               )}
-              <Link to={createPageUrl("ClientPortalTimeline")} className="mt-3 inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium">
+              <Link to={createPageUrl("ClientPortalTimeline")} className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium">
                 Ver timeline completa <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           )}
 
-          {/* Next Meeting */}
+          {/* Next Meeting - White */}
           {upcomingMeetings[0] && (
-            <div className="bg-white border border-purple-200 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-3">
-                <Calendar className="w-4 h-4 text-purple-500" />
+                <Calendar className="w-4 h-4 text-slate-600" />
                 <h3 className="font-semibold text-slate-900 text-sm">Próxima Reunião</h3>
               </div>
               <p className="text-base font-semibold text-slate-900 mb-2">{upcomingMeetings[0].title}</p>
@@ -183,7 +174,7 @@ export default function ClientPortalProject() {
                   href={upcomingMeetings[0].meeting_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 rounded-lg text-xs text-white hover:bg-purple-700 transition-colors"
+                  className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-lg text-xs hover:bg-primary/90 transition-colors"
                 >
                   Entrar na reunião
                 </a>
@@ -193,27 +184,35 @@ export default function ClientPortalProject() {
         </div>
 
         {/* Quick Links */}
-         <div className="border border-slate-200 rounded-2xl p-6">
-           <h2 className="font-semibold text-slate-900 mb-4">Seções do Projeto</h2>
-           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-             {quickLinks.map((link, i) => (
-               <Link
-                 key={i}
-                 to={createPageUrl(link.page)}
-                 className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all group"
-               >
-                 <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100">
-                   <link.icon className="w-5 h-5 text-blue-600" />
-                 </div>
-                 <div className="flex-1">
-                   <p className="text-sm font-medium text-slate-800 group-hover:text-blue-700 transition-colors">{link.label}</p>
-                   <p className="text-xs text-slate-400">{link.desc}</p>
-                 </div>
-                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
-               </Link>
-             ))}
-           </div>
-         </div>
+        <div className="border border-slate-200 rounded-2xl p-6">
+          <h2 className="font-semibold text-slate-900 mb-4">Seções do Projeto</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {quickLinks.map((link, i) => (
+              <Link
+                key={i}
+                to={createPageUrl(link.page)}
+                className={`flex items-center gap-4 p-4 border rounded-xl transition-all group ${
+                  i % 2 === 0
+                    ? "bg-blue-50 border-blue-200 hover:border-blue-300"
+                    : "bg-white border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 ${
+                  i % 2 === 0
+                    ? "bg-blue-100 border-blue-200"
+                    : "bg-slate-100 border-slate-200"
+                }`}>
+                  <link.icon className={`w-5 h-5 ${i % 2 === 0 ? "text-primary" : "text-slate-600"}`} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-slate-800">{link.label}</p>
+                  <p className="text-xs text-slate-400">{link.desc}</p>
+                </div>
+                <ArrowRight className={`w-4 h-4 transition-colors ${i % 2 === 0 ? "text-primary" : "text-slate-300"}`} />
+              </Link>
+            ))}
+          </div>
+        </div>
         </div>
         </div>
         );
