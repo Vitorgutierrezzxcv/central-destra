@@ -87,12 +87,12 @@ export default function ClientPortalProject() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col md:flex-row">
       {/* Left Panel - Dark */}
-      <div className="md:w-5/12 text-white px-5 md:px-8 pt-32 md:pt-12 pb-8 md:pb-12 flex flex-col justify-between md:min-h-screen">
+      <div className="md:w-5/12 text-white px-5 md:px-8 pt-20 md:pt-8 pb-6 md:pb-8 flex flex-col justify-between md:min-h-screen">
         <div>
-          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-8">Projeto</p>
-          <h1 className="text-5xl md:text-5xl font-light leading-tight mb-6 text-white">{activeProject.name}</h1>
-          
-          <div className="space-y-4">
+          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
+          <h1 className="text-5xl md:text-5xl font-light leading-tight mb-3 text-white">{activeProject.name}</h1>
+
+          <div className="space-y-2">
             <div>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-2">Status</p>
               <Badge className={`${statusCfg.color} text-xs`}>{statusCfg.label}</Badge>
@@ -119,7 +119,7 @@ export default function ClientPortalProject() {
 
       {/* Right Panel - Content */}
       <div className="md:w-7/12 bg-white flex flex-col overflow-y-auto">
-        <div className="px-5 md:px-8 py-8 space-y-6 flex-1">
+        <div className="px-5 md:px-8 py-5 space-y-3 flex-1">
           {/* Progress Card */}
         <div className="border border-slate-200 bg-white rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">

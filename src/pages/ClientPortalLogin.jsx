@@ -56,15 +56,15 @@ export default function ClientPortalLogin() {
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row">
       {/* Left panel — decorative (desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-8 xl:p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-6 xl:p-8">
         <div>
-          <div className="flex items-center gap-3 mb-16">
+          <div className="flex items-center gap-2.5 mb-10">
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
               <span className="text-white text-sm font-light tracking-widest">D</span>
             </div>
             <span className="text-white/60 text-xs tracking-widest uppercase font-light">Destra</span>
           </div>
-          <h2 className="text-4xl font-extralight text-white leading-tight mb-4">
+          <h2 className="text-4xl font-extralight text-white leading-tight mb-2">
             Portal do<br />Cliente
           </h2>
           <p className="text-slate-400 text-base font-light leading-relaxed">
@@ -73,7 +73,7 @@ export default function ClientPortalLogin() {
             em tempo real.
           </p>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-1.5">
           {[
             "Visibilidade completa do projeto",
             "Aprovação de entregas",
@@ -91,11 +91,11 @@ export default function ClientPortalLogin() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-4 py-12 md:py-16 bg-white">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-4 py-8 md:py-10 bg-white">
         <div className="w-full max-w-sm md:max-w-lg">
 
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-10">
+          <div className="lg:hidden flex items-center gap-2 mb-6">
             <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">
               <span className="text-white text-sm font-light tracking-widest">D</span>
             </div>
@@ -105,11 +105,11 @@ export default function ClientPortalLogin() {
           </div>
 
           {/* Title */}
-          <div className="mb-8">
+          <div className="mb-5">
             <h1 className="text-2xl md:text-3xl font-light text-slate-900 tracking-tight">
               {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
             </h1>
-            <p className="text-slate-400 text-sm md:text-base mt-1.5 font-light">
+            <p className="text-slate-400 text-sm md:text-base mt-1 font-light">
               {mode === "login"
                 ? "Acesse seu portal com suas credenciais."
                 : "Registre-se para acessar seu portal."}
@@ -117,7 +117,7 @@ export default function ClientPortalLogin() {
           </div>
 
           {/* Mode switcher */}
-          <div className="flex gap-1 mb-8 border-b border-slate-100">
+          <div className="flex gap-1 mb-5 border-b border-slate-100">
             {[
               { key: "login", label: "Entrar" },
               { key: "register", label: "Cadastrar" },
@@ -137,10 +137,10 @@ export default function ClientPortalLogin() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
             {mode === "register" && (
               <div>
-                <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide">Nome completo</label>
+                <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Nome completo</label>
                 <input
                   value={name}
                   onChange={e => setName(e.target.value)}
@@ -152,7 +152,7 @@ export default function ClientPortalLogin() {
             )}
 
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide">E-mail</label>
+              <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">E-mail</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                 <input
@@ -167,7 +167,7 @@ export default function ClientPortalLogin() {
             </div>
 
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide">Senha</label>
+              <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Senha</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
                 <input
@@ -190,7 +190,7 @@ export default function ClientPortalLogin() {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-50 border border-red-100">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-100">
                 <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-red-600 leading-relaxed">{error}</p>
               </div>
@@ -199,7 +199,7 @@ export default function ClientPortalLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-12 bg-slate-900 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2.5 hover:bg-slate-800 transition-colors disabled:opacity-50 mt-2"
+              className="w-full h-11 bg-slate-900 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 mt-1"
             >
               {loading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /><span className="font-light">Aguarde...</span></>
@@ -210,8 +210,8 @@ export default function ClientPortalLogin() {
           </form>
 
           {/* Link copiável (admin hint) */}
-          <div className="mt-10 pt-8 border-t border-slate-100">
-            <p className="text-[10px] text-slate-300 uppercase tracking-widest mb-3 font-medium">Link de acesso</p>
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <p className="text-[10px] text-slate-300 uppercase tracking-widest mb-2 font-medium">Link de acesso</p>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 overflow-hidden">
                 <p className="text-[10px] text-slate-400 truncate font-mono">{PORTAL_URL}</p>

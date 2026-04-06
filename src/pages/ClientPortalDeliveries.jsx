@@ -207,11 +207,11 @@ export default function ClientPortalDeliveries() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-20">
-         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
+      <div className="max-w-full w-full px-5 md:px-4 pt-20 md:pt-8 pb-16">
+         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
            {activeProject?.name || "Entregas"}
          </p>
-        <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="flex items-end justify-between gap-4 mb-4">
           <div className="mb-2">
             <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-2">Entregas</p>
             <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
@@ -227,7 +227,7 @@ export default function ClientPortalDeliveries() {
         </div>
       </div>
 
-      <div className="max-w-full w-full px-5 md:px-4 space-y-3 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 space-y-2 pb-16">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
