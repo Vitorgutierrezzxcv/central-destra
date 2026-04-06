@@ -233,9 +233,9 @@ export default function ClientPortalTasks() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-16">
-        <div className="flex items-end justify-between gap-4 mb-2">
-          <h1 className="text-8xl md:text-7xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
+      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-4">
+        <div className="flex items-end justify-between gap-4 mb-4">
+          <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
             Tarefas
           </h1>
           <div className="text-right">
