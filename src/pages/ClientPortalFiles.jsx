@@ -71,15 +71,15 @@ export default function ClientPortalFiles() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-2">
             Arquivos
           </p>
-         <h1 className="text-6xl md:text-[4rem] leading-[0.85] font-extralight text-slate-900 tracking-tight mb-3">
-           Documentos<br /><span className="text-7xl md:text-[4.5rem]">Compartilhados</span>
+         <h1 className="text-5xl md:text-[4rem] leading-[0.85] font-extralight text-slate-900 tracking-tight mb-3">
+           Documentos<br /><span className="text-6xl md:text-[4.5rem]">Compartilhados</span>
          </h1>
-         <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-2">
+         <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-1">
            Todos os arquivos do seu projeto.
          </p>
-      </div>
+         </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
+         <div className="max-w-lg mx-auto px-5 space-y-3 pb-20">
         {/* Search & Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
@@ -97,7 +97,7 @@ export default function ClientPortalFiles() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-2 rounded-xl text-xs font-medium transition-all border ${
-                  selectedCategory === cat ? "bg-blue-600 border-blue-600 text-white" : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"}`}
+                  selectedCategory === cat ? "bg-[#001A3D] border-[#001A3D] text-white" : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"}`}
               >
                 {cat === "all" ? "Todos" : categoryLabels[cat] || cat}
               </button>
