@@ -99,28 +99,23 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Summary */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm font-light">
-              <span className="text-center text-blue-200">{completedMilestones}/{milestones.length} marcos</span>
-              <span className="hidden md:inline text-slate-600">•</span>
-              <span className="text-center text-blue-200">{completedTasks}/{tasks.length} tarefas</span>
-              <span className="hidden md:inline text-slate-600">•</span>
+            <div className="flex flex-row items-center justify-center gap-3 md:gap-8 text-sm font-light">
+              <span className="text-center text-white">{completedMilestones}/{milestones.length} marcos</span>
+              <span className="text-slate-600">•</span>
+              <span className="text-center text-white">{completedTasks}/{tasks.length} tarefas</span>
+              <span className="text-slate-600">•</span>
               <span className="text-center text-white"><strong className="text-lg">{projectProgress}%</strong> concluído</span>
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-1 w-full px-2 md:px-0">
-              <div className="flex flex-col md:flex-row items-center justify-center w-full relative">
-                {/* Background line for desktop */}
-                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-slate-700 -translate-y-1/2 z-0 rounded-full" />
+            <div className="flex flex-row items-center justify-center gap-4 md:gap-1 w-full px-2 md:px-0">
+              <div className="flex flex-row items-center justify-center w-full relative">
+                {/* Background line for desktop and mobile */}
+                <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-700 -translate-y-1/2 z-0 rounded-full" />
 
-                {/* Filled line for desktop */}
-                <div className="hidden md:block absolute top-1/2 left-0 h-1 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
-                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
-
-                {/* Vertical line for mobile */}
-                <div className="md:hidden absolute left-1/2 top-0 bottom-0 w-1 bg-slate-700 -translate-x-1/2 z-0 rounded-full" />
-                <div className="md:hidden absolute left-1/2 top-0 w-1 -translate-x-1/2 z-0 transition-all duration-700 rounded-full"
-                  style={{ height: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "linear-gradient(180deg, #6FA6FF 0%, #00D4FF 100%)" }} />
+                {/* Filled line - same color as progress */}
+                <div className="absolute top-1/2 left-0 h-1 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
+                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
 
                 {[
                   { label: "Kickoff", desc: "Alinhamento inicial" },
@@ -134,19 +129,19 @@ export default function ClientPortalTimeline() {
                   const isActive = Math.floor(phaseProgress) === idx;
 
                   return (
-                    <div key={idx} className="flex flex-col md:flex-1 items-center relative z-10">
+                    <div key={idx} className="flex flex-col flex-1 items-center relative z-10">
                       <div className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center text-sm md:text-xs font-semibold border-3 transition-all flex-shrink-0 ${
-                        isCompleted ? "text-white shadow-lg" : isActive ? "text-white shadow-lg" : "text-slate-400"
+                        isCompleted || isActive ? "text-white shadow-lg" : "text-slate-400"
                       }`}
                       style={{
-                        backgroundColor: isCompleted ? "#6FA6FF" : isActive ? "#00D4FF" : "#1A2F48",
-                        borderColor: isCompleted ? "#6FA6FF" : isActive ? "#00D4FF" : "#0D1420"
+                        backgroundColor: isCompleted || isActive ? "#6FA6FF" : "#1A2F48",
+                        borderColor: isCompleted || isActive ? "#6FA6FF" : "#0D1420"
                       }}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
-                      <div className="mt-4 md:mt-3 text-center">
-                        <p className="text-xs md:text-xs font-semibold text-white">{phase.label}</p>
-                        <p className="text-[11px] md:text-[10px] font-light mt-1.5 md:mt-1 hidden md:block text-blue-200">{phase.desc}</p>
+                      <div className="mt-3 text-center">
+                        <p className="text-xs font-semibold text-white">{phase.label}</p>
+                        <p className="text-[10px] font-light mt-1 hidden md:block text-blue-200">{phase.desc}</p>
                       </div>
                     </div>
                   );
