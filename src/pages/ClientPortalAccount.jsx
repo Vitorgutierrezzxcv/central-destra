@@ -75,7 +75,7 @@ export default function ClientPortalAccount() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-40 pb-20">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-40 pb-20">
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
            Minha Conta
          </p>
@@ -87,7 +87,7 @@ export default function ClientPortalAccount() {
         </p>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 space-y-4 pb-20">
         {/* Profile Card */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6">
           <div className="flex items-center gap-5 mb-6">
