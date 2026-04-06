@@ -83,7 +83,7 @@ export default function ClientPortalFiles() {
          </p>
          </div>
 
-         <div className="max-w-lg mx-auto px-5 -mt-10 space-y-4 pb-20">
+         <div className="max-w-lg mx-auto px-5 -mt-16 space-y-4 pb-20">
         {/* Search & Filters */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -98,7 +98,7 @@ export default function ClientPortalFiles() {
             </div>
             <Button
               onClick={() => setUploadModalOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white gap-2 flex-shrink-0"
+              className="bg-[#001A3D] hover:bg-[#001a3d]/90 text-white gap-2 flex-shrink-0"
             >
               <Plus className="w-4 h-4" />
               Enviar
