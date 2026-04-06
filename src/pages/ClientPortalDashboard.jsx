@@ -136,8 +136,8 @@ export default function ClientPortalDashboard() {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -194,27 +194,27 @@ export default function ClientPortalDashboard() {
 
             {/* 2. AÇÃO NECESSÁRIA */}
             {pendingActions.length > 0 && (
-              <div className="border-l-3 border-blue-500 bg-blue-50 rounded-lg p-5">
+              <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 rounded-2xl p-5">
                 <div className="flex items-start gap-3 mb-4">
-                  <Zap className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-4 h-4 text-blue-600" />
+                  </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-blue-900 text-sm">Ação Necessária</h3>
-                    <p className="text-xs text-blue-700 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} dependem da sua ação</p>
+                    <h3 className="font-semibold text-slate-900 text-sm">Ação Necessária</h3>
+                    <p className="text-xs text-slate-600 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""}</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  {pendingActions.slice(0, 3).map((action, i) => (
-                    <div key={i} className="text-xs text-blue-800 p-2 bg-white/50 rounded border border-blue-100">
-                      <span className="font-medium">{action.type === "approval" ? "Aprovação:" : "Onboarding:"}</span> {action.title}
+                  {pendingActions.slice(0, 2).map((action, i) => (
+                    <div key={i} className="text-xs p-3 bg-white rounded-lg border border-slate-100 hover:border-blue-200 transition-colors">
+                      <p className="text-slate-900 font-medium line-clamp-1">{action.title}</p>
+                      <p className="text-slate-500 text-[11px] mt-1">{action.type === "approval" ? "Aguarda sua aprovação" : "Pendente de onboarding"}</p>
                     </div>
                   ))}
-                  {pendingActions.length > 3 && (
-                    <p className="text-xs text-blue-600 px-2">+ {pendingActions.length - 3} item{pendingActions.length - 3 > 1 ? "ns" : ""}</p>
-                  )}
                 </div>
-                <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="inline-block mt-3">
+                <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="inline-block mt-4">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-1 h-8 text-xs">
-                    Revisar <ArrowRight className="w-3 h-3" />
+                    Ver Tudo <ArrowRight className="w-3 h-3" />
                   </Button>
                 </Link>
               </div>
@@ -222,19 +222,22 @@ export default function ClientPortalDashboard() {
 
             {/* 3. PRÓXIMA REUNIÃO */}
             {upcomingMeetings.length > 0 ? (
-              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
-                <h3 className="font-semibold text-blue-900 text-sm mb-4">Próxima Reunião</h3>
+              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <h3 className="font-semibold text-slate-900 text-sm">Próxima Reunião</h3>
+                </div>
                 {(() => {
                   const meeting = upcomingMeetings[0];
                   return (
-                    <div className="space-y-2 text-xs">
-                      <div className="pb-2 border-b border-blue-200">
-                        <p className="text-blue-700 mb-1">Assunto</p>
-                        <p className="font-semibold text-blue-900">{meeting.title}</p>
+                    <div className="space-y-3 text-xs">
+                      <div>
+                        <p className="text-slate-600 text-[11px] uppercase tracking-wide mb-1">Assunto</p>
+                        <p className="font-semibold text-slate-900">{meeting.title}</p>
                       </div>
-                      <div className="pb-2 border-b border-blue-200">
-                        <p className="text-blue-700 mb-1">Data e Hora</p>
-                        <p className="font-semibold text-blue-900">
+                      <div>
+                        <p className="text-slate-600 text-[11px] uppercase tracking-wide mb-1">Data e Hora</p>
+                        <p className="font-semibold text-slate-900">
                           {format(new Date(meeting.start_datetime), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                         </p>
                       </div>
@@ -242,7 +245,7 @@ export default function ClientPortalDashboard() {
                         <div className="pt-2">
                           <a href={meeting.meeting_link} target="_blank" rel="noreferrer" className="inline-block">
                             <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-8 text-xs">
-                              Entrar na Reunião <ArrowRight className="w-3 h-3" />
+                              Entrar <ArrowRight className="w-3 h-3" />
                             </Button>
                           </a>
                         </div>
@@ -252,9 +255,9 @@ export default function ClientPortalDashboard() {
                 })()}
               </div>
             ) : (
-              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 text-center py-8">
-                <Calendar className="w-5 h-5 text-blue-300 mx-auto mb-2" />
-                <p className="text-xs text-blue-400">Nenhuma reunião agendada</p>
+              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5 text-center py-8">
+                <Calendar className="w-5 h-5 text-slate-200 mx-auto mb-2" />
+                <p className="text-xs text-slate-400">Nenhuma reunião agendada</p>
               </div>
             )}
 
