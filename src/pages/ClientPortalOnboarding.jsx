@@ -342,7 +342,7 @@ export default function ClientPortalOnboarding() {
          
 
         
-        <div className="flex items-end justify-between gap-4 mb-2">
+        <div className="flex items-end justify-between gap-4 mb-4">
            <h1 className="text-6xl md:text-5xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
              Onboarding
             </h1>
