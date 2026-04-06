@@ -103,6 +103,42 @@ export default function ClientPortalTimeline() {
               <span>{completedTasks}/{tasks.length} tarefas</span>
             </div>
 
+            {/* Visual Progress Phases */}
+            <div className="bg-slate-50 rounded-2xl border border-slate-100 p-6">
+              <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-6">Fases do Projeto</p>
+              <div className="flex items-center justify-between gap-2">
+                {[
+                  { label: "Kickoff", order: 0 },
+                  { label: "Planejamento", order: 1 },
+                  { label: "Desenvolvimento", order: 2 },
+                  { label: "Testes", order: 3 },
+                  { label: "Entrega", order: 4 }
+                ].map((phase, idx) => {
+                  const phaseProgress = (projectProgress / 100) * 5;
+                  const isCompleted = phaseProgress > phase.order;
+                  const isActive = Math.floor(phaseProgress) === phase.order;
+
+                  return (
+                    <div key={phase.order} className="flex flex-col items-center flex-1">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all ${
+                        isCompleted ? "bg-emerald-500 border-emerald-500 text-white" :
+                        isActive ? "bg-blue-500 border-blue-500 text-white scale-110" :
+                        "bg-white border-slate-200 text-slate-400"
+                      }`}>
+                        {isCompleted ? "✓" : idx + 1}
+                      </div>
+                      <p className="text-xs text-slate-600 font-medium mt-2 text-center leading-tight">{phase.label}</p>
+                      {idx < 4 && (
+                        <div className={`absolute w-12 h-1 mt-3 transition-all ${
+                          isCompleted ? "bg-emerald-400" : isActive ? "bg-blue-300" : "bg-slate-200"
+                        }`} style={{ left: `calc(${(idx + 1) * 20}% - 24px)` }} />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Milestones */}
             {milestones.length > 0 && (
               <div>
