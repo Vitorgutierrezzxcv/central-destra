@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from "react";
+import React, { useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Building2, TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, Loader2 } from "lucide-react";
@@ -10,13 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
   const { user, userLoading, company, projects, canAccessProject } = useClientPortal();
 
-  // Suporta ?project_id=xxx na URL para múltiplos projetos
   const urlParams = new URLSearchParams(window.location.search);
   const selectedProjectId = urlParams.get("project_id");
 
@@ -27,7 +25,6 @@ export default function ClientPortalDashboard() {
     return projects.find(p => p.status === "active") || projects[0] || null;
   }, [projects, selectedProjectId]);
 
-  // Se tem mais de 1 projeto e nenhum selecionado, vai para seletor
   useEffect(() => {
     if (!userLoading && projects.length > 1 && !selectedProjectId) {
       navigate(createPageUrl("ClientPortalProjects"), { replace: true });
@@ -66,49 +63,38 @@ export default function ClientPortalDashboard() {
   );
   const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
 
-  const stats = [
-    { label: "Progresso Geral", value: `${activeProject?.progress_percentage || 0}%`, icon: TrendingUp, color: "text-blue-400", bg: "bg-blue-400/10" },
-    { label: "Tarefas Concluídas", value: completedTasks, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-400/10" },
-    { label: "Em Andamento", value: pendingTasks, icon: Clock, color: "text-amber-400", bg: "bg-amber-400/10" },
-    { label: "Aguardando Aprovação", value: pendingApprovals, icon: AlertCircle, color: "text-rose-400", bg: "bg-rose-400/10" },
-  ];
-
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] text-white">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <div className="border-b border-white/5 bg-[#0D1221] px-6 py-5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div className="bg-white border-b border-slate-200 px-6 py-5">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center gap-2 mb-1">
               {company?.logo_url ? (
-                <img src={company.logo_url} alt={company.name} className="w-8 h-8 rounded-lg object-cover" />
-              ) : (
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-white" />
-                </div>
-              )}
-              <span className="text-sm text-slate-400">{company?.name || "Carregando..."}</span>
+                <img src={company.logo_url} alt={company.name} className="w-6 h-6 rounded object-cover" />
+              ) : null}
+              <span className="text-sm text-slate-500">{company?.name || "Carregando..."}</span>
             </div>
-            <h1 className="text-2xl font-bold text-white">
-              Olá, {user?.full_name?.split(" ")[0] || "Cliente"} 👋
+            <h1 className="text-xl font-bold text-slate-900">
+              Olá, {user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente"} 👋
             </h1>
-            <p className="text-slate-400 text-sm mt-0.5">Acompanhe o progresso do seu projeto em tempo real.</p>
+            <p className="text-slate-500 text-sm mt-0.5">Acompanhe o progresso do seu projeto em tempo real.</p>
           </div>
           {activeProject && (
-            <div className="hidden md:flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+            <div className="hidden md:flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
               <div>
-                <p className="text-xs text-slate-400">Projeto Ativo</p>
-                <p className="text-sm font-semibold text-white">{activeProject.name}</p>
+                <p className="text-xs text-blue-500">Projeto Ativo</p>
+                <p className="text-sm font-semibold text-blue-900">{activeProject.name}</p>
               </div>
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">
+              <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">
                 {activeProject.current_phase || "Em andamento"}
               </Badge>
             </div>
@@ -116,98 +102,63 @@ export default function ClientPortalDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6">
         {!activeProject ? (
-          <div className="text-center py-20">
-            <Building2 className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-400">Nenhum projeto disponível no momento.</p>
-            <p className="text-slate-500 text-sm mt-1">Entre em contato com a equipe Destra.</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+            <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-slate-500 font-medium">Nenhum projeto disponível no momento.</p>
+            <p className="text-slate-400 text-sm mt-1">Entre em contato com a equipe Destra para ter acesso.</p>
           </div>
         ) : (
           <>
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {stats.map((stat, i) => (
-                <div key={i} className="bg-[#0D1221] border border-white/5 rounded-2xl p-5">
+              {[
+                { label: "Progresso", value: `${activeProject?.progress_percentage || 0}%`, icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+                { label: "Concluídas", value: completedTasks, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
+                { label: "Em Andamento", value: pendingTasks, icon: Clock, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
+                { label: "Aguard. Aprovação", value: pendingApprovals, icon: AlertCircle, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100" },
+              ].map((stat, i) => (
+                <div key={i} className={`bg-white border ${stat.border} rounded-2xl p-5`}>
                   <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center mb-3`}>
                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
+                  <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+                  <p className="text-xs text-slate-500 mt-1">{stat.label}</p>
                 </div>
               ))}
             </div>
 
-            {/* Progress */}
-            <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6">
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
-                {/* Pie Chart */}
-                <div className="flex-shrink-0 flex flex-col items-center">
-                  <div style={{ width: 160, height: 160 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={[
-                            { name: "Concluído", value: activeProject.progress_percentage || 0 },
-                            { name: "Restante", value: 100 - (activeProject.progress_percentage || 0) },
-                          ]}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={48}
-                          outerRadius={72}
-                          startAngle={90}
-                          endAngle={-270}
-                          dataKey="value"
-                          strokeWidth={0}
-                        >
-                          <Cell fill="#4F8EF7" />
-                          <Cell fill="rgba(255,255,255,0.06)" />
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <p className="text-2xl font-bold text-white -mt-[88px] relative z-10">{activeProject.progress_percentage || 0}%</p>
-                  <p className="text-xs text-slate-400 mt-10">concluído</p>
+            {/* Progress Card */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h2 className="font-semibold text-slate-900 text-lg">{activeProject.name}</h2>
+                  <p className="text-slate-500 text-sm">{activeProject.current_phase || "Fase atual não definida"}</p>
                 </div>
-
-                {/* Info */}
-                <div className="flex-1">
-                  <h2 className="font-semibold text-white text-lg mb-1">{activeProject.name}</h2>
-                  <p className="text-slate-400 text-sm mb-4">{activeProject.current_phase || "Fase atual não definida"}</p>
-
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-white/4 rounded-xl p-3">
-                      <p className="text-xs text-slate-500 mb-1">Tarefas concluídas</p>
-                      <p className="text-lg font-bold text-emerald-400">{completedTasks}</p>
-                    </div>
-                    <div className="bg-white/4 rounded-xl p-3">
-                      <p className="text-xs text-slate-500 mb-1">Em andamento</p>
-                      <p className="text-lg font-bold text-blue-400">{pendingTasks}</p>
-                    </div>
-                  </div>
-
-                  {activeProject.estimated_end_date && (
-                    <div className="flex items-center gap-2 text-xs text-slate-400">
-                      <Clock className="w-3.5 h-3.5" />
-                      Previsão: <span className="text-white font-medium">
-                        {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                      </span>
-                    </div>
-                  )}
-                </div>
+                <span className="text-2xl font-bold text-blue-600">{activeProject.progress_percentage || 0}%</span>
+              </div>
+              <Progress value={activeProject.progress_percentage || 0} className="h-3 rounded-full" />
+              <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
+                {activeProject.project_start_date && (
+                  <span>Início: {format(new Date(activeProject.project_start_date), "dd/MM/yyyy")}</span>
+                )}
+                {activeProject.estimated_end_date && (
+                  <span>Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</span>
+                )}
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Pending Approvals */}
               {pendingApprovals > 0 && (
-                <div className="bg-[#0D1221] border border-rose-500/20 rounded-2xl p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <AlertCircle className="w-5 h-5 text-rose-400" />
-                    <h3 className="font-semibold text-white">Sua ação é necessária</h3>
-                    <Badge className="bg-rose-500/20 text-rose-300 border-rose-500/30 text-xs ml-auto">{pendingApprovals}</Badge>
+                <div className="bg-white border border-rose-200 rounded-2xl p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertCircle className="w-5 h-5 text-rose-500" />
+                    <h3 className="font-semibold text-slate-900">Sua ação é necessária</h3>
+                    <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-xs ml-auto">{pendingApprovals}</Badge>
                   </div>
-                  <p className="text-slate-400 text-sm mb-4">
+                  <p className="text-slate-500 text-sm mb-4">
                     Você tem {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguardando sua aprovação.
                   </p>
                   <Link to={createPageUrl("ClientPortalDeliveries")}>
@@ -220,13 +171,13 @@ export default function ClientPortalDashboard() {
 
               {/* Client Onboarding Pending */}
               {clientOnboarding.length > 0 && (
-                <div className="bg-[#0D1221] border border-amber-500/20 rounded-2xl p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Clock className="w-5 h-5 text-amber-400" />
-                    <h3 className="font-semibold text-white">Pendências do Onboarding</h3>
-                    <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-xs ml-auto">{clientOnboarding.length}</Badge>
+                <div className="bg-white border border-amber-200 rounded-2xl p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Clock className="w-5 h-5 text-amber-500" />
+                    <h3 className="font-semibold text-slate-900">Pendências do Onboarding</h3>
+                    <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs ml-auto">{clientOnboarding.length}</Badge>
                   </div>
-                  <p className="text-slate-400 text-sm mb-4">
+                  <p className="text-slate-500 text-sm mb-4">
                     {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} dependem de você.
                   </p>
                   <Link to={createPageUrl("ClientPortalOnboarding")}>
@@ -238,28 +189,28 @@ export default function ClientPortalDashboard() {
               )}
 
               {/* Upcoming Meetings */}
-              <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6">
+              <div className="bg-white border border-slate-200 rounded-2xl p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-5 h-5 text-blue-400" />
-                  <h3 className="font-semibold text-white">Próximas Reuniões</h3>
+                  <Calendar className="w-5 h-5 text-blue-500" />
+                  <h3 className="font-semibold text-slate-900">Próximas Reuniões</h3>
                 </div>
                 {upcomingMeetings.length === 0 ? (
-                  <p className="text-slate-500 text-sm">Nenhuma reunião agendada.</p>
+                  <p className="text-slate-400 text-sm">Nenhuma reunião agendada.</p>
                 ) : (
                   <div className="space-y-3">
                     {upcomingMeetings.slice(0, 3).map(m => (
-                      <div key={m.id} className="flex items-center gap-3 p-3 bg-white/3 rounded-xl border border-white/5">
-                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-bold text-blue-400">{format(new Date(m.start_datetime), "dd")}</span>
-                          <span className="text-[10px] text-blue-300">{format(new Date(m.start_datetime), "MMM", { locale: ptBR })}</span>
+                      <div key={m.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 flex flex-col items-center justify-center flex-shrink-0">
+                          <span className="text-xs font-bold text-blue-700">{format(new Date(m.start_datetime), "dd")}</span>
+                          <span className="text-[10px] text-blue-500">{format(new Date(m.start_datetime), "MMM", { locale: ptBR })}</span>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">{m.title}</p>
+                          <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
                           <p className="text-xs text-slate-400">{format(new Date(m.start_datetime), "HH:mm")}</p>
                         </div>
                         {m.meeting_link && (
-                          <a href={m.meeting_link} target="_blank" rel="noreferrer" className="text-xs text-blue-400 hover:text-blue-300 flex-shrink-0">
-                            Link
+                          <a href={m.meeting_link} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:text-blue-700 flex-shrink-0 font-medium">
+                            Entrar
                           </a>
                         )}
                       </div>
@@ -269,8 +220,8 @@ export default function ClientPortalDashboard() {
               </div>
 
               {/* Quick Links */}
-              <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6">
-                <h3 className="font-semibold text-white mb-4">Acesso Rápido</h3>
+              <div className="bg-white border border-slate-200 rounded-2xl p-6">
+                <h3 className="font-semibold text-slate-900 mb-4">Acesso Rápido</h3>
                 <div className="space-y-1">
                   {[
                     { label: "Projeto & Roadmap", page: "ClientPortalProject", icon: Building2 },
@@ -280,10 +231,10 @@ export default function ClientPortalDashboard() {
                     { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
                     { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
                   ].map((link, i) => (
-                    <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors group">
-                      <link.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
-                      <span className="text-sm text-slate-300 group-hover:text-white transition-colors">{link.label}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400 ml-auto transition-colors" />
+                    <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group">
+                      <link.icon className="w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                      <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{link.label}</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 ml-auto transition-colors" />
                     </Link>
                   ))}
                 </div>

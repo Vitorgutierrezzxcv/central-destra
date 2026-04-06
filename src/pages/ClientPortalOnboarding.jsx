@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Circle, Clock, Upload, AlertCircle, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
+import { CheckCircle2, Circle, Clock, AlertCircle, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -16,14 +16,14 @@ const responsibleLabels = {
 };
 
 const statusConfig = {
-  pending:     { icon: Circle,      color: "text-slate-500", bg: "border-white/10", label: "Pendente" },
-  in_progress: { icon: Clock,       color: "text-blue-400",  bg: "border-blue-500/30", label: "Em Andamento" },
-  completed:   { icon: CheckCircle2,color: "text-emerald-400",bg: "border-emerald-500/30", label: "Concluído" },
-  blocked:     { icon: AlertCircle, color: "text-rose-400",  bg: "border-rose-500/30", label: "Bloqueado" },
+  pending:     { icon: Circle,       color: "text-slate-400", label: "Pendente" },
+  in_progress: { icon: Clock,        color: "text-blue-500",  label: "Em Andamento" },
+  completed:   { icon: CheckCircle2, color: "text-emerald-500", label: "Concluído" },
+  blocked:     { icon: AlertCircle,  color: "text-rose-500",  label: "Bloqueado" },
 };
 
 export default function ClientPortalOnboarding() {
-  const { user, userLoading, projects, canAccessProject } = useClientPortal();
+  const { userLoading, projects, canAccessProject } = useClientPortal();
   const qc = useQueryClient();
   const [expanded, setExpanded] = useState({});
 
@@ -47,8 +47,8 @@ export default function ClientPortalOnboarding() {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0F1A] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     );
   }
@@ -72,31 +72,31 @@ export default function ClientPortalOnboarding() {
     const isOpen = expanded[item.id];
 
     return (
-      <div className={`bg-[#0D1221] border ${cfg.bg} rounded-2xl transition-all`}>
+      <div className={`bg-white border rounded-2xl transition-all ${item.status === "completed" ? "border-emerald-200" : item.status === "in_progress" ? "border-blue-200" : "border-slate-200"}`}>
         <div
-          className="flex items-center gap-4 p-5 cursor-pointer"
+          className="flex items-center gap-4 p-5 cursor-pointer hover:bg-slate-50 rounded-2xl transition-colors"
           onClick={() => toggleExpand(item.id)}
         >
           <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border
-            ${item.status === "completed" ? "bg-emerald-500/10 border-emerald-500/40" :
-              item.status === "in_progress" ? "bg-blue-500/10 border-blue-500/40" :
-              "bg-white/5 border-white/10"}`}>
+            ${item.status === "completed" ? "bg-emerald-50 border-emerald-200" :
+              item.status === "in_progress" ? "bg-blue-50 border-blue-200" :
+              "bg-slate-50 border-slate-200"}`}>
             <Icon className={`w-5 h-5 ${cfg.color}`} />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-0.5">
-              <p className="text-sm font-semibold text-white">{item.title}</p>
+              <p className={`text-sm font-semibold ${item.status === "completed" ? "text-slate-400 line-through" : "text-slate-900"}`}>{item.title}</p>
               <Badge className={`text-xs ${
-                item.responsible_side === "client" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-                item.responsible_side === "destra" ? "bg-purple-500/20 text-purple-300 border-purple-500/30" :
-                "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                item.responsible_side === "client" ? "bg-blue-100 text-blue-700 border-blue-200" :
+                item.responsible_side === "destra" ? "bg-purple-100 text-purple-700 border-purple-200" :
+                "bg-amber-100 text-amber-700 border-amber-200"
               }`}>
                 {responsibleLabels[item.responsible_side] || item.responsible_side}
               </Badge>
             </div>
             {item.due_date && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-400">
                 Prazo: {format(new Date(item.due_date), "dd/MM/yyyy", { locale: ptBR })}
               </p>
             )}
@@ -104,29 +104,29 @@ export default function ClientPortalOnboarding() {
 
           <div className="flex items-center gap-2">
             <Badge className={`text-xs ${
-              item.status === "completed" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" :
-              item.status === "in_progress" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
-              "bg-slate-500/20 text-slate-300 border-slate-500/30"
+              item.status === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
+              item.status === "in_progress" ? "bg-blue-100 text-blue-700 border-blue-200" :
+              "bg-slate-100 text-slate-600 border-slate-200"
             }`}>
               {cfg.label}
             </Badge>
-            {isOpen ? <ChevronDown className="w-4 h-4 text-slate-500" /> : <ChevronRight className="w-4 h-4 text-slate-500" />}
+            {isOpen ? <ChevronDown className="w-4 h-4 text-slate-400" /> : <ChevronRight className="w-4 h-4 text-slate-400" />}
           </div>
         </div>
 
         {isOpen && (
-          <div className="px-5 pb-5 pt-0 border-t border-white/5">
+          <div className="px-5 pb-5 pt-0 border-t border-slate-100">
             {item.description && (
-              <p className="text-sm text-slate-400 mt-4 mb-4">{item.description}</p>
+              <p className="text-sm text-slate-500 mt-4 mb-4">{item.description}</p>
             )}
             {item.notes && (
-              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-3 mb-4">
-                <p className="text-xs text-blue-400 font-medium mb-1">Observações da Destra</p>
-                <p className="text-sm text-slate-300">{item.notes}</p>
+              <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4">
+                <p className="text-xs text-blue-600 font-medium mb-1">Observações da Destra</p>
+                <p className="text-sm text-slate-700">{item.notes}</p>
               </div>
             )}
             {item.completed_at && item.status === "completed" && (
-              <p className="text-xs text-emerald-400 mb-3 flex items-center gap-1">
+              <p className="text-xs text-emerald-600 mb-3 flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
                 Concluído em {format(new Date(item.completed_at), "dd/MM/yyyy", { locale: ptBR })}
               </p>
@@ -151,67 +151,70 @@ export default function ClientPortalOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] text-white">
-      {/* Header */}
-      <div className="border-b border-white/5 bg-[#0D1221] px-6 py-5">
+    <div className="min-h-screen bg-slate-50">
+      <div className="bg-white border-b border-slate-200 px-6 py-5">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-white">Checklist de Onboarding</h1>
-          <p className="text-slate-400 text-sm mt-1">Itens necessários para iniciar seu projeto com a Destra.</p>
+          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
+          <h1 className="text-2xl font-bold text-slate-900">Checklist de Onboarding</h1>
+          <p className="text-slate-500 text-sm mt-1">Itens necessários para iniciar seu projeto com a Destra.</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 space-y-8">
         {!activeProject ? (
-          <div className="text-center py-20 text-slate-500">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>Nenhum projeto disponível.</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+            <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+            <p className="text-slate-500">Nenhum projeto disponível.</p>
           </div>
         ) : (
           <>
             {/* Progress Overview */}
-            <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm text-slate-400">Progresso do Onboarding</p>
-                  <p className="text-2xl font-bold text-white mt-0.5">{completedAll} <span className="text-slate-500 font-normal text-base">de {items.length} itens</span></p>
+                  <p className="text-sm text-slate-500">Progresso do Onboarding</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-0.5">
+                    {completedAll} <span className="text-slate-400 font-normal text-base">de {items.length} itens</span>
+                  </p>
                 </div>
-                <div className="text-3xl font-bold text-blue-400">{progress}%</div>
+                <div className="text-3xl font-bold text-blue-600">{progress}%</div>
               </div>
-              <Progress value={progress} className="h-2.5 bg-white/10" />
+              <Progress value={progress} className="h-3" />
               {progress === 100 && (
-                <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <p className="text-sm text-emerald-300">Parabéns! Onboarding completo. Seu projeto já pode começar! 🚀</p>
+                <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  <p className="text-sm text-emerald-700">Parabéns! Onboarding completo. Seu projeto já pode começar! 🚀</p>
                 </div>
               )}
             </div>
 
+            {isLoading && (
+              <div className="flex justify-center py-10">
+                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+              </div>
+            )}
+
             {/* Client Items */}
             {clientItems.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
                   Sua Responsabilidade
-                  <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">{clientItems.length}</Badge>
+                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">{clientItems.length}</Badge>
                 </h2>
-                {isLoading ? (
-                  <p className="text-slate-400 text-sm">Carregando...</p>
-                ) : (
-                  <div className="space-y-3">
-                    {clientItems.map(item => <ItemCard key={item.id} item={item} />)}
-                  </div>
-                )}
+                <div className="space-y-3">
+                  {clientItems.map(item => <ItemCard key={item.id} item={item} />)}
+                </div>
               </div>
             )}
 
             {/* Destra Items */}
             {destraItems.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-400" />
+                <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-purple-500" />
                   Equipe Destra
-                  <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs">{destraItems.length}</Badge>
+                  <Badge className="bg-purple-100 text-purple-700 border-purple-200 text-xs">{destraItems.length}</Badge>
                 </h2>
                 <div className="space-y-3">
                   {destraItems.map(item => <ItemCard key={item.id} item={item} />)}
@@ -220,9 +223,9 @@ export default function ClientPortalOnboarding() {
             )}
 
             {items.length === 0 && !isLoading && (
-              <div className="text-center py-20 text-slate-500">
-                <CheckCircle2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Nenhum item de onboarding definido ainda.</p>
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+                <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+                <p className="text-slate-500">Nenhum item de onboarding definido ainda.</p>
               </div>
             )}
           </>

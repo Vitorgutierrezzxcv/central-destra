@@ -5,12 +5,13 @@ import { getClientProfile, isLoggedIn } from "@/lib/clientPortalSession";
 
 /**
  * Hook central do portal do cliente.
- * Usa auth própria do portal (clientPortalSession) — independente do Base44 auth.
- * 
- * Fluxo de resolução do contato/empresa:
- * 1. Tenta pegar linked_client_contact_id do UserProfile
- * 2. Fallback: busca ClientContact pelo email do usuário logado
- * 3. Fallback: usa linked_company_id direto do UserProfile
+ * Auth própria via clientPortalSession (localStorage).
+ *
+ * Resolução do vínculo cliente → empresa → projetos:
+ * 1. Busca UserProfile pelo email da sessão
+ * 2. Busca ClientContact pelo email (fallback)
+ * 3. company_id vem: ClientContact.company_id > UserProfile.linked_company_id > sessão
+ * 4. Projects: filtra por ProjectClientAccess.client_contact_id OU por company_id + client_portal_enabled
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
@@ -21,19 +22,19 @@ export function useClientPortal() {
     if (profile) {
       setUser({
         email: profile.email,
-        full_name: profile.name,
+        full_name: profile.name || profile.full_name,
+        name: profile.name || profile.full_name,
         role: "client_user",
         linked_company_id: profile.linked_company_id || null,
         linked_client_contact_id: profile.linked_client_contact_id || null,
+        id: profile.id,
         ...profile
       });
     }
     setUserLoading(false);
   }, []);
 
-  const isClientRole = true;
-
-  // Perfil estendido do portal
+  // Perfil estendido do portal — re-fetch para pegar linked_ids atualizados
   const { data: userProfile } = useQuery({
     queryKey: ["cp_userProfile", user?.email],
     queryFn: () =>
@@ -42,7 +43,7 @@ export function useClientPortal() {
     enabled: !!user?.email
   });
 
-  // Busca ClientContact pelo email (fallback quando linked_client_contact_id não está preenchido)
+  // Busca ClientContact pelo email
   const { data: clientContactByEmail } = useQuery({
     queryKey: ["cp_clientContact_email", user?.email],
     queryFn: () =>
@@ -51,19 +52,18 @@ export function useClientPortal() {
     enabled: !!user?.email
   });
 
-  // Resolve o contactId: prioridade userProfile > sessão > busca por email
+  // Resolve contactId: prioridade clientContactByEmail > userProfile > sessão
   const contactId =
+    clientContactByEmail?.id ||
     userProfile?.linked_client_contact_id ||
     user?.linked_client_contact_id ||
-    clientContactByEmail?.id ||
     null;
 
-  // Resolve o companyId: prioridade contact > userProfile > sessão
-  const companyIdFromContact = clientContactByEmail?.company_id || null;
+  // Resolve companyId: prioridade clientContact > userProfile > sessão
   const companyId =
+    clientContactByEmail?.company_id ||
     userProfile?.linked_company_id ||
     user?.linked_company_id ||
-    companyIdFromContact ||
     null;
 
   const { data: company } = useQuery({
@@ -95,13 +95,13 @@ export function useClientPortal() {
     enabled: !!companyId
   });
 
-  // Se há acesso explícito por projeto, filtra; senão mostra todos da empresa
-  const authorizedIds = projectAccess.length > 0
+  // Merge: se há acessos explícitos, filtra por eles; senão mostra todos da empresa
+  const authorizedProjectIds = projectAccess.length > 0
     ? projectAccess.map(pa => pa.project_id)
     : null;
 
-  const projects = authorizedIds
-    ? allCompanyProjects.filter(p => authorizedIds.includes(p.id))
+  const projects = authorizedProjectIds
+    ? allCompanyProjects.filter(p => authorizedProjectIds.includes(p.id))
     : allCompanyProjects;
 
   const isApprover =
@@ -124,9 +124,8 @@ export function useClientPortal() {
   };
 
   const canAccessProject = (projectId) => {
-    if (!isClientRole) return true;
-    if (!authorizedIds) return true;
-    return authorizedIds.includes(projectId);
+    if (!authorizedProjectIds) return true;
+    return authorizedProjectIds.includes(projectId);
   };
 
   return {
@@ -139,7 +138,7 @@ export function useClientPortal() {
     clientContact: clientContactByEmail,
     projects,
     projectAccess,
-    isClientRole,
+    isClientRole: true,
     isApprover,
     getProjectPermissions,
     canAccessProject

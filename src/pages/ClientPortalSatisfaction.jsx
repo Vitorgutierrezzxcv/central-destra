@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Star, CheckCircle2, MessageSquare } from "lucide-react";
+import { Star, CheckCircle2, MessageSquare, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useClientPortal } from "@/components/client-portal/useClientPortal";
 
 const criteria = [
   { key: "communication_score", label: "Comunicação", desc: "Clareza e qualidade da comunicação da equipe" },
@@ -16,10 +17,10 @@ const criteria = [
 
 function StarRating({ value, onChange, size = "md" }) {
   const [hovered, setHovered] = useState(0);
-  const sz = size === "lg" ? "w-8 h-8" : "w-6 h-6";
+  const sz = size === "lg" ? "w-7 h-7" : "w-5 h-5";
   return (
     <div className="flex gap-1">
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+      {[1,2,3,4,5,6,7,8,9,10].map(n => (
         <button
           key={n}
           onMouseEnter={() => setHovered(n)}
@@ -27,7 +28,7 @@ function StarRating({ value, onChange, size = "md" }) {
           onClick={() => onChange && onChange(n)}
           className="transition-transform hover:scale-110"
         >
-          <Star className={`${sz} transition-colors ${(hovered || value) >= n ? "text-amber-400 fill-amber-400" : "text-slate-600"}`} />
+          <Star className={`${sz} transition-colors ${(hovered || value) >= n ? "text-amber-400 fill-amber-400" : "text-slate-300"}`} />
         </button>
       ))}
     </div>
@@ -35,21 +36,16 @@ function StarRating({ value, onChange, size = "md" }) {
 }
 
 export default function ClientPortalSatisfaction() {
-  const [user, setUser] = useState(null);
+  const { userLoading, company, projects, canAccessProject } = useClientPortal();
   const [form, setForm] = useState({ overall_score: 0, communication_score: 0, timeline_score: 0, quality_score: 0, result_score: 0, comment: "" });
   const [submitted, setSubmitted] = useState(false);
   const qc = useQueryClient();
 
-  useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
-  }, []);
-
-  const { data: projects = [] } = useQuery({
-    queryKey: ["client_projects", user?.company_id],
-    queryFn: () => base44.entities.Project.filter({ company_id: user.company_id, client_portal_enabled: true }),
-    enabled: !!user?.company_id
-  });
-  const activeProject = projects.find(p => p.status === "active") || projects[0];
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedProjectId = urlParams.get("project_id");
+  const activeProject = projects.find(p =>
+    selectedProjectId ? p.id === selectedProjectId && canAccessProject(p.id) : p.status === "active"
+  ) || projects[0];
 
   const { data: surveys = [] } = useQuery({
     queryKey: ["client_surveys", activeProject?.id],
@@ -61,8 +57,8 @@ export default function ClientPortalSatisfaction() {
   const submitMutation = useMutation({
     mutationFn: () => base44.entities.SatisfactionSurvey.create({
       ...form,
-      project_id: activeProject.id,
-      company_id: user.company_id,
+      project_id: activeProject?.id,
+      company_id: company?.id,
       submitted_at: new Date().toISOString(),
     }),
     onSuccess: () => {
@@ -71,6 +67,14 @@ export default function ClientPortalSatisfaction() {
     }
   });
 
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   const avgScore = surveys.length > 0
     ? (surveys.reduce((sum, s) => sum + (s.overall_score || 0), 0) / surveys.length).toFixed(1)
     : null;
@@ -78,28 +82,28 @@ export default function ClientPortalSatisfaction() {
   const isValid = form.overall_score > 0;
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] text-white">
-      <div className="border-b border-white/5 bg-[#0D1221] px-6 py-5">
+    <div className="min-h-screen bg-slate-50">
+      <div className="bg-white border-b border-slate-200 px-6 py-5">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-white">Avaliação de Satisfação</h1>
-          <p className="text-slate-400 text-sm mt-1">Sua opinião é muito importante para nós.</p>
+          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
+          <h1 className="text-2xl font-bold text-slate-900">Avaliação de Satisfação</h1>
+          <p className="text-slate-500 text-sm mt-1">Sua opinião é muito importante para nós.</p>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 space-y-6">
         {/* Average Score */}
         {avgScore && (
-          <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6 flex items-center gap-6">
+          <div className="bg-white border border-amber-200 rounded-2xl p-6 flex items-center gap-6">
             <div className="text-center">
-              <p className="text-4xl font-bold text-amber-400">{avgScore}</p>
+              <p className="text-4xl font-bold text-amber-500">{avgScore}</p>
               <p className="text-xs text-slate-400 mt-1">média geral</p>
             </div>
             <div className="flex-1">
-              <p className="text-sm text-slate-300 mb-1">{surveys.length} avaliação{surveys.length !== 1 ? "ões" : ""} registrada{surveys.length !== 1 ? "s" : ""}</p>
+              <p className="text-sm text-slate-600 mb-2">{surveys.length} avaliação{surveys.length !== 1 ? "ões" : ""} registrada{surveys.length !== 1 ? "s" : ""}</p>
               <div className="flex gap-0.5">
                 {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-amber-400" : "bg-white/10"}`} />
+                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-amber-400" : "bg-slate-200"}`} />
                 ))}
               </div>
             </div>
@@ -108,33 +112,36 @@ export default function ClientPortalSatisfaction() {
 
         {/* New Survey Form */}
         {submitted ? (
-          <div className="bg-[#0D1221] border border-emerald-500/20 rounded-2xl p-8 text-center">
-            <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-            <h2 className="text-xl font-bold text-white mb-2">Obrigado pelo seu feedback!</h2>
-            <p className="text-slate-400 text-sm">Sua avaliação foi enviada com sucesso. Ela é muito importante para continuarmos melhorando.</p>
-            <Button onClick={() => { setSubmitted(false); setForm({ overall_score: 0, communication_score: 0, timeline_score: 0, quality_score: 0, result_score: 0, comment: "" }); }}
-              variant="ghost" className="mt-4 text-blue-400 hover:text-blue-300">
+          <div className="bg-white border border-emerald-200 rounded-2xl p-8 text-center">
+            <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
+            <h2 className="text-xl font-bold text-slate-900 mb-2">Obrigado pelo seu feedback!</h2>
+            <p className="text-slate-500 text-sm">Sua avaliação foi enviada com sucesso. Ela é muito importante para continuarmos melhorando.</p>
+            <Button
+              onClick={() => { setSubmitted(false); setForm({ overall_score: 0, communication_score: 0, timeline_score: 0, quality_score: 0, result_score: 0, comment: "" }); }}
+              variant="ghost"
+              className="mt-4 text-blue-600 hover:text-blue-700"
+            >
               Enviar nova avaliação
             </Button>
           </div>
         ) : (
-          <div className="bg-[#0D1221] border border-white/5 rounded-2xl p-6 space-y-6">
-            <h2 className="font-semibold text-white text-lg">Nova Avaliação</h2>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 space-y-6">
+            <h2 className="font-semibold text-slate-900 text-lg">Nova Avaliação</h2>
 
             <div>
-              <p className="text-sm font-medium text-slate-300 mb-3">Nota geral do projeto (1–10)</p>
+              <p className="text-sm font-medium text-slate-700 mb-3">Nota geral do projeto (1–10)</p>
               <StarRating value={form.overall_score} onChange={v => setForm(f => ({ ...f, overall_score: v }))} size="lg" />
               {form.overall_score > 0 && (
-                <p className="text-xs text-amber-400 mt-1">Sua nota: {form.overall_score}/10</p>
+                <p className="text-xs text-amber-600 mt-1 font-medium">Sua nota: {form.overall_score}/10</p>
               )}
             </div>
 
             <div className="space-y-4">
               {criteria.map(c => (
-                <div key={c.key} className="flex items-center justify-between gap-4 py-3 border-t border-white/5">
+                <div key={c.key} className="flex items-center justify-between gap-4 py-3 border-t border-slate-100">
                   <div>
-                    <p className="text-sm font-medium text-white">{c.label}</p>
-                    <p className="text-xs text-slate-500">{c.desc}</p>
+                    <p className="text-sm font-medium text-slate-800">{c.label}</p>
+                    <p className="text-xs text-slate-400">{c.desc}</p>
                   </div>
                   <StarRating
                     value={form[c.key]}
@@ -145,12 +152,12 @@ export default function ClientPortalSatisfaction() {
             </div>
 
             <div>
-              <p className="text-sm font-medium text-slate-300 mb-2">Comentários</p>
+              <p className="text-sm font-medium text-slate-700 mb-2">Comentários (opcional)</p>
               <Textarea
                 value={form.comment}
                 onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
                 placeholder="Compartilhe suas observações, sugestões ou elogios..."
-                className="bg-white/5 border-white/10 text-white placeholder:text-slate-500 resize-none"
+                className="resize-none border-slate-200"
                 rows={4}
               />
             </div>
@@ -168,31 +175,31 @@ export default function ClientPortalSatisfaction() {
         {/* History */}
         {surveys.length > 0 && (
           <div>
-            <h2 className="font-semibold text-white mb-4">Histórico de Avaliações</h2>
+            <h2 className="font-semibold text-slate-900 mb-4">Histórico de Avaliações</h2>
             <div className="space-y-3">
               {surveys.map(s => (
-                <div key={s.id} className="bg-[#0D1221] border border-white/5 rounded-2xl p-5">
+                <div key={s.id} className="bg-white border border-slate-200 rounded-2xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-                      <span className="text-lg font-bold text-amber-400">{s.overall_score}</span>
-                      <span className="text-slate-500 text-sm">/10</span>
+                      <span className="text-lg font-bold text-amber-500">{s.overall_score}</span>
+                      <span className="text-slate-400 text-sm">/10</span>
                     </div>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-slate-400">
                       {s.submitted_at ? format(new Date(s.submitted_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : ""}
                     </span>
                   </div>
                   {s.comment && (
-                    <div className="flex items-start gap-2">
-                      <MessageSquare className="w-3.5 h-3.5 text-slate-500 mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-slate-400">{s.comment}</p>
+                    <div className="flex items-start gap-2 mb-3">
+                      <MessageSquare className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-slate-600">{s.comment}</p>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {criteria.map(c => s[c.key] ? (
-                      <div key={c.key} className="bg-white/3 rounded-lg p-2 text-center">
-                        <p className="text-xs text-slate-500 mb-1">{c.label}</p>
-                        <p className="text-sm font-bold text-white">{s[c.key]}/10</p>
+                      <div key={c.key} className="bg-slate-50 rounded-lg p-2 text-center">
+                        <p className="text-xs text-slate-400 mb-1">{c.label}</p>
+                        <p className="text-sm font-bold text-slate-700">{s[c.key]}/10</p>
                       </div>
                     ) : null)}
                   </div>

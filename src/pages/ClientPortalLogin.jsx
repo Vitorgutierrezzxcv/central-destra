@@ -11,7 +11,7 @@ const PORTAL_URL = window.location.origin + "/ClientPortalLogin";
 
 export default function ClientPortalLogin() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login"); // "login" | "register"
+  const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -31,15 +31,22 @@ export default function ClientPortalLogin() {
     setError("");
     setLoading(true);
     try {
-      const res = await base44.functions.invoke("clientPortalAuth", { action: mode, email, password, name });
-      if (res.data?.success) {
-        saveSession(res.data.token, res.data.profile, res.data.expiresAt);
+      const res = await base44.functions.invoke("clientPortalAuth", {
+        action: mode,
+        email: email.trim().toLowerCase(),
+        password,
+        name
+      });
+      const data = res?.data ?? res;
+      if (data?.success) {
+        saveSession(data.token, data.profile, data.expiresAt);
         navigate("/ClientPortalDashboard", { replace: true });
       } else {
-        setError(res.data?.error || "Erro desconhecido.");
+        setError(data?.error || "Erro desconhecido. Tente novamente.");
       }
     } catch (err) {
-      setError(err?.response?.data?.error || "Erro ao conectar. Tente novamente.");
+      const msg = err?.response?.data?.error || err?.message || "Erro ao conectar. Tente novamente.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -53,40 +60,26 @@ export default function ClientPortalLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] text-white flex flex-col items-center justify-center px-5 py-10">
-      {/* Background glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-600/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[300px] bg-purple-600/5 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative w-full max-w-sm">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-5 py-10">
+      <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-900/40">
-            <Building2 className="w-8 h-8 text-white" />
+          <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-200">
+            <Building2 className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Portal do Cliente</h1>
-          <p className="text-slate-400 mt-1.5 text-sm">Acompanhe seu projeto com a Destra</p>
+          <h1 className="text-2xl font-bold text-slate-900">Portal do Cliente</h1>
+          <p className="text-slate-500 mt-1.5 text-sm">Acompanhe seu projeto com a Destra</p>
         </div>
 
         {/* Card */}
-        <div
-          className="rounded-3xl p-7 shadow-2xl"
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            backdropFilter: "blur(40px) saturate(160%)",
-            border: "1px solid rgba(255,255,255,0.09)",
-            boxShadow: "0 24px 64px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.07)",
-          }}
-        >
+        <div className="bg-white rounded-3xl p-7 shadow-sm border border-slate-200">
           {/* Mode toggle */}
-          <div className="flex bg-white/5 rounded-2xl p-1 mb-6">
+          <div className="flex bg-slate-100 rounded-2xl p-1 mb-6">
             <button
               type="button"
               onClick={() => { setMode("login"); setError(""); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium transition-all
-                ${mode === "login" ? "bg-blue-600 text-white shadow" : "text-slate-400 hover:text-slate-200"}`}
+                ${mode === "login" ? "bg-white text-blue-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
               <LogIn className="w-3.5 h-3.5" /> Entrar
             </button>
@@ -94,7 +87,7 @@ export default function ClientPortalLogin() {
               type="button"
               onClick={() => { setMode("register"); setError(""); }}
               className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-sm font-medium transition-all
-                ${mode === "register" ? "bg-purple-600 text-white shadow" : "text-slate-400 hover:text-slate-200"}`}
+                ${mode === "register" ? "bg-white text-purple-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
               <UserPlus className="w-3.5 h-3.5" /> Cadastrar
             </button>
@@ -103,49 +96,49 @@ export default function ClientPortalLogin() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
               <div>
-                <Label className="text-slate-300 text-xs mb-1.5 block">Seu nome</Label>
+                <Label className="text-slate-600 text-xs mb-1.5 block">Seu nome</Label>
                 <Input
                   value={name}
                   onChange={e => setName(e.target.value)}
                   placeholder="Nome completo"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-11"
+                  className="h-11 rounded-xl border-slate-200"
                   required
                 />
               </div>
             )}
 
             <div>
-              <Label className="text-slate-300 text-xs mb-1.5 block">E-mail</Label>
+              <Label className="text-slate-600 text-xs mb-1.5 block">E-mail</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-11 pl-10"
+                  className="h-11 rounded-xl border-slate-200 pl-10"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <Label className="text-slate-300 text-xs mb-1.5 block">Senha</Label>
+              <Label className="text-slate-600 text-xs mb-1.5 block">Senha</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input
                   type={showPass ? "text" : "password"}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder={mode === "register" ? "Crie uma senha (mín. 6 caracteres)" : "Sua senha"}
-                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 rounded-xl h-11 pl-10 pr-10"
+                  className="h-11 rounded-xl border-slate-200 pl-10 pr-10"
                   required
                   minLength={6}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -153,61 +146,53 @@ export default function ClientPortalLogin() {
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                <p className="text-xs text-red-300">{error}</p>
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-200">
+                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <p className="text-xs text-red-600">{error}</p>
               </div>
             )}
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 text-sm font-semibold gap-2 rounded-2xl transition-all active:scale-95 mt-1"
-              style={{
-                background: mode === "register"
-                  ? "linear-gradient(135deg, #9333ea 0%, #7c3aed 100%)"
-                  : "linear-gradient(135deg, #4F8EF7 0%, #6B6FFF 100%)",
-                boxShadow: mode === "register"
-                  ? "0 4px 20px rgba(147,51,234,0.35)"
-                  : "0 4px 20px rgba(79,142,247,0.35)",
-                border: "none",
-              }}
+              className={`w-full h-11 text-sm font-semibold gap-2 rounded-xl transition-all mt-1 ${
+                mode === "register"
+                  ? "bg-purple-600 hover:bg-purple-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
             >
               {loading
                 ? <><Loader2 className="w-4 h-4 animate-spin" />{mode === "register" ? "Criando conta..." : "Entrando..."}</>
                 : mode === "register"
-                  ? <><UserPlus className="w-4 h-4" />Criar Conta<ArrowRight className="w-4 h-4 ml-auto" /></>
-                  : <><LogIn className="w-4 h-4" />Entrar<ArrowRight className="w-4 h-4 ml-auto" /></>
+                  ? <><UserPlus className="w-4 h-4" />Criar Conta</>
+                  : <><LogIn className="w-4 h-4" />Entrar</>
               }
             </Button>
           </form>
         </div>
 
         {/* Link copiável */}
-        <div className="mt-5 rounded-2xl p-4" style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.07)"
-        }}>
-          <p className="text-[11px] text-slate-500 uppercase tracking-wider mb-2 font-medium">Link de acesso para clientes</p>
+        <div className="mt-5 bg-white rounded-2xl p-4 border border-slate-200">
+          <p className="text-[11px] text-slate-400 uppercase tracking-wider mb-2 font-medium">Link de acesso para clientes</p>
           <div className="flex items-center gap-2">
-            <div className="flex-1 bg-white/5 rounded-xl px-3 py-2 overflow-hidden">
-              <p className="text-xs text-slate-300 truncate font-mono">{PORTAL_URL}</p>
+            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 overflow-hidden">
+              <p className="text-xs text-slate-600 truncate font-mono">{PORTAL_URL}</p>
             </div>
             <button
               onClick={copyLink}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition-all border
                 ${copied
-                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                  : "bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20"
+                  ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                  : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
                 }`}
             >
               {copied ? <><CheckCheck className="w-3.5 h-3.5" />Copiado!</> : <><Copy className="w-3.5 h-3.5" />Copiar</>}
             </button>
           </div>
-          <p className="text-[10px] text-slate-600 mt-2">Envie este link para o cliente acessar o portal.</p>
+          <p className="text-[10px] text-slate-400 mt-2">Envie este link para o cliente acessar o portal.</p>
         </div>
 
-        <p className="text-center text-[11px] text-slate-700 mt-5">
+        <p className="text-center text-[11px] text-slate-400 mt-5">
           © {new Date().getFullYear()} Destra · Acesso seguro
         </p>
       </div>
