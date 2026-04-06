@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   Building2, TrendingUp, CheckCircle2, Clock, Calendar,
-  AlertCircle, ArrowRight, Star, Loader2, Timer, Flame
+  AlertCircle, ArrowRight, Star, Loader2, Timer, Flame,
+  FileText, User, Zap
 } from "lucide-react";
 import { format, isAfter, differenceInDays, isPast, addDays, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -77,6 +78,24 @@ export default function ClientPortalDashboard() {
     enabled: !!activeProject?.id
   });
 
+  const { data: deliveries = [] } = useQuery({
+    queryKey: ["client_deliveries", activeProject?.id],
+    queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id
+  });
+
+  const { data: timelineEvents = [] } = useQuery({
+    queryKey: ["client_timeline", activeProject?.id],
+    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id
+  });
+
+  const { data: files = [] } = useQuery({
+    queryKey: ["client_files", activeProject?.id],
+    queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id
+  });
+
   const mainTasks = tasks.filter(t => !t.parent_task_id);
   const completedTasks = mainTasks.filter(t => t.status === "completed").length;
   const inProgressTasks = mainTasks.filter(t => t.status === "in_progress").length;
@@ -93,6 +112,27 @@ export default function ClientPortalDashboard() {
   ).sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime));
 
   const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
+
+  // Ações pendentes consolidadas
+  const pendingActions = [
+    ...pendingApprovalTasks.map(t => ({ type: "approval", data: t, title: t.client_facing_title || t.title })),
+    ...clientOnboarding.map(o => ({ type: "onboarding", data: o, title: o.title }))
+  ].sort((a, b) => new Date(b.data.updated_date || b.data.created_date) - new Date(a.data.updated_date || a.data.created_date));
+
+  // Entregas recentes
+  const recentDeliveries = [...deliveries]
+    .sort((a, b) => new Date(b.delivery_date || b.created_date) - new Date(a.delivery_date || a.created_date))
+    .slice(0, 4);
+
+  // Timeline recente (últimos 5 eventos)
+  const recentTimeline = [...timelineEvents]
+    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
+    .slice(0, 5);
+
+  // Arquivos recentes
+  const recentFiles = [...files]
+    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
+    .slice(0, 4);
 
   if (userLoading) {
     return (
@@ -119,7 +159,7 @@ export default function ClientPortalDashboard() {
         </p>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-6 pb-20">
+      <div className="max-w-lg mx-auto px-5 space-y-5 pb-20">
         {!activeProject ? (
           <div className="text-center py-12">
             <Building2 className="w-8 h-8 text-slate-200 mx-auto mb-3" />
@@ -127,103 +167,205 @@ export default function ClientPortalDashboard() {
           </div>
         ) : (
           <>
-            {/* Aprovações pendentes */}
-            {pendingApprovalTasks.length > 0 && (
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-5">
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-3">
-                    <AlertCircle className="w-4 h-4 text-amber-600" />
-                    <h2 className="font-semibold text-amber-900">
-                      {pendingApprovalTasks.length} entrega{pendingApprovalTasks.length > 1 ? "s" : ""} aguardando aprovação
-                    </h2>
+            {/* 1. CARD DE PROGRESSO GERAL */}
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-6">
+              <p className="text-xs opacity-60 uppercase tracking-widest font-medium mb-3">Progresso Geral</p>
+              <div className="mb-4">
+                <h2 className="text-2xl font-extralight mb-1">{activeProject.name}</h2>
+                {activeProject.current_phase && (
+                  <p className="text-xs opacity-70">{activeProject.current_phase}</p>
+                )}
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between items-baseline mb-2">
+                    <span className="text-xs opacity-70">Progresso</span>
+                    <span className="text-3xl font-extralight">{activeProject.progress_percentage || 0}%</span>
                   </div>
-                  <div className="space-y-1">
-                    {pendingApprovalTasks.slice(0, 3).map(t => (
-                      <div key={t.id} className="text-xs text-amber-700">
-                        • {t.client_facing_title || t.title}
-                      </div>
-                    ))}
-                    {pendingApprovalTasks.length > 3 && (
-                      <p className="text-xs text-amber-600">+ {pendingApprovalTasks.length - 3} outras</p>
-                    )}
+                  <Progress value={activeProject.progress_percentage || 0} className="h-1.5 bg-slate-700" />
+                </div>
+              </div>
+              {activeProject.estimated_end_date && (
+                <p className="text-xs opacity-60 mt-3 pt-3 border-t border-slate-700">
+                  Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}
+                </p>
+              )}
+            </div>
+
+            {/* 2. AÇÃO NECESSÁRIA */}
+            {pendingActions.length > 0 && (
+              <div className="border-l-3 border-amber-500 bg-amber-50 rounded-lg p-5">
+                <div className="flex items-start gap-3 mb-4">
+                  <Zap className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-amber-900 text-sm">Ação Necessária</h3>
+                    <p className="text-xs text-amber-700 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} dependem da sua ação</p>
                   </div>
                 </div>
-                <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="flex-shrink-0">
-                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white gap-1">
-                    Ver <ArrowRight className="w-3 h-3" />
+                <div className="space-y-2">
+                  {pendingActions.slice(0, 3).map((action, i) => (
+                    <div key={i} className="text-xs text-amber-800 p-2 bg-white/50 rounded border border-amber-100">
+                      <span className="font-medium">{action.type === "approval" ? "Aprovação:" : "Onboarding:"}</span> {action.title}
+                    </div>
+                  ))}
+                  {pendingActions.length > 3 && (
+                    <p className="text-xs text-amber-600 px-2">+ {pendingActions.length - 3} item{pendingActions.length - 3 > 1 ? "ns" : ""}</p>
+                  )}
+                </div>
+                <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="inline-block mt-3">
+                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white gap-1 h-8 text-xs">
+                    Revisar <ArrowRight className="w-3 h-3" />
                   </Button>
                 </Link>
-                </div>
               </div>
             )}
 
-            {/* Stats compactos */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
-                <p className="text-xs text-slate-500 mb-1">Progresso</p>
-                <p className="text-2xl font-extralight text-slate-900">{activeProject?.progress_percentage || 0}%</p>
-              </div>
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
-                <p className="text-xs text-slate-500 mb-1">Concluídas</p>
-                <p className="text-2xl font-extralight text-slate-900">{completedTasks}</p>
-              </div>
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
-                <p className="text-xs text-slate-500 mb-1">Em Andamento</p>
-                <p className="text-2xl font-extralight text-slate-900">{inProgressTasks}</p>
-              </div>
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4">
-                <p className="text-xs text-slate-500 mb-1">Aprovações</p>
-                <p className="text-2xl font-extralight text-slate-900">{pendingApprovalTasks.length}</p>
+            {/* 3. VISÃO GERAL DO PROJETO */}
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3">
+              <h3 className="font-semibold text-slate-900 text-sm">Visão Geral</h3>
+              <div className="space-y-3 text-xs">
+                {activeProject.current_phase && (
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                    <span className="text-slate-600">Fase Atual</span>
+                    <span className="font-semibold text-slate-900">{activeProject.current_phase}</span>
+                  </div>
+                )}
+                {activeProject.status && (
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                    <span className="text-slate-600">Status</span>
+                    <Badge className="capitalize bg-slate-200 text-slate-800">{activeProject.status}</Badge>
+                  </div>
+                )}
+                {activeProject.estimated_end_date && (
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
+                    <span className="text-slate-600">Conclusão Estimada</span>
+                    <span className="font-semibold text-slate-900">{format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}</span>
+                  </div>
+                )}
+                {activeProject.project_owner_internal && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Responsável Destra</span>
+                    <span className="font-semibold text-slate-900 truncate">{activeProject.project_owner_internal.split("@")[0]}</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Projeto */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-              <h2 className="font-semibold text-slate-900 text-sm mb-2">{activeProject.name}</h2>
-              {activeProject.current_phase && (
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest mb-3">{activeProject.current_phase}</p>
-              )}
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs text-slate-500">Progresso</span>
-                <span className="text-lg font-extralight text-slate-900">{activeProject.progress_percentage || 0}%</span>
-              </div>
-              <Progress value={activeProject.progress_percentage || 0} className="h-2" />
-              {activeProject.description && (
-                <p className="text-xs text-slate-500 mt-3 leading-relaxed line-clamp-2">{activeProject.description}</p>
-              )}
-            </div>
-
-            {/* Reuniões e Quick Links */}
-            {upcomingMeetings.length > 0 && (
+            {/* 4. PRÓXIMA REUNIÃO */}
+            {upcomingMeetings.length > 0 ? (
               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-4 h-4 text-slate-600" />
-                  <h3 className="font-semibold text-slate-900 text-sm">Próximas Reuniões</h3>
-                </div>
-                <div className="space-y-2">
-                  {upcomingMeetings.slice(0, 2).map(m => (
-                    <Link key={m.id} to={m.meeting_link || "#"} target={m.meeting_link ? "_blank" : undefined} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white transition-colors text-xs">
-                      <span className="text-slate-600 font-light">{format(new Date(m.start_datetime), "dd/MM")}</span>
-                      <span className="text-slate-700 truncate">{m.title}</span>
-                      {m.meeting_link && <ArrowRight className="w-3 h-3 text-slate-400 ml-auto flex-shrink-0" />}
-                    </Link>
+                <h3 className="font-semibold text-slate-900 text-sm mb-4">Próxima Reunião</h3>
+                {(() => {
+                  const meeting = upcomingMeetings[0];
+                  return (
+                    <div className="space-y-2 text-xs">
+                      <div className="pb-2 border-b border-slate-200">
+                        <p className="text-slate-600 mb-1">Assunto</p>
+                        <p className="font-semibold text-slate-900">{meeting.title}</p>
+                      </div>
+                      <div className="pb-2 border-b border-slate-200">
+                        <p className="text-slate-600 mb-1">Data e Hora</p>
+                        <p className="font-semibold text-slate-900">
+                          {format(new Date(meeting.start_datetime), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
+                        </p>
+                      </div>
+                      {meeting.meeting_link && (
+                        <div className="pt-2">
+                          <a href={meeting.meeting_link} target="_blank" rel="noreferrer" className="inline-block">
+                            <Button size="sm" className="bg-slate-800 hover:bg-slate-900 text-white gap-2 h-8 text-xs">
+                              Entrar na Reunião <ArrowRight className="w-3 h-3" />
+                            </Button>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 text-center py-8">
+                <Calendar className="w-5 h-5 text-slate-300 mx-auto mb-2" />
+                <p className="text-xs text-slate-400">Nenhuma reunião agendada</p>
+              </div>
+            )}
+
+            {/* 5. ENTREGAS RECENTES */}
+            {recentDeliveries.length > 0 && (
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                <h3 className="font-semibold text-slate-900 text-sm mb-4">Entregas Recentes</h3>
+                <div className="space-y-3">
+                  {recentDeliveries.map((delivery, i) => (
+                    <div key={i} className="p-3 bg-white rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <h4 className="text-xs font-semibold text-slate-900 flex-1">{delivery.title}</h4>
+                        {delivery.status && (
+                          <Badge className="text-xs bg-slate-200 text-slate-800">{delivery.status}</Badge>
+                        )}
+                      </div>
+                      {delivery.delivery_date && (
+                        <p className="text-[11px] text-slate-500">{format(new Date(delivery.delivery_date), "dd/MM/yyyy")}</p>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Links de acesso rápido */}
-            <div className="space-y-2">
+            {/* 6. TIMELINE RESUMIDA */}
+            {recentTimeline.length > 0 && (
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                <h3 className="font-semibold text-slate-900 text-sm mb-4">Últimas Atualizações</h3>
+                <div className="space-y-3">
+                  {recentTimeline.map((event, i) => (
+                    <div key={i} className="flex gap-3 text-xs">
+                      <div className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-slate-900 font-medium">{event.title}</p>
+                        {event.created_date && (
+                          <p className="text-slate-500 text-[10px] mt-0.5">
+                            {format(new Date(event.created_date), "dd/MM 'às' HH:mm", { locale: ptBR })}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 7. ARQUIVOS RECENTES */}
+            {recentFiles.length > 0 && (
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+                <h3 className="font-semibold text-slate-900 text-sm mb-4">Arquivos Recentes</h3>
+                <div className="space-y-2">
+                  {recentFiles.map((file, i) => (
+                    <a key={i} href={file.file_url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-100 hover:border-slate-200 transition-colors group">
+                      <div className="flex items-center gap-3 flex-1">
+                        <FileText className="w-4 h-4 text-slate-400 group-hover:text-slate-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-slate-900 truncate">{file.file_name || file.title}</p>
+                          {file.created_date && (
+                            <p className="text-[10px] text-slate-500 mt-0.5">{format(new Date(file.created_date), "dd/MM/yyyy")}</p>
+                          )}
+                        </div>
+                      </div>
+                      <ArrowRight className="w-3 h-3 text-slate-300 group-hover:text-slate-400 flex-shrink-0" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Acesso rápido aos principais módulos */}
+            <div className="pt-2 space-y-2 border-t border-slate-100">
               {[
                 { label: "Tarefas & Aprovações", page: "ClientPortalDeliveries", icon: CheckCircle2 },
-                { label: "Timeline", page: "ClientPortalTimeline", icon: TrendingUp },
-                { label: "Arquivos", page: "ClientPortalFiles", icon: Star },
-                { label: "Avaliação", page: "ClientPortalSatisfaction", icon: Star },
+                { label: "Timeline Completa", page: "ClientPortalTimeline", icon: TrendingUp },
+                { label: "Ver Todos os Arquivos", page: "ClientPortalFiles", icon: FileText },
               ].map((link, i) => (
-                <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-lg hover:bg-white hover:border-slate-200 transition-all group">
-                  <link.icon className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" />
-                  <span className="text-sm text-slate-700 font-light flex-1">{link.label}</span>
+                <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors group">
+                  <link.icon className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
+                  <span className="text-xs text-slate-700 font-light flex-1">{link.label}</span>
                   <ArrowRight className="w-3 h-3 text-slate-300 group-hover:text-slate-400" />
                 </Link>
               ))}
