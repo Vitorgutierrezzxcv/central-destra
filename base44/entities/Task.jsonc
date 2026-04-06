@@ -1,0 +1,163 @@
+{
+  "name": "Task",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da tarefa"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada da tarefa"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "ID do projeto ao qual a tarefa pertence"
+    },
+    "module_id": {
+      "type": "string",
+      "description": "ID do m\u00f3dulo de origem (se aplic\u00e1vel)"
+    },
+    "parent_task_id": {
+      "type": "string",
+      "description": "ID da tarefa pai (para subtarefas)"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio respons\u00e1vel pela tarefa"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de in\u00edcio da tarefa"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de t\u00e9rmino da tarefa"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "Status da tarefa"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Prioridade da tarefa"
+    },
+    "time_estimate": {
+      "type": "number",
+      "description": "Tempo estimado em segundos para conclus\u00e3o da tarefa"
+    },
+    "time_tracked": {
+      "type": "number",
+      "default": 0,
+      "description": "Tempo total rastreado em segundos"
+    },
+    "is_tracking": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o tempo est\u00e1 sendo rastreado no momento"
+    },
+    "last_track_start": {
+      "type": "string",
+      "description": "Timestamp do in\u00edcio do tracking atual"
+    },
+    "tracking_user": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que est\u00e1 rastreando no momento"
+    },
+    "linked_page_id": {
+      "type": "string",
+      "description": "ID da p\u00e1gina vinculada"
+    },
+    "visible_to_client": {
+      "type": "boolean",
+      "default": false,
+      "description": "Vis\u00edvel no portal do cliente (legado - n\u00e3o mais necess\u00e1rio)"
+    },
+    "client_facing_title": {
+      "type": "string",
+      "description": "T\u00edtulo exibido ao cliente"
+    },
+    "client_facing_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o exibida ao cliente"
+    },
+    "client_status": {
+      "type": "string",
+      "description": "Status amig\u00e1vel para o cliente"
+    },
+    "completion_summary": {
+      "type": "string",
+      "description": "Resumo do que foi realizado"
+    },
+    "delivery_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requer entrega formal"
+    },
+    "delivery_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da entrega"
+    },
+    "approval_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Requer aprova\u00e7\u00e3o do cliente"
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "Data e hora em que a tarefa foi marcada como conclu\u00edda (ISO 8601)"
+    },
+    "approval_deadline": {
+      "type": "string",
+      "description": "Prazo limite para aprova\u00e7\u00e3o pelo cliente (ISO 8601) \u2014 calculado automaticamente: completed_at + 3 dias"
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "changes_requested",
+        "rejected",
+        "expired"
+      ],
+      "description": "Status de aprova\u00e7\u00e3o pelo cliente"
+    },
+    "gcal_event_id": {
+      "type": "string",
+      "description": "ID do evento no Google Calendar do respons\u00e1vel"
+    },
+    "attachment_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs dos arquivos anexados"
+    },
+    "attachment_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes dos arquivos anexados"
+    }
+  },
+  "required": [
+    "title",
+    "project_id"
+  ]
+}

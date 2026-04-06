@@ -44,7 +44,7 @@ export default function ClientPortalFiles() {
 
   const { data: files = [], isLoading } = useQuery({
     queryKey: ["client_files", activeProject?.id],
-    queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id, visible_to_client: true }),
+    queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
     select: d => [...d].sort((a, b) => new Date(b.uploaded_at || b.created_date) - new Date(a.uploaded_at || a.created_date))
   });

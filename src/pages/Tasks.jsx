@@ -174,9 +174,23 @@ export default function Tasks() {
   };
 
   const handleStatusChange = (task, newStatus) => {
-    updateTaskMutation.mutate({ 
-      id: task.id, 
-      taskData: { ...task, status: newStatus } 
+    const now = new Date();
+    const extraFields = {};
+    if (newStatus === "completed" && task.status !== "completed") {
+      extraFields.completed_at = now.toISOString();
+      // Prazo de 3 dias para aprovação do cliente
+      const deadline = new Date(now);
+      deadline.setDate(deadline.getDate() + 3);
+      extraFields.approval_deadline = deadline.toISOString();
+    } else if (newStatus !== "completed") {
+      // Se sair de concluído, limpa os campos de aprovação
+      extraFields.completed_at = null;
+      extraFields.approval_deadline = null;
+      extraFields.approval_status = null;
+    }
+    updateTaskMutation.mutate({
+      id: task.id,
+      taskData: { ...task, status: newStatus, ...extraFields }
     });
   };
 

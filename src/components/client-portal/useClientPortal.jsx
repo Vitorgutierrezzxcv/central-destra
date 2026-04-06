@@ -5,19 +5,18 @@ import { getClientProfile, isLoggedIn, saveSession, getClientToken } from "@/lib
 
 /**
  * Hook central do portal do cliente.
- * Auth própria via clientPortalSession (localStorage).
- *
- * Fluxo de resolução:
- * 1. Lê sessão local
- * 2. Valida sessão no backend — que também re-resolve linked_ids
- * 3. Busca ClientContact pelo email
- * 4. Resolve projectAccess pelo contactId
- * 5. Retorna projetos autorizados
+ * 
+ * Lógica: EMPRESA → PROJETO → TAREFAS
+ * 
+ * 1. Resolve email da sessão local
+ * 2. Valida sessão no backend (atualiza linked_ids)
+ * 3. Busca ClientContact pelo email → resolve company_id
+ * 4. Busca todos os projetos da empresa (sem filtro visible_to_client)
+ * 5. Retorna projetos, dados da empresa, contactId
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
-  const [sessionValidated, setSessionValidated] = useState(false);
 
   useEffect(() => {
     async function initSession() {
@@ -47,7 +46,6 @@ export function useClientPortal() {
         const data = res?.data ?? res;
         if (data?.valid && data?.profile) {
           const freshProfile = data.profile;
-          // Atualiza sessão local com linked_ids mais recentes
           saveSession(token, freshProfile, null);
           setUser({
             email: freshProfile.email,
@@ -63,15 +61,14 @@ export function useClientPortal() {
       } catch (e) {
         // Silencia erros de validação — usa dados locais
       }
-      
-      setSessionValidated(true);
+
       setUserLoading(false);
     }
 
     initSession();
   }, []);
 
-  // Busca ClientContact pelo email — fonte primária do contactId
+  // Busca ClientContact pelo email — fonte primária do contactId e company_id
   const { data: clientContactByEmail } = useQuery({
     queryKey: ["cp_clientContact_email", user?.email],
     queryFn: () =>
@@ -117,11 +114,11 @@ export function useClientPortal() {
     enabled: !!contactId
   });
 
-  // Todos os projetos para buscar os que têm acesso
-  const { data: allProjects = [] } = useQuery({
-    queryKey: ["client_all_projects_pool"],
-    queryFn: () => base44.entities.Project.list(),
-    enabled: !!contactId || !!companyId
+  // Todos os projetos da empresa — base primária, sem filtros artificiais
+  const { data: allCompanyProjects = [] } = useQuery({
+    queryKey: ["client_company_projects", companyId],
+    queryFn: () => base44.entities.Project.filter({ company_id: companyId }),
+    enabled: !!companyId
   });
 
   // Projetos autorizados pelo access (ativos)
@@ -130,14 +127,12 @@ export function useClientPortal() {
     .map(pa => pa.project_id);
 
   // Se há acessos explícitos, mostra esses projetos
-  // Senão, fallback para projetos da empresa com portal ativo
+  // Senão, fallback para todos os projetos da empresa com portal ativo
   let projects;
   if (authorizedProjectIds.length > 0) {
-    projects = allProjects.filter(p => authorizedProjectIds.includes(p.id));
-  } else if (companyId) {
-    projects = allProjects.filter(p => p.company_id === companyId && p.client_portal_enabled);
+    projects = allCompanyProjects.filter(p => authorizedProjectIds.includes(p.id));
   } else {
-    projects = [];
+    projects = allCompanyProjects.filter(p => p.client_portal_enabled);
   }
 
   const isApprover =
