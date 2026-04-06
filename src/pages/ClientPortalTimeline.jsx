@@ -104,9 +104,8 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="bg-slate-50 rounded-2xl border border-slate-100 p-6">
-              <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-6">Fases do Projeto</p>
-              <div className="flex items-center justify-between gap-2">
+            <div className="relative w-full">
+              <div className="flex items-center justify-between gap-1 md:gap-2">
                 {[
                   { label: "Kickoff", order: 0 },
                   { label: "Planejamento", order: 1 },
@@ -119,20 +118,15 @@ export default function ClientPortalTimeline() {
                   const isActive = Math.floor(phaseProgress) === phase.order;
 
                   return (
-                    <div key={phase.order} className="flex flex-col items-center flex-1">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all ${
+                    <div key={phase.order} className="flex flex-col items-center flex-1 min-w-0">
+                      <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs font-semibold border-2 transition-all flex-shrink-0 ${
                         isCompleted ? "bg-emerald-500 border-emerald-500 text-white" :
-                        isActive ? "bg-blue-500 border-blue-500 text-white scale-110" :
+                        isActive ? "bg-blue-500 border-blue-500 text-white" :
                         "bg-white border-slate-200 text-slate-400"
                       }`}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
-                      <p className="text-xs text-slate-600 font-medium mt-2 text-center leading-tight">{phase.label}</p>
-                      {idx < 4 && (
-                        <div className={`absolute w-12 h-1 mt-3 transition-all ${
-                          isCompleted ? "bg-emerald-400" : isActive ? "bg-blue-300" : "bg-slate-200"
-                        }`} style={{ left: `calc(${(idx + 1) * 20}% - 24px)` }} />
-                      )}
+                      <p className="text-[10px] md:text-xs text-slate-600 font-medium mt-1.5 text-center leading-tight break-words">{phase.label}</p>
                     </div>
                   );
                 })}
