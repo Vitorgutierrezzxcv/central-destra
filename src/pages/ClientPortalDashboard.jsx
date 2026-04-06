@@ -143,9 +143,9 @@ export default function ClientPortalDashboard() {
         {/* ── 1. HERO TOPO ── */}
         <div className="pb-6">
           {/* Nome empresa */}
-          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-7">
-            {company?.name || "Portal do Cliente"}
-          </p>
+             <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
+               {company?.name || "Portal do Cliente"}
+             </p>
 
           {/* Saudação grande */}
           <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-4">

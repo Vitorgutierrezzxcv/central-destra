@@ -29,9 +29,9 @@ export default function ClientPortalProjects() {
       {/* Hero Section */}
       <div className="text-white px-5 md:px-4 pt-8 md:pt-12 pb-8 md:pb-12">
         <div className="max-w-lg md:max-w-6xl mx-auto">
-          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
-            Meus Projetos
-          </p>
+           <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
+             Meus Projetos
+           </p>
           <h1 className="text-[2.5rem] md:text-[3.25rem] leading-[1.15] font-extralight tracking-tight mb-4">
             Todos Seus<br />Projetos
           </h1>
