@@ -196,7 +196,7 @@ export default function ClientPortalTickets() {
                     onClick={() => setFilter(f.key)}
                     className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                       filter === f.key
-                        ? "bg-blue-600 text-white"
+                        ? "bg-slate-900 text-white"
                         : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
                     }`}
                   >
@@ -235,18 +235,18 @@ export default function ClientPortalTickets() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <p className="text-sm font-semibold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                            <p className="text-sm font-semibold text-slate-900 truncate group-hover:text-slate-900 transition-colors">
                               {ticket.title}
                             </p>
                             {ticket.status === "waiting_client" && (
-                              <Badge className="text-[10px] bg-amber-100 text-amber-700 border-amber-200 animate-pulse">
+                              <Badge className="text-[10px] bg-slate-700 text-white border-slate-600 animate-pulse">
                                 Resposta necessária
                               </Badge>
                             )}
                           </div>
                           <div className="flex items-center gap-2 flex-wrap">
-                            <Badge className={`text-[10px] ${st.className}`}>{st.label}</Badge>
-                            <Badge className={`text-[10px] ${pr.className}`}>{pr.label}</Badge>
+                            <Badge className={`text-[10px] ${st.className.includes('bg-slate') ? st.className : st.className + ' text-white'}`}>{st.label}</Badge>
+                            <Badge className={`text-[10px] ${pr.className.includes('bg-slate') ? pr.className : pr.className + ' text-white'}`}>{pr.label}</Badge>
                             {ticket.category && (
                               <span className="text-[10px] text-slate-400">{categoryLabels[ticket.category]}</span>
                             )}
