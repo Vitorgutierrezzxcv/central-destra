@@ -87,7 +87,7 @@ export default function ClientPortalProject() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col md:flex-row">
       {/* Left Panel - Dark */}
-      <div className="md:w-5/12 text-white px-5 md:px-8 py-8 md:py-12 flex flex-col justify-between md:min-h-screen">
+      <div className="md:w-5/12 text-white px-5 md:px-8 pt-32 md:pt-12 pb-8 md:pb-12 flex flex-col justify-between md:min-h-screen">
         <div>
           <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
           <h1 className="text-4xl md:text-5xl font-light leading-tight mb-6 text-white">{activeProject.name}</h1>
