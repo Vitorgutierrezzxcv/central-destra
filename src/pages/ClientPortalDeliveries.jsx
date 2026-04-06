@@ -206,7 +206,7 @@ export default function ClientPortalDeliveries() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-700">
+    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #456C8D 0%, #3A5475 100%)" }}>
       <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-4">
          <div className="flex items-end justify-between gap-4 mb-4">
            <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">
@@ -253,14 +253,14 @@ export default function ClientPortalDeliveries() {
                 : "bg-slate-50 text-slate-500 border-slate-200";
 
             return (
-              <div key={task.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+              <div key={task.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "#3F5A7A", borderColor: "#2E4557" }}>
                 {/* Task Header */}
                 <div className="px-5 pt-5 pb-4">
                   <div className="flex items-start gap-3">
                     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${statusDot}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-3 flex-wrap">
-                        <h2 className="text-sm font-medium text-slate-900 flex-1">
+                        <h2 className="text-sm font-medium text-white flex-1">
                           {task.client_facing_title || task.title}
                         </h2>
                         <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${statusBadge}`}>
@@ -268,26 +268,26 @@ export default function ClientPortalDeliveries() {
                         </span>
                       </div>
                       {task.client_facing_description && (
-                        <p className="text-xs text-slate-400 font-light mt-1.5 leading-relaxed">{task.client_facing_description}</p>
+                        <p className="text-xs font-light mt-1.5 leading-relaxed" style={{ color: "#C5D1DC" }}>{task.client_facing_description}</p>
                       )}
                       <div className="flex gap-4 mt-2 flex-wrap">
-                        {task.start_date && <span className="text-[10px] text-slate-400 font-light">Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
-                        {task.end_date && <span className="text-[10px] text-slate-400 font-light">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
+                        {task.start_date && <span className="text-[10px] font-light" style={{ color: "#A8B8C8" }}>Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
+                        {task.end_date && <span className="text-[10px] font-light" style={{ color: "#A8B8C8" }}>Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
                       </div>
                     </div>
                   </div>
 
                   {task.completion_summary && task.status === "completed" && (
-                    <div className="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
-                      <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider mb-1.5">Resumo</p>
-                      <p className="text-xs text-slate-600 font-light leading-relaxed">{task.completion_summary}</p>
+                    <div className="mt-3 p-3 rounded-xl border" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D" }}>
+                      <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#6FA6FF" }}>Resumo</p>
+                      <p className="text-xs font-light leading-relaxed" style={{ color: "#C5D1DC" }}>{task.completion_summary}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Deliveries */}
                 {(taskDeliveries.length > 0 || canApproveTask || taskFeedback) && (
-                  <div className="border-t border-slate-50 px-5 py-4 space-y-3 bg-slate-50/50">
+                  <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "#2E4557", backgroundColor: "#354A62" }}>
                     {taskDeliveries.map(delivery => {
                       const cfg = deliveryStatusConfig[delivery.status] || deliveryStatusConfig.pending_delivery;
                       const Icon = cfg.icon;
@@ -295,9 +295,9 @@ export default function ClientPortalDeliveries() {
                       const canApprove = ["delivered", "under_review"].includes(delivery.status) && !fb;
 
                       return (
-                        <div key={delivery.id} className="bg-white rounded-xl border border-slate-100 p-4">
+                        <div key={delivery.id} className="rounded-xl border p-4" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D" }}>
                           <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
-                            <p className="text-sm font-medium text-slate-800">{delivery.title}</p>
+                            <p className="text-sm font-medium text-white">{delivery.title}</p>
                             <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex items-center gap-1.5 ${cfg.badge}`}>
                               <Icon className="w-3 h-3" />
                               {cfg.label}
@@ -305,19 +305,19 @@ export default function ClientPortalDeliveries() {
                           </div>
 
                           {delivery.delivery_date && (
-                            <p className="text-[10px] text-slate-400 font-light mb-2">
+                            <p className="text-[10px] font-light mb-2" style={{ color: "#A8B8C8" }}>
                               Entregue em {format(new Date(delivery.delivery_date), "dd/MM/yyyy", { locale: ptBR })}
                             </p>
                           )}
 
                           {delivery.description && (
-                            <p className="text-xs text-slate-500 font-light mb-3 leading-relaxed">{delivery.description}</p>
+                            <p className="text-xs font-light mb-3 leading-relaxed" style={{ color: "#C5D1DC" }}>{delivery.description}</p>
                           )}
 
                           {delivery.public_notes && (
-                            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-3">
-                              <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1.5">Obs. da equipe</p>
-                              <p className="text-xs text-slate-600 font-light">{delivery.public_notes}</p>
+                            <div className="rounded-xl p-3 mb-3 border" style={{ backgroundColor: "#1F2F3D", borderColor: "#0D1621" }}>
+                              <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#6FA6FF" }}>Obs. da equipe</p>
+                              <p className="text-xs font-light" style={{ color: "#C5D1DC" }}>{delivery.public_notes}</p>
                             </div>
                           )}
 
@@ -325,7 +325,8 @@ export default function ClientPortalDeliveries() {
                             <div className="flex flex-wrap gap-2 mb-3">
                               {delivery.attachment_urls.map((url, i) => (
                                 <a key={i} href={url} target="_blank" rel="noreferrer"
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] text-slate-600 hover:bg-slate-100 transition-colors">
+                                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] border transition-colors"
+                                  style={{ backgroundColor: "#1F2F3D", borderColor: "#0D1621", color: "#C5D1DC" }}>
                                   <Paperclip className="w-3 h-3" />
                                   {delivery.attachment_names?.[i] || `Arquivo ${i + 1}`}
                                 </a>
@@ -334,14 +335,15 @@ export default function ClientPortalDeliveries() {
                           )}
 
                           {fb ? (
-                            <div className="flex items-center gap-2 text-xs text-slate-400 font-light">
+                            <div className="flex items-center gap-2 text-xs font-light" style={{ color: "#A8B8C8" }}>
                               <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                               {fb.score}/5 · {fb.approval_status === "approved" ? "Aprovado" : fb.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
                             </div>
                           ) : canApprove ? (
                             <button
                               onClick={() => setFeedbackTarget({ delivery, task })}
-                              className="w-full h-9 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors"
+                              className="w-full h-9 text-white rounded-xl text-xs font-medium transition-colors"
+                              style={{ backgroundColor: "#456C8D" }}
                             >
                               Avaliar esta entrega
                             </button>
@@ -351,27 +353,28 @@ export default function ClientPortalDeliveries() {
                     })}
 
                     {canApproveTask && (
-                      <div className="bg-white border border-slate-200 rounded-xl p-4">
-                        <p className="text-sm font-medium text-slate-800 mb-1">Esta tarefa aguarda sua aprovação</p>
-                        <p className="text-xs text-slate-400 font-light mb-3 leading-relaxed">
-                          A tarefa foi concluída. Por favor, revise e aprove ou solicite ajustes.
-                        </p>
-                        <button
-                          onClick={() => setFeedbackTarget({ delivery: null, task })}
-                          className="h-9 px-4 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors"
-                        >
-                          Aprovar / Solicitar Ajustes
-                        </button>
-                      </div>
-                    )}
+                       <div className="rounded-xl p-4 border" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D" }}>
+                         <p className="text-sm font-medium text-white mb-1">Esta tarefa aguarda sua aprovação</p>
+                         <p className="text-xs font-light mb-3 leading-relaxed" style={{ color: "#C5D1DC" }}>
+                           A tarefa foi concluída. Por favor, revise e aprove ou solicite ajustes.
+                         </p>
+                         <button
+                           onClick={() => setFeedbackTarget({ delivery: null, task })}
+                           className="h-9 px-4 text-white rounded-xl text-xs font-medium transition-colors"
+                           style={{ backgroundColor: "#456C8D" }}
+                         >
+                           Aprovar / Solicitar Ajustes
+                         </button>
+                       </div>
+                     )}
 
-                    {taskFeedback && taskDeliveries.length === 0 && (
-                      <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-slate-100 text-xs text-slate-400 font-light">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                        Avaliado: {taskFeedback.approval_status === "approved" ? "Aprovado" : taskFeedback.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
-                        {taskFeedback.score ? ` · Nota ${taskFeedback.score}/5` : ""}
-                      </div>
-                    )}
+                     {taskFeedback && taskDeliveries.length === 0 && (
+                       <div className="flex items-center gap-2.5 p-3 rounded-xl border text-xs font-light" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D", color: "#C5D1DC" }}>
+                         <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                         Avaliado: {taskFeedback.approval_status === "approved" ? "Aprovado" : taskFeedback.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
+                         {taskFeedback.score ? ` · Nota ${taskFeedback.score}/5` : ""}
+                       </div>
+                     )}
                   </div>
                 )}
               </div>
