@@ -141,11 +141,11 @@ export default function ClientPortalCalendar() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
-        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
-          Calendário
-        </p>
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="max-w-full w-full px-5 md:px-4 pt-8 md:pt-12 pb-20">
+         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+           Calendário
+         </p>
         <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
           Reuniões<br />e Marcos
         </h1>
@@ -154,7 +154,7 @@ export default function ClientPortalCalendar() {
         </p>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-3 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 space-y-3 pb-20">
         <div className="flex gap-2 flex-wrap">
           {["all", "upcoming", "past"].map(f => (
             <button

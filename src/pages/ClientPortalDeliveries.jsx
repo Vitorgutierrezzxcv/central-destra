@@ -207,7 +207,7 @@ export default function ClientPortalDeliveries() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-8 md:pt-12 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 pt-8 md:pt-12 pb-20">
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
            {activeProject?.name || "Entregas"}
          </p>
@@ -224,7 +224,7 @@ export default function ClientPortalDeliveries() {
         </div>
       </div>
 
-      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 space-y-3 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 space-y-3 pb-20">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />

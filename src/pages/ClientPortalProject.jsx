@@ -85,39 +85,46 @@ export default function ClientPortalProject() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero com detalhes do projeto */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-5 md:px-4 py-12 md:py-16">
-        <div className="max-w-lg md:max-w-6xl mx-auto">
-          <p className="text-blue-100 text-[10px] tracking-[0.15em] uppercase font-medium mb-4">Projeto</p>
-          <h1 className="text-4xl md:text-5xl font-light leading-tight mb-3">{activeProject.name}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col md:flex-row">
+      {/* Left Panel - Hero */}
+      <div className="md:w-5/12 text-white px-5 md:px-8 py-8 md:py-12 flex flex-col justify-between min-h-screen md:min-h-auto">
+        <div>
+          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
+          <h1 className="text-4xl md:text-3xl lg:text-4xl font-light leading-tight mb-6">{activeProject.name}</h1>
           {activeProject.description && (
-            <p className="text-blue-100 text-lg font-light max-w-2xl leading-relaxed">{activeProject.description}</p>
+            <p className="text-slate-300 text-sm md:text-base font-light leading-relaxed mb-8">{activeProject.description}</p>
           )}
+          
+          <div className="space-y-4">
+            <div>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-2">Status</p>
+              <Badge className={`${statusCfg.color} text-xs`}>{statusCfg.label}</Badge>
+            </div>
+            {activeProject.project_start_date && (
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-1">Início</p>
+                <p className="text-sm text-slate-200">{format(parseISO(activeProject.project_start_date), "dd 'de' MMMM", { locale: ptBR })}</p>
+              </div>
+            )}
+            {activeProject.estimated_end_date && (
+              <div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-1">Entrega Prevista</p>
+                <p className="text-sm text-slate-200">{format(parseISO(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}</p>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="text-[10px] text-slate-500 space-y-1">
+          <p>© 2026 Destra · Acesso seguro</p>
         </div>
       </div>
 
-      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 py-8 space-y-6">
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: "Progresso", value: `${activeProject.progress_percentage || 0}%`, icon: TrendingUp, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
-            { label: "Tarefas Concluídas", value: completedTasks, icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100" },
-            { label: "Em Andamento", value: pendingTasks, icon: Clock, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
-            { label: "Próximas Reuniões", value: upcomingMeetings.length, icon: Calendar, color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100" },
-          ].map((s, i) => (
-            <div key={i} className={`bg-white border ${s.border} rounded-2xl p-5`}>
-              <div className={`w-9 h-9 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
-                <s.icon className={`w-4 h-4 ${s.color}`} />
-              </div>
-              <p className="text-2xl font-bold text-slate-900">{s.value}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
+      {/* Right Panel - Content */}
+      <div className="md:w-7/12 bg-white flex flex-col overflow-y-auto">
+        <div className="px-5 md:px-8 py-8 space-y-6 flex-1">
         {/* Progress Bar */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+         <div className="border border-slate-200 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="font-semibold text-slate-900">Progresso Geral</h2>
@@ -203,28 +210,29 @@ export default function ClientPortalProject() {
         </div>
 
         {/* Quick Links */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h2 className="font-semibold text-slate-900 mb-4">Seções do Projeto</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {quickLinks.map((link, i) => (
-              <Link
-                key={i}
-                to={createPageUrl(link.page)}
-                className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all group"
-              >
-                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100">
-                  <link.icon className="w-5 h-5 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-800 group-hover:text-blue-700 transition-colors">{link.label}</p>
-                  <p className="text-xs text-slate-400">{link.desc}</p>
-                </div>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
-              </Link>
-            ))}
-          </div>
+         <div className="border border-slate-200 rounded-2xl p-6">
+           <h2 className="font-semibold text-slate-900 mb-4">Seções do Projeto</h2>
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+             {quickLinks.map((link, i) => (
+               <Link
+                 key={i}
+                 to={createPageUrl(link.page)}
+                 className="flex items-center gap-4 p-4 bg-slate-50 border border-slate-100 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-all group"
+               >
+                 <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100">
+                   <link.icon className="w-5 h-5 text-blue-600" />
+                 </div>
+                 <div className="flex-1">
+                   <p className="text-sm font-medium text-slate-800 group-hover:text-blue-700 transition-colors">{link.label}</p>
+                   <p className="text-xs text-slate-400">{link.desc}</p>
+                 </div>
+                 <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
+               </Link>
+             ))}
+           </div>
+         </div>
         </div>
-      </div>
-    </div>
-  );
-}
+        </div>
+        </div>
+        );
+        }
