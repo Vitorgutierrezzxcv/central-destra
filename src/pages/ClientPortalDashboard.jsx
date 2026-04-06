@@ -1,41 +1,60 @@
-import React, { useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useMemo, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Building2, TrendingUp, CheckCircle2, Clock, Calendar,
-  AlertCircle, ArrowRight, Star, Loader2, Timer, Flame,
-  FileText, User, Zap
+  CheckCircle2, Clock, Calendar, AlertCircle,
+  ArrowRight, Star, Loader2, MessageSquare, Paperclip, ChevronRight, Receipt
 } from "lucide-react";
-import { format, isAfter, differenceInDays, isPast, addDays, parseISO } from "date-fns";
+import { format, isAfter, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
-
-function getApprovalDeadline(task) {
-  const ref = task.approval_deadline || (task.completed_at ? addDays(parseISO(task.completed_at), 3).toISOString() : null);
-  return ref ? parseISO(ref) : null;
-}
-
-function DeadlineLabel({ task }) {
-  const deadline = getApprovalDeadline(task);
-  if (!deadline) return <span className="text-xs text-amber-600">Aguarda aprovação</span>;
-
-  const daysLeft = differenceInDays(deadline, new Date());
-  const expired = isPast(deadline);
-
-  if (expired) return <span className="text-xs text-rose-600 font-medium">Prazo expirado</span>;
-  if (daysLeft === 0) return <span className="text-xs text-orange-600 font-semibold flex items-center gap-1"><Flame className="w-3 h-3" />Encerra hoje!</span>;
-  if (daysLeft === 1) return <span className="text-xs text-amber-600 font-medium flex items-center gap-1"><Timer className="w-3 h-3" />Falta 1 dia</span>;
-  return <span className="text-xs text-amber-600">Faltam {daysLeft} dias</span>;
-}
+import TaskApprovalModal from "@/components/client-portal/TaskApprovalModal";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { user, userLoading, company, projects, canAccessProject } = useClientPortal();
+
+  const [selectedApprovalTask, setSelectedApprovalTask] = useState(null);
+
+  const submitApproval = useMutation({
+    mutationFn: async (data) => {
+      // Update task status
+      await base44.entities.Task.update(data.taskId, {
+        status: data.decision === "approved" ? "completed" : "pending"
+      });
+
+      // Create a comment/record if there's feedback
+      if (data.feedback.trim()) {
+        await base44.entities.TaskComment.create({
+          task_id: data.taskId,
+          comment: `[${data.decision === "approved" ? "APROVADO" : "REJEITADO"}] ${data.feedback}`,
+          is_client_feedback: true
+        });
+      }
+
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client_tasks"] });
+      setSelectedApprovalTask(null);
+      toast({
+        title: "Sucesso",
+        description: "Sua decisão foi registrada e enviada à equipe."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível processar sua aprovação. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  });
 
   const urlParams = new URLSearchParams(window.location.search);
   const selectedProjectId = urlParams.get("project_id");
@@ -53,28 +72,9 @@ export default function ClientPortalDashboard() {
     }
   }, [projects.length, userLoading, selectedProjectId]);
 
-  // Busca todas as tarefas do projeto — sem filtro visible_to_client
   const { data: tasks = [] } = useQuery({
-    queryKey: ["client_dash_tasks", activeProject?.id],
-    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id }),
-    enabled: !!activeProject?.id
-  });
-
-  const { data: meetings = [] } = useQuery({
-    queryKey: ["client_dash_meetings", activeProject?.id],
-    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id }),
-    enabled: !!activeProject?.id
-  });
-
-  const { data: feedbacks = [] } = useQuery({
-    queryKey: ["client_dash_feedbacks", activeProject?.id],
-    queryFn: () => base44.entities.DeliveryFeedback.filter({ project_id: activeProject.id }),
-    enabled: !!activeProject?.id
-  });
-
-  const { data: onboarding = [] } = useQuery({
-    queryKey: ["client_onboarding", activeProject?.id],
-    queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
+    queryKey: ["client_tasks", activeProject?.id],
+    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
@@ -84,283 +84,390 @@ export default function ClientPortalDashboard() {
     enabled: !!activeProject?.id
   });
 
-  const { data: timelineEvents = [] } = useQuery({
-    queryKey: ["client_timeline", activeProject?.id],
-    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
+  const { data: meetings = [] } = useQuery({
+    queryKey: ["client_meetings", activeProject?.id],
+    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
+    enabled: !!activeProject?.id
+  });
+
+  const { data: onboarding = [] } = useQuery({
+    queryKey: ["client_onboarding", activeProject?.id],
+    queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: files = [] } = useQuery({
-    queryKey: ["client_files", activeProject?.id],
+    queryKey: ["client_files_home", activeProject?.id],
     queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id }),
-    enabled: !!activeProject?.id
+    enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 3)
   });
 
-  const mainTasks = tasks.filter(t => !t.parent_task_id);
-  const completedTasks = mainTasks.filter(t => t.status === "completed").length;
-  const inProgressTasks = mainTasks.filter(t => t.status === "in_progress").length;
-
-  // Tarefas concluídas aguardando aprovação (sem feedback ainda)
-  const pendingApprovalTasks = mainTasks.filter(t => {
-    if (t.status !== "completed") return false;
-    const hasFeedback = feedbacks.some(f => f.task_id === t.id);
-    return !hasFeedback;
+  const { data: milestones = [] } = useQuery({
+    queryKey: ["client_milestones_home", activeProject?.id],
+    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date)).slice(0, 4)
   });
 
-  const upcomingMeetings = meetings.filter(m =>
-    m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date())
-  ).sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime));
+  const { data: timelineEvents = [] } = useQuery({
+    queryKey: ["client_timeline_events", activeProject?.id],
+    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
+  });
 
-  const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
-
-  // Ações pendentes consolidadas
-  const pendingActions = [
-    ...pendingApprovalTasks.map(t => ({ type: "approval", data: t, title: t.client_facing_title || t.title })),
-    ...clientOnboarding.map(o => ({ type: "onboarding", data: o, title: o.title }))
-  ].sort((a, b) => new Date(b.data.updated_date || b.data.created_date) - new Date(a.data.updated_date || a.data.created_date));
-
-  // Entregas recentes
-  const recentDeliveries = [...deliveries]
-    .sort((a, b) => new Date(b.delivery_date || b.created_date) - new Date(a.delivery_date || a.created_date))
-    .slice(0, 4);
-
-  // Timeline recente (últimos 5 eventos)
-  const recentTimeline = [...timelineEvents]
-    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-    .slice(0, 5);
-
-  // Arquivos recentes
-  const recentFiles = [...files]
-    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-    .slice(0, 4);
+  const completedTasks      = tasks.filter(t => t.status === "completed").length;
+  const inProgressTasks     = tasks.filter(t => t.status === "in_progress").length;
+  const pendingApprovals    = deliveries.filter(d => ["delivered", "under_review"].includes(d.status)).length;
+  const pendingApprovalTasks = tasks.filter(t => t.approval_required && t.status !== 'completed');
+  const upcomingMeeting     = meetings.find(m => m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date()));
+  const clientOnboarding    = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
+  const recentDeliveries    = deliveries.filter(d => d.status === "approved").slice(0, 3);
+  const hasActions          = pendingApprovals > 0 || clientOnboarding.length > 0;
+  const progress            = activeProject?.progress_percentage || 0;
+  const firstName           = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
 
   if (userLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
       </div>
     );
   }
 
-  const firstName = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
-
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero */}
-      <div className="max-w-lg mx-auto px-5 pt-14 pb-8">
-        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
-          {company?.name || "Portal"}
-        </p>
-        <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
-          Olá,<br />{firstName}
-        </h1>
-        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
-          {activeProject ? `Acompanhe ${activeProject.name}` : "Bem-vindo ao portal do cliente"}
-        </p>
-      </div>
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-36 space-y-4">
 
-      <div className="max-w-lg mx-auto px-5 space-y-5 pb-20">
-        {!activeProject ? (
-          <div className="text-center py-12">
-            <Building2 className="w-8 h-8 text-slate-200 mx-auto mb-3" />
-            <p className="text-slate-400 font-light">Nenhum projeto disponível.</p>
-          </div>
-        ) : (
-          <>
-            {/* 1. CARD DE PROGRESSO GERAL */}
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-6">
-              <p className="text-xs opacity-60 uppercase tracking-widest font-medium mb-3">Progresso Geral</p>
-              <div className="mb-4">
-                <h2 className="text-2xl font-extralight mb-1">{activeProject.name}</h2>
+        {/* ── 1. HERO TOPO ── */}
+        <div className="pb-6">
+          {/* Nome empresa */}
+          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-7">
+            {company?.name || "Portal do Cliente"}
+          </p>
+
+          {/* Saudação grande */}
+          <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-4">
+            Olá,<br />
+            <span className="font-light">{firstName}</span>
+          </h1>
+
+          {/* Subtítulo leve */}
+          <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
+            Acompanhe o andamento do seu<br />projeto em tempo real.
+          </p>
+        </div>
+
+        {/* ── 2. CARD DE PROGRESSO ── dark, executivo */}
+        {activeProject && (
+          <div className="bg-[#0d1117] rounded-2xl px-6 py-6">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div className="min-w-0">
+                <p className="text-[10px] text-white/30 tracking-[0.15em] uppercase font-medium mb-1.5">Projeto</p>
+                <p className="text-sm text-white font-light leading-snug truncate">{activeProject.name}</p>
                 {activeProject.current_phase && (
-                  <p className="text-xs opacity-70">{activeProject.current_phase}</p>
+                  <p className="text-[10px] text-white/30 font-light mt-1">{activeProject.current_phase}</p>
                 )}
               </div>
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between items-baseline mb-2">
-                    <span className="text-xs opacity-70">Progresso</span>
-                    <span className="text-3xl font-extralight">{activeProject.progress_percentage || 0}%</span>
-                  </div>
-                  <Progress value={activeProject.progress_percentage || 0} className="h-1.5 bg-slate-700" />
-                </div>
+              <div className="text-right flex-shrink-0">
+                <span className="text-3xl font-extralight text-white">{progress}</span>
+                <span className="text-sm text-white/30 ml-0.5">%</span>
               </div>
+            </div>
+
+            {/* Barra */}
+            <div className="w-full bg-white/10 rounded-full h-[1.5px] mb-4">
+              <div
+                className="h-[1.5px] rounded-full bg-white/70 transition-all duration-1000"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            {/* Datas */}
+            <div className="flex items-center justify-between">
+              {activeProject.project_start_date && (
+                <p className="text-[10px] text-white/25 font-light">
+                  Início {format(new Date(activeProject.project_start_date), "dd/MM/yy")}
+                </p>
+              )}
               {activeProject.estimated_end_date && (
-                <p className="text-xs opacity-60 mt-3 pt-3 border-t border-slate-700">
-                  Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}
+                <p className="text-[10px] text-white/25 font-light">
+                  Previsão {format(new Date(activeProject.estimated_end_date), "dd/MM/yy")}
                 </p>
               )}
             </div>
+          </div>
+        )}
 
-            {/* 2. AÇÃO NECESSÁRIA */}
-            {pendingActions.length > 0 && (
-              <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 rounded-2xl p-5">
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-blue-600" />
+        {/* ── 3. AÇÃO NECESSÁRIA (DESTAQUE) ── */}
+        {hasActions && (
+          <div className="pt-4 space-y-3">
+            <div className="border-b border-slate-100 pb-4">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-rose-600 font-bold px-1 mb-4">
+                ⚠ Ação Necessária
+              </p>
+
+              {pendingApprovals > 0 && (
+                <Link
+                  to={createPageUrl("ClientPortalDeliveries")}
+                  className="flex items-center gap-4 bg-rose-50 border border-rose-100 rounded-2xl px-5 py-4 active:opacity-80 transition-opacity mb-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0">
+                    <AlertCircle className="w-5 h-5 text-rose-500" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-slate-900 text-sm">Ação Necessária</h3>
-                    <p className="text-xs text-slate-600 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} aguardando</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-rose-700">Entregas com aprovação pendente</p>
+                    <p className="text-xs text-rose-600 font-light mt-1">
+                      {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} sua revisão e decisão
+                    </p>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  {pendingActions.slice(0, 2).map((action, i) => (
-                    <div key={i} className="text-xs p-3 bg-white rounded-lg border border-slate-100 hover:border-blue-200 transition-colors">
-                      <p className="text-slate-900 font-medium line-clamp-1">{action.title}</p>
-                      <p className="text-slate-500 text-[11px] mt-1">{action.type === "approval" ? "Aguarda sua aprovação" : "Pendente de onboarding"}</p>
-                    </div>
-                  ))}
-                </div>
-                <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="inline-block mt-4">
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-1 h-8 text-xs">
-                    Ver Tudo <ArrowRight className="w-3 h-3" />
-                  </Button>
+                  <ChevronRight className="w-4 h-4 text-rose-200 flex-shrink-0" />
                 </Link>
-              </div>
-            )}
+              )}
 
-            {/* 3. VISÃO GERAL DO PROJETO */}
-            <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
-              <h3 className="font-semibold text-slate-900 text-sm mb-4">Visão Geral</h3>
-              <div className="space-y-3">
-                {activeProject.current_phase && (
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                    <span className="text-xs text-slate-600">Fase Atual</span>
-                    <span className="font-semibold text-slate-900 text-sm">{activeProject.current_phase}</span>
+              {clientOnboarding.length > 0 && (
+                <Link
+                  to={createPageUrl("ClientPortalOnboarding")}
+                  className="flex items-center gap-4 bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 active:opacity-80 transition-opacity"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-amber-600" />
                   </div>
-                )}
-                {activeProject.status && (
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                    <span className="text-xs text-slate-600">Status</span>
-                    <Badge className="capitalize bg-slate-200 text-slate-800 text-xs">{activeProject.status}</Badge>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-amber-700">Onboarding pendente</p>
+                    <p className="text-xs text-amber-600 font-light mt-1">
+                      {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação para continuarmos
+                    </p>
                   </div>
-                )}
-                {activeProject.estimated_end_date && (
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-                    <span className="text-xs text-slate-600">Conclusão Estimada</span>
-                    <span className="font-semibold text-slate-900 text-sm">{format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}</span>
+                  <ChevronRight className="w-4 h-4 text-amber-200 flex-shrink-0" />
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+
+
+
+        {/* ── 4. TAREFAS PENDENTES DE APROVAÇÃO ── */}
+        {pendingApprovalTasks.length > 0 && (
+          <div className="pt-3">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Tarefas pendentes de aprovação</p>
+              <Link to={createPageUrl("ClientPortalDeliveries")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
+                Ver tudo →
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {pendingApprovalTasks.slice(0, 3).map(task => (
+                <button
+                  key={task.id}
+                  onClick={() => setSelectedApprovalTask(task)}
+                  className="w-full text-left block border border-primary/20 bg-primary/5 rounded-2xl px-4 py-3 hover:bg-primary/10 transition-colors"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full mt-1.5 bg-primary flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-light text-slate-900 leading-snug">{task.client_facing_title || task.title}</p>
+                      {task.delivery_date && (
+                        <p className="text-[10px] text-slate-500 font-light mt-1">
+                          Entrega: {format(new Date(task.delivery_date), "dd/MM/yyyy")}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                )}
-                {activeProject.project_owner_internal && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-600">Responsável Destra</span>
-                    <span className="font-semibold text-slate-900 text-sm">{activeProject.project_owner_internal.split("@")[0]}</span>
-                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── 5. PRÓXIMA REUNIÃO ── */}
+        <div className="pt-3">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Próxima reunião</p>
+          {upcomingMeeting ? (
+            <div className="bg-[#0d1117] rounded-2xl px-5 py-5">
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-white/8 border border-white/10 flex flex-col items-center justify-center flex-shrink-0">
+                  <span className="text-xl font-light text-white leading-none">
+                    {format(new Date(upcomingMeeting.start_datetime), "dd")}
+                  </span>
+                  <span className="text-[8px] text-white/30 uppercase tracking-widest mt-0.5">
+                    {format(new Date(upcomingMeeting.start_datetime), "MMM", { locale: ptBR })}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white leading-snug mb-1">{upcomingMeeting.title}</p>
+                  <p className="text-[11px] text-white/40 font-light">
+                    {format(new Date(upcomingMeeting.start_datetime), "HH:mm")} &middot;{" "}
+                    {format(new Date(upcomingMeeting.start_datetime), "EEEE", { locale: ptBR })}
+                  </p>
+                  {upcomingMeeting.description && (
+                    <p className="text-[10px] text-white/25 font-light mt-2 leading-snug">{upcomingMeeting.description}</p>
+                  )}
+                </div>
+                {upcomingMeeting.meeting_link && (
+                  <a href={upcomingMeeting.meeting_link} target="_blank" rel="noreferrer"
+                    className="flex-shrink-0 h-9 px-4 bg-white/10 text-white rounded-xl text-xs font-medium flex items-center hover:bg-white/20 transition-colors">
+                    Entrar
+                  </a>
                 )}
               </div>
             </div>
+          ) : (
+            <div className="border border-slate-100 rounded-2xl px-5 py-8 text-center">
+              <Calendar className="w-6 h-6 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-400 font-light">Nenhuma reunião agendada no momento.</p>
+            </div>
+          )}
+        </div>
 
-            {/* 4. PRÓXIMA REUNIÃO */}
-            {upcomingMeetings.length > 0 ? (
-              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                  <h3 className="font-semibold text-slate-900 text-sm">Próxima Reunião</h3>
+        {/* ── 6. ENTREGAS RECENTES ── */}
+        {recentDeliveries.length > 0 && (
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Entregas recentes</p>
+              <Link to={createPageUrl("ClientPortalDeliveries")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
+                Ver todas →
+              </Link>
+            </div>
+            <div className="space-y-2">
+              {recentDeliveries.map(d => (
+                <div key={d.id} className="flex items-center gap-4 border border-slate-100 rounded-2xl px-5 py-4">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{d.title}</p>
+                    {d.delivery_date && (
+                      <p className="text-[10px] text-slate-400 font-light mt-0.5">
+                        {format(new Date(d.delivery_date), "dd/MM/yyyy")}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full font-medium flex-shrink-0">
+                    Aprovado
+                  </span>
                 </div>
-                {(() => {
-                  const meeting = upcomingMeetings[0];
-                  return (
-                    <div className="space-y-3 text-xs">
-                      <div>
-                        <p className="text-slate-600 text-[11px] uppercase tracking-wide mb-1">Assunto</p>
-                        <p className="font-semibold text-slate-900">{meeting.title}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-600 text-[11px] uppercase tracking-wide mb-1">Data e Hora</p>
-                        <p className="font-semibold text-slate-900">
-                          {format(new Date(meeting.start_datetime), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
-                        </p>
-                      </div>
-                      {meeting.meeting_link && (
-                        <div className="pt-2">
-                          <a href={meeting.meeting_link} target="_blank" rel="noreferrer" className="inline-block">
-                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-8 text-xs">
-                              Entrar <ArrowRight className="w-3 h-3" />
-                            </Button>
-                          </a>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            ) : (
-              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5 text-center py-8">
-                <Calendar className="w-5 h-5 text-slate-200 mx-auto mb-2" />
-                <p className="text-xs text-slate-400">Nenhuma reunião agendada</p>
-              </div>
-            )}
-
-            {/* 5. ENTREGAS RECENTES */}
-            {recentDeliveries.length > 0 && (
-              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
-                <h3 className="font-semibold text-slate-900 text-sm mb-4">Entregas Recentes</h3>
-                <div className="space-y-3">
-                  {recentDeliveries.map((delivery, i) => (
-                    <div key={i} className="p-3 bg-white rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <h4 className="text-xs font-semibold text-slate-900 flex-1">{delivery.title}</h4>
-                        {delivery.status && (
-                          <Badge className="text-xs bg-slate-200 text-slate-800">{delivery.status}</Badge>
-                        )}
-                      </div>
-                      {delivery.delivery_date && (
-                        <p className="text-[11px] text-slate-500">{format(new Date(delivery.delivery_date), "dd/MM/yyyy")}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 6. TIMELINE RESUMIDA */}
-            {recentTimeline.length > 0 && (
-              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
-                <h3 className="font-semibold text-slate-900 text-sm mb-4">Últimas Atualizações</h3>
-                <div className="space-y-3">
-                  {recentTimeline.map((event, i) => (
-                    <div key={i} className="flex gap-3 text-xs">
-                      <div className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="text-slate-900 font-medium">{event.title}</p>
-                        {event.created_date && (
-                          <p className="text-slate-500 text-[10px] mt-0.5">
-                            {format(new Date(event.created_date), "dd/MM 'às' HH:mm", { locale: ptBR })}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* 7. ARQUIVOS RECENTES */}
-            {recentFiles.length > 0 && (
-              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
-                <h3 className="font-semibold text-slate-900 text-sm mb-4">Arquivos Recentes</h3>
-                <div className="space-y-2">
-                  {recentFiles.map((file, i) => (
-                    <a key={i} href={file.file_url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-100 hover:border-slate-200 transition-colors group">
-                      <div className="flex items-center gap-3 flex-1">
-                        <FileText className="w-4 h-4 text-slate-400 group-hover:text-slate-600 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-900 truncate">{file.file_name || file.title}</p>
-                          {file.created_date && (
-                            <p className="text-[10px] text-slate-500 mt-0.5">{format(new Date(file.created_date), "dd/MM/yyyy")}</p>
-                          )}
-                        </div>
-                      </div>
-                      <ArrowRight className="w-3 h-3 text-slate-300 group-hover:text-slate-400 flex-shrink-0" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
+              ))}
+            </div>
+          </div>
         )}
+
+        {/* ── 7. TIMELINE RESUMIDA ── */}
+        <div className="pt-4">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Timeline de eventos</p>
+            {milestones.length > 0 && (
+              <Link to={createPageUrl("ClientPortalTimeline")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
+                Ver completa →
+              </Link>
+            )}
+          </div>
+          {timelineEvents.length > 0 ? (
+            <div className="bg-[#0d1117] rounded-2xl px-5 py-5 space-y-4">
+              {timelineEvents.map((event, i) => (
+                <div key={event.id} className={`flex items-start gap-4 ${i < timelineEvents.length - 1 ? "pb-4 border-b border-white/[0.06]" : ""}`}>
+                  <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${
+                    event.event_type === "task_completed" ? "bg-emerald-400" :
+                    event.event_type === "delivery_sent" ? "bg-blue-400" :
+                    event.event_type === "meeting" ? "bg-purple-400" :
+                    event.event_type === "feedback" ? "bg-amber-400" : "bg-white/20"
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-light text-white/80 leading-snug">{event.title || event.description}</p>
+                    <p className="text-[10px] text-white/25 font-light mt-0.5">
+                      {formatDistanceToNow(new Date(event.created_date), { addSuffix: true, locale: ptBR })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="border border-slate-100 rounded-2xl px-5 py-8 text-center">
+              <Clock className="w-6 h-6 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-400 font-light">Sem eventos ainda na timeline.</p>
+            </div>
+          )}
+        </div>
+
+        {/* ── 8. ARQUIVOS RECENTES ── */}
+        {files.length > 0 && (
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-3 px-1">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Arquivos recentes</p>
+              <Link to={createPageUrl("ClientPortalFiles")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
+                Ver todos →
+              </Link>
+            </div>
+            <div className="border border-slate-100 rounded-2xl overflow-hidden">
+              {files.map((f, i) => (
+                <a key={f.id} href={f.file_url} target="_blank" rel="noreferrer"
+                  className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 active:bg-slate-50 transition-colors ${i < files.length - 1 ? "border-b border-slate-100" : ""}`}>
+                  <div className="w-8 h-8 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
+                    <Paperclip className="w-3.5 h-3.5 text-slate-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{f.name || f.file_name || "Arquivo"}</p>
+                    <p className="text-[10px] text-slate-400 font-light mt-0.5">
+                      {f.created_date ? formatDistanceToNow(new Date(f.created_date), { addSuffix: true, locale: ptBR }) : ""}
+                    </p>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-slate-200 flex-shrink-0" />
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── 9. NAVEGAÇÃO RÁPIDA ── */}
+        <div className="pt-6">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Mais opções</p>
+          <div className="border border-slate-100 rounded-2xl overflow-hidden">
+            {[
+              { label: "Tarefas",    sub: "Progresso das atividades",  page: "ClientPortalTasks",      icon: CheckCircle2 },
+              { label: "Entregas",   sub: "Aprovações e revisões",     page: "ClientPortalDeliveries", icon: AlertCircle  },
+              { label: "Calendário", sub: "Reuniões e datas",          page: "ClientPortalCalendar",   icon: Calendar     },
+              { label: "Arquivos",   sub: "Documentos do projeto",     page: "ClientPortalFiles",      icon: Star         },
+              { label: "Financeiro", sub: "Faturas e contratos",        page: "ClientPortalFinancial",  icon: Receipt      },
+            { label: "Suporte",    sub: "Abrir ou ver chamados",     page: "ClientPortalTickets",    icon: MessageSquare},
+            ].map((link, i, arr) => (
+              <Link key={i} to={createPageUrl(link.page)}
+                className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 active:bg-slate-50 transition-colors ${i < arr.length - 1 ? "border-b border-slate-100" : ""}`}>
+                <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
+                  <link.icon className="w-4 h-4 text-slate-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-900">{link.label}</p>
+                  <p className="text-xs text-slate-400 font-light">{link.sub}</p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-200 flex-shrink-0" />
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* ── SEM PROJETO ── */}
+        {!activeProject && !userLoading && (
+          <div className="py-24 flex flex-col items-center text-center">
+            <Clock className="w-7 h-7 text-slate-200 mb-5" />
+            <p className="text-slate-500 font-light">Nenhum projeto disponível.</p>
+            <p className="text-slate-400 text-sm font-light mt-2 max-w-xs leading-relaxed">
+              Entre em contato com a equipe Destra.
+            </p>
+          </div>
+        )}
+
       </div>
+
+      {/* Modal de Aprovação */}
+      {selectedApprovalTask && (
+        <TaskApprovalModal
+          task={selectedApprovalTask}
+          onClose={() => setSelectedApprovalTask(null)}
+          onSubmit={(data) => submitApproval.mutate(data)}
+        />
+      )}
     </div>
   );
 }
