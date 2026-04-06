@@ -104,45 +104,80 @@ export default function ClientPortalTimeline() {
              </div>
 
             {/* Visual Progress Phases */}
-            <div className="w-full px-1 md:px-0">
-              <div className="flex flex-row items-center justify-between w-full relative mb-6">
-                {/* Background line - white */}
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white -translate-y-1/2 z-0 rounded-full" />
+             <div className="w-full px-1 md:px-0">
+               <div className="flex flex-row items-center justify-between w-full relative mb-6">
+                 {/* Background line - white */}
+                 <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white -translate-y-1/2 z-0 rounded-full" />
 
-                {/* Filled line - blue */}
-                <div className="absolute top-1/2 left-0 h-0.5 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
-                  style={{ width: `calc((${Math.floor((projectProgress / 100) * 5)} / 4) * 100%)`, background: "#6FA6FF" }} />
+                 {/* Segmented colored lines */}
+                 {[
+                   { label: "Kickoff", desc: "Alinhamento inicial", color: "#6FA6FF" },
+                   { label: "Planejamento", desc: "Estratégia e roadmap", color: "#00D4FF" },
+                   { label: "Desenvolvimento", desc: "Execução do projeto", color: "#00E5CC" },
+                   { label: "Testes", desc: "QA e validação", color: "#0FC8B8" },
+                   { label: "Entrega", desc: "Finalização", color: "#06B6A4" }
+                 ].map((phase, idx) => {
+                   const phaseProgress = (projectProgress / 100) * 5;
+                   const isCompleted = phaseProgress > idx + 1;
+                   const isActive = Math.floor(phaseProgress) === idx;
 
-                {[
-                  { label: "Kickoff", desc: "Alinhamento inicial" },
-                  { label: "Planejamento", desc: "Estratégia e roadmap" },
-                  { label: "Desenvolvimento", desc: "Execução do projeto" },
-                  { label: "Testes", desc: "QA e validação" },
-                  { label: "Entrega", desc: "Finalização" }
-                ].map((phase, idx) => {
-                  const phaseProgress = (projectProgress / 100) * 5;
-                  const isCompleted = phaseProgress > idx;
-                  const isActive = Math.floor(phaseProgress) === idx;
+                   const totalPositions = 5;
+                   const segmentWidth = 100 / (totalPositions - 1);
+                   const currentPos = (idx / (totalPositions - 1)) * 100;
+                   const nextPos = ((idx + 1) / (totalPositions - 1)) * 100;
 
-                  return (
-                    <div key={idx} className="flex flex-col items-center relative z-10">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
-                      style={{
-                        backgroundColor: isActive ? "#6FA6FF" : "white",
-                        borderColor: isActive ? "#6FA6FF" : "white",
-                        color: isActive ? "white" : isCompleted ? "#6FA6FF" : "#B0B0B0"
-                      }}>
-                        {isCompleted ? "✓" : idx + 1}
-                      </div>
-                      <div className="mt-2 text-center">
-                        <p className="text-[10px] md:text-xs font-semibold text-white">{phase.label}</p>
-                        <p className="text-[8px] md:text-[10px] font-light mt-0.5 hidden md:block text-blue-200">{phase.desc}</p>
-                      </div>
-                    </div>
-                    );
-                    })}
-                    </div>
-                    </div>
+                   const fillWidth = isCompleted ? 100 : isActive ? ((phaseProgress - idx) * 100) : 0;
+
+                   return (
+                     <div key={idx} style={{ 
+                       position: 'absolute',
+                       left: `${currentPos}%`,
+                       width: `${segmentWidth}%`,
+                       height: '2px',
+                       top: '50%',
+                       transform: 'translateY(-50%)',
+                       zIndex: 1
+                     }}>
+                       <div style={{
+                         width: `${fillWidth}%`,
+                         height: '100%',
+                         backgroundColor: phase.color,
+                         transition: 'width 0.7s ease'
+                       }} />
+                     </div>
+                   );
+                 })}
+
+                 {[
+                   { label: "Kickoff", desc: "Alinhamento inicial", color: "#6FA6FF" },
+                   { label: "Planejamento", desc: "Estratégia e roadmap", color: "#00D4FF" },
+                   { label: "Desenvolvimento", desc: "Execução do projeto", color: "#00E5CC" },
+                   { label: "Testes", desc: "QA e validação", color: "#0FC8B8" },
+                   { label: "Entrega", desc: "Finalização", color: "#06B6A4" }
+                 ].map((phase, idx) => {
+                   const phaseProgress = (projectProgress / 100) * 5;
+                   const isCompleted = phaseProgress > idx;
+                   const isActive = Math.floor(phaseProgress) === idx;
+
+                   return (
+                     <div key={idx} className="flex flex-col items-center relative z-10">
+                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
+                       style={{
+                         backgroundColor: isActive || isCompleted ? phase.color : "white",
+                         borderColor: isActive || isCompleted ? phase.color : "white",
+                         color: isActive || isCompleted ? "white" : "#B0B0B0"
+                       }}>
+                         {isCompleted ? "✓" : idx + 1}
+                       </div>
+                       <div className="mt-2 text-center">
+                         <p className="text-[10px] md:text-xs font-semibold text-white">{phase.label}</p>
+                         <p className="text-[8px] md:text-[10px] font-light mt-0.5 hidden md:block text-blue-200">{phase.desc}</p>
+                       </div>
+                     </div>
+                     );
+                     })}
+                     </div>
+                     </div>
 
 
 
