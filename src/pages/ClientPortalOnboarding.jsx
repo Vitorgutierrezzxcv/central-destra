@@ -342,10 +342,10 @@ export default function ClientPortalOnboarding() {
          
 
         
-        <div className="flex items-end justify-between gap-4 mb-2">
+        <div className="flex items-end justify-between gap-4 mb-0">
            <h1 className="text-6xl md:text-5xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
              Onboarding
-           </h1>
+            </h1>
            <div className="text-right">
              <span className="text-3xl font-extralight text-slate-900">{progress}</span>
              <span className="text-base text-slate-400 font-light">%</span>
@@ -354,7 +354,7 @@ export default function ClientPortalOnboarding() {
          </div>
         </div>
 
-        <div className="max-w-full w-full px-5 md:px-4 space-y-4 pb-16">
+        <div className="max-w-full w-full px-5 md:px-4 pb-16">
         {!activeProject ?
         <div className="flex flex-col items-center py-20">
             <CheckCircle2 className="w-10 h-10 text-slate-200 mb-4" />
@@ -363,16 +363,45 @@ export default function ClientPortalOnboarding() {
 
         <>
             {/* Progress bar */}
-            <div className="w-full bg-slate-100 rounded-full h-1">
+            <div className="w-full bg-slate-100 rounded-full h-1 mb-6">
               <div className="h-1 rounded-full bg-slate-900 transition-all duration-700"
             style={{ width: `${progress}%` }} />
             </div>
 
+            {/* Status Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Itens Concluídos</p>
+                <p className="text-3xl font-extralight text-emerald-600">{completedAll}</p>
+                <p className="text-xs text-slate-400 mt-1">de {items.length} itens</p>
+              </div>
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Sua Responsabilidade</p>
+                <p className="text-3xl font-extralight text-blue-600">{clientItems.length}</p>
+                <p className="text-xs text-slate-400 mt-1">ações pendentes</p>
+              </div>
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+                <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Equipe Destra</p>
+                <p className="text-3xl font-extralight text-slate-600">{destraItems.length}</p>
+                <p className="text-xs text-slate-400 mt-1">itens em andamento</p>
+              </div>
+            </div>
+
             {progress === 100 &&
-            <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl mb-3">
+            <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl mb-6">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 <p className="text-sm text-emerald-700 font-light">Parabéns! Onboarding completo. Seu projeto está pronto para começar.</p>
               </div>
+            }
+
+            {/* Next Steps */}
+            {progress < 100 && items.length > 0 &&
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 mb-8">
+              <p className="text-xs text-blue-600 uppercase tracking-widest font-semibold mb-2">Próximos Passos</p>
+              <p className="text-sm text-blue-700 font-light">
+                Complete todos os itens da sua responsabilidade para ativar seu projeto. Você receberá atualizações conforme a equipe Destra progride nos seus itens.
+              </p>
+            </div>
             }
 
             {isLoading &&
@@ -383,13 +412,13 @@ export default function ClientPortalOnboarding() {
 
             {/* Client Items */}
             {clientItems.length > 0 &&
-            <div className="mt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                  <p className="text-xs text-slate-600 tracking-widest uppercase font-semibold">
-                    Sua responsabilidade
+            <div className="mt-0">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-blue-600" />
+                  <p className="text-sm text-slate-700 tracking-wide uppercase font-semibold">
+                    Sua Responsabilidade
                   </p>
-                  <span className="text-[10px] text-slate-400 font-light">({clientItems.length})</span>
+                  <span className="text-[10px] text-slate-400 font-light ml-auto">({clientItems.filter(i => i.status !== 'completed').length} pendentes)</span>
                 </div>
                 <div className="space-y-2.5">
                   {clientItems.map((item) => <ItemCard key={item.id} item={item} />)}
@@ -399,13 +428,13 @@ export default function ClientPortalOnboarding() {
 
             {/* Destra Items */}
             {destraItems.length > 0 &&
-            <div className="mt-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                  <p className="text-xs text-slate-600 tracking-widest uppercase font-semibold">
+            <div className="mt-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 rounded-full bg-slate-500" />
+                  <p className="text-sm text-slate-700 tracking-wide uppercase font-semibold">
                     Equipe Destra
                   </p>
-                  <span className="text-[10px] text-slate-400 font-light">({destraItems.length})</span>
+                  <span className="text-[10px] text-slate-400 font-light ml-auto">({destraItems.length} itens)</span>
                 </div>
                 <div className="space-y-2.5">
                   {destraItems.map((item) => <ItemCard key={item.id} item={item} />)}
