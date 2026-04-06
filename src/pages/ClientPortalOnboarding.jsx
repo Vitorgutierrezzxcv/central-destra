@@ -342,19 +342,19 @@ export default function ClientPortalOnboarding() {
          
 
         
-        <div className="flex items-end justify-between gap-4 mb-8">
-          <h1 className="text-2xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
-            Onboarding
-          </h1>
-          <div className="text-right">
-            <span className="text-2xl font-extralight text-slate-900">{progress}</span>
-            <span className="text-sm text-slate-400 font-light">%</span>
-            <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">{completedAll}/{items.length}</p>
-          </div>
+        <div className="flex items-end justify-between gap-4 mb-2">
+           <h1 className="text-6xl md:text-5xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
+             Onboarding
+           </h1>
+           <div className="text-right">
+             <span className="text-3xl font-extralight text-slate-900">{progress}</span>
+             <span className="text-base text-slate-400 font-light">%</span>
+             <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">{completedAll}/{items.length}</p>
+           </div>
+         </div>
         </div>
-      </div>
 
-      <div className="max-w-full w-full px-5 md:px-4 space-y-6 pb-20">
+        <div className="max-w-full w-full px-5 md:px-4 space-y-4 pb-16">
         {!activeProject ?
         <div className="flex flex-col items-center py-20">
             <CheckCircle2 className="w-10 h-10 text-slate-200 mb-4" />
@@ -369,11 +369,11 @@ export default function ClientPortalOnboarding() {
             </div>
 
             {progress === 100 &&
-          <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+            <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl mb-3">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
                 <p className="text-sm text-emerald-700 font-light">Parabéns! Onboarding completo. Seu projeto está pronto para começar.</p>
               </div>
-          }
+            }
 
             {isLoading &&
           <div className="flex justify-center py-10">
@@ -383,35 +383,35 @@ export default function ClientPortalOnboarding() {
 
             {/* Client Items */}
             {clientItems.length > 0 &&
-          <div>
-                <div className="flex items-center gap-2 mb-4">
+            <div className="mt-4">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                  <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">
+                  <p className="text-xs text-slate-600 tracking-widest uppercase font-semibold">
                     Sua responsabilidade
                   </p>
                   <span className="text-[10px] text-slate-400 font-light">({clientItems.length})</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {clientItems.map((item) => <ItemCard key={item.id} item={item} />)}
                 </div>
               </div>
-          }
+            }
 
             {/* Destra Items */}
             {destraItems.length > 0 &&
-          <div>
-                <div className="flex items-center gap-2 mb-4">
+            <div className="mt-4">
+                <div className="flex items-center gap-2 mb-3">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                  <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">
+                  <p className="text-xs text-slate-600 tracking-widest uppercase font-semibold">
                     Equipe Destra
                   </p>
                   <span className="text-[10px] text-slate-400 font-light">({destraItems.length})</span>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {destraItems.map((item) => <ItemCard key={item.id} item={item} />)}
                 </div>
               </div>
-          }
+            }
 
             {items.length === 0 && !isLoading &&
           <div className="flex flex-col items-center py-20">
