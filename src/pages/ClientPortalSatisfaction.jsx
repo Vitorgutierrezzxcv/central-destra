@@ -28,7 +28,7 @@ function StarRating({ value, onChange, size = "md" }) {
           onClick={() => onChange && onChange(n)}
           className="transition-transform hover:scale-110"
         >
-          <Star className={`${sz} transition-colors ${(hovered || value) >= n ? "text-blue-900 fill-blue-900" : "text-slate-300"}`} />
+          <Star className={`${sz} transition-colors ${(hovered || value) >= n ? "text-slate-950 fill-slate-950" : "text-slate-300"}`} />
         </button>
       ))}
     </div>
@@ -99,16 +99,16 @@ export default function ClientPortalSatisfaction() {
       <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
-          <div className="bg-white border border-blue-900 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+          <div className="bg-white border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             <div className="text-center md:text-left">
-              <p className="text-3xl md:text-4xl font-bold text-blue-900">{avgScore}</p>
+              <p className="text-3xl md:text-4xl font-bold text-slate-950">{avgScore}</p>
               <p className="text-xs text-slate-400 mt-1">média geral</p>
             </div>
             <div className="flex-1 w-full">
               <p className="text-sm text-slate-600 mb-2">{surveys.length} avaliação{surveys.length !== 1 ? "ões" : ""} registrada{surveys.length !== 1 ? "s" : ""}</p>
               <div className="flex gap-0.5">
                 {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-blue-900" : "bg-slate-200"}`} />
+                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-slate-950" : "bg-slate-200"}`} />
                 ))}
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function ClientPortalSatisfaction() {
               <p className="text-sm font-medium text-slate-700 mb-3">Nota geral do projeto (1–10)</p>
               <StarRating value={form.overall_score} onChange={v => setForm(f => ({ ...f, overall_score: v }))} size="lg" />
               {form.overall_score > 0 && (
-                <p className="text-xs text-blue-900 mt-1 font-medium">Sua nota: {form.overall_score}/10</p>
+                <p className="text-xs text-slate-950 mt-1 font-medium">Sua nota: {form.overall_score}/10</p>
               )}
             </div>
 
@@ -170,7 +170,7 @@ export default function ClientPortalSatisfaction() {
             <Button
               onClick={() => submitMutation.mutate()}
               disabled={!isValid || submitMutation.isPending}
-              className="w-full bg-blue-900 hover:bg-blue-950 text-white h-11"
+              className="w-full bg-slate-950 hover:bg-slate-950 text-white h-11"
             >
               {submitMutation.isPending ? "Enviando..." : "Enviar Avaliação"}
             </Button>
@@ -186,8 +186,8 @@ export default function ClientPortalSatisfaction() {
                 <div key={s.id} className="bg-white border border-slate-200 rounded-2xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-blue-900 fill-blue-900" />
-                      <span className="text-lg font-bold text-blue-900">{s.overall_score}</span>
+                      <Star className="w-4 h-4 text-slate-950 fill-slate-950" />
+                      <span className="text-lg font-bold text-slate-950">{s.overall_score}</span>
                       <span className="text-slate-400 text-sm">/10</span>
                     </div>
                     <span className="text-xs text-slate-400">
