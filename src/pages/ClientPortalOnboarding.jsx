@@ -342,7 +342,7 @@ export default function ClientPortalOnboarding() {
          
 
         
-        <div className="flex items-end justify-between gap-4 mb-0">
+        <div className="flex items-end justify-between gap-4 mb-1">
            <h1 className="text-6xl md:text-5xl leading-[1.1] font-extralight text-slate-900 tracking-tight">
              Onboarding
             </h1>
@@ -363,7 +363,7 @@ export default function ClientPortalOnboarding() {
 
         <>
             {/* Progress bar */}
-            <div className="w-full bg-slate-100 rounded-full h-1 mb-4">
+            <div className="w-full bg-slate-100 rounded-full h-1 mb-4 -mt-1">
               <div className="h-1 rounded-full bg-slate-900 transition-all duration-700"
             style={{ width: `${progress}%` }} />
             </div>
@@ -371,9 +371,9 @@ export default function ClientPortalOnboarding() {
             {/* Status Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div className="rounded-2xl p-5 border" style={{ backgroundColor: "#050D1B", borderColor: "#020408" }}>
-                <p className="text-xs uppercase tracking-wider font-semibold mb-2" style={{ color: "#6FA6FF" }}>Itens Concluídos</p>
-                <p className="text-3xl font-extralight" style={{ color: "#6FA6FF" }}>{completedAll}</p>
-                <p className="text-xs mt-1" style={{ color: "#456C8D" }}>de {items.length} itens</p>
+                <p className="text-xs uppercase tracking-wider font-semibold mb-2 text-white">Itens Concluídos</p>
+                <p className="text-3xl font-extralight text-white">{completedAll}</p>
+                <p className="text-xs mt-1" style={{ color: "#6FA6FF" }}>de {items.length} itens</p>
               </div>
               <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
                 <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Sua Responsabilidade</p>
