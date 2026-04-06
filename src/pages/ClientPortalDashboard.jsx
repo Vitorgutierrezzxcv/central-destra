@@ -138,7 +138,7 @@ export default function ClientPortalDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-14 pb-36 space-y-4">
+      <div className="max-w-lg md:max-w-5xl mx-auto px-5 md:px-8 pt-8 md:pt-12 pb-36 space-y-4">
 
         {/* ── 1. HERO TOPO ── */}
         <div className="pb-6">

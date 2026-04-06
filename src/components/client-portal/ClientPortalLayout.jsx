@@ -86,74 +86,8 @@ export default function ClientPortalLayout() {
 
   return (
     <div className="min-h-screen bg-[#f8f8f6]">
-      {/* ── Thin top bar (mobile only) ── */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 h-12 bg-white/90 backdrop-blur-md border-b border-slate-100 flex items-center px-5 justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-slate-900 flex items-center justify-center">
-            <span className="text-white text-[10px] font-medium tracking-widest">D</span>
-          </div>
-          <span className="text-[11px] font-medium text-slate-500 tracking-widest uppercase">
-            {currentPage?.label || "Portal"}
-          </span>
-        </div>
-        {company && (
-          <span className="text-[10px] text-slate-400 truncate max-w-[120px]">{company.name}</span>
-        )}
-      </div>
-
-      {/* ── Desktop thin top bar ── */}
-      <div className="hidden md:flex fixed top-0 left-0 right-0 z-30 h-14 bg-white/90 backdrop-blur-md border-b border-slate-100 items-center px-8 justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-xl bg-slate-900 flex items-center justify-center">
-            <span className="text-white text-xs font-medium tracking-widest">D</span>
-          </div>
-          <div className="h-4 w-px bg-slate-200" />
-          <span className="text-xs font-light text-slate-500 tracking-widest uppercase">Portal do Cliente</span>
-        </div>
-
-        {/* Desktop nav pills */}
-        <nav className="flex items-center gap-1">
-          {visibleNav.slice(0, 7).map(item => {
-            const isActive = location.pathname.toLowerCase().includes(item.page.toLowerCase());
-            return (
-              <Link
-                key={item.page}
-                to={createPageUrl(item.page)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-200
-                  ${isActive
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
-              >
-                <item.icon className="w-3 h-3" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          {company && (
-            <span className="text-[11px] text-slate-400">{company.name}</span>
-          )}
-          <div className="h-4 w-px bg-slate-200" />
-          <Link
-            to={createPageUrl("ClientPortalAccount")}
-            className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 text-xs font-semibold hover:bg-slate-200 transition-colors"
-          >
-            {(user?.full_name || user?.name || "C").charAt(0).toUpperCase()}
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="text-[11px] text-slate-400 hover:text-slate-700 transition-colors flex items-center gap-1"
-          >
-            <LogOut className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
-
       {/* ── Main Content ── */}
-      <main className="pt-12 md:pt-14 min-h-screen pb-24 md:pb-8">
+      <main className="min-h-screen pb-24 md:pb-8">
         <Outlet />
       </main>
 

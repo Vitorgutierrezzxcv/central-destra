@@ -42,8 +42,8 @@ export default function ClientPortalProjects() {
       </div>
 
       {/* Projects List */}
-      <div className="bg-white px-5 py-12">
-        <div className="max-w-lg mx-auto">
+      <div className="bg-white px-5 md:px-8 py-12">
+        <div className="max-w-lg md:max-w-5xl mx-auto">
         {projects.length === 0 ? (
             <div className="py-20 flex flex-col items-center text-center">
               <Building2 className="w-12 h-12 text-slate-100 mb-4" />

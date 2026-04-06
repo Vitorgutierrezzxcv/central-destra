@@ -86,7 +86,7 @@ export default function ClientPortalProject() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6">
+      <div className="max-w-lg md:max-w-5xl mx-auto px-5 md:px-8 py-8 space-y-6">
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
