@@ -176,7 +176,7 @@ export default function ClientPortalTickets() {
                    { label: "Total", value: tickets.length, color: "text-slate-700", bg: "bg-slate-50 border-slate-200" },
                  ].map((s, i) => (
                   <div key={i} className={`border rounded-2xl p-4 ${s.bg}`}>
-                     <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                     <p className={`text-2xl font-bold ${s.bg.includes('text-white') ? 'text-white' : s.color}`}>{s.value}</p>
                      <p className={`text-xs mt-0.5 ${s.bg.includes('text-white') ? 'text-slate-300' : 'text-slate-500'}`}>{s.label}</p>
                    </div>
                 ))}
