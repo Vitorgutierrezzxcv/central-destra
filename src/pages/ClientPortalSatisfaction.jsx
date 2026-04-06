@@ -84,7 +84,7 @@ export default function ClientPortalSatisfaction() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-24 md:pt-28 pb-20">
+      <div className="mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-20">
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
           Avaliação
         </p>
@@ -96,7 +96,7 @@ export default function ClientPortalSatisfaction() {
         </p>
         </div>
 
-        <div className="max-w-lg mx-auto px-5 -mt-2 space-y-4 pb-20">
+        <div className="mx-auto px-5 md:px-12 -mt-2 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
           <div className="bg-slate-950 border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
