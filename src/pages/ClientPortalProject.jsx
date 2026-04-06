@@ -89,7 +89,7 @@ export default function ClientPortalProject() {
       {/* Left Panel - Dark */}
       <div className="md:w-5/12 text-white px-5 md:px-8 pt-20 md:pt-8 pb-6 md:pb-8 flex flex-col justify-between md:min-h-screen">
         <div>
-          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projetos</p>
+          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-1">Projetos</p>
           <h1 className="text-6xl md:text-6xl font-light leading-tight mb-2 text-white">{activeProject.name}</h1>
 
           <div className="space-y-2">
