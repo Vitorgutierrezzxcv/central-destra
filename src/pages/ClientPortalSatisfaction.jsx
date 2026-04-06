@@ -91,12 +91,12 @@ export default function ClientPortalSatisfaction() {
         <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight mb-3">
           Sua<br /><span className="text-[5.5rem]">Opinião</span>
         </h1>
-        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-1">
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
           Avalie a qualidade do nosso trabalho.
         </p>
         </div>
 
-        <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
+        <div className="max-w-lg mx-auto px-5 -mt-2 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
           <div className="bg-slate-950 border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
