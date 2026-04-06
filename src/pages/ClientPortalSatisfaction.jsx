@@ -96,7 +96,7 @@ export default function ClientPortalSatisfaction() {
         </p>
         </div>
 
-        <div className="mx-auto px-5 md:px-12 -mt-5 md:-mt-6 space-y-4 pb-20">
+        <div className="mx-auto px-5 md:px-12 -mt-8 md:-mt-10 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
           <div className="bg-slate-950 border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
