@@ -201,7 +201,7 @@ export default function ClientPortalDashboard() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-slate-900 text-sm">Ação Necessária</h3>
-                    <p className="text-xs text-slate-600 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""}</p>
+                    <p className="text-xs text-slate-600 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} aguardando</p>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -220,7 +220,38 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 3. PRÓXIMA REUNIÃO */}
+            {/* 3. VISÃO GERAL DO PROJETO */}
+            <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
+              <h3 className="font-semibold text-slate-900 text-sm mb-4">Visão Geral</h3>
+              <div className="space-y-3">
+                {activeProject.current_phase && (
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <span className="text-xs text-slate-600">Fase Atual</span>
+                    <span className="font-semibold text-slate-900 text-sm">{activeProject.current_phase}</span>
+                  </div>
+                )}
+                {activeProject.status && (
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <span className="text-xs text-slate-600">Status</span>
+                    <Badge className="capitalize bg-slate-200 text-slate-800 text-xs">{activeProject.status}</Badge>
+                  </div>
+                )}
+                {activeProject.estimated_end_date && (
+                  <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                    <span className="text-xs text-slate-600">Conclusão Estimada</span>
+                    <span className="font-semibold text-slate-900 text-sm">{format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}</span>
+                  </div>
+                )}
+                {activeProject.project_owner_internal && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-slate-600">Responsável Destra</span>
+                    <span className="font-semibold text-slate-900 text-sm">{activeProject.project_owner_internal.split("@")[0]}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 4. PRÓXIMA REUNIÃO */}
             {upcomingMeetings.length > 0 ? (
               <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-4">
@@ -261,9 +292,9 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 4. ENTREGAS RECENTES */}
+            {/* 5. ENTREGAS RECENTES */}
             {recentDeliveries.length > 0 && (
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Entregas Recentes</h3>
                 <div className="space-y-3">
                   {recentDeliveries.map((delivery, i) => (
@@ -283,14 +314,14 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 5. TIMELINE RESUMIDA */}
+            {/* 6. TIMELINE RESUMIDA */}
             {recentTimeline.length > 0 && (
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Últimas Atualizações</h3>
                 <div className="space-y-3">
                   {recentTimeline.map((event, i) => (
                     <div key={i} className="flex gap-3 text-xs">
-                      <div className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
+                      <div className="w-2 h-2 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-slate-900 font-medium">{event.title}</p>
                         {event.created_date && (
@@ -305,9 +336,9 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 6. ARQUIVOS RECENTES */}
+            {/* 7. ARQUIVOS RECENTES */}
             {recentFiles.length > 0 && (
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
+              <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Arquivos Recentes</h3>
                 <div className="space-y-2">
                   {recentFiles.map((file, i) => (
@@ -327,21 +358,6 @@ export default function ClientPortalDashboard() {
                 </div>
               </div>
             )}
-
-            {/* Acesso rápido aos principais módulos */}
-            <div className="pt-2 space-y-2 border-t border-slate-100">
-              {[
-                { label: "Tarefas & Aprovações", page: "ClientPortalDeliveries", icon: CheckCircle2 },
-                { label: "Timeline Completa", page: "ClientPortalTimeline", icon: TrendingUp },
-                { label: "Ver Todos os Arquivos", page: "ClientPortalFiles", icon: FileText },
-              ].map((link, i) => (
-                <Link key={i} to={createPageUrl(link.page)} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors group">
-                  <link.icon className="w-4 h-4 text-slate-400 group-hover:text-slate-600" />
-                  <span className="text-xs text-slate-700 font-light flex-1">{link.label}</span>
-                  <ArrowRight className="w-3 h-3 text-slate-300 group-hover:text-slate-400" />
-                </Link>
-              ))}
-            </div>
           </>
         )}
       </div>
