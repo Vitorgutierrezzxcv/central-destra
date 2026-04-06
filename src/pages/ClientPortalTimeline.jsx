@@ -66,24 +66,24 @@ export default function ClientPortalTimeline() {
   const projectProgress = activeProject?.progress_percentage || 0;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-2">
+    <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg, #050D1B 0%, #020408 100%)" }}>
+      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-7xl md:text-8xl leading-none font-extralight text-slate-900 tracking-tight">
+            <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">
               Timeline
             </h1>
             </div>
             {activeProject && (
             <div className="text-right mb-2">
-              <span className="text-2xl font-extralight text-slate-900">{projectProgress}</span>
-              <span className="text-sm text-slate-400 font-light">%</span>
+              <span className="text-3xl font-extralight text-white">{projectProgress}</span>
+              <span className="text-sm text-blue-100 font-light">%</span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-full w-full px-5 md:px-4 space-y-8 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 space-y-10 pb-20">
         {!activeProject ? (
           <div className="flex flex-col items-center py-20">
             <Target className="w-10 h-10 text-slate-200 mb-4" />
@@ -93,35 +93,34 @@ export default function ClientPortalTimeline() {
           <>
             {/* Progress bar */}
             <div className="flex justify-center">
-              <div className="w-full max-w-xs bg-slate-100 rounded-full h-1.5">
-                <div className="h-1.5 rounded-full bg-slate-900 transition-all duration-700"
-                  style={{ width: `${projectProgress}%` }} />
+              <div className="w-full max-w-sm bg-slate-700 rounded-full h-2">
+                <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${projectProgress}%`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
               </div>
             </div>
 
             {/* Summary */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm text-slate-600 font-light">
-              <span className="text-center">{completedMilestones}/{milestones.length} marcos</span>
-              <span className="hidden md:inline">•</span>
-              <span className="text-center">{completedTasks}/{tasks.length} tarefas</span>
-              <span className="hidden md:inline">•</span>
-              <span className="text-center"><strong>{projectProgress}%</strong> concluído</span>
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm font-light">
+              <span className="text-center text-blue-200">{completedMilestones}/{milestones.length} marcos</span>
+              <span className="hidden md:inline text-slate-600">•</span>
+              <span className="text-center text-blue-200">{completedTasks}/{tasks.length} tarefas</span>
+              <span className="hidden md:inline text-slate-600">•</span>
+              <span className="text-center text-white"><strong className="text-lg">{projectProgress}%</strong> concluído</span>
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0 w-full">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-1 w-full px-2 md:px-0">
               <div className="flex flex-col md:flex-row items-center justify-center w-full relative">
                 {/* Background line for desktop */}
-                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -translate-y-1/2 z-0" />
+                <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-slate-700 -translate-y-1/2 z-0 rounded-full" />
 
                 {/* Filled line for desktop */}
-                <div className="hidden md:block absolute top-1/2 left-0 h-0.5 bg-emerald-500 -translate-y-1/2 z-0 transition-all duration-700"
-                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)` }} />
+                <div className="hidden md:block absolute top-1/2 left-0 h-1 -translate-y-1/2 z-0 transition-all duration-700 rounded-full"
+                  style={{ width: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
 
                 {/* Vertical line for mobile */}
-                <div className="md:hidden absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-200 -translate-x-1/2 z-0" />
-                <div className="md:hidden absolute left-1/2 top-0 w-0.5 bg-emerald-500 -translate-x-1/2 z-0 transition-all duration-700"
-                  style={{ height: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)` }} />
+                <div className="md:hidden absolute left-1/2 top-0 bottom-0 w-1 bg-slate-700 -translate-x-1/2 z-0 rounded-full" />
+                <div className="md:hidden absolute left-1/2 top-0 w-1 -translate-x-1/2 z-0 transition-all duration-700 rounded-full"
+                  style={{ height: `calc((${((projectProgress / 100) * 5)} / 4) * 100%)`, background: "linear-gradient(180deg, #6FA6FF 0%, #00D4FF 100%)" }} />
 
                 {[
                   { label: "Kickoff", desc: "Alinhamento inicial" },
@@ -136,16 +135,18 @@ export default function ClientPortalTimeline() {
 
                   return (
                     <div key={idx} className="flex flex-col md:flex-1 items-center relative z-10">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all flex-shrink-0 ${
-                        isCompleted ? "bg-emerald-500 border-emerald-500 text-white shadow-md" :
-                        isActive ? "bg-blue-500 border-blue-500 text-white shadow-md" :
-                        "bg-white border-slate-200 text-slate-400"
-                      }`}>
+                      <div className={`w-14 h-14 md:w-12 md:h-12 rounded-full flex items-center justify-center text-sm md:text-xs font-semibold border-3 transition-all flex-shrink-0 ${
+                        isCompleted ? "text-white shadow-lg" : isActive ? "text-white shadow-lg" : "text-slate-400"
+                      }`}
+                      style={{
+                        backgroundColor: isCompleted ? "#6FA6FF" : isActive ? "#00D4FF" : "#1A2F48",
+                        borderColor: isCompleted ? "#6FA6FF" : isActive ? "#00D4FF" : "#0D1420"
+                      }}>
                         {isCompleted ? "✓" : idx + 1}
                       </div>
-                      <div className="mt-3 text-center">
-                        <p className="text-xs md:text-sm font-semibold text-slate-800">{phase.label}</p>
-                        <p className="text-[10px] text-slate-400 font-light mt-1 hidden md:block">{phase.desc}</p>
+                      <div className="mt-4 md:mt-3 text-center">
+                        <p className="text-xs md:text-xs font-semibold text-white">{phase.label}</p>
+                        <p className="text-[11px] md:text-[10px] font-light mt-1.5 md:mt-1 hidden md:block text-blue-200">{phase.desc}</p>
                       </div>
                     </div>
                   );
@@ -157,9 +158,9 @@ export default function ClientPortalTimeline() {
 
             {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
               <div className="flex flex-col items-center py-20">
-                <Target className="w-10 h-10 text-slate-200 mb-4" />
+                <Target className="w-10 h-10 text-slate-600 mb-4" />
                 <p className="text-slate-400 font-light">Nenhum dado de timeline ainda.</p>
-                <p className="text-xs text-slate-400 font-light mt-2 text-center">A equipe Destra atualizará em breve.</p>
+                <p className="text-xs text-slate-500 font-light mt-2 text-center">A equipe Destra atualizará em breve.</p>
               </div>
             )}
           </>
