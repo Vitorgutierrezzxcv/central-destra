@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
@@ -89,7 +90,7 @@ export default function ClientPortalFinancial() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-36 space-y-4">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-24 md:pt-12 pb-36 space-y-4">
 
         {/* ── HERO ── */}
         <div className="pb-4">
