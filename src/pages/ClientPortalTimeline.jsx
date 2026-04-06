@@ -55,8 +55,8 @@ export default function ClientPortalTimeline() {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="min-h-screen bg-[#f8f8f6] flex items-center justify-center">
+        <Loader2 className="w-4 h-4 animate-spin text-slate-300" />
       </div>
     );
   }
@@ -66,112 +66,86 @@ export default function ClientPortalTimeline() {
   const projectProgress = activeProject?.progress_percentage || 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-slate-900">Timeline do Projeto</h1>
+    <div className="min-h-screen bg-[#f8f8f6]">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
+        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">
+              {activeProject?.name || "Portal"}
+            </p>
+            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Timeline</h1>
+          </div>
           {activeProject && (
-            <p className="text-slate-500 text-sm mt-1">{activeProject.name} · {activeProject.current_phase || "Em andamento"}</p>
+            <div className="text-right">
+              <span className="text-2xl font-extralight text-slate-900">{projectProgress}</span>
+              <span className="text-sm text-slate-400 font-light">%</span>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">concluído</p>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7 space-y-8">
         {!activeProject ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <Target className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500">Nenhum projeto disponível.</p>
+          <div className="flex flex-col items-center py-20">
+            <Target className="w-10 h-10 text-slate-200 mb-4" />
+            <p className="text-slate-400 font-light">Nenhum projeto disponível.</p>
           </div>
         ) : (
           <>
-            {/* Overall Progress */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="font-semibold text-slate-900">{activeProject.name}</h2>
-                  <p className="text-slate-500 text-sm mt-0.5">
-                    {completedMilestones} de {milestones.length} marcos · {completedTasks} de {tasks.length} tarefas concluídas
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-blue-600">{projectProgress}%</p>
-                  <p className="text-xs text-slate-400">concluído</p>
-                </div>
-              </div>
-              <Progress value={projectProgress} className="h-3" />
-
-              {milestones.length > 0 && (
-                <div className="mt-4 flex gap-1.5 flex-wrap">
-                  {milestones.map((m) => {
-                    const cfg = taskStatusConfig[m.status] || taskStatusConfig.pending;
-                    return <div key={m.id} className={`w-3 h-3 rounded-full ${cfg.bg}`} title={m.title} />;
-                  })}
-                </div>
-              )}
+            {/* Progress bar */}
+            <div className="w-full bg-slate-100 rounded-full h-1">
+              <div className="h-1 rounded-full bg-slate-900 transition-all duration-700"
+                style={{ width: `${projectProgress}%` }} />
             </div>
 
-            {/* Milestones Timeline */}
+            {/* Summary */}
+            <div className="flex items-center gap-6 text-sm text-slate-400 font-light">
+              <span>{completedMilestones}/{milestones.length} marcos</span>
+              <span>{completedTasks}/{tasks.length} tarefas</span>
+            </div>
+
+            {/* Milestones */}
             {milestones.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 mb-5">Marcos do Projeto</h2>
+                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Marcos do Projeto</p>
                 <div className="relative">
-                  <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-slate-200" />
-                  <div className="space-y-4">
+                  <div className="absolute left-5 top-5 bottom-5 w-px bg-slate-100" />
+                  <div className="space-y-3">
                     {milestones.map((milestone) => {
                       const cfg = taskStatusConfig[milestone.status] || taskStatusConfig.pending;
-                      const typeCfg = milestoneTypeConfig[milestone.milestone_type] || milestoneTypeConfig.other;
                       const Icon = cfg.icon;
-                      const TypeIcon = typeCfg.icon;
                       const isOverdue = milestone.due_date && isBefore(parseISO(milestone.due_date), new Date()) && milestone.status !== "completed";
-
                       return (
-                        <div key={milestone.id} className="relative flex gap-5">
-                          <div className={`relative z-10 w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border-2
-                            ${milestone.status === "completed" ? "bg-emerald-50 border-emerald-300" :
-                              milestone.status === "in_progress" ? "bg-blue-50 border-blue-300" :
-                              "bg-white border-slate-200"}`}>
-                            <Icon className={`w-5 h-5 ${cfg.color}`} />
+                        <div key={milestone.id} className="relative flex gap-4">
+                          <div className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border bg-white
+                            ${milestone.status === "completed" ? "border-emerald-200" :
+                              milestone.status === "in_progress" ? "border-blue-200" :
+                              "border-slate-150"}`}>
+                            <Icon className={`w-4 h-4 ${cfg.color}`} />
                           </div>
-
-                          <div className={`flex-1 bg-white border rounded-2xl p-5 transition-all ${
-                            milestone.status === "completed" ? "border-emerald-200" :
-                            milestone.status === "in_progress" ? "border-blue-200" :
-                            isOverdue ? "border-rose-200" : "border-slate-200"
-                          }`}>
-                            <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
+                          <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-4 min-w-0">
+                            <div className="flex items-start justify-between gap-3 flex-wrap">
                               <div>
-                                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                  <Badge className={`text-xs ${typeCfg.color}`}>
-                                    <TypeIcon className="w-3 h-3 mr-1" />
-                                    {typeCfg.label}
-                                  </Badge>
-                                  {isOverdue && (
-                                    <Badge className="text-xs bg-rose-100 text-rose-700 border-rose-200">Atrasado</Badge>
+                                <h3 className="text-sm font-medium text-slate-900">{milestone.title}</h3>
+                                {milestone.description && (
+                                  <p className="text-xs text-slate-400 font-light mt-1 leading-relaxed">{milestone.description}</p>
+                                )}
+                                <div className="flex items-center gap-3 mt-2 flex-wrap">
+                                  {milestone.due_date && (
+                                    <span className={`text-[10px] font-light ${isOverdue ? "text-rose-400" : "text-slate-400"}`}>
+                                      Prazo: {format(parseISO(milestone.due_date), "dd/MM/yyyy")}
+                                    </span>
                                   )}
+                                  {isOverdue && <span className="text-[10px] text-rose-500 font-medium">Atrasado</span>}
                                 </div>
-                                <h3 className="font-semibold text-slate-900">{milestone.title}</h3>
                               </div>
-                              <Badge className={`text-xs ${
-                                milestone.status === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
-                                milestone.status === "in_progress" ? "bg-blue-100 text-blue-700 border-blue-200" :
-                                "bg-slate-100 text-slate-600 border-slate-200"
-                              }`}>
-                                {cfg.label}
-                              </Badge>
-                            </div>
-
-                            {milestone.description && (
-                              <p className="text-sm text-slate-500 mb-3">{milestone.description}</p>
-                            )}
-
-                            <div className="flex items-center gap-4 flex-wrap">
-                              {milestone.due_date && (
-                                <span className="flex items-center gap-1.5 text-xs text-slate-400">
-                                  <Flag className="w-3 h-3" />
-                                  Prazo: {format(parseISO(milestone.due_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                                </span>
-                              )}
+                              <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${
+                                milestone.status === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                                milestone.status === "in_progress" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                                "bg-slate-50 text-slate-500 border-slate-200"
+                              }`}>{cfg.label}</span>
                             </div>
                           </div>
                         </div>
@@ -182,29 +156,43 @@ export default function ClientPortalTimeline() {
               </div>
             )}
 
-            {/* Reuniões */}
+            {/* Meetings */}
             {meetings.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 mb-4">Reuniões</h2>
+                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Reuniões</p>
                 <div className="space-y-2">
                   {meetings.map(m => (
-                    <div key={m.id} className="bg-white border border-slate-200 rounded-xl p-4 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-blue-100 flex flex-col items-center justify-center flex-shrink-0">
-                        <Calendar className="w-4 h-4 text-blue-600" />
+                    <div key={m.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center flex-shrink-0">
+                        {m.start_datetime ? (
+                          <>
+                            <span className="text-xs font-semibold text-slate-700 leading-none">
+                              {format(new Date(m.start_datetime), "dd")}
+                            </span>
+                            <span className="text-[8px] text-slate-400 uppercase tracking-wide mt-0.5">
+                              {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
+                            </span>
+                          </>
+                        ) : <Calendar className="w-3.5 h-3.5 text-slate-400" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-800">{m.title}</p>
                         {m.start_datetime && (
-                          <p className="text-xs text-slate-400 mt-0.5">{format(new Date(m.start_datetime), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
+                          <p className="text-xs text-slate-400 font-light mt-0.5">{format(new Date(m.start_datetime), "HH:mm")}</p>
                         )}
-                        {m.description && <p className="text-xs text-slate-500 mt-1">{m.description}</p>}
+                        {m.description && <p className="text-xs text-slate-400 font-light mt-1 leading-relaxed">{m.description}</p>}
                       </div>
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge className={`text-xs ${m.status === "completed" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium ${
+                          m.status === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                          m.status === "cancelled" ? "bg-slate-50 text-slate-400 border-slate-200" :
+                          "bg-blue-50 text-blue-600 border-blue-100"
+                        }`}>
                           {m.status === "completed" ? "Realizada" : m.status === "cancelled" ? "Cancelada" : "Agendada"}
-                        </Badge>
+                        </span>
                         {m.meeting_link && m.status !== "completed" && (
-                          <a href={m.meeting_link} target="_blank" rel="noreferrer" className="text-xs text-blue-600 font-medium hover:underline">Entrar</a>
+                          <a href={m.meeting_link} target="_blank" rel="noreferrer"
+                            className="text-xs text-slate-700 font-medium hover:text-slate-900">Entrar →</a>
                         )}
                       </div>
                     </div>
@@ -213,31 +201,33 @@ export default function ClientPortalTimeline() {
               </div>
             )}
 
-            {/* Tasks Timeline */}
+            {/* Tasks */}
             {tasks.length > 0 && (
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 mb-5">Tarefas do Projeto</h2>
+                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Tarefas</p>
                 <div className="space-y-2">
                   {tasks.map(task => {
                     const tStatus = task.status === "completed" ? "completed" : task.status === "in_progress" ? "in_progress" : "pending";
                     const cfg = taskStatusConfig[tStatus];
-                    const Icon = cfg.icon;
+                    const dot = tStatus === "completed" ? "bg-emerald-400" : tStatus === "in_progress" ? "bg-blue-400" : "bg-slate-300";
                     return (
-                      <div key={task.id} className={`bg-white border rounded-xl p-4 flex items-start gap-4 ${cfg.border}`}>
-                        <Icon className={`w-4 h-4 mt-0.5 flex-shrink-0 ${cfg.color}`} />
+                      <div key={task.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-start gap-4">
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${dot}`} />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-slate-800">{task.client_facing_title || task.title}</p>
-                          {task.client_facing_description && <p className="text-xs text-slate-500 mt-0.5">{task.client_facing_description}</p>}
-                          <div className="flex items-center gap-3 mt-1 flex-wrap">
-                            {task.start_date && <span className="text-xs text-slate-400">Início: {format(new Date(task.start_date), "dd/MM/yyyy", { locale: ptBR })}</span>}
-                            {task.end_date && <span className="text-xs text-slate-400">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy", { locale: ptBR })}</span>}
+                          {task.client_facing_description && (
+                            <p className="text-xs text-slate-400 font-light mt-0.5 leading-relaxed">{task.client_facing_description}</p>
+                          )}
+                          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                            {task.start_date && <span className="text-[10px] text-slate-400 font-light">Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
+                            {task.end_date && <span className="text-[10px] text-slate-400 font-light">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
                           </div>
                         </div>
-                        <Badge className={`text-xs flex-shrink-0 ${
-                          tStatus === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
-                          tStatus === "in_progress" ? "bg-blue-100 text-blue-700 border-blue-200" :
-                          "bg-slate-100 text-slate-600 border-slate-200"
-                        }`}>{cfg.label}</Badge>
+                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${
+                          tStatus === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
+                          tStatus === "in_progress" ? "bg-blue-50 text-blue-600 border-blue-100" :
+                          "bg-slate-50 text-slate-500 border-slate-200"
+                        }`}>{cfg.label}</span>
                       </div>
                     );
                   })}
@@ -246,10 +236,10 @@ export default function ClientPortalTimeline() {
             )}
 
             {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
-              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-                <Target className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                <p className="text-slate-500">Nenhum marco, tarefa ou reunião definida ainda.</p>
-                <p className="text-sm text-slate-400 mt-1">A equipe Destra atualizará a timeline em breve.</p>
+              <div className="flex flex-col items-center py-20">
+                <Target className="w-10 h-10 text-slate-200 mb-4" />
+                <p className="text-slate-400 font-light">Nenhum dado de timeline ainda.</p>
+                <p className="text-xs text-slate-400 font-light mt-2 text-center">A equipe Destra atualizará em breve.</p>
               </div>
             )}
           </>

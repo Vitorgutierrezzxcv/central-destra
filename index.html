@@ -1,13 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://base44.com/logo_v2.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Base44 APP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Portal do Cliente · Destra</title>
+    <meta name="description" content="Portal do Cliente Destra — acompanhe seus projetos, aprovações e entregas em tempo real." />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Portal Destra" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f172a'/><text x='50%25' y='55%25' font-size='18' fill='white' font-family='system-ui' text-anchor='middle' dominant-baseline='middle' font-weight='300' letter-spacing='1'>D</text></svg>" />
+
+    <!-- OG -->
+    <meta property="og:title" content="Portal do Cliente · Destra" />
+    <meta property="og:description" content="Acompanhe seus projetos em tempo real." />
+    <meta property="og:type" content="website" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

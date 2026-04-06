@@ -166,9 +166,9 @@ export default function ClientPortalOnboarding() {
 
     return (
       <div className={`bg-white border rounded-2xl transition-all ${
-        item.status === "completed" ? "border-emerald-200" :
-        item.status === "in_progress" ? "border-blue-200" :
-        item.attachment_required ? "border-amber-200" : "border-slate-200"
+        item.status === "completed" ? "border-emerald-100" :
+        item.status === "in_progress" ? "border-blue-100" :
+        item.attachment_required ? "border-amber-100" : "border-slate-100"
       }`}>
         {/* Header */}
         <div
@@ -337,68 +337,63 @@ export default function ClientPortalOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <h1 className="text-2xl font-bold text-slate-900">Checklist de Onboarding</h1>
-          <p className="text-slate-500 text-sm mt-1">Itens necessários para iniciar seu projeto com a Destra.</p>
+    <div className="min-h-screen bg-[#f8f8f6]">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
+        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">
+              {activeProject?.name || "Portal"}
+            </p>
+            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Onboarding</h1>
+            <p className="text-sm text-slate-400 font-light mt-1.5">Itens necessários para iniciar seu projeto.</p>
+          </div>
+          <div className="text-right">
+            <span className="text-2xl font-extralight text-slate-900">{progress}</span>
+            <span className="text-sm text-slate-400 font-light">%</span>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">{completedAll}/{items.length} itens</p>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-8 space-y-8">
+      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7 space-y-7">
         {!activeProject ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500">Nenhum projeto disponível.</p>
+          <div className="flex flex-col items-center py-20">
+            <CheckCircle2 className="w-10 h-10 text-slate-200 mb-4" />
+            <p className="text-slate-400 font-light">Nenhum projeto disponível.</p>
           </div>
         ) : (
           <>
-            {/* Progress Overview */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-sm text-slate-500">Progresso do Onboarding</p>
-                  <p className="text-2xl font-bold text-slate-900 mt-0.5">
-                    {completedAll} <span className="text-slate-400 font-normal text-base">de {items.length} itens</span>
-                  </p>
-                </div>
-                <div className="text-3xl font-bold text-blue-600">{progress}%</div>
-              </div>
-              <Progress value={progress} className="h-3" />
-              {progress === 100 && (
-                <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <p className="text-sm text-emerald-700">Parabéns! Onboarding completo. Seu projeto já pode começar! 🚀</p>
-                </div>
-              )}
-
-              {/* Legenda de status */}
-              <div className="mt-4 flex flex-wrap gap-3">
-                {items.filter(i => i.attachment_required && i.status !== "completed").length > 0 && (
-                  <div className="flex items-center gap-1.5 text-xs text-amber-600">
-                    <Paperclip className="w-3 h-3" />
-                    <span>{items.filter(i => i.attachment_required && i.status !== "completed").length} item(s) aguardando arquivo</span>
-                  </div>
-                )}
-              </div>
+            {/* Progress bar */}
+            <div className="w-full bg-slate-100 rounded-full h-1">
+              <div className="h-1 rounded-full bg-slate-900 transition-all duration-700"
+                style={{ width: `${progress}%` }} />
             </div>
+
+            {progress === 100 && (
+              <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <p className="text-sm text-emerald-700 font-light">Parabéns! Onboarding completo. Seu projeto está pronto para começar.</p>
+              </div>
+            )}
 
             {isLoading && (
               <div className="flex justify-center py-10">
-                <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                <Loader2 className="w-4 h-4 animate-spin text-slate-300" />
               </div>
             )}
 
             {/* Client Items */}
             {clientItems.length > 0 && (
               <div>
-                <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  Sua Responsabilidade
-                  <Badge className="bg-blue-100 text-blue-700 border-blue-200 text-xs">{clientItems.length}</Badge>
-                </h2>
-                <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                  <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">
+                    Sua responsabilidade
+                  </p>
+                  <span className="text-[10px] text-slate-400 font-light">({clientItems.length})</span>
+                </div>
+                <div className="space-y-2">
                   {clientItems.map(item => <ItemCard key={item.id} item={item} />)}
                 </div>
               </div>
@@ -407,21 +402,23 @@ export default function ClientPortalOnboarding() {
             {/* Destra Items */}
             {destraItems.length > 0 && (
               <div>
-                <h2 className="text-base font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-500" />
-                  Equipe Destra
-                  <Badge className="bg-purple-100 text-purple-700 border-purple-200 text-xs">{destraItems.length}</Badge>
-                </h2>
-                <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                  <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">
+                    Equipe Destra
+                  </p>
+                  <span className="text-[10px] text-slate-400 font-light">({destraItems.length})</span>
+                </div>
+                <div className="space-y-2">
                   {destraItems.map(item => <ItemCard key={item.id} item={item} />)}
                 </div>
               </div>
             )}
 
             {items.length === 0 && !isLoading && (
-              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-                <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                <p className="text-slate-500">Nenhum item de onboarding definido ainda.</p>
+              <div className="flex flex-col items-center py-20">
+                <CheckCircle2 className="w-10 h-10 text-slate-200 mb-4" />
+                <p className="text-slate-400 font-light">Nenhum item de onboarding definido ainda.</p>
               </div>
             )}
           </>

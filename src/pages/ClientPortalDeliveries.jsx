@@ -2,50 +2,73 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  CheckCircle2, Clock, AlertCircle, XCircle, MessageSquare,
-  Paperclip, Star, ThumbsUp, ThumbsDown, RefreshCw, Loader2, Package
+  CheckCircle2, Clock, AlertCircle, XCircle,
+  Paperclip, ThumbsUp, ThumbsDown, RefreshCw, Loader2, Package, X, Star
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { motion, AnimatePresence } from "framer-motion";
 
 const deliveryStatusConfig = {
-  pending_delivery:  { label: "Aguardando Entrega",       color: "bg-slate-100 text-slate-600 border-slate-200",   icon: Clock },
-  delivered:         { label: "Aguardando sua Revisão",   color: "bg-blue-100 text-blue-700 border-blue-200",      icon: Clock },
-  under_review:      { label: "Em Revisão",               color: "bg-amber-100 text-amber-700 border-amber-200",   icon: Clock },
-  approved:          { label: "Aprovado",                 color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: CheckCircle2 },
-  changes_requested: { label: "Ajustes Solicitados",      color: "bg-orange-100 text-orange-700 border-orange-200", icon: RefreshCw },
-  rejected:          { label: "Reprovado",                color: "bg-rose-100 text-rose-700 border-rose-200",       icon: XCircle },
+  pending_delivery:  { label: "Aguardando Entrega",     badge: "bg-slate-50 text-slate-500 border-slate-200",     icon: Clock },
+  delivered:         { label: "Aguarda sua Revisão",    badge: "bg-blue-50 text-blue-600 border-blue-100",        icon: Clock },
+  under_review:      { label: "Em Revisão",             badge: "bg-amber-50 text-amber-600 border-amber-100",     icon: Clock },
+  approved:          { label: "Aprovado",               badge: "bg-emerald-50 text-emerald-600 border-emerald-100", icon: CheckCircle2 },
+  changes_requested: { label: "Ajustes Solicitados",    badge: "bg-orange-50 text-orange-600 border-orange-100",  icon: RefreshCw },
+  rejected:          { label: "Reprovado",              badge: "bg-rose-50 text-rose-600 border-rose-100",        icon: XCircle },
 };
 
-function FeedbackModal({ delivery, task, onClose, onSubmit, loading }) {
-  const [form, setForm] = useState({ approval_status: "approved", score: 5, comment: "" });
+function FeedbackDrawer({ delivery, task, onClose, onSubmit, loading }) {
+  const [form, setForm] = useState({ approval_status: "approved", score: 4, comment: "" });
 
   return (
-    <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Avaliar Entrega</DialogTitle>
-          <p className="text-sm text-slate-500">{delivery?.title || task?.client_facing_title || task?.title}</p>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end md:items-center justify-center"
+    >
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" onClick={onClose} />
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 40, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+        className="relative bg-white rounded-t-3xl md:rounded-2xl w-full md:max-w-md z-50 shadow-2xl"
+      >
+        <div className="flex justify-center pt-4 pb-2 md:hidden">
+          <div className="w-10 h-1 bg-slate-200 rounded-full" />
+        </div>
+
+        <div className="flex items-start justify-between gap-4 px-6 py-4 border-b border-slate-50">
           <div>
-            <p className="text-sm font-medium text-slate-700 mb-2">Sua decisão *</p>
-            <div className="flex gap-2">
+            <h2 className="text-base font-medium text-slate-900">Avaliar Entrega</h2>
+            <p className="text-xs text-slate-400 font-light mt-0.5">
+              {delivery?.title || task?.client_facing_title || task?.title}
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+            <X className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
+
+        <div className="px-6 py-5 space-y-6">
+          {/* Decision */}
+          <div>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-3">Sua decisão</p>
+            <div className="grid grid-cols-3 gap-2">
               {[
-                { value: "approved", label: "Aprovar", icon: ThumbsUp, color: "border-emerald-500 bg-emerald-50 text-emerald-700" },
-                { value: "changes_requested", label: "Pedir Ajustes", icon: RefreshCw, color: "border-amber-500 bg-amber-50 text-amber-700" },
-                { value: "rejected", label: "Reprovar", icon: ThumbsDown, color: "border-rose-500 bg-rose-50 text-rose-700" },
+                { value: "approved", label: "Aprovar", icon: ThumbsUp, active: "bg-emerald-50 border-emerald-300 text-emerald-700" },
+                { value: "changes_requested", label: "Ajustes", icon: RefreshCw, active: "bg-amber-50 border-amber-300 text-amber-700" },
+                { value: "rejected", label: "Reprovar", icon: ThumbsDown, active: "bg-rose-50 border-rose-300 text-rose-700" },
               ].map(opt => (
                 <button
                   key={opt.value}
                   onClick={() => setForm(f => ({ ...f, approval_status: opt.value }))}
-                  className={`flex-1 flex flex-col items-center gap-1.5 py-3 rounded-xl border-2 transition-all text-sm font-medium
-                    ${form.approval_status === opt.value ? opt.color : "border-slate-200 text-slate-400 hover:border-slate-300"}`}
+                  className={`flex flex-col items-center gap-2 py-4 rounded-xl border-2 transition-all text-xs font-medium
+                    ${form.approval_status === opt.value ? opt.active : "border-slate-100 text-slate-400 hover:border-slate-200 bg-slate-50"}`}
                 >
                   <opt.icon className="w-4 h-4" />
                   {opt.label}
@@ -54,15 +77,19 @@ function FeedbackModal({ delivery, task, onClose, onSubmit, loading }) {
             </div>
           </div>
 
+          {/* Score */}
           <div>
-            <p className="text-sm font-medium text-slate-700 mb-2">Nota (1–5)</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-3">Nota (1–5)</p>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(n => (
                 <button
                   key={n}
                   onClick={() => setForm(f => ({ ...f, score: n }))}
-                  className={`w-10 h-10 rounded-lg border-2 transition-all text-sm font-bold
-                    ${form.score >= n ? "border-amber-500 bg-amber-50 text-amber-700" : "border-slate-200 text-slate-400 hover:border-slate-300"}`}
+                  className={`flex-1 h-10 rounded-xl border-2 transition-all text-sm font-medium flex items-center justify-center
+                    ${form.score >= n
+                      ? "border-amber-300 bg-amber-50 text-amber-700"
+                      : "border-slate-100 text-slate-300 bg-slate-50 hover:border-slate-200"
+                    }`}
                 >
                   {n}
                 </button>
@@ -70,35 +97,42 @@ function FeedbackModal({ delivery, task, onClose, onSubmit, loading }) {
             </div>
           </div>
 
+          {/* Comment */}
           <div>
-            <p className="text-sm font-medium text-slate-700 mb-2">Comentário (opcional)</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-3">Comentário (opcional)</p>
             <Textarea
               value={form.comment}
               onChange={e => setForm(f => ({ ...f, comment: e.target.value }))}
               placeholder="Deixe um comentário sobre esta entrega..."
-              className="resize-none"
+              className="resize-none rounded-xl border-slate-200 bg-slate-50 focus:bg-white text-sm"
               rows={3}
             />
           </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="flex-1 h-11 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={() => onSubmit(form)}
+              disabled={loading}
+              className="flex-1 h-11 bg-slate-900 text-white rounded-xl text-sm font-medium hover:bg-slate-800 transition-colors disabled:opacity-50"
+            >
+              {loading ? "Enviando..." : "Confirmar"}
+            </button>
+          </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button
-            onClick={() => onSubmit(form)}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            {loading ? "Enviando..." : "Confirmar Avaliação"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </motion.div>
+    </motion.div>
   );
 }
 
 export default function ClientPortalDeliveries() {
   const { userLoading, contactId, companyId, projects, canAccessProject } = useClientPortal();
-  const [feedbackTarget, setFeedbackTarget] = useState(null); // { delivery, task }
+  const [feedbackTarget, setFeedbackTarget] = useState(null);
   const qc = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -131,8 +165,6 @@ export default function ClientPortalDeliveries() {
       const newStatus = form.approval_status === "approved" ? "approved"
         : form.approval_status === "rejected" ? "rejected"
         : "changes_requested";
-
-      // Salva o feedback
       await base44.entities.DeliveryFeedback.create({
         delivery_id: delivery?.id || null,
         task_id: task.id,
@@ -144,8 +176,6 @@ export default function ClientPortalDeliveries() {
         comment: form.comment,
         submitted_at: new Date().toISOString(),
       });
-
-      // Atualiza status da entrega (se existir) ou da tarefa
       if (delivery?.id) {
         await base44.entities.TaskDelivery.update(delivery.id, { status: newStatus });
       }
@@ -161,204 +191,212 @@ export default function ClientPortalDeliveries() {
   const getTaskFeedback = (taskId) => feedbacks.find(f => f.task_id === taskId);
   const getDeliveryFeedback = (deliveryId) => feedbacks.find(f => f.delivery_id === deliveryId);
 
-  const pendingApprovals = tasks.filter(t => {
-    const taskDeliveries = getTaskDeliveries(t.id);
-    if (taskDeliveries.length > 0) {
-      return taskDeliveries.some(d => ["delivered", "under_review"].includes(d.status));
-    }
+  const pendingCount = tasks.filter(t => {
+    const td = getTaskDeliveries(t.id);
+    if (td.length > 0) return td.some(d => ["delivered", "under_review"].includes(d.status));
     return t.approval_required && t.status === "completed" && !getTaskFeedback(t.id);
-  });
+  }).length;
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="min-h-screen bg-[#f8f8f6] flex items-center justify-center">
+        <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-5xl mx-auto flex items-center justify-between flex-wrap gap-3">
+    <div className="min-h-screen bg-[#f8f8f6]">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-100 px-6 py-7 md:px-10">
+        <div className="max-w-3xl mx-auto flex items-end justify-between gap-4">
           <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-            <h1 className="text-2xl font-bold text-slate-900">Tarefas & Entregas</h1>
-            <p className="text-slate-500 text-sm mt-1">Acompanhe o andamento e aprove as entregas do seu projeto.</p>
+            <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-2">
+              {activeProject?.name || "Portal"}
+            </p>
+            <h1 className="text-2xl font-extralight text-slate-900 tracking-tight">Entregas</h1>
+            <p className="text-sm text-slate-400 font-light mt-1.5">
+              Acompanhe e aprove as entregas do seu projeto.
+            </p>
           </div>
-          {pendingApprovals.length > 0 && (
-            <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-sm px-3 py-1.5">
-              {pendingApprovals.length} pendente{pendingApprovals.length > 1 ? "s" : ""} de aprovação
-            </Badge>
+          {pendingCount > 0 && (
+            <div className="text-right">
+              <span className="text-2xl font-extralight text-slate-900">{pendingCount}</span>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">pendente{pendingCount > 1 ? "s" : ""}</p>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6">
+      <div className="max-w-3xl mx-auto px-5 md:px-10 py-7 space-y-4">
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-5 h-5 text-slate-300 animate-spin" />
           </div>
         ) : !activeProject ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <Package className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500 font-medium">Nenhum projeto disponível.</p>
+          <div className="flex flex-col items-center py-20">
+            <Package className="w-10 h-10 text-slate-200 mb-4" />
+            <p className="text-slate-400 font-light">Nenhum projeto disponível.</p>
           </div>
         ) : tasks.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
-            <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-            <p className="text-slate-500 font-medium">Nenhuma tarefa disponível no momento.</p>
-            <p className="text-slate-400 text-sm mt-1">As tarefas aparecerão aqui quando forem liberadas pela equipe.</p>
+          <div className="flex flex-col items-center py-20">
+            <CheckCircle2 className="w-10 h-10 text-slate-200 mb-4" />
+            <p className="text-slate-400 font-light">Nenhuma tarefa disponível no momento.</p>
+            <p className="text-slate-400 text-sm font-light mt-2 text-center max-w-xs">
+              As tarefas aparecerão aqui quando forem liberadas pela equipe.
+            </p>
           </div>
         ) : (
           tasks.map(task => {
             const taskDeliveries = getTaskDeliveries(task.id);
             const taskFeedback = getTaskFeedback(task.id);
             const canApproveTask = task.approval_required && task.status === "completed" && !taskFeedback && taskDeliveries.length === 0;
+            const statusDot = task.status === "completed" ? "bg-emerald-400" : task.status === "in_progress" ? "bg-blue-400" : "bg-slate-300";
+            const statusBadge = task.status === "completed"
+              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+              : task.status === "in_progress"
+                ? "bg-blue-50 text-blue-600 border-blue-100"
+                : "bg-slate-50 text-slate-500 border-slate-200";
 
             return (
-              <div key={task.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                {/* Task header */}
-                <div className={`p-5 border-b border-slate-100 ${task.status === "completed" ? "bg-emerald-50/50" : task.status === "in_progress" ? "bg-blue-50/50" : ""}`}>
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-3 h-3 rounded-full mt-1.5 flex-shrink-0 ${task.status === "completed" ? "bg-emerald-500" : task.status === "in_progress" ? "bg-blue-500" : "bg-slate-300"}`} />
-                      <div>
-                        <h2 className="font-semibold text-slate-900 text-base">{task.client_facing_title || task.title}</h2>
-                        {task.client_facing_description && (
-                          <p className="text-sm text-slate-500 mt-0.5">{task.client_facing_description}</p>
-                        )}
-                        <div className="flex gap-3 mt-1 flex-wrap">
-                          {task.start_date && <span className="text-xs text-slate-400">Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
-                          {task.end_date && <span className="text-xs text-slate-400">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
-                        </div>
+              <div key={task.id} className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
+                {/* Task Header */}
+                <div className="px-5 pt-5 pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${statusDot}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <h2 className="text-sm font-medium text-slate-900 flex-1">
+                          {task.client_facing_title || task.title}
+                        </h2>
+                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${statusBadge}`}>
+                          {task.client_status || (task.status === "completed" ? "Concluído" : task.status === "in_progress" ? "Em andamento" : "Pendente")}
+                        </span>
+                      </div>
+                      {task.client_facing_description && (
+                        <p className="text-xs text-slate-400 font-light mt-1.5 leading-relaxed">{task.client_facing_description}</p>
+                      )}
+                      <div className="flex gap-4 mt-2 flex-wrap">
+                        {task.start_date && <span className="text-[10px] text-slate-400 font-light">Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
+                        {task.end_date && <span className="text-[10px] text-slate-400 font-light">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
                       </div>
                     </div>
-                    <Badge className={`text-xs flex-shrink-0 ${task.status === "completed" ? "bg-emerald-100 text-emerald-700 border-emerald-200" : task.status === "in_progress" ? "bg-blue-100 text-blue-700 border-blue-200" : "bg-slate-100 text-slate-600 border-slate-200"}`}>
-                      {task.client_status || (task.status === "completed" ? "Concluído" : task.status === "in_progress" ? "Em andamento" : "Pendente")}
-                    </Badge>
                   </div>
 
                   {task.completion_summary && task.status === "completed" && (
-                    <div className="mt-3 bg-emerald-50 border border-emerald-100 rounded-xl p-3">
-                      <p className="text-xs text-emerald-600 font-medium mb-1">Resumo da Conclusão</p>
-                      <p className="text-sm text-slate-600">{task.completion_summary}</p>
+                    <div className="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                      <p className="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider mb-1.5">Resumo</p>
+                      <p className="text-xs text-slate-600 font-light leading-relaxed">{task.completion_summary}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Deliveries */}
-                <div className="p-4 space-y-3">
-                  {taskDeliveries.map(delivery => {
-                    const cfg = deliveryStatusConfig[delivery.status] || deliveryStatusConfig.pending_delivery;
-                    const Icon = cfg.icon;
-                    const fb = getDeliveryFeedback(delivery.id);
-                    const canApprove = ["delivered", "under_review"].includes(delivery.status) && !fb;
+                {(taskDeliveries.length > 0 || canApproveTask || taskFeedback) && (
+                  <div className="border-t border-slate-50 px-5 py-4 space-y-3 bg-slate-50/50">
+                    {taskDeliveries.map(delivery => {
+                      const cfg = deliveryStatusConfig[delivery.status] || deliveryStatusConfig.pending_delivery;
+                      const Icon = cfg.icon;
+                      const fb = getDeliveryFeedback(delivery.id);
+                      const canApprove = ["delivered", "under_review"].includes(delivery.status) && !fb;
 
-                    return (
-                      <div key={delivery.id} className="border border-slate-200 rounded-xl p-4">
-                        <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">{delivery.title}</p>
-                            {delivery.delivery_date && (
-                              <p className="text-xs text-slate-400 mt-0.5">
-                                Entregue em {format(new Date(delivery.delivery_date), "dd/MM/yyyy", { locale: ptBR })}
-                              </p>
-                            )}
+                      return (
+                        <div key={delivery.id} className="bg-white rounded-xl border border-slate-100 p-4">
+                          <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                            <p className="text-sm font-medium text-slate-800">{delivery.title}</p>
+                            <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex items-center gap-1.5 ${cfg.badge}`}>
+                              <Icon className="w-3 h-3" />
+                              {cfg.label}
+                            </span>
                           </div>
-                          <Badge className={`${cfg.color} flex items-center gap-1.5 text-xs`}>
-                            <Icon className="w-3 h-3" />
-                            {cfg.label}
-                          </Badge>
-                        </div>
 
-                        {delivery.description && (
-                          <p className="text-sm text-slate-500 mb-3">{delivery.description}</p>
-                        )}
+                          {delivery.delivery_date && (
+                            <p className="text-[10px] text-slate-400 font-light mb-2">
+                              Entregue em {format(new Date(delivery.delivery_date), "dd/MM/yyyy", { locale: ptBR })}
+                            </p>
+                          )}
 
-                        {delivery.public_notes && (
-                          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-3">
-                            <p className="text-xs text-blue-600 font-medium mb-1">Observações da equipe</p>
-                            <p className="text-sm text-slate-700">{delivery.public_notes}</p>
-                          </div>
-                        )}
+                          {delivery.description && (
+                            <p className="text-xs text-slate-500 font-light mb-3 leading-relaxed">{delivery.description}</p>
+                          )}
 
-                        {delivery.attachment_urls?.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {delivery.attachment_urls.map((url, i) => (
-                              <a key={i} href={url} target="_blank" rel="noreferrer"
-                                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors">
-                                <Paperclip className="w-3 h-3" />
-                                {delivery.attachment_names?.[i] || `Arquivo ${i + 1}`}
-                              </a>
-                            ))}
-                          </div>
-                        )}
+                          {delivery.public_notes && (
+                            <div className="bg-slate-50 border border-slate-100 rounded-xl p-3 mb-3">
+                              <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider mb-1.5">Obs. da equipe</p>
+                              <p className="text-xs text-slate-600 font-light">{delivery.public_notes}</p>
+                            </div>
+                          )}
 
-                        <div className="flex items-center justify-between">
+                          {delivery.attachment_urls?.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {delivery.attachment_urls.map((url, i) => (
+                                <a key={i} href={url} target="_blank" rel="noreferrer"
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] text-slate-600 hover:bg-slate-100 transition-colors">
+                                  <Paperclip className="w-3 h-3" />
+                                  {delivery.attachment_names?.[i] || `Arquivo ${i + 1}`}
+                                </a>
+                              ))}
+                            </div>
+                          )}
+
                           {fb ? (
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
-                              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                              Sua avaliação: {fb.score}/5 · {fb.approval_status === "approved" ? "✓ Aprovado" : fb.approval_status === "rejected" ? "✗ Reprovado" : "↺ Ajustes solicitados"}
+                            <div className="flex items-center gap-2 text-xs text-slate-400 font-light">
+                              <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                              {fb.score}/5 · {fb.approval_status === "approved" ? "Aprovado" : fb.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
                             </div>
                           ) : canApprove ? (
-                            <Button
-                              size="sm"
+                            <button
                               onClick={() => setFeedbackTarget({ delivery, task })}
-                              className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                              className="w-full h-9 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors"
                             >
-                              <MessageSquare className="w-3.5 h-3.5" />
                               Avaliar esta entrega
-                            </Button>
+                            </button>
                           ) : null}
                         </div>
+                      );
+                    })}
+
+                    {canApproveTask && (
+                      <div className="bg-white border border-slate-200 rounded-xl p-4">
+                        <p className="text-sm font-medium text-slate-800 mb-1">Esta tarefa aguarda sua aprovação</p>
+                        <p className="text-xs text-slate-400 font-light mb-3 leading-relaxed">
+                          A tarefa foi concluída. Por favor, revise e aprove ou solicite ajustes.
+                        </p>
+                        <button
+                          onClick={() => setFeedbackTarget({ delivery: null, task })}
+                          className="h-9 px-4 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors"
+                        >
+                          Aprovar / Solicitar Ajustes
+                        </button>
                       </div>
-                    );
-                  })}
+                    )}
 
-                  {/* Tarefa com approval_required mas sem delivery */}
-                  {canApproveTask && (
-                    <div className="border border-amber-200 bg-amber-50 rounded-xl p-4">
-                      <p className="text-sm font-medium text-amber-800 mb-1">Esta tarefa aguarda sua aprovação</p>
-                      <p className="text-xs text-amber-600 mb-3">A tarefa foi concluída. Por favor, revise e aprove ou solicite ajustes.</p>
-                      <Button
-                        size="sm"
-                        onClick={() => setFeedbackTarget({ delivery: null, task })}
-                        className="bg-amber-600 hover:bg-amber-700 text-white gap-1.5"
-                      >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        Aprovar / Solicitar Ajustes
-                      </Button>
-                    </div>
-                  )}
-
-                  {taskFeedback && taskDeliveries.length === 0 && (
-                    <div className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl text-xs text-slate-500">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                      Avaliado: {taskFeedback.approval_status === "approved" ? "Aprovado" : taskFeedback.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
-                      {taskFeedback.score ? ` · Nota: ${taskFeedback.score}/5` : ""}
-                    </div>
-                  )}
-
-                  {taskDeliveries.length === 0 && !canApproveTask && !taskFeedback && (
-                    <p className="text-xs text-slate-400 text-center py-2">Nenhuma entrega registrada para esta tarefa ainda.</p>
-                  )}
-                </div>
+                    {taskFeedback && taskDeliveries.length === 0 && (
+                      <div className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-slate-100 text-xs text-slate-400 font-light">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                        Avaliado: {taskFeedback.approval_status === "approved" ? "Aprovado" : taskFeedback.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
+                        {taskFeedback.score ? ` · Nota ${taskFeedback.score}/5` : ""}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })
         )}
       </div>
 
-      {feedbackTarget && (
-        <FeedbackModal
-          delivery={feedbackTarget.delivery}
-          task={feedbackTarget.task}
-          onClose={() => setFeedbackTarget(null)}
-          onSubmit={(form) => submitFeedbackMutation.mutate({ form, delivery: feedbackTarget.delivery, task: feedbackTarget.task })}
-          loading={submitFeedbackMutation.isPending}
-        />
-      )}
+      <AnimatePresence>
+        {feedbackTarget && (
+          <FeedbackDrawer
+            delivery={feedbackTarget.delivery}
+            task={feedbackTarget.task}
+            onClose={() => setFeedbackTarget(null)}
+            onSubmit={(form) => submitFeedbackMutation.mutate({ form, delivery: feedbackTarget.delivery, task: feedbackTarget.task })}
+            loading={submitFeedbackMutation.isPending}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
