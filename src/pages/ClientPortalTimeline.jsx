@@ -104,163 +104,36 @@ export default function ClientPortalTimeline() {
             </div>
 
             {/* Visual Progress Phases */}
-            <div className="relative w-full">
-              <div className="flex items-center justify-between gap-1 md:gap-2">
-                {[
-                  { label: "Kickoff", order: 0 },
-                  { label: "Planejamento", order: 1 },
-                  { label: "Desenvolvimento", order: 2 },
-                  { label: "Testes", order: 3 },
-                  { label: "Entrega", order: 4 }
-                ].map((phase, idx) => {
-                  const phaseProgress = (projectProgress / 100) * 5;
-                  const isCompleted = phaseProgress > phase.order;
-                  const isActive = Math.floor(phaseProgress) === phase.order;
+            <div className="space-y-3">
+              {[
+                { label: "Kickoff", order: 0 },
+                { label: "Planejamento", order: 1 },
+                { label: "Desenvolvimento", order: 2 },
+                { label: "Testes", order: 3 },
+                { label: "Entrega", order: 4 }
+              ].map((phase, idx) => {
+                const phaseProgress = (projectProgress / 100) * 5;
+                const isCompleted = phaseProgress > phase.order;
+                const isActive = Math.floor(phaseProgress) === phase.order;
 
-                  return (
-                    <div key={phase.order} className="flex flex-col items-center flex-1 min-w-0">
-                      <div className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs font-semibold border-2 transition-all flex-shrink-0 ${
-                        isCompleted ? "bg-emerald-500 border-emerald-500 text-white" :
-                        isActive ? "bg-blue-500 border-blue-500 text-white" :
-                        "bg-white border-slate-200 text-slate-400"
-                      }`}>
-                        {isCompleted ? "✓" : idx + 1}
-                      </div>
-                      <p className="text-[10px] md:text-xs text-slate-600 font-medium mt-1.5 text-center leading-tight break-words">{phase.label}</p>
+                return (
+                  <div key={phase.order} className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold border-2 transition-all flex-shrink-0 ${
+                      isCompleted ? "bg-emerald-500 border-emerald-500 text-white" :
+                      isActive ? "bg-blue-500 border-blue-500 text-white" :
+                      "bg-white border-slate-200 text-slate-400"
+                    }`}>
+                      {isCompleted ? "✓" : idx + 1}
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-slate-700">{phase.label}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Milestones */}
-            {milestones.length > 0 && (
-              <div>
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Marcos do Projeto</p>
-                <div className="relative">
-                  <div className="absolute left-5 top-5 bottom-5 w-px bg-slate-100" />
-                  <div className="space-y-3">
-                    {milestones.map((milestone) => {
-                      const cfg = taskStatusConfig[milestone.status] || taskStatusConfig.pending;
-                      const Icon = cfg.icon;
-                      const isOverdue = milestone.due_date && isBefore(parseISO(milestone.due_date), new Date()) && milestone.status !== "completed";
-                      return (
-                        <div key={milestone.id} className="relative flex gap-4">
-                          <div className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border bg-white
-                            ${milestone.status === "completed" ? "border-emerald-200" :
-                              milestone.status === "in_progress" ? "border-blue-200" :
-                              "border-slate-150"}`}>
-                            <Icon className={`w-4 h-4 ${cfg.color}`} />
-                          </div>
-                          <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-4 min-w-0">
-                            <div className="flex items-start justify-between gap-3 flex-wrap">
-                              <div>
-                                <h3 className="text-sm font-medium text-slate-900">{milestone.title}</h3>
-                                {milestone.description && (
-                                  <p className="text-xs text-slate-400 font-light mt-1 leading-relaxed">{milestone.description}</p>
-                                )}
-                                <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                  {milestone.due_date && (
-                                    <span className={`text-[10px] font-light ${isOverdue ? "text-rose-400" : "text-slate-400"}`}>
-                                      Prazo: {format(parseISO(milestone.due_date), "dd/MM/yyyy")}
-                                    </span>
-                                  )}
-                                  {isOverdue && <span className="text-[10px] text-rose-500 font-medium">Atrasado</span>}
-                                </div>
-                              </div>
-                              <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${
-                                milestone.status === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                                milestone.status === "in_progress" ? "bg-blue-50 text-blue-600 border-blue-100" :
-                                "bg-slate-50 text-slate-500 border-slate-200"
-                              }`}>{cfg.label}</span>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {/* Meetings */}
-             {meetings.length > 0 && (
-               <div className="bg-[#001A3D] rounded-2xl p-6">
-                 <p className="text-[10px] text-slate-300 tracking-widest uppercase font-medium mb-4">Reuniões</p>
-                 <div className="space-y-2">
-                   {meetings.map(m => (
-                     <div key={m.id} className="bg-[#002654] rounded-2xl border border-[#003d7a] p-4 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-[#003d7a] border border-[#005299] flex flex-col items-center justify-center flex-shrink-0">
-                        {m.start_datetime ? (
-                          <>
-                            <span className="text-xs font-semibold text-slate-100 leading-none">
-                              {format(new Date(m.start_datetime), "dd")}
-                            </span>
-                            <span className="text-[8px] text-slate-400 uppercase tracking-wide mt-0.5">
-                              {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
-                            </span>
-                          </>
-                        ) : <Calendar className="w-3.5 h-3.5 text-slate-300" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-100">{m.title}</p>
-                        {m.start_datetime && (
-                          <p className="text-xs text-slate-400 font-light mt-0.5">{format(new Date(m.start_datetime), "HH:mm")}</p>
-                        )}
-                        {m.description && <p className="text-xs text-slate-400 font-light mt-1 leading-relaxed">{m.description}</p>}
-                      </div>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium ${
-                          m.status === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                          m.status === "cancelled" ? "bg-slate-700 text-slate-300 border-slate-600" :
-                          "bg-[#005299] text-slate-100 border-[#007acc]"
-                        }`}>
-                          {m.status === "completed" ? "Realizada" : m.status === "cancelled" ? "Cancelada" : "Agendada"}
-                        </span>
-                        {m.meeting_link && m.status !== "completed" && (
-                          <a href={m.meeting_link} target="_blank" rel="noreferrer"
-                            className="text-xs text-slate-200 font-medium hover:text-white">Entrar →</a>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Tasks */}
-            {tasks.length > 0 && (
-              <div>
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Tarefas</p>
-                <div className="space-y-2">
-                  {tasks.map(task => {
-                    const tStatus = task.status === "completed" ? "completed" : task.status === "in_progress" ? "in_progress" : "pending";
-                    const cfg = taskStatusConfig[tStatus];
-                    const dot = tStatus === "completed" ? "bg-emerald-400" : tStatus === "in_progress" ? "bg-blue-400" : "bg-slate-300";
-                    return (
-                      <div key={task.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-start gap-4">
-                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${dot}`} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-800">{task.client_facing_title || task.title}</p>
-                          {task.client_facing_description && (
-                            <p className="text-xs text-slate-400 font-light mt-0.5 leading-relaxed">{task.client_facing_description}</p>
-                          )}
-                          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                            {task.start_date && <span className="text-[10px] text-slate-400 font-light">Início: {format(new Date(task.start_date), "dd/MM/yyyy")}</span>}
-                            {task.end_date && <span className="text-[10px] text-slate-400 font-light">Prazo: {format(new Date(task.end_date), "dd/MM/yyyy")}</span>}
-                          </div>
-                        </div>
-                        <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex-shrink-0 ${
-                          tStatus === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                          tStatus === "in_progress" ? "bg-blue-50 text-blue-600 border-blue-100" :
-                          "bg-slate-50 text-slate-500 border-slate-200"
-                        }`}>{cfg.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
 
             {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
               <div className="flex flex-col items-center py-20">
