@@ -154,26 +154,26 @@ export default function ClientPortalTimeline() {
             )}
 
             {/* Meetings */}
-            {meetings.length > 0 && (
-              <div>
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-4">Reuniões</p>
-                <div className="space-y-2">
-                  {meetings.map(m => (
-                    <div key={m.id} className="bg-white rounded-2xl border border-slate-100 p-4 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center flex-shrink-0">
+             {meetings.length > 0 && (
+               <div className="bg-[#001A3D] rounded-2xl p-6">
+                 <p className="text-[10px] text-slate-300 tracking-widest uppercase font-medium mb-4">Reuniões</p>
+                 <div className="space-y-2">
+                   {meetings.map(m => (
+                     <div key={m.id} className="bg-[#002654] rounded-2xl border border-[#003d7a] p-4 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-[#003d7a] border border-[#005299] flex flex-col items-center justify-center flex-shrink-0">
                         {m.start_datetime ? (
                           <>
-                            <span className="text-xs font-semibold text-slate-700 leading-none">
+                            <span className="text-xs font-semibold text-slate-100 leading-none">
                               {format(new Date(m.start_datetime), "dd")}
                             </span>
                             <span className="text-[8px] text-slate-400 uppercase tracking-wide mt-0.5">
                               {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
                             </span>
                           </>
-                        ) : <Calendar className="w-3.5 h-3.5 text-slate-400" />}
+                        ) : <Calendar className="w-3.5 h-3.5 text-slate-300" />}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800">{m.title}</p>
+                        <p className="text-sm font-medium text-slate-100">{m.title}</p>
                         {m.start_datetime && (
                           <p className="text-xs text-slate-400 font-light mt-0.5">{format(new Date(m.start_datetime), "HH:mm")}</p>
                         )}
@@ -182,14 +182,14 @@ export default function ClientPortalTimeline() {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium ${
                           m.status === "completed" ? "bg-emerald-50 text-emerald-600 border-emerald-100" :
-                          m.status === "cancelled" ? "bg-slate-50 text-slate-400 border-slate-200" :
-                          "bg-blue-50 text-blue-600 border-blue-100"
+                          m.status === "cancelled" ? "bg-slate-700 text-slate-300 border-slate-600" :
+                          "bg-[#005299] text-slate-100 border-[#007acc]"
                         }`}>
                           {m.status === "completed" ? "Realizada" : m.status === "cancelled" ? "Cancelada" : "Agendada"}
                         </span>
                         {m.meeting_link && m.status !== "completed" && (
                           <a href={m.meeting_link} target="_blank" rel="noreferrer"
-                            className="text-xs text-slate-700 font-medium hover:text-slate-900">Entrar →</a>
+                            className="text-xs text-slate-200 font-medium hover:text-white">Entrar →</a>
                         )}
                       </div>
                     </div>
