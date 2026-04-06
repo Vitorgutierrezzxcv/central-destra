@@ -206,7 +206,7 @@ export default function ClientPortalDeliveries() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #456C8D 0%, #3A5475 100%)" }}>
+    <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #1A2F48 0%, #0F1E2E 100%)" }}>
       <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-4">
          <div className="flex items-end justify-between gap-4 mb-4">
            <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">
@@ -253,7 +253,7 @@ export default function ClientPortalDeliveries() {
                 : "bg-slate-50 text-slate-500 border-slate-200";
 
             return (
-              <div key={task.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "#3F5A7A", borderColor: "#2E4557" }}>
+              <div key={task.id} className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "#1F3A52", borderColor: "#0F1E2E" }}>
                 {/* Task Header */}
                 <div className="px-5 pt-5 pb-4">
                   <div className="flex items-start gap-3">
@@ -287,7 +287,7 @@ export default function ClientPortalDeliveries() {
 
                 {/* Deliveries */}
                 {(taskDeliveries.length > 0 || canApproveTask || taskFeedback) && (
-                  <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "#2E4557", backgroundColor: "#354A62" }}>
+                  <div className="border-t px-5 py-4 space-y-3" style={{ borderColor: "#0F1E2E", backgroundColor: "#1A2F48" }}>
                     {taskDeliveries.map(delivery => {
                       const cfg = deliveryStatusConfig[delivery.status] || deliveryStatusConfig.pending_delivery;
                       const Icon = cfg.icon;
@@ -295,7 +295,7 @@ export default function ClientPortalDeliveries() {
                       const canApprove = ["delivered", "under_review"].includes(delivery.status) && !fb;
 
                       return (
-                        <div key={delivery.id} className="rounded-xl border p-4" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D" }}>
+                        <div key={delivery.id} className="rounded-xl border p-4" style={{ backgroundColor: "#152A3A", borderColor: "#0F1E2E" }}>
                           <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
                             <p className="text-sm font-medium text-white">{delivery.title}</p>
                             <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-medium flex items-center gap-1.5 ${cfg.badge}`}>
@@ -315,7 +315,7 @@ export default function ClientPortalDeliveries() {
                           )}
 
                           {delivery.public_notes && (
-                            <div className="rounded-xl p-3 mb-3 border" style={{ backgroundColor: "#1F2F3D", borderColor: "#0D1621" }}>
+                            <div className="rounded-xl p-3 mb-3 border" style={{ backgroundColor: "#0F1E2E", borderColor: "#050D16" }}>
                               <p className="text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color: "#6FA6FF" }}>Obs. da equipe</p>
                               <p className="text-xs font-light" style={{ color: "#C5D1DC" }}>{delivery.public_notes}</p>
                             </div>
@@ -326,7 +326,7 @@ export default function ClientPortalDeliveries() {
                               {delivery.attachment_urls.map((url, i) => (
                                 <a key={i} href={url} target="_blank" rel="noreferrer"
                                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] border transition-colors"
-                                  style={{ backgroundColor: "#1F2F3D", borderColor: "#0D1621", color: "#C5D1DC" }}>
+                                  style={{ backgroundColor: "#0F1E2E", borderColor: "#050D16", color: "#C5D1DC" }}>
                                   <Paperclip className="w-3 h-3" />
                                   {delivery.attachment_names?.[i] || `Arquivo ${i + 1}`}
                                 </a>
@@ -343,7 +343,7 @@ export default function ClientPortalDeliveries() {
                             <button
                               onClick={() => setFeedbackTarget({ delivery, task })}
                               className="w-full h-9 text-white rounded-xl text-xs font-medium transition-colors"
-                              style={{ backgroundColor: "#456C8D" }}
+                              style={{ backgroundColor: "#2A4A68" }}
                             >
                               Avaliar esta entrega
                             </button>
@@ -353,7 +353,7 @@ export default function ClientPortalDeliveries() {
                     })}
 
                     {canApproveTask && (
-                       <div className="rounded-xl p-4 border" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D" }}>
+                       <div className="rounded-xl p-4 border" style={{ backgroundColor: "#152A3A", borderColor: "#0F1E2E" }}>
                          <p className="text-sm font-medium text-white mb-1">Esta tarefa aguarda sua aprovação</p>
                          <p className="text-xs font-light mb-3 leading-relaxed" style={{ color: "#C5D1DC" }}>
                            A tarefa foi concluída. Por favor, revise e aprove ou solicite ajustes.
@@ -361,7 +361,7 @@ export default function ClientPortalDeliveries() {
                          <button
                            onClick={() => setFeedbackTarget({ delivery: null, task })}
                            className="h-9 px-4 text-white rounded-xl text-xs font-medium transition-colors"
-                           style={{ backgroundColor: "#456C8D" }}
+                           style={{ backgroundColor: "#2A4A68" }}
                          >
                            Aprovar / Solicitar Ajustes
                          </button>
@@ -369,7 +369,7 @@ export default function ClientPortalDeliveries() {
                      )}
 
                      {taskFeedback && taskDeliveries.length === 0 && (
-                       <div className="flex items-center gap-2.5 p-3 rounded-xl border text-xs font-light" style={{ backgroundColor: "#2E4557", borderColor: "#1F2F3D", color: "#C5D1DC" }}>
+                       <div className="flex items-center gap-2.5 p-3 rounded-xl border text-xs font-light" style={{ backgroundColor: "#152A3A", borderColor: "#0F1E2E", color: "#C5D1DC" }}>
                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                          Avaliado: {taskFeedback.approval_status === "approved" ? "Aprovado" : taskFeedback.approval_status === "rejected" ? "Reprovado" : "Ajustes solicitados"}
                          {taskFeedback.score ? ` · Nota ${taskFeedback.score}/5` : ""}
