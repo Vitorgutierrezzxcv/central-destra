@@ -11,19 +11,19 @@ import { ptBR } from "date-fns/locale";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
 
 const INVOICE_STATUS = {
-  pending:   { label: "Pendente",   color: "text-amber-600",  bg: "bg-amber-50",   border: "border-amber-100", icon: Clock },
-  paid:      { label: "Pago",       color: "text-emerald-600",bg: "bg-emerald-50", border: "border-emerald-100",icon: CheckCircle2 },
-  overdue:   { label: "Vencida",    color: "text-rose-600",   bg: "bg-rose-50",    border: "border-rose-100",   icon: AlertCircle },
-  cancelled: { label: "Cancelada",  color: "text-slate-400",  bg: "bg-slate-50",   border: "border-slate-100",  icon: XCircle },
+  pending:   { label: "Pendente",   color: "text-white",  bg: "bg-slate-700",   border: "border-slate-600", icon: Clock },
+  paid:      { label: "Pago",       color: "text-white",bg: "bg-emerald-600", border: "border-emerald-500",icon: CheckCircle2 },
+  overdue:   { label: "Vencida",    color: "text-white",   bg: "bg-rose-600",    border: "border-rose-500",   icon: AlertCircle },
+  cancelled: { label: "Cancelada",  color: "text-white",  bg: "bg-slate-500",   border: "border-slate-400",  icon: XCircle },
 };
 
 const CONTRACT_STATUS = {
-  draft:     { label: "Rascunho",   color: "text-slate-400",  bg: "bg-slate-50"  },
-  sent:      { label: "Enviado",    color: "text-blue-600",   bg: "bg-blue-50"   },
-  signed:    { label: "Assinado",   color: "text-emerald-600",bg: "bg-emerald-50"},
-  active:    { label: "Ativo",      color: "text-emerald-600",bg: "bg-emerald-50"},
-  completed: { label: "Concluído",  color: "text-slate-500",  bg: "bg-slate-50"  },
-  cancelled: { label: "Cancelado",  color: "text-rose-500",   bg: "bg-rose-50"   },
+  draft:     { label: "Rascunho",   color: "text-white",  bg: "bg-slate-600"  },
+  sent:      { label: "Enviado",    color: "text-white",   bg: "bg-slate-700"   },
+  signed:    { label: "Assinado",   color: "text-white",bg: "bg-emerald-600"},
+  active:    { label: "Ativo",      color: "text-white",bg: "bg-emerald-600"},
+  completed: { label: "Concluído",  color: "text-white",  bg: "bg-slate-600"  },
+  cancelled: { label: "Cancelado",  color: "text-white",   bg: "bg-rose-600"   },
 };
 
 function CopyButton({ text }) {
@@ -106,23 +106,23 @@ export default function ClientPortalFinancial() {
 
         {/* ── RESUMO FINANCEIRO ── */}
         <div className="grid grid-cols-3 gap-2 -mt-8 md:-mt-10">
-          <div className="border border-slate-100 rounded-2xl p-4">
-            <span className="text-xl font-extralight text-emerald-600 leading-none block truncate">
+          <div className="bg-emerald-600 rounded-2xl p-4">
+            <span className="text-xl font-extralight text-white leading-none block truncate">
               {fmt(totalPaid).replace("R$", "").trim()}
             </span>
-            <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Pago</span>
+            <span className="text-[9px] text-white/70 uppercase tracking-widest font-medium mt-2 block">Pago</span>
           </div>
-          <div className="bg-[#0d1117] rounded-2xl p-4">
+          <div className="bg-slate-900 rounded-2xl p-4">
             <span className="text-xl font-extralight text-white leading-none block truncate">
               {fmt(totalPending).replace("R$", "").trim()}
             </span>
-            <span className="text-[9px] text-white/30 uppercase tracking-widest font-medium mt-2 block">Pendente</span>
+            <span className="text-[9px] text-white/50 uppercase tracking-widest font-medium mt-2 block">Pendente</span>
           </div>
-          <div className="border border-rose-100 rounded-2xl p-4">
-            <span className="text-xl font-extralight text-rose-500 leading-none block truncate">
+          <div className="bg-rose-600 rounded-2xl p-4">
+            <span className="text-xl font-extralight text-white leading-none block truncate">
               {fmt(totalOverdue).replace("R$", "").trim()}
             </span>
-            <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Vencido</span>
+            <span className="text-[9px] text-white/70 uppercase tracking-widest font-medium mt-2 block">Vencido</span>
           </div>
         </div>
 
@@ -137,7 +137,7 @@ export default function ClientPortalFinancial() {
               onClick={() => setTab(t.key)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all
                 ${tab === t.key
-                  ? "bg-[#0d1117] text-white"
+                  ? "bg-slate-900 text-white"
                   : "bg-slate-50 text-slate-500 hover:bg-slate-100"
                 }`}
             >
@@ -239,7 +239,7 @@ export default function ClientPortalFinancial() {
                             {inv.boleto_barcode && <CopyButton text={inv.boleto_barcode} />}
                             {inv.boleto_url && (
                               <a href={inv.boleto_url} target="_blank" rel="noreferrer"
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0d1117] text-white text-xs font-medium hover:opacity-90 transition-opacity">
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-medium hover:opacity-90 transition-opacity">
                                 <Download className="w-3 h-3" />
                                 Baixar boleto
                               </a>
@@ -361,7 +361,7 @@ export default function ClientPortalFinancial() {
                     <div className="flex gap-2 flex-wrap pt-2 border-t border-slate-50">
                       {c.file_url && (
                         <a href={c.file_url} target="_blank" rel="noreferrer"
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#0d1117] text-white text-xs font-medium hover:opacity-90 transition-opacity">
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900 text-white text-xs font-medium hover:opacity-90 transition-opacity">
                           <Download className="w-3 h-3" />
                           {c.signed_file_url ? "Contrato original" : "Baixar contrato"}
                         </a>
