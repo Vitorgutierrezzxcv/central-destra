@@ -87,7 +87,7 @@ export default function ClientPortalProject() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex flex-col md:flex-row">
       {/* Left Panel - Dark */}
-      <div className="md:w-5/12 text-white px-5 md:px-8 py-8 md:py-12 flex flex-col justify-between min-h-screen md:min-h-auto">
+      <div className="md:w-5/12 text-white px-5 md:px-8 py-8 md:py-12 flex flex-col justify-between md:min-h-screen">
         <div>
           <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
           <h1 className="text-4xl md:text-5xl font-light leading-tight mb-6 text-white">{activeProject.name}</h1>
@@ -120,8 +120,8 @@ export default function ClientPortalProject() {
       {/* Right Panel - Content */}
       <div className="md:w-7/12 bg-white flex flex-col overflow-y-auto">
         <div className="px-5 md:px-8 py-8 space-y-6 flex-1">
-          {/* Progress Card - Blue */}
-        <div className="border border-blue-200 bg-blue-50 rounded-2xl p-6">
+          {/* Progress Card */}
+        <div className="border border-slate-200 bg-white rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="font-semibold text-slate-900">Progresso Geral</h2>
@@ -156,11 +156,11 @@ export default function ClientPortalProject() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Next Milestone - Blue */}
+          {/* Next Milestone */}
           {nextMilestone && (
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <div className="flex items-center gap-2 mb-3">
-                <Flag className="w-4 h-4 text-primary" />
+                <Flag className="w-4 h-4 text-slate-600" />
                 <h3 className="font-semibold text-slate-900 text-sm">Próximo Marco</h3>
               </div>
               <p className="text-base font-semibold text-slate-900 mb-2">{nextMilestone.title}</p>
@@ -168,12 +168,12 @@ export default function ClientPortalProject() {
                 <p className="text-sm text-slate-500 mb-3">{nextMilestone.description}</p>
               )}
               {nextMilestone.due_date && (
-                <p className="text-xs text-primary flex items-center gap-1">
+                <p className="text-xs text-slate-600 flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {format(parseISO(nextMilestone.due_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </p>
               )}
-              <Link to={createPageUrl("ClientPortalTimeline")} className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 font-medium">
+              <Link to={createPageUrl("ClientPortalTimeline")} className="mt-3 inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-800 font-medium">
                 Ver timeline completa <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -214,24 +214,16 @@ export default function ClientPortalProject() {
               <Link
                 key={i}
                 to={createPageUrl(link.page)}
-                className={`flex items-center gap-4 p-4 border rounded-xl transition-all group ${
-                  i % 2 === 0
-                    ? "bg-blue-50 border-blue-200 hover:border-blue-300"
-                    : "bg-white border-slate-200 hover:border-slate-300"
-                }`}
-              >
-                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 ${
-                  i % 2 === 0
-                    ? "bg-blue-100 border-blue-200"
-                    : "bg-slate-100 border-slate-200"
-                }`}>
-                  <link.icon className={`w-5 h-5 ${i % 2 === 0 ? "text-primary" : "text-slate-600"}`} />
+                className="flex items-center gap-4 p-4 border border-slate-200 rounded-xl transition-all hover:border-slate-300 bg-white"
+                >
+                <div className="w-10 h-10 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-center flex-shrink-0">
+                  <link.icon className="w-5 h-5 text-slate-600" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-slate-800">{link.label}</p>
                   <p className="text-xs text-slate-400">{link.desc}</p>
                 </div>
-                <ArrowRight className={`w-4 h-4 transition-colors ${i % 2 === 0 ? "text-primary" : "text-slate-300"}`} />
+                <ArrowRight className="w-4 h-4 text-slate-300 transition-colors" />
               </Link>
             ))}
           </div>
