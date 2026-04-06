@@ -91,8 +91,8 @@ export default function ClientPortalLogin() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-12 md:py-16 bg-white">
-        <div className="w-full max-w-sm md:max-w-md">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-4 py-12 md:py-16 bg-white">
+        <div className="w-full max-w-sm md:max-w-lg">
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">

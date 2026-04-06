@@ -85,8 +85,19 @@ export default function ClientPortalProject() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-lg md:max-w-5xl mx-auto px-5 md:px-8 py-8 space-y-6">
+    <div className="min-h-screen bg-white">
+      {/* Hero com detalhes do projeto */}
+      <div className="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-5 md:px-4 py-12 md:py-16">
+        <div className="max-w-lg md:max-w-6xl mx-auto">
+          <p className="text-blue-100 text-[10px] tracking-[0.15em] uppercase font-medium mb-4">Projeto</p>
+          <h1 className="text-4xl md:text-5xl font-light leading-tight mb-3">{activeProject.name}</h1>
+          {activeProject.description && (
+            <p className="text-blue-100 text-lg font-light max-w-2xl leading-relaxed">{activeProject.description}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 py-8 space-y-6">
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[

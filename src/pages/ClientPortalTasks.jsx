@@ -233,7 +233,7 @@ export default function ClientPortalTasks() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-14 pb-20">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-8 md:pt-12 pb-20">
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
           {activeProject?.name || "Tarefas"}
         </p>
@@ -249,7 +249,7 @@ export default function ClientPortalTasks() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-6 pb-20">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 space-y-6 pb-20">
         <div className="w-full bg-slate-100 rounded-full h-1">
           <div
             className="h-1 rounded-full bg-slate-900 transition-all duration-700"
