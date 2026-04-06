@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   CheckCircle2, Clock, Calendar, AlertCircle,
@@ -10,10 +10,51 @@ import { ptBR } from "date-fns/locale";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import TaskApprovalModal from "@/components/client-portal/TaskApprovalModal";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { user, userLoading, company, projects, canAccessProject } = useClientPortal();
+
+  const [selectedApprovalTask, setSelectedApprovalTask] = useState(null);
+
+  const submitApproval = useMutation({
+    mutationFn: async (data) => {
+      // Update task status
+      await base44.entities.Task.update(data.taskId, {
+        status: data.decision === "approved" ? "completed" : "pending"
+      });
+
+      // Create a comment/record if there's feedback
+      if (data.feedback.trim()) {
+        await base44.entities.TaskComment.create({
+          task_id: data.taskId,
+          comment: `[${data.decision === "approved" ? "APROVADO" : "REJEITADO"}] ${data.feedback}`,
+          is_client_feedback: true
+        });
+      }
+
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client_tasks"] });
+      setSelectedApprovalTask(null);
+      toast({
+        title: "Sucesso",
+        description: "Sua decisão foi registrada e enviada à equipe."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível processar sua aprovação. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  });
 
   const urlParams = new URLSearchParams(window.location.search);
   const selectedProjectId = urlParams.get("project_id");
@@ -219,13 +260,13 @@ export default function ClientPortalDashboard() {
             </div>
             <div className="space-y-2">
               {pendingApprovalTasks.slice(0, 3).map(task => (
-                <Link
+                <button
                   key={task.id}
-                  to={createPageUrl("ClientPortalDeliveries")}
-                  className="block border border-amber-100 bg-amber-50/50 rounded-2xl px-4 py-3 hover:bg-amber-100/50 transition-colors"
+                  onClick={() => setSelectedApprovalTask(task)}
+                  className="w-full text-left block border border-primary/20 bg-primary/5 rounded-2xl px-4 py-3 hover:bg-primary/10 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full mt-1.5 bg-amber-400 flex-shrink-0" />
+                    <div className="w-2 h-2 rounded-full mt-1.5 bg-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-light text-slate-900 leading-snug">{task.client_facing_title || task.title}</p>
                       {task.delivery_date && (
@@ -235,7 +276,7 @@ export default function ClientPortalDashboard() {
                       )}
                     </div>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           </div>
@@ -418,6 +459,15 @@ export default function ClientPortalDashboard() {
         )}
 
       </div>
+
+      {/* Modal de Aprovação */}
+      {selectedApprovalTask && (
+        <TaskApprovalModal
+          task={selectedApprovalTask}
+          onClose={() => setSelectedApprovalTask(null)}
+          onSubmit={(data) => submitApproval.mutate(data)}
+        />
+      )}
     </div>
   );
 }
