@@ -90,7 +90,7 @@ export default function ClientPortalProject() {
       <div className="md:w-5/12 text-white px-5 md:px-8 pt-32 md:pt-12 pb-8 md:pb-12 flex flex-col justify-between md:min-h-screen">
         <div>
           <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-8">Projeto</p>
-          <h1 className="text-4xl md:text-5xl font-light leading-tight mb-6 text-white">{activeProject.name}</h1>
+          <h1 className="text-5xl md:text-5xl font-light leading-tight mb-6 text-white">{activeProject.name}</h1>
           
           <div className="space-y-4">
             <div>

@@ -79,10 +79,10 @@ export default function ClientPortalAccount() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
            Minha Conta
          </p>
-        <h1 className="text-4xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
+        <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
           Seus<br />Dados
         </h1>
-        <p className="text-lg md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-10">
+        <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-10">
           Gerenciamento de perfil e segurança.
         </p>
       </div>
