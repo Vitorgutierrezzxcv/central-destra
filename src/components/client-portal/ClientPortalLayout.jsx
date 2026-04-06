@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
@@ -29,6 +29,13 @@ export default function ClientPortalLayout() {
   const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin");
   const isActivatePage = location.pathname.toLowerCase().includes("clientportalactivate");
 
+  // Redireciona para login se não autenticado (dentro de useEffect para não violar regras de hooks)
+  useEffect(() => {
+    if (!userLoading && !isLoggedIn() && !isLoginPage && !isActivatePage) {
+      navigate("/ClientPortalLogin", { replace: true });
+    }
+  }, [userLoading, isLoginPage, isActivatePage]);
+
   // Login e Activate têm layout próprio (light)
   if (isLoginPage || isActivatePage) {
     return (
@@ -38,14 +45,8 @@ export default function ClientPortalLayout() {
     );
   }
 
-  // Se não está logado no portal próprio, redireciona para o login
-  if (!userLoading && !isLoggedIn()) {
-    navigate("/ClientPortalLogin", { replace: true });
-    return null;
-  }
-
   // Loading state
-  if (userLoading) {
+  if (userLoading || !isLoggedIn()) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
