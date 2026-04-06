@@ -69,6 +69,13 @@ export default function ClientPortalDashboard() {
     select: d => [...d].sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date)).slice(0, 4)
   });
 
+  const { data: timelineEvents = [] } = useQuery({
+    queryKey: ["client_timeline_events", activeProject?.id],
+    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
+    enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
+  });
+
   const completedTasks   = tasks.filter(t => t.status === "completed").length;
   const inProgressTasks  = tasks.filter(t => t.status === "in_progress").length;
   const pendingApprovals = deliveries.filter(d => ["delivered", "under_review"].includes(d.status)).length;
@@ -89,7 +96,7 @@ export default function ClientPortalDashboard() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg mx-auto px-5 pt-14 pb-36 space-y-3">
+      <div className="max-w-lg mx-auto px-5 pt-14 pb-36 space-y-4">
 
         {/* ── 1. HERO TOPO ── */}
         <div className="pb-6">
@@ -151,102 +158,128 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 3. AÇÕES PENDENTES ── */}
+        {/* ── 3. AÇÃO NECESSÁRIA (DESTAQUE) ── */}
         {hasActions && (
-          <div className="space-y-2 pt-2">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">
-              Sua atenção é necessária
-            </p>
+          <div className="pt-4 space-y-3">
+            <div className="border-b border-slate-100 pb-4">
+              <p className="text-[10px] tracking-[0.15em] uppercase text-rose-600 font-bold px-1 mb-4">
+                ⚠ Ação Necessária
+              </p>
 
-            {pendingApprovals > 0 && (
-              <Link
-                to={createPageUrl("ClientPortalDeliveries")}
-                className="flex items-center gap-4 bg-[#0d1117] rounded-2xl px-5 py-4 active:opacity-80 transition-opacity"
-              >
-                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                  <AlertCircle className="w-4 h-4 text-white/70" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white">Aprovação pendente</p>
-                  <p className="text-xs text-white/40 font-light mt-0.5">
-                    {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} sua revisão
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-white/20 flex-shrink-0" />
-              </Link>
-            )}
+              {pendingApprovals > 0 && (
+                <Link
+                  to={createPageUrl("ClientPortalDeliveries")}
+                  className="flex items-center gap-4 bg-rose-50 border border-rose-100 rounded-2xl px-5 py-4 active:opacity-80 transition-opacity mb-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0">
+                    <AlertCircle className="w-5 h-5 text-rose-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-rose-700">Entregas com aprovação pendente</p>
+                    <p className="text-xs text-rose-600 font-light mt-1">
+                      {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} sua revisão e decisão
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-rose-200 flex-shrink-0" />
+                </Link>
+              )}
 
-            {clientOnboarding.length > 0 && (
-              <Link
-                to={createPageUrl("ClientPortalOnboarding")}
-                className="flex items-center gap-4 border border-slate-100 rounded-2xl px-5 py-4 active:bg-slate-50 transition-colors"
-              >
-                <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-4 h-4 text-slate-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900">Onboarding pendente</p>
-                  <p className="text-xs text-slate-400 font-light mt-0.5">
-                    {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-200 flex-shrink-0" />
-              </Link>
-            )}
+              {clientOnboarding.length > 0 && (
+                <Link
+                  to={createPageUrl("ClientPortalOnboarding")}
+                  className="flex items-center gap-4 bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 active:opacity-80 transition-opacity"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-amber-700">Onboarding pendente</p>
+                    <p className="text-xs text-amber-600 font-light mt-1">
+                      {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação para continuarmos
+                    </p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-amber-200 flex-shrink-0" />
+                </Link>
+              )}
+            </div>
           </div>
         )}
 
-        {/* ── 4. VISÃO GERAL ── stats 3 colunas */}
+        {/* ── 4. VISÃO GERAL DO PROJETO ── */}
         {activeProject && (
-          <div className="pt-2 space-y-2">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Visão geral</p>
+          <div className="pt-4 space-y-3">
+            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1">Visão geral do projeto</p>
+
+            <div className="border border-slate-100 rounded-2xl px-5 py-5 space-y-4">
+              {activeProject.current_phase && (
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Fase Atual</span>
+                  <span className="text-sm font-light text-slate-700">{activeProject.current_phase}</span>
+                </div>
+              )}
+
+              {activeProject.status && (
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Status</span>
+                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${
+                    activeProject.status === "active" ? "bg-emerald-50 text-emerald-600" :
+                    activeProject.status === "completed" ? "bg-slate-50 text-slate-600" : "bg-blue-50 text-blue-600"
+                  }`}>
+                    {activeProject.status === "active" ? "Ativo" : activeProject.status === "completed" ? "Concluído" : "Arquivado"}
+                  </span>
+                </div>
+              )}
+
+              {activeProject.estimated_end_date && (
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Previsão</span>
+                  <span className="text-sm font-light text-slate-700">
+                    {format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}
+                  </span>
+                </div>
+              )}
+
+              {activeProject.updated_date && (
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Última atualização</span>
+                  <span className="text-sm font-light text-slate-700">
+                    {formatDistanceToNow(new Date(activeProject.updated_date), { addSuffix: true, locale: ptBR })}
+                  </span>
+                </div>
+              )}
+
+              {activeProject.project_owner_internal && (
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Responsável Destra</span>
+                  <span className="text-sm font-light text-slate-700">
+                    {activeProject.project_owner_internal.split("@")[0]}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Stats em 3 colunas */}
             <div className="grid grid-cols-3 gap-2">
-              <div className="border border-slate-100 rounded-2xl p-4">
+              <div className="border border-slate-100 rounded-2xl p-4 text-center">
                 <span className="text-2xl font-extralight text-slate-900 leading-none block">{completedTasks}</span>
                 <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Concluídas</span>
               </div>
-              <div className="bg-[#0d1117] rounded-2xl p-4">
+              <div className="bg-[#0d1117] rounded-2xl p-4 text-center">
                 <span className="text-2xl font-extralight text-white leading-none block">{inProgressTasks}</span>
                 <span className="text-[9px] text-white/30 uppercase tracking-widest font-medium mt-2 block">Andamento</span>
               </div>
-              <div className="border border-slate-100 rounded-2xl p-4">
+              <div className="border border-slate-100 rounded-2xl p-4 text-center">
                 <span className="text-2xl font-extralight text-slate-900 leading-none block">{tasks.length}</span>
                 <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Total</span>
               </div>
             </div>
-
-            {/* Fase + responsável */}
-            {(activeProject.current_phase || activeProject.project_owner_internal) && (
-              <div className="border border-slate-100 rounded-2xl px-5 py-4 space-y-3">
-                {activeProject.current_phase && (
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Fase atual</p>
-                    <p className="text-xs text-slate-700 font-light">{activeProject.current_phase}</p>
-                  </div>
-                )}
-                {activeProject.estimated_end_date && (
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Previsão</p>
-                    <p className="text-xs text-slate-700 font-light">
-                      {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                    </p>
-                  </div>
-                )}
-                {activeProject.project_owner_internal && (
-                  <div className="flex items-center justify-between">
-                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Responsável</p>
-                    <p className="text-xs text-slate-700 font-light">{activeProject.project_owner_internal.split("@")[0]}</p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
 
         {/* ── 5. PRÓXIMA REUNIÃO ── */}
-        {upcomingMeeting && (
-          <div className="pt-2">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Próxima reunião</p>
+        <div className="pt-4">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Próxima reunião</p>
+          {upcomingMeeting ? (
             <div className="bg-[#0d1117] rounded-2xl px-5 py-5">
               <div className="flex items-center gap-5">
                 <div className="w-14 h-14 rounded-2xl bg-white/8 border border-white/10 flex flex-col items-center justify-center flex-shrink-0">
@@ -263,6 +296,9 @@ export default function ClientPortalDashboard() {
                     {format(new Date(upcomingMeeting.start_datetime), "HH:mm")} &middot;{" "}
                     {format(new Date(upcomingMeeting.start_datetime), "EEEE", { locale: ptBR })}
                   </p>
+                  {upcomingMeeting.description && (
+                    <p className="text-[10px] text-white/25 font-light mt-2 leading-snug">{upcomingMeeting.description}</p>
+                  )}
                 </div>
                 {upcomingMeeting.meeting_link && (
                   <a href={upcomingMeeting.meeting_link} target="_blank" rel="noreferrer"
@@ -272,8 +308,13 @@ export default function ClientPortalDashboard() {
                 )}
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="border border-slate-100 rounded-2xl px-5 py-8 text-center">
+              <Calendar className="w-6 h-6 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-400 font-light">Nenhuma reunião agendada no momento.</p>
+            </div>
+          )}
+        </div>
 
         {/* ── 6. ENTREGAS RECENTES ── */}
         {recentDeliveries.length > 0 && (
@@ -308,41 +349,41 @@ export default function ClientPortalDashboard() {
         )}
 
         {/* ── 7. TIMELINE RESUMIDA ── */}
-        {milestones.length > 0 && (
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Timeline</p>
+        <div className="pt-4">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Timeline de eventos</p>
+            {milestones.length > 0 && (
               <Link to={createPageUrl("ClientPortalTimeline")} className="text-[10px] text-slate-400 hover:text-slate-700 font-medium transition-colors">
                 Ver completa →
               </Link>
-            </div>
+            )}
+          </div>
+          {timelineEvents.length > 0 ? (
             <div className="bg-[#0d1117] rounded-2xl px-5 py-5 space-y-4">
-              {milestones.map((m, i) => (
-                <div key={m.id} className={`flex items-start gap-4 ${i < milestones.length - 1 ? "pb-4 border-b border-white/[0.06]" : ""}`}>
-                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                    m.status === "completed" ? "bg-emerald-400" :
-                    m.status === "in_progress" ? "bg-blue-400" : "bg-white/20"
+              {timelineEvents.map((event, i) => (
+                <div key={event.id} className={`flex items-start gap-4 ${i < timelineEvents.length - 1 ? "pb-4 border-b border-white/[0.06]" : ""}`}>
+                  <div className={`w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 ${
+                    event.event_type === "task_completed" ? "bg-emerald-400" :
+                    event.event_type === "delivery_sent" ? "bg-blue-400" :
+                    event.event_type === "meeting" ? "bg-purple-400" :
+                    event.event_type === "feedback" ? "bg-amber-400" : "bg-white/20"
                   }`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-light text-white/80 leading-snug">{m.title}</p>
-                    {m.due_date && (
-                      <p className="text-[10px] text-white/25 font-light mt-0.5">
-                        {format(new Date(m.due_date), "dd/MM/yyyy")}
-                      </p>
-                    )}
+                    <p className="text-sm font-light text-white/80 leading-snug">{event.title || event.description}</p>
+                    <p className="text-[10px] text-white/25 font-light mt-0.5">
+                      {formatDistanceToNow(new Date(event.created_date), { addSuffix: true, locale: ptBR })}
+                    </p>
                   </div>
-                  <span className={`text-[9px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 border ${
-                    m.status === "completed" ? "text-emerald-400 border-emerald-400/20 bg-emerald-400/10" :
-                    m.status === "in_progress" ? "text-blue-400 border-blue-400/20 bg-blue-400/10" :
-                    "text-white/30 border-white/10 bg-white/5"
-                  }`}>
-                    {m.status === "completed" ? "Concluído" : m.status === "in_progress" ? "Andamento" : "Pendente"}
-                  </span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="border border-slate-100 rounded-2xl px-5 py-8 text-center">
+              <Clock className="w-6 h-6 text-slate-200 mx-auto mb-3" />
+              <p className="text-sm text-slate-400 font-light">Sem eventos ainda na timeline.</p>
+            </div>
+          )}
+        </div>
 
         {/* ── 8. ARQUIVOS RECENTES ── */}
         {files.length > 0 && (
@@ -374,8 +415,8 @@ export default function ClientPortalDashboard() {
         )}
 
         {/* ── 9. NAVEGAÇÃO RÁPIDA ── */}
-        <div className="pt-4">
-          <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Navegar</p>
+        <div className="pt-6">
+          <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Mais opções</p>
           <div className="border border-slate-100 rounded-2xl overflow-hidden">
             {[
               { label: "Tarefas",    sub: "Progresso das atividades",  page: "ClientPortalTasks",      icon: CheckCircle2 },
