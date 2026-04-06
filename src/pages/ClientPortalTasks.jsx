@@ -237,11 +237,14 @@ export default function ClientPortalTasks() {
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
           {activeProject?.name || "Tarefas"}
         </p>
-        <div className="flex items-end justify-between gap-4 mb-8">
-          <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
-            Tarefas
-          </h1>
-          <div className="text-right">
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div className="mb-2">
+            <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-2">Tarefas</p>
+            <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+              Tarefas
+            </h1>
+            </div>
+            <div className="text-right">
             <span className="text-2xl font-extralight text-slate-900">{counts.completed}</span>
             <span className="text-sm text-slate-400 font-light">/{counts.all}</span>
             <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">concluídas</p>

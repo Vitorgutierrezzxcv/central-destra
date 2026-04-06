@@ -211,11 +211,14 @@ export default function ClientPortalDeliveries() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
            {activeProject?.name || "Entregas"}
          </p>
-        <div className="flex items-end justify-between gap-4 mb-8">
-          <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
-            Entregas
-          </h1>
-          {pendingCount > 0 && (
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div className="mb-2">
+            <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-2">Entregas</p>
+            <h1 className="text-5xl md:text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+              Entregas
+            </h1>
+            </div>
+            {pendingCount > 0 && (
             <div className="text-right">
               <span className="text-2xl font-extralight text-slate-900">{pendingCount}</span>
               <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">pendente{pendingCount > 1 ? "s" : ""}</p>
