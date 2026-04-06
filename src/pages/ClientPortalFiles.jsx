@@ -71,15 +71,15 @@ export default function ClientPortalFiles() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-2">
             Arquivos
           </p>
-         <h1 className="text-5xl md:text-[4rem] leading-[0.85] font-extralight text-slate-900 tracking-tight mb-3">
-           Documentos<br /><span className="text-6xl md:text-[4.5rem]">Compartilhados</span>
+         <h1 className="text-4xl md:text-[4rem] leading-[0.85] font-extralight text-slate-900 tracking-tight mb-1">
+           Documentos<br /><span className="text-5xl md:text-[4.5rem]">Compartilhados</span>
          </h1>
-         <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-1">
+         <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-0">
            Todos os arquivos do seu projeto.
          </p>
          </div>
 
-         <div className="max-w-lg mx-auto px-5 space-y-3 pb-20">
+         <div className="max-w-lg mx-auto px-5 pt-2 space-y-4 pb-20">
         {/* Search & Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
