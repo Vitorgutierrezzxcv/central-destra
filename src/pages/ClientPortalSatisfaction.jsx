@@ -91,24 +91,24 @@ export default function ClientPortalSatisfaction() {
         <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight mb-3">
           Sua<br /><span className="text-[5.5rem]">Opinião</span>
         </h1>
-        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-3">
+        <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mb-1">
           Avalie a qualidade do nosso trabalho.
         </p>
-      </div>
+        </div>
 
-      <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
+        <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
         {/* Average Score */}
         {avgScore && (
-          <div className="bg-white border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+          <div className="bg-slate-950 border border-slate-950 rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
             <div className="text-center md:text-left">
-              <p className="text-3xl md:text-4xl font-bold text-slate-950">{avgScore}</p>
-              <p className="text-xs text-slate-400 mt-1">média geral</p>
+              <p className="text-3xl md:text-4xl font-bold text-white">{avgScore}</p>
+              <p className="text-xs text-slate-300 mt-1">média geral</p>
             </div>
             <div className="flex-1 w-full">
-              <p className="text-sm text-slate-600 mb-2">{surveys.length} avaliação{surveys.length !== 1 ? "ões" : ""} registrada{surveys.length !== 1 ? "s" : ""}</p>
+              <p className="text-sm text-slate-200 mb-2">{surveys.length} avaliação{surveys.length !== 1 ? "ões" : ""} registrada{surveys.length !== 1 ? "s" : ""}</p>
               <div className="flex gap-0.5">
                 {[1,2,3,4,5,6,7,8,9,10].map(n => (
-                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-slate-950" : "bg-slate-200"}`} />
+                  <div key={n} className={`h-2 flex-1 rounded-full ${parseFloat(avgScore) >= n ? "bg-white" : "bg-slate-700"}`} />
                 ))}
               </div>
             </div>
