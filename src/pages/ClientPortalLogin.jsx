@@ -54,9 +54,9 @@ export default function ClientPortalLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
       {/* Left panel — decorative (desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-8 xl:p-12">
         <div>
           <div className="flex items-center gap-3 mb-16">
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
@@ -91,8 +91,8 @@ export default function ClientPortalLogin() {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 bg-white">
-        <div className="w-full max-w-sm">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-12 md:py-16 bg-white">
+        <div className="w-full max-w-sm md:max-w-md">
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2.5 mb-10">
@@ -106,10 +106,10 @@ export default function ClientPortalLogin() {
 
           {/* Title */}
           <div className="mb-8">
-            <h1 className="text-2xl font-light text-slate-900 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-light text-slate-900 tracking-tight">
               {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
             </h1>
-            <p className="text-slate-400 text-sm mt-1.5 font-light">
+            <p className="text-slate-400 text-sm md:text-base mt-1.5 font-light">
               {mode === "login"
                 ? "Acesse seu portal com suas credenciais."
                 : "Registre-se para acessar seu portal."}
