@@ -14,9 +14,9 @@ import TicketChat from "@/components/client-portal/TicketChat";
 import NewTicketForm from "@/components/client-portal/NewTicketForm";
 
 const statusConfig = {
-  open:           { label: "Aberto",          icon: Circle,        className: "bg-blue-100 text-blue-700 border-blue-200" },
+  open:           { label: "Aberto",          icon: Circle,        className: "bg-slate-900 text-white border-slate-800" },
   in_progress:    { label: "Em Andamento",    icon: Clock,         className: "bg-purple-100 text-purple-700 border-purple-200" },
-  waiting_client: { label: "Aguardando você", icon: AlertCircle,   className: "bg-amber-100 text-amber-700 border-amber-200" },
+  waiting_client: { label: "Aguardando você", icon: AlertCircle,   className: "bg-slate-700 text-white border-slate-600" },
   resolved:       { label: "Resolvido",       icon: CheckCircle2,  className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
   closed:         { label: "Fechado",         icon: CheckCircle2,  className: "bg-slate-100 text-slate-600 border-slate-200" },
 };
@@ -31,7 +31,7 @@ const categoryLabels = {
 
 const priorityConfig = {
   low:    { label: "Baixa",   className: "bg-slate-100 text-slate-500" },
-  medium: { label: "Média",   className: "bg-blue-100 text-blue-600" },
+  medium: { label: "Média",   className: "bg-slate-900 text-white" },
   high:   { label: "Alta",    className: "bg-orange-100 text-orange-600" },
   urgent: { label: "Urgente", className: "bg-rose-100 text-rose-600" },
 };
@@ -170,15 +170,15 @@ export default function ClientPortalTickets() {
             {/* Stats */}
             {!showNew && (
               <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: "Abertos", value: openCount, color: "text-blue-600", bg: "bg-blue-50 border-blue-100" },
-                  { label: "Aguard. Resposta", value: waitingCount, color: "text-amber-600", bg: "bg-amber-50 border-amber-100" },
-                  { label: "Total", value: tickets.length, color: "text-slate-700", bg: "bg-slate-50 border-slate-200" },
-                ].map((s, i) => (
+                 {[
+                   { label: "Abertos", value: openCount, color: "text-slate-900", bg: "bg-slate-900 border-slate-800 text-white" },
+                   { label: "Aguard. Resposta", value: waitingCount, color: "text-slate-700", bg: "bg-slate-700 border-slate-600 text-white" },
+                   { label: "Total", value: tickets.length, color: "text-slate-700", bg: "bg-slate-50 border-slate-200" },
+                 ].map((s, i) => (
                   <div key={i} className={`border rounded-2xl p-4 ${s.bg}`}>
-                    <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
-                  </div>
+                     <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                     <p className={`text-xs mt-0.5 ${s.bg.includes('text-white') ? 'text-slate-300' : 'text-slate-500'}`}>{s.label}</p>
+                   </div>
                 ))}
               </div>
             )}
