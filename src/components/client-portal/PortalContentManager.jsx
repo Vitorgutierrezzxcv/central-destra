@@ -621,8 +621,9 @@ function FilesManager({ projectId, companyId }) {
 }
 
 // ─── Tarefas (visibilidade + aprovação) ───────────────────────────────────────
-function TasksVisibilityManager({ projectId }) {
+function TasksVisibilityManager({ projectId, contactId }) {
   const qc = useQueryClient();
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["admin_project_tasks", projectId],
@@ -630,6 +631,20 @@ function TasksVisibilityManager({ projectId }) {
     enabled: !!projectId,
     select: d => d.filter(t => !t.parent_task_id).sort((a, b) => a.title.localeCompare(b.title))
   });
+
+  // Busca o acesso do contato neste projeto para o toggle auto_visible
+  const { data: accessList = [] } = useQuery({
+    queryKey: ["pcm_access_project", contactId, projectId],
+    queryFn: () => base44.entities.ProjectClientAccess.filter({ client_contact_id: contactId, project_id: projectId }),
+    enabled: !!contactId && !!projectId
+  });
+  const access = accessList[0];
+
+  const toggleAutoVisible = (v) => {
+    if (!access) return;
+    base44.entities.ProjectClientAccess.update(access.id, { auto_visible_tasks: v })
+      .then(() => qc.invalidateQueries({ queryKey: ["pcm_access_project", contactId, projectId] }));
+  };
 
   const toggleVisibility = (task) => {
     base44.entities.Task.update(task.id, { visible_to_client: !task.visible_to_client })
@@ -641,15 +656,67 @@ function TasksVisibilityManager({ projectId }) {
       .then(() => qc.invalidateQueries({ queryKey: ["admin_project_tasks", projectId] }));
   };
 
+  const handleBulkVisibility = async (visible) => {
+    setBulkLoading(true);
+    await Promise.all(tasks.map(t => base44.entities.Task.update(t.id, { visible_to_client: visible })));
+    qc.invalidateQueries({ queryKey: ["admin_project_tasks", projectId] });
+    setBulkLoading(false);
+  };
+
+  const handleBulkApproval = async (required) => {
+    setBulkLoading(true);
+    await Promise.all(tasks.map(t => base44.entities.Task.update(t.id, { approval_required: required })));
+    qc.invalidateQueries({ queryKey: ["admin_project_tasks", projectId] });
+    setBulkLoading(false);
+  };
+
   const statusColors = { pending: "bg-slate-100 text-slate-500", in_progress: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700" };
   const statusLabels = { pending: "Pendente", in_progress: "Em andamento", completed: "Concluído" };
   const visible = tasks.filter(t => t.visible_to_client);
+  const withApproval = tasks.filter(t => t.approval_required);
 
   return (
-    <div>
-      <p className="text-xs text-slate-500 mb-3">
-        Ative a visibilidade de cada tarefa para que o cliente veja nas abas <strong>Entregas</strong> e <strong>Timeline</strong>.
-        {visible.length > 0 && <span className="ml-2 text-blue-600 font-medium">{visible.length} tarefa(s) visível(eis)</span>}
+    <div className="space-y-4">
+      {/* Ações em massa */}
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-3">
+        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Ações em Massa</p>
+
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" onClick={() => handleBulkVisibility(true)} disabled={bulkLoading || tasks.length === 0}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-xs gap-1.5 h-8">
+            {bulkLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+            Liberar todas ao cliente
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => handleBulkVisibility(false)} disabled={bulkLoading || tasks.length === 0}
+            className="text-xs gap-1.5 h-8 border-slate-300 text-slate-600 hover:bg-slate-100">
+            Ocultar todas
+          </Button>
+          <Button size="sm" onClick={() => handleBulkApproval(true)} disabled={bulkLoading || tasks.length === 0}
+            className="bg-purple-600 hover:bg-purple-700 text-white text-xs gap-1.5 h-8">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            Aprovar todas
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => handleBulkApproval(false)} disabled={bulkLoading || tasks.length === 0}
+            className="text-xs gap-1.5 h-8 border-slate-300 text-slate-600 hover:bg-slate-100">
+            Remover aprovação
+          </Button>
+        </div>
+
+        {/* Auto-visibilidade */}
+        {access && (
+          <div className="flex items-center gap-3 pt-2 border-t border-slate-200">
+            <Switch checked={!!access.auto_visible_tasks} onCheckedChange={toggleAutoVisible} />
+            <div>
+              <p className="text-xs font-medium text-slate-700">Novas tarefas visíveis automaticamente</p>
+              <p className="text-[10px] text-slate-400">Toda tarefa nova criada neste projeto já aparecerá para o cliente</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <p className="text-xs text-slate-500">
+        {visible.length > 0 && <span className="text-blue-600 font-medium">{visible.length}/{tasks.length} visível(eis)</span>}
+        {withApproval.length > 0 && <span className="ml-2 text-purple-600 font-medium">· {withApproval.length} com aprovação</span>}
       </p>
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
@@ -801,7 +868,7 @@ export default function PortalContentManager({ contact, projects, companies }) {
               </TabsList>
               <div className="mt-3">
                 <TabsContent value="project"><ProjectEditor project={activeProject} /></TabsContent>
-                <TabsContent value="tasks"><TasksVisibilityManager projectId={activeProjectId} /></TabsContent>
+                <TabsContent value="tasks"><TasksVisibilityManager projectId={activeProjectId} contactId={contact?.id} /></TabsContent>
                 <TabsContent value="meetings"><MeetingsManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="milestones"><MilestonesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="onboarding"><OnboardingManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>

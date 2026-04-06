@@ -42,6 +42,11 @@
       "type": "boolean",
       "default": true,
       "description": "Acesso ativo"
+    },
+    "auto_visible_tasks": {
+      "type": "boolean",
+      "default": false,
+      "description": "Novas tarefas criadas j\u00e1 ficam vis\u00edveis ao cliente automaticamente"
     }
   },
   "required": [
