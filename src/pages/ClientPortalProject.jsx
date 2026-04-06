@@ -89,14 +89,13 @@ export default function ClientPortalProject() {
       {/* Left Panel - Dark */}
       <div className="md:w-5/12 text-white px-5 md:px-8 pt-20 md:pt-8 pb-6 md:pb-8 flex flex-col justify-between md:min-h-screen">
         <div>
-          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
-          <h1 className="text-5xl md:text-5xl font-light leading-tight mb-3 text-white">{activeProject.name}</h1>
+          <div className="mb-6">
+            <p className="text-slate-300 text-lg tracking-[0.1em] font-light leading-[0.9]">Destra</p>
+            <p className="text-slate-300 text-3xl tracking-[0.05em] font-light leading-[0.9]">global</p>
+          </div>
+          <h1 className="text-6xl md:text-6xl font-light leading-tight mb-2 text-white">{activeProject.name}</h1>
 
           <div className="space-y-2">
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-2">Status</p>
-              <Badge className={`${statusCfg.color} text-xs`}>{statusCfg.label}</Badge>
-            </div>
             {activeProject.project_start_date && (
               <div>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-1">Início</p>
