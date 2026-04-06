@@ -205,79 +205,10 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 4. VISÃO GERAL DO PROJETO ── */}
-        {activeProject && (
-          <div className="pt-4 space-y-3">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1">Visão geral do projeto</p>
 
-            <div className="border border-slate-100 rounded-2xl px-5 py-5 space-y-4">
-              {activeProject.current_phase && (
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Fase Atual</span>
-                  <span className="text-sm font-light text-slate-700">{activeProject.current_phase}</span>
-                </div>
-              )}
 
-              {activeProject.status && (
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Status</span>
-                  <span className={`text-xs font-medium px-3 py-1 rounded-full ${
-                    activeProject.status === "active" ? "bg-emerald-50 text-emerald-600" :
-                    activeProject.status === "completed" ? "bg-slate-50 text-slate-600" : "bg-blue-50 text-blue-600"
-                  }`}>
-                    {activeProject.status === "active" ? "Ativo" : activeProject.status === "completed" ? "Concluído" : "Arquivado"}
-                  </span>
-                </div>
-              )}
-
-              {activeProject.estimated_end_date && (
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Previsão</span>
-                  <span className="text-sm font-light text-slate-700">
-                    {format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}
-                  </span>
-                </div>
-              )}
-
-              {activeProject.updated_date && (
-                <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Última atualização</span>
-                  <span className="text-sm font-light text-slate-700">
-                    {formatDistanceToNow(new Date(activeProject.updated_date), { addSuffix: true, locale: ptBR })}
-                  </span>
-                </div>
-              )}
-
-              {activeProject.project_owner_internal && (
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Responsável Destra</span>
-                  <span className="text-sm font-light text-slate-700">
-                    {activeProject.project_owner_internal.split("@")[0]}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Stats em 3 colunas */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="border border-slate-100 rounded-2xl p-4 text-center">
-                <span className="text-2xl font-extralight text-slate-900 leading-none block">{completedTasks}</span>
-                <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Concluídas</span>
-              </div>
-              <div className="bg-[#0d1117] rounded-2xl p-4 text-center">
-                <span className="text-2xl font-extralight text-white leading-none block">{inProgressTasks}</span>
-                <span className="text-[9px] text-white/30 uppercase tracking-widest font-medium mt-2 block">Andamento</span>
-              </div>
-              <div className="border border-slate-100 rounded-2xl p-4 text-center">
-                <span className="text-2xl font-extralight text-slate-900 leading-none block">{tasks.length}</span>
-                <span className="text-[9px] text-slate-400 uppercase tracking-widest font-medium mt-2 block">Total</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── 5. PRÓXIMA REUNIÃO ── */}
-        <div className="pt-4">
+        {/* ── 4. PRÓXIMA REUNIÃO ── */}
+        <div className="pt-3">
           <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Próxima reunião</p>
           {upcomingMeeting ? (
             <div className="bg-[#0d1117] rounded-2xl px-5 py-5">
@@ -316,7 +247,7 @@ export default function ClientPortalDashboard() {
           )}
         </div>
 
-        {/* ── 6. ENTREGAS RECENTES ── */}
+        {/* ── 5. ENTREGAS RECENTES ── */}
         {recentDeliveries.length > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -348,7 +279,7 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 7. TIMELINE RESUMIDA ── */}
+        {/* ── 6. TIMELINE RESUMIDA ── */}
         <div className="pt-4">
           <div className="flex items-center justify-between mb-3 px-1">
             <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium">Timeline de eventos</p>
@@ -385,7 +316,7 @@ export default function ClientPortalDashboard() {
           )}
         </div>
 
-        {/* ── 8. ARQUIVOS RECENTES ── */}
+        {/* ── 7. ARQUIVOS RECENTES ── */}
         {files.length > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-3 px-1">
@@ -414,7 +345,7 @@ export default function ClientPortalDashboard() {
           </div>
         )}
 
-        {/* ── 9. NAVEGAÇÃO RÁPIDA ── */}
+        {/* ── 8. NAVEGAÇÃO RÁPIDA ── */}
         <div className="pt-6">
           <p className="text-[10px] tracking-[0.15em] uppercase text-slate-400 font-medium px-1 mb-3">Mais opções</p>
           <div className="border border-slate-100 rounded-2xl overflow-hidden">
