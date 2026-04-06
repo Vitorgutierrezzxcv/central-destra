@@ -92,10 +92,8 @@ export default function ClientPortalTimeline() {
         ) : (
           <>
             {/* Progress bar */}
-            <div className="flex justify-center">
-              <div className="w-full max-w-sm bg-slate-700 rounded-full h-2">
-                <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${projectProgress}%`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
-              </div>
+            <div className="w-full bg-slate-700 rounded-full h-2">
+              <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${projectProgress}%`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
             </div>
 
             {/* Summary */}
@@ -145,21 +143,6 @@ export default function ClientPortalTimeline() {
                     </div>
                     );
                     })}
-                    </div>
-
-                    {/* Legends below the timeline */}
-                    <div className="flex flex-row items-start justify-between w-full">
-                    {[
-                    { label: "Kickoff" },
-                    { label: "Planejamento" },
-                    { label: "Desenvolvimento" },
-                    { label: "Testes" },
-                    { label: "Entrega" }
-                    ].map((phase, idx) => (
-                    <div key={idx} className="text-center flex-1">
-                    <p className="text-[9px] md:text-xs font-semibold text-white">{phase.label}</p>
-                    </div>
-                    ))}
                     </div>
                     </div>
 
