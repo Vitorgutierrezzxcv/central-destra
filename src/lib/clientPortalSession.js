@@ -6,7 +6,10 @@
 const SESSION_KEY = "cp_session";
 
 export function saveSession(token, profile, expiresAt) {
-  localStorage.setItem(SESSION_KEY, JSON.stringify({ token, profile, expiresAt }));
+  // Se expiresAt for null, mantém o existente
+  const existing = getSession();
+  const finalExpiry = expiresAt || existing?.expiresAt || null;
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ token, profile, expiresAt: finalExpiry }));
 }
 
 export function getSession() {

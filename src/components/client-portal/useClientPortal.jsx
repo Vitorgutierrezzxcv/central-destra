@@ -1,25 +1,35 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { getClientProfile, isLoggedIn } from "@/lib/clientPortalSession";
+import { getClientProfile, isLoggedIn, saveSession, getClientToken } from "@/lib/clientPortalSession";
 
 /**
  * Hook central do portal do cliente.
  * Auth própria via clientPortalSession (localStorage).
  *
- * Resolução do vínculo cliente → empresa → projetos:
- * 1. Busca UserProfile pelo email da sessão
- * 2. Busca ClientContact pelo email (fallback)
- * 3. company_id vem: ClientContact.company_id > UserProfile.linked_company_id > sessão
- * 4. Projects: filtra por ProjectClientAccess.client_contact_id OU por company_id + client_portal_enabled
+ * Fluxo de resolução:
+ * 1. Lê sessão local
+ * 2. Valida sessão no backend — que também re-resolve linked_ids
+ * 3. Busca ClientContact pelo email
+ * 4. Resolve projectAccess pelo contactId
+ * 5. Retorna projetos autorizados
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
+  const [sessionValidated, setSessionValidated] = useState(false);
 
   useEffect(() => {
-    const profile = getClientProfile();
-    if (profile) {
+    async function initSession() {
+      const profile = getClientProfile();
+      const token = getClientToken();
+
+      if (!profile || !token) {
+        setUserLoading(false);
+        return;
+      }
+
+      // Carrega imediatamente com dados locais
       setUser({
         email: profile.email,
         full_name: profile.name || profile.full_name,
@@ -30,24 +40,51 @@ export function useClientPortal() {
         id: profile.id,
         ...profile
       });
+
+      // Valida sessão no backend e atualiza linked_ids
+      try {
+        const res = await base44.functions.invoke("clientPortalAuth", { action: "validate", token });
+        const data = res?.data ?? res;
+        if (data?.valid && data?.profile) {
+          const freshProfile = data.profile;
+          // Atualiza sessão local com linked_ids mais recentes
+          saveSession(token, freshProfile, null);
+          setUser({
+            email: freshProfile.email,
+            full_name: freshProfile.name || freshProfile.full_name,
+            name: freshProfile.name || freshProfile.full_name,
+            role: "client_user",
+            linked_company_id: freshProfile.linked_company_id || null,
+            linked_client_contact_id: freshProfile.linked_client_contact_id || null,
+            id: freshProfile.id,
+            ...freshProfile
+          });
+        }
+      } catch (e) {
+        // Silencia erros de validação — usa dados locais
+      }
+      
+      setSessionValidated(true);
+      setUserLoading(false);
     }
-    setUserLoading(false);
+
+    initSession();
   }, []);
 
-  // Perfil estendido do portal — re-fetch para pegar linked_ids atualizados
-  const { data: userProfile } = useQuery({
-    queryKey: ["cp_userProfile", user?.email],
-    queryFn: () =>
-      base44.entities.UserProfile.filter({ user_email: user.email })
-        .then(d => d?.[0] || null),
-    enabled: !!user?.email
-  });
-
-  // Busca ClientContact pelo email
+  // Busca ClientContact pelo email — fonte primária do contactId
   const { data: clientContactByEmail } = useQuery({
     queryKey: ["cp_clientContact_email", user?.email],
     queryFn: () =>
       base44.entities.ClientContact.filter({ email: user.email })
+        .then(d => d?.[0] || null),
+    enabled: !!user?.email
+  });
+
+  // Perfil estendido do portal para pegar linked_ids persistidos
+  const { data: userProfile } = useQuery({
+    queryKey: ["cp_userProfile", user?.email],
+    queryFn: () =>
+      base44.entities.UserProfile.filter({ user_email: user.email })
         .then(d => d?.[0] || null),
     enabled: !!user?.email
   });
@@ -68,8 +105,7 @@ export function useClientPortal() {
 
   const { data: company } = useQuery({
     queryKey: ["client_company", companyId],
-    queryFn: () =>
-      base44.entities.Company.filter({ id: companyId }).then(d => d?.[0] || null),
+    queryFn: () => base44.entities.Company.list().then(d => d.find(c => c.id === companyId) || null),
     enabled: !!companyId
   });
 
@@ -77,29 +113,32 @@ export function useClientPortal() {
   const { data: projectAccess = [] } = useQuery({
     queryKey: ["client_project_access", contactId],
     queryFn: () =>
-      base44.entities.ProjectClientAccess.filter({
-        client_contact_id: contactId,
-        is_active: true
-      }),
+      base44.entities.ProjectClientAccess.filter({ client_contact_id: contactId }),
     enabled: !!contactId
   });
 
-  // Todos os projetos da empresa (com ou sem portal ativo)
-  const { data: allCompanyProjects = [] } = useQuery({
-    queryKey: ["client_all_projects", companyId],
-    queryFn: () => base44.entities.Project.filter({ company_id: companyId }),
-    enabled: !!companyId
+  // Todos os projetos para buscar os que têm acesso
+  const { data: allProjects = [] } = useQuery({
+    queryKey: ["client_all_projects_pool"],
+    queryFn: () => base44.entities.Project.list(),
+    enabled: !!contactId || !!companyId
   });
 
-  // Projetos explicitamente autorizados pelo access (busca independente para garantir)
-  const authorizedProjectIds = projectAccess.length > 0
-    ? projectAccess.filter(pa => pa.is_active !== false).map(pa => pa.project_id)
-    : null;
+  // Projetos autorizados pelo access (ativos)
+  const authorizedProjectIds = projectAccess
+    .filter(pa => pa.is_active !== false)
+    .map(pa => pa.project_id);
 
-  // Se há acessos explícitos, mostra esses projetos; senão mostra todos com portal ativo
-  const projects = authorizedProjectIds
-    ? allCompanyProjects.filter(p => authorizedProjectIds.includes(p.id))
-    : allCompanyProjects.filter(p => p.client_portal_enabled);
+  // Se há acessos explícitos, mostra esses projetos
+  // Senão, fallback para projetos da empresa com portal ativo
+  let projects;
+  if (authorizedProjectIds.length > 0) {
+    projects = allProjects.filter(p => authorizedProjectIds.includes(p.id));
+  } else if (companyId) {
+    projects = allProjects.filter(p => p.company_id === companyId && p.client_portal_enabled);
+  } else {
+    projects = [];
+  }
 
   const isApprover =
     user?.role === "client_approver" ||
@@ -121,7 +160,7 @@ export function useClientPortal() {
   };
 
   const canAccessProject = (projectId) => {
-    if (!authorizedProjectIds) return true;
+    if (authorizedProjectIds.length === 0) return true;
     return authorizedProjectIds.includes(projectId);
   };
 

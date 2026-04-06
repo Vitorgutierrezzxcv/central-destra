@@ -1,6 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
-// Usa Web Crypto para hash de senha (sem dependências externas)
 async function hashPassword(password) {
   const salt = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
   const encoder = new TextEncoder();
@@ -40,27 +39,42 @@ Deno.serve(async (req) => {
       const expired = profile.portal_session_expires && new Date(profile.portal_session_expires) < new Date();
       if (expired) return Response.json({ valid: false, reason: "expired" }, { status: 401 });
 
+      // Re-resolve linked_ids sempre que validar sessão
+      let linked_client_contact_id = profile.linked_client_contact_id || null;
+      let linked_company_id = profile.linked_company_id || null;
+
+      if (!linked_client_contact_id) {
+        const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: profile.user_email });
+        const contact = contacts?.[0];
+        if (contact) {
+          linked_client_contact_id = contact.id;
+          linked_company_id = contact.company_id || linked_company_id;
+          // Atualiza o profile para future requests
+          await base44.asServiceRole.entities.UserProfile.update(profile.id, {
+            linked_client_contact_id,
+            linked_company_id: linked_company_id || profile.linked_company_id,
+          });
+        }
+      }
+
       return Response.json({
         valid: true,
         profile: {
           id: profile.id,
           email: profile.user_email,
           name: profile.full_name || profile.display_name || profile.user_email,
-          linked_company_id: profile.linked_company_id || null,
-          linked_client_contact_id: profile.linked_client_contact_id || null,
+          linked_company_id,
+          linked_client_contact_id,
           portal_type: profile.portal_type || "client"
         }
       });
     }
 
-    // Email e senha obrigatórios para login/register
     if (!email || !password) {
       return Response.json({ error: "Email e senha são obrigatórios." }, { status: 400 });
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-
-    // Busca perfil existente
     const profiles = await base44.asServiceRole.entities.UserProfile.filter({ user_email: normalizedEmail });
     const existing = profiles?.[0] || null;
 
@@ -78,17 +92,15 @@ Deno.serve(async (req) => {
         return Response.json({ error: "Senha incorreta." }, { status: 401 });
       }
 
-      // Tenta vincular ao ClientContact pelo email se ainda não vinculado
+      // SEMPRE re-resolve o ClientContact pelo email para garantir vínculo atualizado
       let linked_client_contact_id = existing.linked_client_contact_id || null;
       let linked_company_id = existing.linked_company_id || null;
 
-      if (!linked_client_contact_id) {
-        const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
-        const contact = contacts?.[0];
-        if (contact) {
-          linked_client_contact_id = contact.id;
-          linked_company_id = contact.company_id || linked_company_id;
-        }
+      const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
+      const contact = contacts?.[0];
+      if (contact) {
+        linked_client_contact_id = contact.id;
+        linked_company_id = contact.company_id || linked_company_id;
       }
 
       const updateData = {
@@ -108,8 +120,8 @@ Deno.serve(async (req) => {
           id: existing.id,
           email: normalizedEmail,
           name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
-          linked_company_id: linked_company_id,
-          linked_client_contact_id: linked_client_contact_id,
+          linked_company_id,
+          linked_client_contact_id,
           portal_type: "client"
         }
       });
@@ -123,6 +135,16 @@ Deno.serve(async (req) => {
 
       const hash = await hashPassword(password);
 
+      // Tenta vincular ao ClientContact existente
+      let linked_client_contact_id = null;
+      let linked_company_id = null;
+      const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
+      const contact = contacts?.[0];
+      if (contact) {
+        linked_client_contact_id = contact.id;
+        linked_company_id = contact.company_id || null;
+      }
+
       let profile;
       if (existing) {
         await base44.asServiceRole.entities.UserProfile.update(existing.id, {
@@ -130,7 +152,9 @@ Deno.serve(async (req) => {
           portal_session_token: newToken,
           portal_session_expires: expiresAt,
           full_name: name || existing.full_name,
-          portal_type: "client"
+          portal_type: "client",
+          ...(linked_client_contact_id ? { linked_client_contact_id } : {}),
+          ...(linked_company_id ? { linked_company_id } : {}),
         });
         profile = existing;
       } else {
@@ -141,7 +165,9 @@ Deno.serve(async (req) => {
           portal_type: "client",
           portal_password_hash: hash,
           portal_session_token: newToken,
-          portal_session_expires: expiresAt
+          portal_session_expires: expiresAt,
+          ...(linked_client_contact_id ? { linked_client_contact_id } : {}),
+          ...(linked_company_id ? { linked_company_id } : {}),
         });
       }
 
@@ -153,8 +179,8 @@ Deno.serve(async (req) => {
           id: profile.id,
           email: normalizedEmail,
           name: name || profile.full_name || normalizedEmail.split("@")[0],
-          linked_company_id: profile.linked_company_id || null,
-          linked_client_contact_id: profile.linked_client_contact_id || null,
+          linked_company_id: linked_company_id || profile.linked_company_id || null,
+          linked_client_contact_id: linked_client_contact_id || profile.linked_client_contact_id || null,
           portal_type: "client"
         }
       });

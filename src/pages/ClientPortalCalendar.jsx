@@ -29,13 +29,13 @@ export default function ClientPortalCalendar() {
 
   const { data: meetings = [] } = useQuery({
     queryKey: ["client_calendar_meetings", activeProject?.id],
-    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
+    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: milestones = [] } = useQuery({
     queryKey: ["client_calendar_milestones", activeProject?.id],
-    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id, visible_to_client: true }),
+    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 

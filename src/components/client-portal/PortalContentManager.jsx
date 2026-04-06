@@ -1,13 +1,13 @@
 /**
  * PortalContentManager — painel admin para gerenciar o conteúdo que o cliente vê:
- * reuniões, marcos (timeline), onboarding, arquivos, e entregas de tarefas.
+ * projeto, tarefas, reuniões, marcos (timeline), onboarding, arquivos.
  */
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar, Flag, ClipboardList, File, Plus, Trash2, Edit2, CheckCircle2,
-  Clock, Upload, Link, ChevronDown, ChevronUp, Loader2, Package
+  Clock, Upload, Loader2, Package, FolderOpen, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,105 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
+
+// ─── Projeto (edição completa) ────────────────────────────────────────────────
+function ProjectEditor({ project }) {
+  const qc = useQueryClient();
+  const [form, setForm] = useState({ ...project });
+  const [saved, setSaved] = useState(false);
+
+  const saveMutation = useMutation({
+    mutationFn: () => base44.entities.Project.update(project.id, form),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin_all_projects"] });
+      qc.invalidateQueries({ queryKey: ["client_all_projects_pool"] });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+  });
+
+  const f = (key) => (e) => setForm(prev => ({ ...prev, [key]: e.target?.value ?? e }));
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-slate-500">Edite as informações que o cliente verá na aba Projetos do portal.</p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2">
+          <Label className="text-xs">Nome do Projeto</Label>
+          <Input value={form.name || ""} onChange={f("name")} className="mt-1" />
+        </div>
+        <div className="col-span-2">
+          <Label className="text-xs">Resumo do que foi contratado</Label>
+          <Textarea value={form.description || ""} onChange={f("description")} rows={3} className="mt-1 resize-none" placeholder="Descreva o escopo contratado para o cliente..." />
+        </div>
+        <div>
+          <Label className="text-xs">Status do Projeto</Label>
+          <Select value={form.status || "active"} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
+            <SelectTrigger className="mt-1 text-sm"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Em andamento</SelectItem>
+              <SelectItem value="completed">Concluído</SelectItem>
+              <SelectItem value="archived">Arquivado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label className="text-xs">Fase Atual</Label>
+          <Input value={form.current_phase || ""} onChange={f("current_phase")} className="mt-1" placeholder="Ex: Criação de conteúdo" />
+        </div>
+        <div>
+          <Label className="text-xs">Data de Início</Label>
+          <Input type="date" value={form.project_start_date || ""} onChange={f("project_start_date")} className="mt-1" />
+        </div>
+        <div>
+          <Label className="text-xs">Previsão de Entrega</Label>
+          <Input type="date" value={form.estimated_end_date || ""} onChange={f("estimated_end_date")} className="mt-1" />
+        </div>
+        <div>
+          <Label className="text-xs">Tipo de Serviço</Label>
+          <Input value={form.service_type || ""} onChange={f("service_type")} className="mt-1" placeholder="Ex: Gestão de tráfego" />
+        </div>
+        <div>
+          <Label className="text-xs">Responsável Interno</Label>
+          <Input value={form.project_owner_internal || ""} onChange={f("project_owner_internal")} className="mt-1" placeholder="Email do responsável" />
+        </div>
+        <div className="col-span-2">
+          <Label className="text-xs">Progresso (%)</Label>
+          <div className="flex items-center gap-3 mt-1">
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={form.progress_percentage ?? 0}
+              onChange={e => setForm(p => ({ ...p, progress_percentage: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) }))}
+              className="w-24"
+            />
+            <div className="flex-1">
+              <Progress value={form.progress_percentage || 0} className="h-3" />
+            </div>
+            <span className="text-sm font-semibold text-slate-700">{form.progress_percentage || 0}%</span>
+          </div>
+        </div>
+        <div className="col-span-2 flex items-center gap-2 pt-1">
+          <Switch
+            checked={!!form.client_portal_enabled}
+            onCheckedChange={v => setForm(p => ({ ...p, client_portal_enabled: v }))}
+          />
+          <Label className="text-xs">Portal ativo para o cliente</Label>
+        </div>
+      </div>
+      <Button
+        onClick={() => saveMutation.mutate()}
+        disabled={saveMutation.isPending}
+        className={`w-full ${saved ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"} text-white`}
+      >
+        {saveMutation.isPending ? "Salvando..." : saved ? "✓ Salvo!" : "Salvar Alterações do Projeto"}
+      </Button>
+    </div>
+  );
+}
 
 // ─── Reuniões ────────────────────────────────────────────────────────────────
 function MeetingsManager({ projectId, companyId }) {
@@ -54,6 +152,7 @@ function MeetingsManager({ projectId, companyId }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin_meetings", projectId] })
   });
 
+  const meetingTypeLabels = { kickoff: "Kickoff", weekly: "Semanal", review: "Revisão", presentation: "Apresentação", onboarding: "Onboarding", ad_hoc: "Avulso" };
   const statusColors = { scheduled: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700", cancelled: "bg-slate-100 text-slate-500" };
 
   return (
@@ -66,7 +165,7 @@ function MeetingsManager({ projectId, companyId }) {
       </div>
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
-        meetings.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhuma reunião cadastrada.</p> :
+        meetings.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhuma reunião. Cadastre reuniões para aparecerem no calendário e timeline do cliente.</p> :
         <div className="space-y-2">
           {meetings.map(m => (
             <div key={m.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
@@ -74,10 +173,13 @@ function MeetingsManager({ projectId, companyId }) {
                 <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
                 <p className="text-xs text-slate-400">
                   {m.start_datetime ? format(new Date(m.start_datetime), "dd/MM/yyyy HH:mm") : "—"}
+                  {" · "}{meetingTypeLabels[m.meeting_type] || m.meeting_type}
                   {m.meeting_link && <span className="ml-2 text-blue-500">• Com link</span>}
                 </p>
               </div>
-              <Badge className={`text-[10px] ${statusColors[m.status] || "bg-slate-100 text-slate-500"}`}>{m.status}</Badge>
+              <Badge className={`text-[10px] ${statusColors[m.status] || "bg-slate-100 text-slate-500"}`}>
+                {m.status === "scheduled" ? "Agendada" : m.status === "completed" ? "Realizada" : "Cancelada"}
+              </Badge>
               <Badge className={`text-[10px] ${m.visible_to_client ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"}`}>
                 {m.visible_to_client ? "Visível" : "Oculta"}
               </Badge>
@@ -100,7 +202,7 @@ function MeetingsManager({ projectId, companyId }) {
                 <Select value={form.meeting_type || "weekly"} onValueChange={v => setForm(f => ({ ...f, meeting_type: v }))}>
                   <SelectTrigger className="mt-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["kickoff","weekly","review","presentation","onboarding","ad_hoc"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {Object.entries(meetingTypeLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -116,11 +218,11 @@ function MeetingsManager({ projectId, companyId }) {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><Label className="text-xs">Data/Hora Início</Label><Input type="datetime-local" value={form.start_datetime ? form.start_datetime.slice(0,16) : ""} onChange={e => setForm(f => ({ ...f, start_datetime: e.target.value }))} className="mt-1" /></div>
-              <div><Label className="text-xs">Data/Hora Fim</Label><Input type="datetime-local" value={form.end_datetime ? form.end_datetime.slice(0,16) : ""} onChange={e => setForm(f => ({ ...f, end_datetime: e.target.value }))} className="mt-1" /></div>
+              <div><Label className="text-xs">Data/Hora Início</Label><Input type="datetime-local" value={form.start_datetime ? form.start_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, start_datetime: e.target.value }))} className="mt-1" /></div>
+              <div><Label className="text-xs">Data/Hora Fim</Label><Input type="datetime-local" value={form.end_datetime ? form.end_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, end_datetime: e.target.value }))} className="mt-1" /></div>
             </div>
             <div><Label className="text-xs">Link da Reunião (Google Meet, Zoom...)</Label><Input value={form.meeting_link || ""} onChange={e => setForm(f => ({ ...f, meeting_link: e.target.value }))} placeholder="https://meet.google.com/..." className="mt-1" /></div>
-            <div><Label className="text-xs">Local / Endereço</Label><Input value={form.location || ""} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="Opcional" className="mt-1" /></div>
+            <div><Label className="text-xs">Local / Endereço (opcional)</Label><Input value={form.location || ""} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} className="mt-1" /></div>
             <div><Label className="text-xs">Descrição</Label><Textarea value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
             <div className="flex items-center gap-2">
               <Switch checked={!!form.visible_to_client} onCheckedChange={v => setForm(f => ({ ...f, visible_to_client: v }))} />
@@ -170,6 +272,7 @@ function MilestonesManager({ projectId, companyId }) {
 
   const statusColors = { upcoming: "bg-slate-100 text-slate-600", in_progress: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700", delayed: "bg-rose-100 text-rose-700" };
   const statusLabels = { upcoming: "Pendente", in_progress: "Em andamento", completed: "Concluído", delayed: "Atrasado" };
+  const milestoneTypeLabels = { kickoff: "Kickoff", review: "Revisão", delivery: "Entrega", approval: "Aprovação", launch: "Lançamento", other: "Outro" };
 
   return (
     <div>
@@ -181,13 +284,13 @@ function MilestonesManager({ projectId, companyId }) {
       </div>
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
-        milestones.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhum marco cadastrado. Os marcos aparecem na timeline do cliente.</p> :
+        milestones.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhum marco. Os marcos aparecem na timeline do cliente.</p> :
         <div className="space-y-2">
           {milestones.map(m => (
             <div key={m.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
-                <p className="text-xs text-slate-400">{m.due_date ? format(new Date(m.due_date), "dd/MM/yyyy") : "—"} · {m.milestone_type}</p>
+                <p className="text-xs text-slate-400">{m.due_date ? format(new Date(m.due_date), "dd/MM/yyyy") : "—"} · {milestoneTypeLabels[m.milestone_type] || m.milestone_type}</p>
               </div>
               <Badge className={`text-[10px] ${statusColors[m.status] || "bg-slate-100 text-slate-500"}`}>{statusLabels[m.status] || m.status}</Badge>
               <div className="flex gap-1">
@@ -209,7 +312,7 @@ function MilestonesManager({ projectId, companyId }) {
                 <Select value={form.milestone_type || "other"} onValueChange={v => setForm(f => ({ ...f, milestone_type: v }))}>
                   <SelectTrigger className="mt-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {["kickoff","review","delivery","approval","launch","other"].map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    {Object.entries(milestoneTypeLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -225,13 +328,9 @@ function MilestonesManager({ projectId, companyId }) {
                 </Select>
               </div>
             </div>
-            <div><Label className="text-xs">Data Prevista</Label><Input type="date" value={form.due_date || ""} onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))} className="mt-1" /></div>
+            <div><Label className="text-xs">Data Prevista *</Label><Input type="date" value={form.due_date || ""} onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))} className="mt-1" /></div>
             <div><Label className="text-xs">Descrição</Label><Textarea value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
-            <div><Label className="text-xs">Ordem de exibição</Label><Input type="number" value={form.order ?? 0} onChange={e => setForm(f => ({ ...f, order: parseInt(e.target.value) || 0 }))} className="mt-1" /></div>
-            <div className="flex items-center gap-2">
-              <Switch checked={!!form.visible_to_client} onCheckedChange={v => setForm(f => ({ ...f, visible_to_client: v }))} />
-              <Label className="text-xs">Visível ao cliente</Label>
-            </div>
+            <div><Label className="text-xs">Ordem de exibição</Label><Input type="number" value={form.order ?? 0} onChange={e => setForm(f => ({ ...f, order: parseInt(e.target.value) || 0 }))} className="mt-1 w-24" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -256,10 +355,10 @@ function OnboardingManager({ projectId, companyId }) {
     queryKey: ["admin_onboarding", projectId],
     queryFn: () => base44.entities.OnboardingItem.filter({ project_id: projectId }),
     enabled: !!projectId,
-    select: d => [...d].sort((a, b) => a.responsible_side.localeCompare(b.responsible_side))
+    select: d => [...d].sort((a, b) => a.responsible_side?.localeCompare(b.responsible_side || "") || 0)
   });
 
-  const openNew = () => { setEditing(null); setForm({ title: "", description: "", item_type: "document", responsible_side: "client", status: "pending", due_date: "", attachment_required: false, notes: "" }); setOpen(true); };
+  const openNew = () => { setEditing(null); setForm({ title: "", description: "", item_type: "document", responsible_side: "client", status: "pending", due_date: "", notes: "" }); setOpen(true); };
   const openEdit = (m) => { setEditing(m); setForm({ ...m }); setOpen(true); };
 
   const saveMutation = useMutation({
@@ -274,34 +373,80 @@ function OnboardingManager({ projectId, companyId }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin_onboarding", projectId] })
   });
 
+  const updateStatus = (item, status) => {
+    base44.entities.OnboardingItem.update(item.id, { status })
+      .then(() => qc.invalidateQueries({ queryKey: ["admin_onboarding", projectId] }));
+  };
+
   const statusColors = { pending: "bg-slate-100 text-slate-600", in_progress: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700", blocked: "bg-rose-100 text-rose-700" };
   const statusLabels = { pending: "Pendente", in_progress: "Em andamento", completed: "Concluído", blocked: "Bloqueado" };
+  const itemTypeLabels = { document: "Documento", access: "Acesso", information: "Informação", approval: "Aprovação", other: "Outro" };
+
+  const clientItems = items.filter(i => i.responsible_side === "client");
+  const destraItems = items.filter(i => i.responsible_side !== "client");
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-slate-700">{items.length} item(ns) de onboarding</p>
+        <p className="text-sm font-medium text-slate-700">{items.length} item(ns)</p>
         <Button size="sm" onClick={openNew} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 text-xs">
           <Plus className="w-3.5 h-3.5" /> Novo Item
         </Button>
       </div>
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
-        items.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhum item de onboarding. Os itens aparecem na aba de Onboarding do cliente.</p> :
-        <div className="space-y-2">
-          {items.map(item => (
-            <div key={item.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">{item.title}</p>
-                <p className="text-xs text-slate-400">{item.responsible_side === "client" ? "🟦 Cliente" : "🟩 Destra"} · {item.item_type}</p>
-              </div>
-              <Badge className={`text-[10px] ${statusColors[item.status] || "bg-slate-100 text-slate-500"}`}>{statusLabels[item.status] || item.status}</Badge>
-              <div className="flex gap-1">
-                <Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
-                <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(item.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+        items.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhum item. Os itens aparecem na aba de Onboarding do cliente.</p> :
+        <div className="space-y-4">
+          {clientItems.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-blue-600 mb-2">🟦 Responsabilidade do Cliente</p>
+              <div className="space-y-2">
+                {clientItems.map(item => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{item.title}</p>
+                      <p className="text-xs text-slate-400">{itemTypeLabels[item.item_type] || item.item_type}{item.due_date ? ` · Prazo: ${format(new Date(item.due_date), "dd/MM/yyyy")}` : ""}</p>
+                    </div>
+                    <Select value={item.status} onValueChange={v => updateStatus(item, v)}>
+                      <SelectTrigger className="h-7 text-xs w-28 border-slate-200"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(item.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          )}
+          {destraItems.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-emerald-600 mb-2">🟩 Responsabilidade da Destra</p>
+              <div className="space-y-2">
+                {destraItems.map(item => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{item.title}</p>
+                      <p className="text-xs text-slate-400">{itemTypeLabels[item.item_type] || item.item_type}{item.due_date ? ` · Prazo: ${format(new Date(item.due_date), "dd/MM/yyyy")}` : ""}</p>
+                    </div>
+                    <Select value={item.status} onValueChange={v => updateStatus(item, v)}>
+                      <SelectTrigger className="h-7 text-xs w-28 border-slate-200"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(statusLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(item)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(item.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       }
 
@@ -324,11 +469,7 @@ function OnboardingManager({ projectId, companyId }) {
                 <Select value={form.item_type || "document"} onValueChange={v => setForm(f => ({ ...f, item_type: v }))}>
                   <SelectTrigger className="mt-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="document">Documento</SelectItem>
-                    <SelectItem value="access">Acesso</SelectItem>
-                    <SelectItem value="information">Informação</SelectItem>
-                    <SelectItem value="approval">Aprovação</SelectItem>
-                    <SelectItem value="other">Outro</SelectItem>
+                    {Object.entries(itemTypeLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -346,7 +487,7 @@ function OnboardingManager({ projectId, companyId }) {
             </div>
             <div><Label className="text-xs">Prazo</Label><Input type="date" value={form.due_date || ""} onChange={e => setForm(f => ({ ...f, due_date: e.target.value }))} className="mt-1" /></div>
             <div><Label className="text-xs">Descrição</Label><Textarea value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
-            <div><Label className="text-xs">Notas internas</Label><Textarea value={form.notes || ""} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
+            <div><Label className="text-xs">Notas internas (não visíveis ao cliente)</Label><Textarea value={form.notes || ""} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
@@ -375,7 +516,7 @@ function FilesManager({ projectId, companyId }) {
   });
 
   const openNew = () => {
-    setForm({ title: "", file_url: "", file_type: "", category: "documentation", visible_to_client: true, uploaded_by: "" });
+    setForm({ title: "", file_url: "", file_type: "", category: "documentation", visible_to_client: true, description: "" });
     setOpen(true);
   };
 
@@ -406,6 +547,8 @@ function FilesManager({ projectId, companyId }) {
       .then(() => qc.invalidateQueries({ queryKey: ["admin_files", projectId] }));
   };
 
+  const categoryLabels = { contract: "Contrato", presentation: "Apresentação", report: "Relatório", asset: "Material", documentation: "Documentação", other: "Outro" };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -422,7 +565,7 @@ function FilesManager({ projectId, companyId }) {
             <div key={f.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-slate-800 truncate">{f.title}</p>
-                <p className="text-xs text-slate-400">{f.category} · {f.uploaded_at ? format(new Date(f.uploaded_at), "dd/MM/yyyy") : "—"}</p>
+                <p className="text-xs text-slate-400">{categoryLabels[f.category] || f.category}{f.uploaded_at ? ` · ${format(new Date(f.uploaded_at), "dd/MM/yyyy")}` : ""}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={!!f.visible_to_client} onCheckedChange={() => toggleVisibility(f)} className="scale-75" title="Visível ao cliente" />
@@ -451,11 +594,12 @@ function FilesManager({ projectId, companyId }) {
               <Input value={form.file_url || ""} onChange={e => setForm(f => ({ ...f, file_url: e.target.value }))} placeholder="https://..." className="mt-1" />
             </div>
             <div><Label className="text-xs">Nome do Arquivo *</Label><Input value={form.title || ""} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="mt-1" /></div>
+            <div><Label className="text-xs">Descrição</Label><Input value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="mt-1" /></div>
             <div><Label className="text-xs">Categoria</Label>
               <Select value={form.category || "documentation"} onValueChange={v => setForm(f => ({ ...f, category: v }))}>
                 <SelectTrigger className="mt-1 text-xs"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {["contract","presentation","report","asset","documentation","other"].map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {Object.entries(categoryLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -476,7 +620,7 @@ function FilesManager({ projectId, companyId }) {
   );
 }
 
-// ─── Tarefas do projeto (para entregas) ───────────────────────────────────────
+// ─── Tarefas (visibilidade + aprovação) ───────────────────────────────────────
 function TasksVisibilityManager({ projectId }) {
   const qc = useQueryClient();
 
@@ -484,7 +628,7 @@ function TasksVisibilityManager({ projectId }) {
     queryKey: ["admin_project_tasks", projectId],
     queryFn: () => base44.entities.Task.filter({ project_id: projectId }),
     enabled: !!projectId,
-    select: d => d.filter(t => !t.parent_task_id) // só tarefas principais
+    select: d => d.filter(t => !t.parent_task_id).sort((a, b) => a.title.localeCompare(b.title))
   });
 
   const toggleVisibility = (task) => {
@@ -492,24 +636,48 @@ function TasksVisibilityManager({ projectId }) {
       .then(() => qc.invalidateQueries({ queryKey: ["admin_project_tasks", projectId] }));
   };
 
+  const toggleApproval = (task) => {
+    base44.entities.Task.update(task.id, { approval_required: !task.approval_required })
+      .then(() => qc.invalidateQueries({ queryKey: ["admin_project_tasks", projectId] }));
+  };
+
+  const statusColors = { pending: "bg-slate-100 text-slate-500", in_progress: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700" };
   const statusLabels = { pending: "Pendente", in_progress: "Em andamento", completed: "Concluído" };
+  const visible = tasks.filter(t => t.visible_to_client);
 
   return (
     <div>
-      <p className="text-xs text-slate-500 mb-3">Ative a visibilidade de cada tarefa para que o cliente veja nas abas Entregas e Timeline.</p>
+      <p className="text-xs text-slate-500 mb-3">
+        Ative a visibilidade de cada tarefa para que o cliente veja nas abas <strong>Entregas</strong> e <strong>Timeline</strong>.
+        {visible.length > 0 && <span className="ml-2 text-blue-600 font-medium">{visible.length} tarefa(s) visível(eis)</span>}
+      </p>
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
-        tasks.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhuma tarefa neste projeto.</p> :
+        tasks.length === 0 ? (
+          <div className="text-center py-8 border border-dashed border-slate-200 rounded-xl">
+            <p className="text-xs text-slate-400">Nenhuma tarefa neste projeto.</p>
+            <p className="text-xs text-slate-400 mt-1">Crie tarefas no projeto para liberá-las ao cliente.</p>
+          </div>
+        ) :
         <div className="space-y-2">
           {tasks.map(task => (
-            <div key={task.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">{task.title}</p>
-                <p className="text-xs text-slate-400">{statusLabels[task.status] || task.status}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch checked={!!task.visible_to_client} onCheckedChange={() => toggleVisibility(task)} className="scale-75" />
-                <span className="text-[10px] text-slate-400">{task.visible_to_client ? "Visível" : "Oculta"}</span>
+            <div key={task.id} className={`p-3 bg-white border rounded-xl transition-all ${task.visible_to_client ? "border-blue-200 bg-blue-50/30" : "border-slate-100"}`}>
+              <div className="flex items-center gap-3">
+                <Switch checked={!!task.visible_to_client} onCheckedChange={() => toggleVisibility(task)} className="scale-75 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-800 truncate">{task.title}</p>
+                  {task.client_facing_title && task.client_facing_title !== task.title && (
+                    <p className="text-xs text-blue-600 truncate">→ Cliente vê: "{task.client_facing_title}"</p>
+                  )}
+                  <p className="text-xs text-slate-400">{statusLabels[task.status] || task.status}</p>
+                </div>
+                <Badge className={`text-[10px] flex-shrink-0 ${statusColors[task.status] || "bg-slate-100 text-slate-500"}`}>
+                  {statusLabels[task.status] || task.status}
+                </Badge>
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <Switch checked={!!task.approval_required} onCheckedChange={() => toggleApproval(task)} className="scale-75" />
+                  <span className="text-[10px] text-slate-400">Aprovação</span>
+                </div>
               </div>
             </div>
           ))}
@@ -519,15 +687,57 @@ function TasksVisibilityManager({ projectId }) {
   );
 }
 
+// ─── Avaliações recebidas ─────────────────────────────────────────────────────
+function SurveysViewer({ projectId }) {
+  const { data: surveys = [], isLoading } = useQuery({
+    queryKey: ["admin_surveys", projectId],
+    queryFn: () => base44.entities.SatisfactionSurvey.filter({ project_id: projectId }),
+    enabled: !!projectId,
+    select: d => [...d].sort((a, b) => new Date(b.submitted_at || b.created_date) - new Date(a.submitted_at || a.created_date))
+  });
+
+  if (isLoading) return <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div>;
+
+  if (surveys.length === 0) return <p className="text-xs text-slate-400 text-center py-6">Nenhuma avaliação recebida ainda.</p>;
+
+  const avg = (surveys.reduce((s, sv) => s + (sv.overall_score || 0), 0) / surveys.length).toFixed(1);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+        <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+        <div>
+          <p className="text-lg font-bold text-amber-600">{avg}/10</p>
+          <p className="text-xs text-slate-500">{surveys.length} avaliação(ões)</p>
+        </div>
+      </div>
+      {surveys.map(s => (
+        <div key={s.id} className="bg-white border border-slate-100 rounded-xl p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-bold text-amber-500">{s.overall_score}/10</span>
+            <span className="text-xs text-slate-400">{s.submitted_at ? format(new Date(s.submitted_at), "dd/MM/yyyy") : "—"}</span>
+          </div>
+          {s.comment && <p className="text-sm text-slate-600">{s.comment}</p>}
+          <div className="grid grid-cols-2 gap-2 mt-2 text-xs text-slate-500">
+            {s.communication_score && <span>Comunicação: {s.communication_score}/10</span>}
+            {s.timeline_score && <span>Prazos: {s.timeline_score}/10</span>}
+            {s.quality_score && <span>Qualidade: {s.quality_score}/10</span>}
+            {s.result_score && <span>Resultados: {s.result_score}/10</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main export ─────────────────────────────────────────────────────────────
 export default function PortalContentManager({ contact, projects, companies }) {
-  const contactAccess = useQuery({
+  const { data: accessList = [] } = useQuery({
     queryKey: ["pcm_access", contact?.id],
     queryFn: () => base44.entities.ProjectClientAccess.filter({ client_contact_id: contact.id }),
     enabled: !!contact?.id
   });
 
-  const accessList = contactAccess.data || [];
   const accessedProjectIds = accessList.map(a => a.project_id);
   const accessedProjects = projects.filter(p => accessedProjectIds.includes(p.id));
 
@@ -544,55 +754,62 @@ export default function PortalContentManager({ contact, projects, companies }) {
         <Package className="w-4 h-4 text-blue-600 flex-shrink-0" />
         <p className="text-xs text-blue-700">
           Gerencie o conteúdo que <strong>{contact.name}</strong> vê no portal.
-          {accessedProjects.length === 0 && " ⚠️ Nenhum projeto liberado para este contato."}
+          {accessedProjects.length === 0 && " ⚠️ Nenhum projeto liberado para este contato — vincule um projeto acima."}
         </p>
       </div>
 
-      {accessedProjects.length > 1 && (
-        <Select value={activeProjectId || ""} onValueChange={setSelectedProjectId}>
-          <SelectTrigger className="text-sm"><SelectValue placeholder="Selecione o projeto" /></SelectTrigger>
-          <SelectContent>
-            {accessedProjects.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-          </SelectContent>
-        </Select>
-      )}
+      {accessedProjects.length === 0 ? null : (
+        <>
+          {accessedProjects.length > 1 && (
+            <Select value={activeProjectId || ""} onValueChange={setSelectedProjectId}>
+              <SelectTrigger className="text-sm"><SelectValue placeholder="Selecione o projeto" /></SelectTrigger>
+              <SelectContent>
+                {accessedProjects.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
 
-      {activeProject && (
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-2">
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-slate-800">{activeProject.name}</p>
-            <p className="text-xs text-slate-500">{activeProject.status} · {activeProject.progress_percentage || 0}% concluído</p>
-          </div>
-        </div>
-      )}
+          {activeProject && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center gap-3">
+              <FolderOpen className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">{activeProject.name}</p>
+                <p className="text-xs text-slate-500">{activeProject.status} · {activeProject.progress_percentage || 0}% concluído</p>
+              </div>
+              <Badge className={activeProject.client_portal_enabled ? "bg-emerald-100 text-emerald-700 text-[10px]" : "bg-slate-100 text-slate-500 text-[10px]"}>
+                {activeProject.client_portal_enabled ? "Portal ativo" : "Portal inativo"}
+              </Badge>
+            </div>
+          )}
 
-      {activeProjectId && (
-        <Tabs defaultValue="tasks">
-          <TabsList className="w-full grid grid-cols-5 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-1">
-            <TabsTrigger value="tasks" className="text-[10px] flex flex-col gap-0.5 py-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <ClipboardList className="w-3.5 h-3.5 mx-auto" /> Tarefas
-            </TabsTrigger>
-            <TabsTrigger value="meetings" className="text-[10px] flex flex-col gap-0.5 py-2 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <Calendar className="w-3.5 h-3.5 mx-auto" /> Reuniões
-            </TabsTrigger>
-            <TabsTrigger value="milestones" className="text-[10px] flex flex-col gap-0.5 py-2 rounded-lg data-[state=active]:bg-purple-600 data-[state=active]:text-white">
-              <Flag className="w-3.5 h-3.5 mx-auto" /> Timeline
-            </TabsTrigger>
-            <TabsTrigger value="onboarding" className="text-[10px] flex flex-col gap-0.5 py-2 rounded-lg data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
-              <CheckCircle2 className="w-3.5 h-3.5 mx-auto" /> Onboarding
-            </TabsTrigger>
-            <TabsTrigger value="files" className="text-[10px] flex flex-col gap-0.5 py-2 rounded-lg data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-              <File className="w-3.5 h-3.5 mx-auto" /> Arquivos
-            </TabsTrigger>
-          </TabsList>
-          <div className="mt-3">
-            <TabsContent value="tasks"><TasksVisibilityManager projectId={activeProjectId} /></TabsContent>
-            <TabsContent value="meetings"><MeetingsManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
-            <TabsContent value="milestones"><MilestonesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
-            <TabsContent value="onboarding"><OnboardingManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
-            <TabsContent value="files"><FilesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
-          </div>
-        </Tabs>
+          {activeProjectId && (
+            <Tabs defaultValue="project">
+              <TabsList className="w-full grid grid-cols-6 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
+                {[
+                  { value: "project", label: "Projeto", icon: FolderOpen, color: "data-[state=active]:bg-slate-700" },
+                  { value: "tasks", label: "Tarefas", icon: ClipboardList, color: "data-[state=active]:bg-blue-600" },
+                  { value: "meetings", label: "Reuniões", icon: Calendar, color: "data-[state=active]:bg-blue-600" },
+                  { value: "milestones", label: "Timeline", icon: Flag, color: "data-[state=active]:bg-purple-600" },
+                  { value: "onboarding", label: "Onboard.", icon: CheckCircle2, color: "data-[state=active]:bg-emerald-600" },
+                  { value: "files", label: "Arquivos", icon: File, color: "data-[state=active]:bg-amber-600" },
+                ].map(tab => (
+                  <TabsTrigger key={tab.value} value={tab.value} className={`text-[10px] flex flex-col gap-0.5 py-2 rounded-lg ${tab.color} data-[state=active]:text-white`}>
+                    <tab.icon className="w-3.5 h-3.5 mx-auto" />
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              <div className="mt-3">
+                <TabsContent value="project"><ProjectEditor project={activeProject} /></TabsContent>
+                <TabsContent value="tasks"><TasksVisibilityManager projectId={activeProjectId} /></TabsContent>
+                <TabsContent value="meetings"><MeetingsManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
+                <TabsContent value="milestones"><MilestonesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
+                <TabsContent value="onboarding"><OnboardingManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
+                <TabsContent value="files"><FilesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
+              </div>
+            </Tabs>
+          )}
+        </>
       )}
     </div>
   );
