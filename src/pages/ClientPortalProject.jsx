@@ -85,44 +85,27 @@ export default function ClientPortalProject() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col md:flex-row">
-      {/* Left Panel - Hero */}
-      <div className="md:w-5/12 text-white px-5 md:px-8 py-8 md:py-12 flex flex-col justify-between min-h-screen md:min-h-auto">
-        <div>
-          <p className="text-slate-400 text-[10px] tracking-[0.2em] uppercase font-medium mb-4">Projeto</p>
-          <h1 className="text-4xl md:text-3xl lg:text-4xl font-light leading-tight mb-6">{activeProject.name}</h1>
-          {activeProject.description && (
-            <p className="text-slate-300 text-sm md:text-base font-light leading-relaxed mb-8">{activeProject.description}</p>
-          )}
-          
-          <div className="space-y-4">
-            <div>
-              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-2">Status</p>
-              <Badge className={`${statusCfg.color} text-xs`}>{statusCfg.label}</Badge>
-            </div>
-            {activeProject.project_start_date && (
-              <div>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-1">Início</p>
-                <p className="text-sm text-slate-200">{format(parseISO(activeProject.project_start_date), "dd 'de' MMMM", { locale: ptBR })}</p>
-              </div>
-            )}
-            {activeProject.estimated_end_date && (
-              <div>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-1">Entrega Prevista</p>
-                <p className="text-sm text-slate-200">{format(parseISO(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}</p>
-              </div>
+    <div className="min-h-screen bg-white flex flex-col">
+      <div className="max-w-full w-full px-5 md:px-4 pt-8 md:pt-12 pb-20">
+        <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">
+          {activeProject.name}
+        </p>
+        <div className="flex items-end justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight">
+              {activeProject.name}
+            </h1>
+            {activeProject.description && (
+              <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed mt-3">
+                {activeProject.description}
+              </p>
             )}
           </div>
         </div>
-        
-        <div className="text-[10px] text-slate-500 space-y-1">
-          <p>© 2026 Destra · Acesso seguro</p>
-        </div>
       </div>
 
-      {/* Right Panel - Content */}
-      <div className="md:w-7/12 bg-white flex flex-col overflow-y-auto">
-        <div className="px-5 md:px-8 py-8 space-y-6 flex-1">
+      {/* Content */}
+      <div className="max-w-full w-full px-5 md:px-4 space-y-6 pb-20">
         {/* Progress Bar */}
          <div className="border border-slate-200 rounded-2xl p-6">
           <div className="flex items-center justify-between mb-3">
@@ -231,7 +214,6 @@ export default function ClientPortalProject() {
              ))}
            </div>
          </div>
-        </div>
         </div>
         </div>
         );
