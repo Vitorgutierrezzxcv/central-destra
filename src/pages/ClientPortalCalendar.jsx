@@ -142,7 +142,7 @@ export default function ClientPortalCalendar() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <div className="max-w-full w-full px-5 md:px-4 pt-8 md:pt-12 pb-20">
+      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-20">
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
            Calendário
          </p>

@@ -27,7 +27,7 @@ export default function ClientPortalProjects() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
       {/* Hero Section */}
-      <div className="text-white px-5 md:px-4 pt-8 md:pt-12 pb-8 md:pb-12">
+      <div className="text-white px-5 md:px-4 pt-28 md:pt-12 pb-8 md:pb-12">
         <div className="max-w-lg md:max-w-6xl mx-auto">
            <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-8">
              Meus Projetos
