@@ -1,14 +1,12 @@
 import React, { useMemo, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { TrendingUp, CheckCircle2, Clock, Calendar, AlertCircle, ArrowRight, Star, Loader2, MessageSquare } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ArrowRight, Star, Loader2, MessageSquare, Calendar, FileText } from "lucide-react";
 import { format, isAfter } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Progress } from "@/components/ui/progress";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
-import ProjectProgressIndicators from "@/components/client-portal/ProjectProgressIndicators";
 
 export default function ClientPortalDashboard() {
   const navigate = useNavigate();
@@ -61,222 +59,197 @@ export default function ClientPortalDashboard() {
     m.status === "scheduled" && m.start_datetime && isAfter(new Date(m.start_datetime), new Date())
   );
   const clientOnboarding = onboarding.filter(o => o.responsible_side === "client" && o.status !== "completed");
+  const progress = activeProject?.progress_percentage || 0;
+  const firstName = user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente";
 
   if (userLoading) {
     return (
       <div className="min-h-screen bg-[#f8f8f6] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">
-            <span className="text-white text-sm font-light">D</span>
-          </div>
-          <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
-        </div>
+        <Loader2 className="w-4 h-4 text-slate-300 animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#f8f8f6]">
-      {/* ── Hero Header ── */}
-      <div className="bg-white border-b border-slate-100 px-6 py-8 md:px-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              {company && (
-                <div className="flex items-center gap-2 mb-3">
-                  {company.logo_url && (
-                    <img src={company.logo_url} alt={company.name} className="w-5 h-5 rounded object-cover opacity-70" />
-                  )}
-                  <span className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">{company.name}</span>
-                </div>
+
+      {/* ── HERO ── */}
+      <div className="bg-[#f8f8f6] px-6 pt-10 pb-8 md:px-10 md:pt-14">
+        <div className="max-w-3xl mx-auto">
+          {company && (
+            <div className="flex items-center gap-2 mb-5">
+              {company.logo_url && (
+                <img src={company.logo_url} alt={company.name} className="w-5 h-5 rounded object-cover opacity-60" />
               )}
-              <h1 className="text-2xl md:text-3xl font-extralight text-slate-900 tracking-tight">
-                Olá, {user?.full_name?.split(" ")[0] || user?.name?.split(" ")[0] || "Cliente"}
-              </h1>
-              <p className="text-slate-400 text-sm mt-1.5 font-light">
-                Acompanhe o progresso do seu projeto em tempo real.
-              </p>
+              <span className="text-[10px] text-slate-400 tracking-widest uppercase font-medium">{company.name}</span>
             </div>
-            {activeProject && (
-              <div className="hidden md:block text-right">
-                <p className="text-[10px] text-slate-400 tracking-wider uppercase">{activeProject.current_phase || "Em andamento"}</p>
-                <p className="text-lg font-light text-slate-700 mt-0.5">{activeProject.name}</p>
-              </div>
-            )}
-          </div>
+          )}
+
+          <h1 className="text-5xl md:text-7xl font-extralight text-slate-900 tracking-tight leading-none mb-5">
+            Olá,<br />{firstName}.
+          </h1>
+          <p className="text-lg md:text-xl text-slate-400 font-extralight leading-relaxed max-w-sm">
+            Acompanhe o progresso do seu projeto em tempo real, aqui mesmo.
+          </p>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-5 md:px-10 py-8 space-y-8">
-        {!activeProject ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-5">
-              <Clock className="w-7 h-7 text-slate-300" />
-            </div>
-            <h3 className="text-slate-600 font-light text-lg mb-2">Nenhum projeto disponível</h3>
-            <p className="text-slate-400 text-sm font-light max-w-xs leading-relaxed">
-              Entre em contato com a equipe Destra para ter acesso ao seu projeto.
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* ── Progress Card ── */}
-            <div className="bg-white rounded-2xl border border-slate-100 p-6 md:p-8">
-              <div className="flex items-start justify-between gap-4 mb-6">
-                <div>
-                  <h2 className="text-base font-medium text-slate-900">{activeProject.name}</h2>
-                  <p className="text-sm text-slate-400 font-light mt-0.5">{activeProject.current_phase || "Fase em andamento"}</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-3xl font-extralight text-slate-900">{activeProject.progress_percentage || 0}</span>
-                  <span className="text-lg text-slate-400 font-light">%</span>
-                </div>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5">
-                <div
-                  className="h-1.5 rounded-full bg-slate-900 transition-all duration-700"
-                  style={{ width: `${activeProject.progress_percentage || 0}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between mt-4 text-xs text-slate-400 font-light">
-                {activeProject.project_start_date && (
-                  <span>Início: {format(new Date(activeProject.project_start_date), "dd/MM/yyyy")}</span>
-                )}
-                {activeProject.estimated_end_date && (
-                  <span>Previsão: {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}</span>
-                )}
-              </div>
-              {activeProject.description && (
-                <p className="text-sm text-slate-400 font-light mt-5 pt-5 border-t border-slate-50 leading-relaxed">
-                  {activeProject.description}
+      {activeProject ? (
+        <div className="max-w-3xl mx-auto px-5 md:px-10 pb-12 space-y-4">
+
+          {/* ── PROGRESS BAR BLOCK (dark) ── */}
+          <div className="bg-slate-900 rounded-3xl p-7 md:p-8">
+            <div className="flex items-end justify-between gap-4 mb-5">
+              <div>
+                <p className="text-[10px] text-slate-500 tracking-widest uppercase font-medium mb-1.5">
+                  {activeProject.current_phase || "Em andamento"}
                 </p>
-              )}
-            </div>
-
-            {/* ── Stats ── */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { label: "Progresso", value: `${activeProject?.progress_percentage || 0}%`, icon: TrendingUp },
-                { label: "Concluídas", value: completedTasks, icon: CheckCircle2 },
-                { label: "Em andamento", value: pendingTasks, icon: Clock },
-                { label: "Aguard. aprovação", value: pendingApprovals, icon: AlertCircle },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-100 p-5">
-                  <stat.icon className="w-4 h-4 text-slate-300 mb-3" />
-                  <p className="text-2xl font-extralight text-slate-900">{stat.value}</p>
-                  <p className="text-[10px] text-slate-400 mt-1 tracking-wide uppercase font-medium">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Visual Progress */}
-            <ProjectProgressIndicators tasks={tasks} project={activeProject} />
-
-            {/* ── Action Alerts ── */}
-            <div className="space-y-3">
-              {pendingApprovals > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
-                      <AlertCircle className="w-4 h-4 text-slate-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">Sua ação é necessária</p>
-                      <p className="text-xs text-slate-400 font-light mt-0.5">
-                        {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} aprovação.
-                      </p>
-                    </div>
-                  </div>
-                  <Link to={createPageUrl("ClientPortalDeliveries")}
-                    className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors">
-                    Ver <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              )}
-
-              {clientOnboarding.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center">
-                      <Clock className="w-4 h-4 text-slate-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-slate-900">Pendências do Onboarding</p>
-                      <p className="text-xs text-slate-400 font-light mt-0.5">
-                        {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação.
-                      </p>
-                    </div>
-                  </div>
-                  <Link to={createPageUrl("ClientPortalOnboarding")}
-                    className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-medium hover:bg-slate-800 transition-colors">
-                    Ver <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* ── Grid: Meetings + Quick Links ── */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Upcoming Meetings */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-5">Próximas Reuniões</p>
-                {upcomingMeetings.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <Calendar className="w-8 h-8 text-slate-200 mx-auto mb-3" />
-                    <p className="text-sm text-slate-400 font-light">Nenhuma reunião agendada</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {upcomingMeetings.slice(0, 3).map(m => (
-                      <div key={m.id} className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex flex-col items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-semibold text-slate-700 leading-none">
-                            {format(new Date(m.start_datetime), "dd")}
-                          </span>
-                          <span className="text-[8px] text-slate-400 uppercase tracking-wide mt-0.5">
-                            {format(new Date(m.start_datetime), "MMM", { locale: ptBR })}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm text-slate-800 truncate font-medium">{m.title}</p>
-                          <p className="text-xs text-slate-400 font-light mt-0.5">{format(new Date(m.start_datetime), "HH:mm")}</p>
-                        </div>
-                        {m.meeting_link && (
-                          <a href={m.meeting_link} target="_blank" rel="noreferrer"
-                            className="text-xs text-slate-900 hover:text-slate-600 font-medium flex-shrink-0 flex items-center gap-1">
-                            Entrar <ArrowRight className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <p className="text-white font-light text-lg leading-snug">{activeProject.name}</p>
               </div>
+              <div className="text-right flex-shrink-0">
+                <span className="text-5xl font-extralight text-white leading-none">{progress}</span>
+                <span className="text-xl text-slate-500 font-light">%</span>
+              </div>
+            </div>
+            {/* Barra fina */}
+            <div className="w-full bg-slate-700/50 rounded-full h-px">
+              <div
+                className="h-px rounded-full bg-white transition-all duration-700"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between mt-3 text-[10px] text-slate-600 font-light">
+              {activeProject.project_start_date && (
+                <span>{format(new Date(activeProject.project_start_date), "dd/MM/yyyy")}</span>
+              )}
+              {activeProject.estimated_end_date && (
+                <span>Previsão {format(new Date(activeProject.estimated_end_date), "dd 'de' MMMM", { locale: ptBR })}</span>
+              )}
+            </div>
+          </div>
 
-              {/* Quick Links */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6">
-                <p className="text-[10px] text-slate-400 tracking-widest uppercase font-medium mb-5">Acesso Rápido</p>
-                <div className="space-y-0.5">
-                  {[
-                    { label: "Tarefas & Progresso", page: "ClientPortalTasks", icon: CheckCircle2 },
-                    { label: "Entregas para Aprovar", page: "ClientPortalDeliveries", icon: AlertCircle },
-                    { label: "Calendário", page: "ClientPortalCalendar", icon: Calendar },
-                    { label: "Arquivos", page: "ClientPortalFiles", icon: Star },
-                    { label: "Chamados de Suporte", page: "ClientPortalTickets", icon: MessageSquare },
-                  ].map((link, i) => (
-                    <Link key={i} to={createPageUrl(link.page)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors group">
-                      <link.icon className="w-3.5 h-3.5 text-slate-300 group-hover:text-slate-500 transition-colors" />
-                      <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors font-light flex-1">{link.label}</span>
-                      <ArrowRight className="w-3 h-3 text-slate-200 group-hover:text-slate-400 transition-all group-hover:translate-x-0.5" />
-                    </Link>
-                  ))}
+          {/* ── STATS ROW ── */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 flex flex-col gap-3">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div>
+                <p className="text-3xl font-extralight text-slate-900 leading-none">{completedTasks}</p>
+                <p className="text-[10px] text-slate-400 mt-1.5 tracking-wide uppercase font-medium">Concluídas</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-100 p-5 flex flex-col gap-3">
+              <Clock className="w-4 h-4 text-blue-400" />
+              <div>
+                <p className="text-3xl font-extralight text-slate-900 leading-none">{pendingTasks}</p>
+                <p className="text-[10px] text-slate-400 mt-1.5 tracking-wide uppercase font-medium">Em aberto</p>
+              </div>
+            </div>
+            <div className={`rounded-2xl p-5 flex flex-col gap-3 ${pendingApprovals > 0 ? "bg-slate-900" : "bg-white border border-slate-100"}`}>
+              <AlertCircle className={`w-4 h-4 ${pendingApprovals > 0 ? "text-slate-400" : "text-slate-300"}`} />
+              <div>
+                <p className={`text-3xl font-extralight leading-none ${pendingApprovals > 0 ? "text-white" : "text-slate-900"}`}>{pendingApprovals}</p>
+                <p className={`text-[10px] mt-1.5 tracking-wide uppercase font-medium ${pendingApprovals > 0 ? "text-slate-500" : "text-slate-400"}`}>
+                  {pendingApprovals > 0 ? "Aguard. você" : "Aprovações"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── ACTION ALERTS ── */}
+          {pendingApprovals > 0 && (
+            <Link to={createPageUrl("ClientPortalDeliveries")}
+              className="block bg-slate-900 rounded-2xl p-6 hover:bg-slate-800 transition-colors group">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white font-medium text-sm">Sua ação é necessária</p>
+                  <p className="text-slate-400 text-xs font-light mt-1">
+                    {pendingApprovals} entrega{pendingApprovals > 1 ? "s" : ""} aguarda{pendingApprovals > 1 ? "m" : ""} aprovação.
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+            </Link>
+          )}
+
+          {clientOnboarding.length > 0 && (
+            <Link to={createPageUrl("ClientPortalOnboarding")}
+              className="block bg-white rounded-2xl border border-slate-200 p-6 hover:border-slate-300 transition-colors group">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-900 font-medium text-sm">Pendências de onboarding</p>
+                  <p className="text-slate-400 text-xs font-light mt-1">
+                    {clientOnboarding.length} item{clientOnboarding.length > 1 ? "s" : ""} aguardam sua ação.
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+              </div>
+            </Link>
+          )}
+
+          {/* ── PRÓXIMA REUNIÃO (dark block) ── */}
+          {upcomingMeetings.length > 0 && (
+            <div className="bg-slate-900 rounded-3xl p-7">
+              <p className="text-[10px] text-slate-500 tracking-widest uppercase font-medium mb-5">Próxima Reunião</p>
+              <div className="flex items-start gap-5">
+                <div className="flex-shrink-0 flex flex-col items-center">
+                  <span className="text-4xl font-extralight text-white leading-none">
+                    {format(new Date(upcomingMeetings[0].start_datetime), "dd")}
+                  </span>
+                  <span className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
+                    {format(new Date(upcomingMeetings[0].start_datetime), "MMM", { locale: ptBR })}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0 pt-1">
+                  <p className="text-white font-light leading-snug">{upcomingMeetings[0].title}</p>
+                  <p className="text-slate-500 text-xs font-light mt-1.5">
+                    {format(new Date(upcomingMeetings[0].start_datetime), "HH:mm")} · {format(new Date(upcomingMeetings[0].start_datetime), "EEEE", { locale: ptBR })}
+                  </p>
+                  {upcomingMeetings[0].meeting_link && (
+                    <a href={upcomingMeetings[0].meeting_link} target="_blank" rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 mt-4 text-xs text-white font-medium px-4 py-2 bg-white/10 rounded-xl hover:bg-white/20 transition-colors">
+                      Entrar na reunião <ArrowRight className="w-3 h-3" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
-          </>
-        )}
-      </div>
+          )}
+
+          {/* ── QUICK LINKS GRID ── */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Tarefas", sub: `${completedTasks}/${tasks.length} concluídas`, page: "ClientPortalTasks", icon: CheckCircle2, dark: false },
+              { label: "Entregas", sub: pendingApprovals > 0 ? `${pendingApprovals} aguardando` : "Aprovações", page: "ClientPortalDeliveries", icon: AlertCircle, dark: pendingApprovals > 0 },
+              { label: "Arquivos", sub: "Documentos", page: "ClientPortalFiles", icon: FileText, dark: false },
+              { label: "Suporte", sub: "Chamados", page: "ClientPortalTickets", icon: MessageSquare, dark: false },
+            ].map((link) => (
+              <Link key={link.page} to={createPageUrl(link.page)}
+                className={`rounded-2xl p-5 flex flex-col gap-3 group transition-all ${
+                  link.dark
+                    ? "bg-slate-900 hover:bg-slate-800"
+                    : "bg-white border border-slate-100 hover:border-slate-200"
+                }`}>
+                <link.icon className={`w-4 h-4 ${link.dark ? "text-slate-400" : "text-slate-300"}`} />
+                <div>
+                  <p className={`text-sm font-medium ${link.dark ? "text-white" : "text-slate-900"}`}>{link.label}</p>
+                  <p className={`text-[10px] font-light mt-0.5 ${link.dark ? "text-slate-500" : "text-slate-400"}`}>{link.sub}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto px-5 md:px-10 py-20 flex flex-col items-center text-center">
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-5">
+            <Clock className="w-6 h-6 text-slate-300" />
+          </div>
+          <h3 className="text-slate-600 font-light text-lg mb-2">Nenhum projeto disponível</h3>
+          <p className="text-slate-400 text-sm font-light max-w-xs leading-relaxed">
+            Entre em contato com a equipe Destra para ter acesso ao seu projeto.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
