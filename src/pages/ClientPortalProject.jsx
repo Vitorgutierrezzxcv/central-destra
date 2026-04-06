@@ -86,27 +86,6 @@ export default function ClientPortalProject() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Portal do Cliente</p>
-          <div className="flex items-start justify-between gap-4 flex-wrap">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">{activeProject.name}</h1>
-              {activeProject.description && (
-                <p className="text-slate-500 text-sm mt-1 max-w-xl">{activeProject.description}</p>
-              )}
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
-              {activeProject.service_type && (
-                <Badge className="bg-slate-100 text-slate-600 border-slate-200">{activeProject.service_type}</Badge>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 space-y-6">
         {/* Stats Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
