@@ -152,7 +152,7 @@ export default function ClientPortalDashboard() {
           {company?.name || "Portal"}
         </p>
         <h1 className="text-[3.25rem] leading-[1.1] font-extralight text-slate-900 tracking-tight mb-2">
-          Olá,<br />{firstName} 👋
+          Olá,<br />{firstName}
         </h1>
         <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
           {activeProject ? `Acompanhe ${activeProject.name}` : "Bem-vindo ao portal do cliente"}
@@ -194,85 +194,54 @@ export default function ClientPortalDashboard() {
 
             {/* 2. AÇÃO NECESSÁRIA */}
             {pendingActions.length > 0 && (
-              <div className="border-l-3 border-amber-500 bg-amber-50 rounded-lg p-5">
+              <div className="border-l-3 border-blue-500 bg-blue-50 rounded-lg p-5">
                 <div className="flex items-start gap-3 mb-4">
-                  <Zap className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Zap className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-amber-900 text-sm">Ação Necessária</h3>
-                    <p className="text-xs text-amber-700 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} dependem da sua ação</p>
+                    <h3 className="font-semibold text-blue-900 text-sm">Ação Necessária</h3>
+                    <p className="text-xs text-blue-700 mt-0.5">{pendingActions.length} item{pendingActions.length > 1 ? "ns" : ""} dependem da sua ação</p>
                   </div>
                 </div>
                 <div className="space-y-2">
                   {pendingActions.slice(0, 3).map((action, i) => (
-                    <div key={i} className="text-xs text-amber-800 p-2 bg-white/50 rounded border border-amber-100">
+                    <div key={i} className="text-xs text-blue-800 p-2 bg-white/50 rounded border border-blue-100">
                       <span className="font-medium">{action.type === "approval" ? "Aprovação:" : "Onboarding:"}</span> {action.title}
                     </div>
                   ))}
                   {pendingActions.length > 3 && (
-                    <p className="text-xs text-amber-600 px-2">+ {pendingActions.length - 3} item{pendingActions.length - 3 > 1 ? "ns" : ""}</p>
+                    <p className="text-xs text-blue-600 px-2">+ {pendingActions.length - 3} item{pendingActions.length - 3 > 1 ? "ns" : ""}</p>
                   )}
                 </div>
                 <Link to={`${createPageUrl("ClientPortalDeliveries")}${activeProject ? `?project_id=${activeProject.id}` : ""}`} className="inline-block mt-3">
-                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white gap-1 h-8 text-xs">
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-1 h-8 text-xs">
                     Revisar <ArrowRight className="w-3 h-3" />
                   </Button>
                 </Link>
               </div>
             )}
 
-            {/* 3. VISÃO GERAL DO PROJETO */}
-            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 space-y-3">
-              <h3 className="font-semibold text-slate-900 text-sm">Visão Geral</h3>
-              <div className="space-y-3 text-xs">
-                {activeProject.current_phase && (
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                    <span className="text-slate-600">Fase Atual</span>
-                    <span className="font-semibold text-slate-900">{activeProject.current_phase}</span>
-                  </div>
-                )}
-                {activeProject.status && (
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                    <span className="text-slate-600">Status</span>
-                    <Badge className="capitalize bg-slate-200 text-slate-800">{activeProject.status}</Badge>
-                  </div>
-                )}
-                {activeProject.estimated_end_date && (
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                    <span className="text-slate-600">Conclusão Estimada</span>
-                    <span className="font-semibold text-slate-900">{format(new Date(activeProject.estimated_end_date), "dd/MM/yyyy")}</span>
-                  </div>
-                )}
-                {activeProject.project_owner_internal && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Responsável Destra</span>
-                    <span className="font-semibold text-slate-900 truncate">{activeProject.project_owner_internal.split("@")[0]}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 4. PRÓXIMA REUNIÃO */}
+            {/* 3. PRÓXIMA REUNIÃO */}
             {upcomingMeetings.length > 0 ? (
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
-                <h3 className="font-semibold text-slate-900 text-sm mb-4">Próxima Reunião</h3>
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                <h3 className="font-semibold text-blue-900 text-sm mb-4">Próxima Reunião</h3>
                 {(() => {
                   const meeting = upcomingMeetings[0];
                   return (
                     <div className="space-y-2 text-xs">
-                      <div className="pb-2 border-b border-slate-200">
-                        <p className="text-slate-600 mb-1">Assunto</p>
-                        <p className="font-semibold text-slate-900">{meeting.title}</p>
+                      <div className="pb-2 border-b border-blue-200">
+                        <p className="text-blue-700 mb-1">Assunto</p>
+                        <p className="font-semibold text-blue-900">{meeting.title}</p>
                       </div>
-                      <div className="pb-2 border-b border-slate-200">
-                        <p className="text-slate-600 mb-1">Data e Hora</p>
-                        <p className="font-semibold text-slate-900">
+                      <div className="pb-2 border-b border-blue-200">
+                        <p className="text-blue-700 mb-1">Data e Hora</p>
+                        <p className="font-semibold text-blue-900">
                           {format(new Date(meeting.start_datetime), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                         </p>
                       </div>
                       {meeting.meeting_link && (
                         <div className="pt-2">
                           <a href={meeting.meeting_link} target="_blank" rel="noreferrer" className="inline-block">
-                            <Button size="sm" className="bg-slate-800 hover:bg-slate-900 text-white gap-2 h-8 text-xs">
+                            <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white gap-2 h-8 text-xs">
                               Entrar na Reunião <ArrowRight className="w-3 h-3" />
                             </Button>
                           </a>
@@ -283,13 +252,13 @@ export default function ClientPortalDashboard() {
                 })()}
               </div>
             ) : (
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 text-center py-8">
-                <Calendar className="w-5 h-5 text-slate-300 mx-auto mb-2" />
-                <p className="text-xs text-slate-400">Nenhuma reunião agendada</p>
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 text-center py-8">
+                <Calendar className="w-5 h-5 text-blue-300 mx-auto mb-2" />
+                <p className="text-xs text-blue-400">Nenhuma reunião agendada</p>
               </div>
             )}
 
-            {/* 5. ENTREGAS RECENTES */}
+            {/* 4. ENTREGAS RECENTES */}
             {recentDeliveries.length > 0 && (
               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Entregas Recentes</h3>
@@ -311,7 +280,7 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 6. TIMELINE RESUMIDA */}
+            {/* 5. TIMELINE RESUMIDA */}
             {recentTimeline.length > 0 && (
               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Últimas Atualizações</h3>
@@ -333,7 +302,7 @@ export default function ClientPortalDashboard() {
               </div>
             )}
 
-            {/* 7. ARQUIVOS RECENTES */}
+            {/* 6. ARQUIVOS RECENTES */}
             {recentFiles.length > 0 && (
               <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5">
                 <h3 className="font-semibold text-slate-900 text-sm mb-4">Arquivos Recentes</h3>
