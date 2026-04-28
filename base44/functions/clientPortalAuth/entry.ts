@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 async function hashPassword(password) {
   const salt = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
@@ -39,7 +39,6 @@ Deno.serve(async (req) => {
       const expired = profile.portal_session_expires && new Date(profile.portal_session_expires) < new Date();
       if (expired) return Response.json({ valid: false, reason: "expired" }, { status: 401 });
 
-      // Re-resolve linked_ids sempre que validar sessão
       let linked_client_contact_id = profile.linked_client_contact_id || null;
       let linked_company_id = profile.linked_company_id || null;
 
@@ -49,7 +48,6 @@ Deno.serve(async (req) => {
         if (contact) {
           linked_client_contact_id = contact.id;
           linked_company_id = contact.company_id || linked_company_id;
-          // Atualiza o profile para future requests
           await base44.asServiceRole.entities.UserProfile.update(profile.id, {
             linked_client_contact_id,
             linked_company_id: linked_company_id || profile.linked_company_id,
@@ -92,7 +90,6 @@ Deno.serve(async (req) => {
         return Response.json({ error: "Senha incorreta." }, { status: 401 });
       }
 
-      // SEMPRE re-resolve o ClientContact pelo email para garantir vínculo atualizado
       let linked_client_contact_id = existing.linked_client_contact_id || null;
       let linked_company_id = existing.linked_company_id || null;
 
@@ -135,7 +132,6 @@ Deno.serve(async (req) => {
 
       const hash = await hashPassword(password);
 
-      // Tenta vincular ao ClientContact existente
       let linked_client_contact_id = null;
       let linked_company_id = null;
       const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
@@ -182,45 +178,6 @@ Deno.serve(async (req) => {
           linked_company_id: linked_company_id || profile.linked_company_id || null,
           linked_client_contact_id: linked_client_contact_id || profile.linked_client_contact_id || null,
           portal_type: "client"
-        }
-      });
-    }
-
-    // ─── LOGIN INTERNAL (usuários da Central Destra) ─────────────
-    // Verifica se existe um UserProfile com portal_type "internal" ou "admin"
-    if (action === "login_internal") {
-      if (!existing || !existing.portal_password_hash) {
-        return Response.json({ error: "Conta não encontrada." }, { status: 404 });
-      }
-
-      const match = await verifyPassword(password, existing.portal_password_hash);
-      if (!match) {
-        return Response.json({ error: "Senha incorreta." }, { status: 401 });
-      }
-
-      const portalType = existing.portal_type || "client";
-      if (portalType === "client") {
-        // Usuário do portal tentando acessar área interna
-        return Response.json({ error: "Acesso negado. Esta área é exclusiva para usuários internos." }, { status: 403 });
-      }
-
-      await base44.asServiceRole.entities.UserProfile.update(existing.id, {
-        portal_session_token: newToken,
-        portal_session_expires: expiresAt,
-      });
-
-      return Response.json({
-        success: true,
-        token: newToken,
-        expiresAt,
-        portal_type: portalType,
-        profile: {
-          id: existing.id,
-          email: normalizedEmail,
-          name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
-          linked_company_id: existing.linked_company_id || null,
-          linked_client_contact_id: existing.linked_client_contact_id || null,
-          portal_type: portalType
         }
       });
     }

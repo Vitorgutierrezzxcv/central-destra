@@ -190,7 +190,7 @@ function TaskDrawer({ task, onClose, user }) {
 }
 
 export default function ClientPortalTasks() {
-  const { user, userLoading, projects, canAccessProject } = useClientPortal();
+  const { user, userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
   const [selectedTask, setSelectedTask] = useState(null);
   const [filter, setFilter] = useState("all");
 
@@ -202,7 +202,7 @@ export default function ClientPortalTasks() {
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["client_visible_tasks", activeProject?.id],
-    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
+    queryFn: () => callPortalData("get_tasks", { project_id: activeProject.id }).then(d => d?.tasks || []),
     enabled: !!activeProject?.id
   });
 

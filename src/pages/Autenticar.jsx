@@ -4,6 +4,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
 import { isClientPortalPath } from "@/lib/auth-routing";
+// Chama clientPortalAuth via SDK — requiresAuth: false está configurado no base44Client
+async function callClientPortalAuth(payload) {
+  const res = await base44.functions.invoke("clientPortalAuth", payload);
+  return res?.data ?? res;
+}
 
 /**
  * Tela de login unificada — serve tanto para o Portal do Cliente quanto para
@@ -48,14 +53,13 @@ export default function Autenticar() {
 
     try {
       if (isClientTarget) {
-        // Autenticação para o Portal do Cliente (senha local via backend)
-        const res = await base44.functions.invoke("clientPortalAuth", {
+        // Autenticação para o Portal do Cliente — via fetch direto (sem auth de usuário)
+        const data = await callClientPortalAuth({
           action: mode,
           email: normalizedEmail,
           password,
           name,
         });
-        const data = res?.data ?? res;
 
         if (data?.success) {
           saveSession(data.token, data.profile, data.expiresAt);
