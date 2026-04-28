@@ -11,9 +11,18 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [appPublicSettings, setAppPublicSettings] = useState(null);
+
+  // Rotas públicas não precisam de auth check
+  const pathLower = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
+  const isPublicPath = pathLower === '/autenticar' || pathLower.startsWith('/clientportal');
 
   useEffect(() => {
+    if (isPublicPath) {
+      setIsLoadingAuth(false);
+      setIsLoadingPublicSettings(false);
+      return;
+    }
     checkAppState();
   }, []);
 

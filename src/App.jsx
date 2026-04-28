@@ -83,19 +83,6 @@ const ClientPortalRoutes = () => (
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
-  const location = useLocation();
-  const pathLower = location.pathname.toLowerCase();
-  const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
-
-  // Página de login unificada — pública, sem auth necessário
-  if (pathLower === '/autenticar') {
-    return <Autenticar />;
-  }
-
-  // Client portal routes are fully independent — no Destra auth needed
-  if (isClientPortalRoute) {
-    return <ClientPortalRoutes />;
-  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -149,19 +136,34 @@ const PublicRoutes = () => (
 );
 
 function App() {
+  return (
+    <QueryClientProvider client={queryClientInstance}>
+      <Router>
+        <NavigationTracker />
+        <AppRouter />
+      </Router>
+      <Toaster />
+      <VisualEditAgent />
+    </QueryClientProvider>
+  );
+}
 
+function AppRouter() {
+  const location = useLocation();
+  const pathLower = location.pathname.toLowerCase();
+  const isPublicRoute = pathLower === '/autenticar';
+  const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
+
+  // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
+  if (isPublicRoute) return <Autenticar />;
+  if (isClientPortalRoute) return <ClientPortalRoutes />;
+
+  // Rotas internas — precisam do AuthProvider
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <NavigationTracker />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-        <VisualEditAgent />
-      </QueryClientProvider>
+      <AuthenticatedApp />
     </AuthProvider>
-  )
+  );
 }
 
 export default App
