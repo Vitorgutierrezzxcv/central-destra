@@ -46,20 +46,35 @@ const ClientPortalRoutes = () => (
   <Routes>
     <Route element={<ClientPortalLayout />}>
       <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
+      <Route path="/clientportallogin" element={<ClientPortalLogin />} />
       <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
+      <Route path="/clientportaldashboard" element={<ClientPortalDashboard />} />
       <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
+      <Route path="/clientportalprojects" element={<ClientPortalProjects />} />
       <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
+      <Route path="/clientportalproject" element={<ClientPortalProject />} />
       <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
+      <Route path="/clientportaltasks" element={<ClientPortalTasks />} />
       <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
+      <Route path="/clientportaltimeline" element={<ClientPortalTimeline />} />
       <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
+      <Route path="/clientportalonboarding" element={<ClientPortalOnboarding />} />
       <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
+      <Route path="/clientportalaccount" element={<ClientPortalAccount />} />
       <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
+      <Route path="/clientportaldeliveries" element={<ClientPortalDeliveries />} />
       <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
+      <Route path="/clientportalcalendar" element={<ClientPortalCalendar />} />
       <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
+      <Route path="/clientportalfiles" element={<ClientPortalFiles />} />
       <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
+      <Route path="/clientportalsatisfaction" element={<ClientPortalSatisfaction />} />
       <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
+      <Route path="/clientportalactivate" element={<ClientPortalActivate />} />
       <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
+      <Route path="/clientportaltickets" element={<ClientPortalTickets />} />
       <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
+      <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>
@@ -68,7 +83,8 @@ const ClientPortalRoutes = () => (
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
   const location = useLocation();
-  const isClientPortalRoute = location.pathname.startsWith('/ClientPortal');
+  const pathLower = location.pathname.toLowerCase();
+  const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
 
   // Client portal routes are fully independent — no Destra auth needed
   if (isClientPortalRoute) {
@@ -110,6 +126,7 @@ const AuthenticatedApp = () => {
         <Route path="/CalendarSync" element={<CalendarSync />} />
         <Route path="/PerformanceReports" element={<PerformanceReports />} />
         <Route path="/ClientPortalAdmin" element={<ClientPortalAdmin />} />
+        <Route path="/clientportaladmin" element={<ClientPortalAdmin />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
