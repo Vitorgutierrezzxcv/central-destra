@@ -89,7 +89,7 @@ export default function Autenticar() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-blue-600 lg:bg-white flex flex-col lg:flex-row">
       {/* ── Left panel (desktop only) ── */}
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-8">
         <div>
