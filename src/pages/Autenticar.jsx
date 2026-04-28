@@ -120,11 +120,11 @@ export default function Autenticar() {
       </div>
 
       {/* ── Right panel ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 bg-white">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8 lg:bg-white">
         <div className="w-full max-w-sm md:max-w-lg">
 
           {/* ── Mobile ── */}
-          <div className="lg:hidden bg-gradient-to-b from-slate-950 to-slate-900 rounded-3xl p-8 -mx-5 min-h-screen flex flex-col justify-between">
+          <div className="lg:hidden p-8 -mx-5 min-h-screen flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-3 mb-12">
                 <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
