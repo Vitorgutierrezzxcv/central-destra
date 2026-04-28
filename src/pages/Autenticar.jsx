@@ -27,12 +27,7 @@ export default function Autenticar() {
   const params = new URLSearchParams(location.search);
   const next = params.get("next") || "";
 
-  // Detecta PWA instalado (iOS standalone ou Android display-mode: standalone)
-  const isPWA = window.navigator.standalone === true ||
-    window.matchMedia("(display-mode: standalone)").matches;
-
-  // É portal do cliente se: o next aponta para o portal, OU se está rodando como PWA instalado
-  const isClientTarget = isClientPortalPath(next) || isPWA;
+  const isClientTarget = isClientPortalPath(next);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
