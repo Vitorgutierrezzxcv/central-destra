@@ -5,7 +5,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import VisualEditAgent from '@/lib/VisualEditAgent'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet, useLocation } from 'react-router-dom';
 import { setupIframeMessaging } from './lib/iframe-messaging';
 import PageNotFound from './lib/PageNotFound';
 import GoogleCalendarCallback from './pages/GoogleCalendarCallback';
@@ -42,35 +42,37 @@ const LayoutWrapper = ({ children, currentPageName }) => {
   return Layout ? <Layout currentPageName={currentPageName}>{content}</Layout> : <>{content}</>;
 };
 
+const ClientPortalRoutes = () => (
+  <Routes>
+    <Route element={<ClientPortalLayout />}>
+      <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
+      <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
+      <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
+      <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
+      <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
+      <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
+      <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
+      <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
+      <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
+      <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
+      <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
+      <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
+      <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
+      <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
+      <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
+    </Route>
+    <Route path="*" element={<PageNotFound />} />
+  </Routes>
+);
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
-  const currentPath = window.location.pathname;
-  const isClientPortalRoute = currentPath.startsWith('/ClientPortal');
+  const location = useLocation();
+  const isClientPortalRoute = location.pathname.startsWith('/ClientPortal');
 
-  // If accessing client portal routes, skip central auth check
+  // Client portal routes are fully independent — no Destra auth needed
   if (isClientPortalRoute) {
-    return (
-      <Routes>
-        <Route element={<ClientPortalLayout />}>
-          <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
-          <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
-          <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
-          <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
-          <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
-          <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
-          <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
-          <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
-          <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
-          <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
-          <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
-          <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
-          <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
-          <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
-          <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
-        </Route>
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
-    );
+    return <ClientPortalRoutes />;
   }
 
   // Show loading spinner while checking app public settings or auth
@@ -93,28 +95,9 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // Render the main app
+  // Render the main app (internal Destra users only)
   return (
     <Routes>
-      {/* ── Portal do Cliente (sem sidebar interna, com ClientPortalLayout) ── */}
-      <Route element={<ClientPortalLayout />}>
-        <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
-        <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
-        <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
-        <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
-        <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
-        <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
-        <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
-        <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
-        <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
-        <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
-        <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
-        <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
-        <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
-        <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
-        <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
-      </Route>
-
       {/* ── App interno (com sidebar Layout) ── */}
       <Route element={<LayoutWrapper currentPageName={mainPageKey} />}>
         <Route path="/" element={<MainPage />} />
