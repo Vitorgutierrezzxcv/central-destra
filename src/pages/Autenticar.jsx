@@ -54,12 +54,21 @@ export default function Autenticar() {
     try {
       if (isClientTarget) {
         // Autenticação para o Portal do Cliente — via fetch direto (sem auth de usuário)
-        const data = await callClientPortalAuth({
-          action: mode,
-          email: normalizedEmail,
-          password,
-          name,
-        });
+        let data;
+        try {
+          data = await callClientPortalAuth({
+            action: mode,
+            email: normalizedEmail,
+            password,
+            name,
+          });
+        } catch (apiErr) {
+          // SDK lança exceção para respostas 4xx — extrair mensagem do backend
+          const errMsg = apiErr?.response?.data?.error || apiErr?.message || "Erro desconhecido. Tente novamente.";
+          setError(errMsg);
+          setLoading(false);
+          return;
+        }
 
         if (data?.success) {
           saveSession(data.token, data.profile, data.expiresAt);
@@ -75,6 +84,7 @@ export default function Autenticar() {
         window.location.href = destination;
       }
     } catch (err) {
+      // Só chega aqui para erros do auth interno (Base44)
       const msg = err?.response?.data?.error || err?.message || "";
       if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("incorrect") || msg.toLowerCase().includes("credential")) {
         setError("E-mail ou senha inválidos.");
