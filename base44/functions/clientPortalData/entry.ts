@@ -134,7 +134,9 @@ Deno.serve(async (req) => {
     }
 
     if (action === "get_tickets") {
-      const tickets = await base44.asServiceRole.entities.SupportTicket.filter({ company_id: companyId });
+      const { project_id } = params;
+      const filterBy = project_id ? { project_id } : { company_id: companyId };
+      const tickets = await base44.asServiceRole.entities.SupportTicket.filter(filterBy);
       return Response.json({ tickets });
     }
 
@@ -142,6 +144,19 @@ Deno.serve(async (req) => {
       const invoices = await base44.asServiceRole.entities.ClientInvoice.filter({ company_id: companyId });
       const contracts = await base44.asServiceRole.entities.ClientContract.filter({ company_id: companyId });
       return Response.json({ invoices, contracts });
+    }
+
+    if (action === "get_contact") {
+      if (!contactId) return Response.json({ contact: null });
+      const contacts = await base44.asServiceRole.entities.ClientContact.filter({ id: contactId });
+      return Response.json({ contact: contacts?.[0] || null });
+    }
+
+    if (action === "update_contact") {
+      const { phone, address } = params;
+      if (!contactId) return Response.json({ error: "Contato não encontrado." }, { status: 404 });
+      const updated = await base44.asServiceRole.entities.ClientContact.update(contactId, { phone, address });
+      return Response.json({ contact: updated });
     }
 
     if (action === "get_satisfaction") {

@@ -18,7 +18,7 @@ const milestoneTypeLabels = {
 };
 
 export default function ClientPortalCalendar() {
-  const { userLoading, projects, canAccessProject } = useClientPortal();
+  const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
   const [filter, setFilter] = useState("all");
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -29,13 +29,13 @@ export default function ClientPortalCalendar() {
 
   const { data: meetings = [] } = useQuery({
     queryKey: ["client_calendar_meetings", activeProject?.id],
-    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id }),
+    queryFn: () => callPortalData("get_meetings", { project_id: activeProject.id }).then(d => d?.meetings || []),
     enabled: !!activeProject?.id
   });
 
   const { data: milestones = [] } = useQuery({
     queryKey: ["client_calendar_milestones", activeProject?.id],
-    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id }),
+    queryFn: () => callPortalData("get_milestones", { project_id: activeProject.id }).then(d => d?.milestones || []),
     enabled: !!activeProject?.id
   });
 

@@ -45,7 +45,7 @@ function CopyButton({ text }) {
 }
 
 export default function ClientPortalFinancial() {
-  const { userLoading, company, companyId, projects, canAccessProject } = useClientPortal();
+  const { userLoading, company, companyId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [tab, setTab] = useState("invoices");
   const [expandedInvoice, setExpandedInvoice] = useState(null);
 
@@ -59,19 +59,15 @@ export default function ClientPortalFinancial() {
     return projects.find(p => p.status === "active") || projects[0] || null;
   }, [projects, selectedProjectId]);
 
-  const { data: invoices = [], isLoading: invLoading } = useQuery({
+  const { data: invoicesData, isLoading: invLoading } = useQuery({
     queryKey: ["client_invoices", companyId],
-    queryFn: () => base44.entities.ClientInvoice.filter({ company_id: companyId, visible_to_client: true }),
+    queryFn: () => callPortalData("get_invoices"),
     enabled: !!companyId,
-    select: d => [...d].sort((a, b) => new Date(b.due_date) - new Date(a.due_date))
   });
 
-  const { data: contracts = [], isLoading: contLoading } = useQuery({
-    queryKey: ["client_contracts", companyId],
-    queryFn: () => base44.entities.ClientContract.filter({ company_id: companyId, visible_to_client: true }),
-    enabled: !!companyId,
-    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-  });
+  const invoices = [...(invoicesData?.invoices || [])].sort((a, b) => new Date(b.due_date) - new Date(a.due_date));
+  const contracts = [...(invoicesData?.contracts || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  const contLoading = invLoading;
 
   const totalPaid    = invoices.filter(i => i.status === "paid").reduce((s, i) => s + (i.amount || 0), 0);
   const totalPending = invoices.filter(i => i.status === "pending").reduce((s, i) => s + (i.amount || 0), 0);

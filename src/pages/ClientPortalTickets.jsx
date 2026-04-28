@@ -37,7 +37,7 @@ const priorityConfig = {
 };
 
 export default function ClientPortalTickets() {
-  const { userLoading, user, projects, companyId, contactId, canAccessProject } = useClientPortal();
+  const { userLoading, user, projects, companyId, contactId, canAccessProject, callPortalData } = useClientPortal();
   const qc = useQueryClient();
   const [showNew, setShowNew] = useState(false);
   const [activeTicket, setActiveTicket] = useState(null);
@@ -51,9 +51,10 @@ export default function ClientPortalTickets() {
 
   const { data: tickets = [], isLoading } = useQuery({
     queryKey: ["client_tickets", activeProject?.id],
-    queryFn: () => base44.entities.SupportTicket.filter({ project_id: activeProject.id }),
+    queryFn: () => callPortalData("get_tickets", { project_id: activeProject.id }).then(d =>
+      [...(d?.tickets || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
+    ),
     enabled: !!activeProject?.id,
-    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
   });
 
   const createMutation = useMutation({
@@ -68,7 +69,7 @@ export default function ClientPortalTickets() {
         status: "open",
       });
       // Notifica admins
-      const admins = await base44.entities.User.list().catch(() => []);
+      const admins = await base44.entities.User.list("-created_date", 50).catch(() => []);
       for (const admin of admins.filter(u => u.role === "admin")) {
         await base44.integrations.Core.SendEmail({
           to: admin.email,

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { User, Building2, Mail, Phone, MapPin, Shield, Save, Loader2, CheckCircle2, Lock, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ function InfoRow({ icon: Icon, label, value }) {
 
 export default function ClientPortalAccount() {
   const navigate = useNavigate();
-  const { user, userLoading, company, contactId } = useClientPortal();
+  const { user, userLoading, company, contactId, callPortalData } = useClientPortal();
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -34,7 +33,7 @@ export default function ClientPortalAccount() {
 
   const { data: contact } = useQuery({
     queryKey: ["client_contact", contactId],
-    queryFn: () => base44.entities.ClientContact.filter({ id: contactId }).then(d => d?.[0] || null),
+    queryFn: () => callPortalData("get_contact").then(d => d?.contact || null),
     enabled: !!contactId
   });
 
@@ -45,10 +44,7 @@ export default function ClientPortalAccount() {
   }, [contact]);
 
   const saveMutation = useMutation({
-    mutationFn: () => base44.entities.ClientContact.update(contact.id, {
-      phone: form.phone,
-      address: form.address,
-    }),
+    mutationFn: () => callPortalData("update_contact", { phone: form.phone, address: form.address }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["client_contact"] });
       setEditing(false);
