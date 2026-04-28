@@ -29,6 +29,7 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -86,6 +87,11 @@ const AuthenticatedApp = () => {
   const pathLower = location.pathname.toLowerCase();
   const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
 
+  // Página de login unificada — pública, sem auth necessário
+  if (pathLower === '/autenticar') {
+    return <Autenticar />;
+  }
+
   // Client portal routes are fully independent — no Destra auth needed
   if (isClientPortalRoute) {
     return <ClientPortalRoutes />;
@@ -134,6 +140,13 @@ const AuthenticatedApp = () => {
   );
 };
 
+// Página de login unificada — fora do AuthenticatedApp para não exigir auth
+const PublicRoutes = () => (
+  <Routes>
+    <Route path="/Autenticar" element={<Autenticar />} />
+    <Route path="/autenticar" element={<Autenticar />} />
+  </Routes>
+);
 
 function App() {
 

@@ -186,6 +186,45 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ─── LOGIN INTERNAL (usuários da Central Destra) ─────────────
+    // Verifica se existe um UserProfile com portal_type "internal" ou "admin"
+    if (action === "login_internal") {
+      if (!existing || !existing.portal_password_hash) {
+        return Response.json({ error: "Conta não encontrada." }, { status: 404 });
+      }
+
+      const match = await verifyPassword(password, existing.portal_password_hash);
+      if (!match) {
+        return Response.json({ error: "Senha incorreta." }, { status: 401 });
+      }
+
+      const portalType = existing.portal_type || "client";
+      if (portalType === "client") {
+        // Usuário do portal tentando acessar área interna
+        return Response.json({ error: "Acesso negado. Esta área é exclusiva para usuários internos." }, { status: 403 });
+      }
+
+      await base44.asServiceRole.entities.UserProfile.update(existing.id, {
+        portal_session_token: newToken,
+        portal_session_expires: expiresAt,
+      });
+
+      return Response.json({
+        success: true,
+        token: newToken,
+        expiresAt,
+        portal_type: portalType,
+        profile: {
+          id: existing.id,
+          email: normalizedEmail,
+          name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
+          linked_company_id: existing.linked_company_id || null,
+          linked_client_contact_id: existing.linked_client_contact_id || null,
+          portal_type: portalType
+        }
+      });
+    }
+
     return Response.json({ error: "Ação inválida." }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
