@@ -7,8 +7,9 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar, Flag, ClipboardList, File, Plus, Trash2, Edit2, CheckCircle2,
-  Clock, Upload, Loader2, Package, FolderOpen, Star
+  Clock, Upload, Loader2, Package, FolderOpen, Star, GraduationCap
 } from "lucide-react";
+import CoursesManager from "./CoursesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -851,7 +852,7 @@ export default function PortalContentManager({ contact, projects, companies }) {
 
           {activeProjectId && (
             <Tabs defaultValue="project">
-              <TabsList className="w-full grid grid-cols-6 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
+              <TabsList className="w-full grid grid-cols-7 bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
                 {[
                   { value: "project", label: "Projeto", icon: FolderOpen, color: "data-[state=active]:bg-slate-700" },
                   { value: "tasks", label: "Tarefas", icon: ClipboardList, color: "data-[state=active]:bg-blue-600" },
@@ -859,6 +860,7 @@ export default function PortalContentManager({ contact, projects, companies }) {
                   { value: "milestones", label: "Timeline", icon: Flag, color: "data-[state=active]:bg-purple-600" },
                   { value: "onboarding", label: "Onboard.", icon: CheckCircle2, color: "data-[state=active]:bg-emerald-600" },
                   { value: "files", label: "Arquivos", icon: File, color: "data-[state=active]:bg-amber-600" },
+                  { value: "courses", label: "Cursos", icon: GraduationCap, color: "data-[state=active]:bg-indigo-600" },
                 ].map(tab => (
                   <TabsTrigger key={tab.value} value={tab.value} className={`text-[10px] flex flex-col gap-0.5 py-2 rounded-lg ${tab.color} data-[state=active]:text-white`}>
                     <tab.icon className="w-3.5 h-3.5 mx-auto" />
@@ -873,6 +875,7 @@ export default function PortalContentManager({ contact, projects, companies }) {
                 <TabsContent value="milestones"><MilestonesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="onboarding"><OnboardingManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
                 <TabsContent value="files"><FilesManager projectId={activeProjectId} companyId={activeCompanyId} /></TabsContent>
+                <TabsContent value="courses"><CoursesManager companyId={activeCompanyId} /></TabsContent>
               </div>
             </Tabs>
           )}
