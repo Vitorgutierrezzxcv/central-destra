@@ -27,7 +27,9 @@ export default function Autenticar() {
   const params = new URLSearchParams(location.search);
   const next = params.get("next") || "";
 
-  const isClientTarget = isClientPortalPath(next);
+  // É portal do cliente se: next aponta para /ClientPortal*, OU se não há next (login standalone = portal)
+  // Usuários internos sempre chegam com ?next=/ ou similar (via AuthContext redirect)
+  const isClientTarget = isClientPortalPath(next) || next === "";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
