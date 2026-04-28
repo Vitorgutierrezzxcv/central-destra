@@ -1,28 +1,23 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { getClientProfile, isLoggedIn, saveSession, getClientToken, clearSession } from "@/lib/clientPortalSession";
-
-/**
- * Chama a função clientPortalData via SDK (público, sem auth de usuário).
- * Toda a autenticação é feita via portal_session_token.
- */
-async function callPortalData(action, params = {}) {
-  const token = getClientToken();
-  const res = await base44.functions.invoke("clientPortalData", { action, token, params });
-  return res?.data ?? res;
-}
+import { getClientProfile, isLoggedIn, saveSession, getClientToken } from "@/lib/clientPortalSession";
 
 /**
  * Hook central do portal do cliente.
- * Usa clientPortalSession (localStorage) para auth própria.
- * Busca dados via clientPortalData (asServiceRole) — sem exigir usuário Base44.
+ * Auth própria via clientPortalSession (localStorage).
+ *
+ * Fluxo de resolução:
+ * 1. Lê sessão local
+ * 2. Valida sessão no backend — que também re-resolve linked_ids
+ * 3. Busca ClientContact pelo email
+ * 4. Resolve projectAccess pelo contactId
+ * 5. Retorna projetos autorizados
  */
 export function useClientPortal() {
   const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
-  const [contactId, setContactId] = useState(null);
-  const [companyId, setCompanyId] = useState(null);
+  const [sessionValidated, setSessionValidated] = useState(false);
 
   useEffect(() => {
     async function initSession() {
@@ -45,14 +40,14 @@ export function useClientPortal() {
         id: profile.id,
         ...profile
       });
-      setContactId(profile.linked_client_contact_id || null);
-      setCompanyId(profile.linked_company_id || null);
 
       // Valida sessão no backend e atualiza linked_ids
       try {
-        const data = await callPortalData("session_info");
-        if (data?.profile) {
+        const res = await base44.functions.invoke("clientPortalAuth", { action: "validate", token });
+        const data = res?.data ?? res;
+        if (data?.valid && data?.profile) {
           const freshProfile = data.profile;
+          // Atualiza sessão local com linked_ids mais recentes
           saveSession(token, freshProfile, null);
           setUser({
             email: freshProfile.email,
@@ -64,41 +59,90 @@ export function useClientPortal() {
             id: freshProfile.id,
             ...freshProfile
           });
-          setContactId(data.contactId || freshProfile.linked_client_contact_id || null);
-          setCompanyId(data.companyId || freshProfile.linked_company_id || null);
-        } else if (data?.error) {
-          // Sessão inválida — limpa
-          clearSession();
-          setUser(null);
         }
       } catch (e) {
-        // Silencia erros — usa dados locais
+        // Silencia erros de validação — usa dados locais
       }
-
+      
+      setSessionValidated(true);
       setUserLoading(false);
     }
 
     initSession();
   }, []);
 
-  // Busca projetos e empresa via função backend
-  const { data: projectsData } = useQuery({
-    queryKey: ["cp_projects", contactId, companyId],
-    queryFn: () => callPortalData("get_projects"),
-    enabled: !!user && (!!contactId || !!companyId),
+  // Busca ClientContact pelo email — fonte primária do contactId
+  const { data: clientContactByEmail } = useQuery({
+    queryKey: ["cp_clientContact_email", user?.email],
+    queryFn: () =>
+      base44.entities.ClientContact.filter({ email: user.email })
+        .then(d => d?.[0] || null),
+    enabled: !!user?.email
   });
 
-  const projects = projectsData?.projects || [];
-  const projectAccess = projectsData?.projectAccess || [];
-  const company = projectsData?.company || null;
+  // Perfil estendido do portal para pegar linked_ids persistidos
+  const { data: userProfile } = useQuery({
+    queryKey: ["cp_userProfile", user?.email],
+    queryFn: () =>
+      base44.entities.UserProfile.filter({ user_email: user.email })
+        .then(d => d?.[0] || null),
+    enabled: !!user?.email
+  });
+
+  // Resolve contactId: prioridade clientContactByEmail > userProfile > sessão
+  const contactId =
+    clientContactByEmail?.id ||
+    userProfile?.linked_client_contact_id ||
+    user?.linked_client_contact_id ||
+    null;
+
+  // Resolve companyId: prioridade clientContact > userProfile > sessão
+  const companyId =
+    clientContactByEmail?.company_id ||
+    userProfile?.linked_company_id ||
+    user?.linked_company_id ||
+    null;
+
+  const { data: company } = useQuery({
+    queryKey: ["client_company", companyId],
+    queryFn: () => base44.entities.Company.list().then(d => d.find(c => c.id === companyId) || null),
+    enabled: !!companyId
+  });
+
+  // Acessos explícitos a projetos pelo contactId
+  const { data: projectAccess = [] } = useQuery({
+    queryKey: ["client_project_access", contactId],
+    queryFn: () =>
+      base44.entities.ProjectClientAccess.filter({ client_contact_id: contactId }),
+    enabled: !!contactId
+  });
+
+  // Todos os projetos para buscar os que têm acesso
+  const { data: allProjects = [] } = useQuery({
+    queryKey: ["client_all_projects_pool"],
+    queryFn: () => base44.entities.Project.list(),
+    enabled: !!contactId || !!companyId
+  });
+
+  // Projetos autorizados pelo access (ativos)
+  const authorizedProjectIds = projectAccess
+    .filter(pa => pa.is_active !== false)
+    .map(pa => pa.project_id);
+
+  // Se há acessos explícitos, mostra esses projetos
+  // Senão, fallback para projetos da empresa com portal ativo
+  let projects;
+  if (authorizedProjectIds.length > 0) {
+    projects = allProjects.filter(p => authorizedProjectIds.includes(p.id));
+  } else if (companyId) {
+    projects = allProjects.filter(p => p.company_id === companyId && p.client_portal_enabled);
+  } else {
+    projects = [];
+  }
 
   const isApprover =
     user?.role === "client_approver" ||
     projectAccess.some(pa => pa.can_approve);
-
-  const authorizedProjectIds = projectAccess
-    .filter(pa => pa.is_active !== false)
-    .map(pa => pa.project_id);
 
   const getProjectPermissions = (projectId) => {
     const access = projectAccess.find(pa => pa.project_id === projectId);
@@ -123,17 +167,16 @@ export function useClientPortal() {
   return {
     user,
     userLoading,
-    userProfile: user,
+    userProfile,
     company,
     companyId,
     contactId,
-    clientContact: null,
+    clientContact: clientContactByEmail,
     projects,
     projectAccess,
     isClientRole: true,
     isApprover,
     getProjectPermissions,
-    canAccessProject,
-    callPortalData
+    canAccessProject
   };
 }

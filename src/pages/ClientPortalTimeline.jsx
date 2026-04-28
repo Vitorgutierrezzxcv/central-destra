@@ -25,7 +25,7 @@ const milestoneTypeConfig = {
 };
 
 export default function ClientPortalTimeline() {
-  const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
+  const { userLoading, projects, canAccessProject } = useClientPortal();
 
   const urlParams = new URLSearchParams(window.location.search);
   const selectedProjectId = urlParams.get("project_id");
@@ -35,23 +35,21 @@ export default function ClientPortalTimeline() {
 
   const { data: milestones = [] } = useQuery({
     queryKey: ["client_milestones", activeProject?.id],
-    queryFn: () => callPortalData("get_milestones", { project_id: activeProject.id }).then(d =>
-      [...(d?.milestones || [])].sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(a.due_date || 0) - new Date(b.due_date || 0))
-    ),
+    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => (a.order || 0) - (b.order || 0) || new Date(a.due_date || 0) - new Date(b.due_date || 0))
   });
 
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_timeline_tasks", activeProject?.id],
-    queryFn: () => callPortalData("get_tasks", { project_id: activeProject.id }).then(d =>
-      [...(d?.tasks || [])].sort((a, b) => new Date(a.end_date || a.start_date || 0) - new Date(b.end_date || b.start_date || 0))
-    ),
+    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(a.end_date || a.start_date || 0) - new Date(b.end_date || b.start_date || 0))
   });
 
   const { data: meetings = [] } = useQuery({
     queryKey: ["client_timeline_meetings", activeProject?.id],
-    queryFn: () => callPortalData("get_meetings", { project_id: activeProject.id }).then(d => d?.meetings || []),
+    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 

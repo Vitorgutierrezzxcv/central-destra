@@ -34,7 +34,7 @@ const itemTypeLabels = {
 };
 
 export default function ClientPortalOnboarding() {
-  const { userLoading, projects, canAccessProject, user, company, callPortalData } = useClientPortal();
+  const { userLoading, projects, canAccessProject, user, company } = useClientPortal();
   const qc = useQueryClient();
   const [expanded, setExpanded] = useState({});
   const [uploading, setUploading] = useState({});
@@ -49,10 +49,9 @@ export default function ClientPortalOnboarding() {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["client_onboarding_items", activeProject?.id],
-    queryFn: () => callPortalData("get_onboarding", { project_id: activeProject.id }).then(d =>
-      [...(d?.items || [])].sort((a, b) => (a.order || 0) - (b.order || 0))
-    ),
+    queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
+    select: (d) => [...d].sort((a, b) => (a.order || 0) - (b.order || 0))
   });
 
   const updateMutation = useMutation({
@@ -145,7 +144,7 @@ export default function ClientPortalOnboarding() {
     }
 
     // Busca admins para notificar
-    const admins = await base44.entities.User.list("-created_date", 50).catch(() => []);
+    const admins = await base44.entities.User.list().catch(() => []);
     const adminEmails = admins.filter((u) => u.role === "admin").map((u) => u.email);
 
     for (const email of adminEmails) {

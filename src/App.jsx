@@ -29,7 +29,6 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
-import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -47,35 +46,20 @@ const ClientPortalRoutes = () => (
   <Routes>
     <Route element={<ClientPortalLayout />}>
       <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
-      <Route path="/clientportallogin" element={<ClientPortalLogin />} />
       <Route path="/ClientPortalDashboard" element={<ClientPortalDashboard />} />
-      <Route path="/clientportaldashboard" element={<ClientPortalDashboard />} />
       <Route path="/ClientPortalProjects" element={<ClientPortalProjects />} />
-      <Route path="/clientportalprojects" element={<ClientPortalProjects />} />
       <Route path="/ClientPortalProject" element={<ClientPortalProject />} />
-      <Route path="/clientportalproject" element={<ClientPortalProject />} />
       <Route path="/ClientPortalTasks" element={<ClientPortalTasks />} />
-      <Route path="/clientportaltasks" element={<ClientPortalTasks />} />
       <Route path="/ClientPortalTimeline" element={<ClientPortalTimeline />} />
-      <Route path="/clientportaltimeline" element={<ClientPortalTimeline />} />
       <Route path="/ClientPortalOnboarding" element={<ClientPortalOnboarding />} />
-      <Route path="/clientportalonboarding" element={<ClientPortalOnboarding />} />
       <Route path="/ClientPortalAccount" element={<ClientPortalAccount />} />
-      <Route path="/clientportalaccount" element={<ClientPortalAccount />} />
       <Route path="/ClientPortalDeliveries" element={<ClientPortalDeliveries />} />
-      <Route path="/clientportaldeliveries" element={<ClientPortalDeliveries />} />
       <Route path="/ClientPortalCalendar" element={<ClientPortalCalendar />} />
-      <Route path="/clientportalcalendar" element={<ClientPortalCalendar />} />
       <Route path="/ClientPortalFiles" element={<ClientPortalFiles />} />
-      <Route path="/clientportalfiles" element={<ClientPortalFiles />} />
       <Route path="/ClientPortalSatisfaction" element={<ClientPortalSatisfaction />} />
-      <Route path="/clientportalsatisfaction" element={<ClientPortalSatisfaction />} />
       <Route path="/ClientPortalActivate" element={<ClientPortalActivate />} />
-      <Route path="/clientportalactivate" element={<ClientPortalActivate />} />
       <Route path="/ClientPortalTickets" element={<ClientPortalTickets />} />
-      <Route path="/clientportaltickets" element={<ClientPortalTickets />} />
       <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
-      <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>
@@ -83,6 +67,13 @@ const ClientPortalRoutes = () => (
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
+  const location = useLocation();
+  const isClientPortalRoute = location.pathname.startsWith('/ClientPortal');
+
+  // Client portal routes are fully independent — no Destra auth needed
+  if (isClientPortalRoute) {
+    return <ClientPortalRoutes />;
+  }
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -119,7 +110,6 @@ const AuthenticatedApp = () => {
         <Route path="/CalendarSync" element={<CalendarSync />} />
         <Route path="/PerformanceReports" element={<PerformanceReports />} />
         <Route path="/ClientPortalAdmin" element={<ClientPortalAdmin />} />
-        <Route path="/clientportaladmin" element={<ClientPortalAdmin />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />
@@ -127,43 +117,21 @@ const AuthenticatedApp = () => {
   );
 };
 
-// Página de login unificada — fora do AuthenticatedApp para não exigir auth
-const PublicRoutes = () => (
-  <Routes>
-    <Route path="/Autenticar" element={<Autenticar />} />
-    <Route path="/autenticar" element={<Autenticar />} />
-  </Routes>
-);
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClientInstance}>
-      <Router>
-        <NavigationTracker />
-        <AppRouter />
-      </Router>
-      <Toaster />
-      <VisualEditAgent />
-    </QueryClientProvider>
-  );
-}
 
-function AppRouter() {
-  const location = useLocation();
-  const pathLower = location.pathname.toLowerCase();
-  const isPublicRoute = pathLower === '/autenticar';
-  const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
-
-  // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
-  if (isPublicRoute) return <Autenticar />;
-  if (isClientPortalRoute) return <ClientPortalRoutes />;
-
-  // Rotas internas — precisam do AuthProvider
   return (
     <AuthProvider>
-      <AuthenticatedApp />
+      <QueryClientProvider client={queryClientInstance}>
+        <Router>
+          <NavigationTracker />
+          <AuthenticatedApp />
+        </Router>
+        <Toaster />
+        <VisualEditAgent />
+      </QueryClientProvider>
     </AuthProvider>
-  );
+  )
 }
 
 export default App

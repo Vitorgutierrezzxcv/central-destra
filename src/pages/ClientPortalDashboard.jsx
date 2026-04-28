@@ -17,7 +17,7 @@ export default function ClientPortalDashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user, userLoading, company, projects, canAccessProject, callPortalData } = useClientPortal();
+  const { user, userLoading, company, projects, canAccessProject } = useClientPortal();
 
   const [selectedApprovalTask, setSelectedApprovalTask] = useState(null);
 
@@ -72,54 +72,49 @@ export default function ClientPortalDashboard() {
     }
   }, [projects.length, userLoading, selectedProjectId]);
 
-
-
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_tasks", activeProject?.id],
-    queryFn: () => callPortalData("get_tasks", { project_id: activeProject.id }).then(d => d?.tasks || []),
+    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: deliveries = [] } = useQuery({
     queryKey: ["client_deliveries", activeProject?.id],
-    queryFn: () => callPortalData("get_deliveries", { project_id: activeProject.id }).then(d => d?.deliveries || []),
+    queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: meetings = [] } = useQuery({
     queryKey: ["client_meetings", activeProject?.id],
-    queryFn: () => callPortalData("get_meetings", { project_id: activeProject.id }).then(d => d?.meetings || []),
+    queryFn: () => base44.entities.ProjectMeeting.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id
   });
 
   const { data: onboarding = [] } = useQuery({
     queryKey: ["client_onboarding", activeProject?.id],
-    queryFn: () => callPortalData("get_onboarding", { project_id: activeProject.id }).then(d => d?.items || []),
+    queryFn: () => base44.entities.OnboardingItem.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id
   });
 
   const { data: files = [] } = useQuery({
     queryKey: ["client_files_home", activeProject?.id],
-    queryFn: () => callPortalData("get_files", { project_id: activeProject.id }).then(d =>
-      [...(d?.files || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 3)
-    ),
+    queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 3)
   });
 
   const { data: milestones = [] } = useQuery({
     queryKey: ["client_milestones_home", activeProject?.id],
-    queryFn: () => callPortalData("get_milestones", { project_id: activeProject.id }).then(d =>
-      [...(d?.milestones || [])].sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date)).slice(0, 4)
-    ),
+    queryFn: () => base44.entities.ProjectMilestone.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date)).slice(0, 4)
   });
 
   const { data: timelineEvents = [] } = useQuery({
     queryKey: ["client_timeline_events", activeProject?.id],
-    queryFn: () => callPortalData("get_timeline", { project_id: activeProject.id }).then(d =>
-      [...(d?.events || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
-    ),
+    queryFn: () => base44.entities.ProjectTimelineEvent.filter({ project_id: activeProject.id }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
   });
 
   const completedTasks      = tasks.filter(t => t.status === "completed").length;

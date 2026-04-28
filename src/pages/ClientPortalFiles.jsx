@@ -34,7 +34,7 @@ function getFileIcon(fileType) {
 }
 
 export default function ClientPortalFiles() {
-  const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
+  const { userLoading, projects, canAccessProject } = useClientPortal();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -48,10 +48,9 @@ export default function ClientPortalFiles() {
 
   const { data: files = [], isLoading } = useQuery({
     queryKey: ["client_files", activeProject?.id],
-    queryFn: () => callPortalData("get_files", { project_id: activeProject.id }).then(d =>
-      [...(d?.files || [])].sort((a, b) => new Date(b.uploaded_at || b.created_date) - new Date(a.uploaded_at || a.created_date))
-    ),
+    queryFn: () => base44.entities.ProjectFile.filter({ project_id: activeProject.id, visible_to_client: true }),
     enabled: !!activeProject?.id,
+    select: d => [...d].sort((a, b) => new Date(b.uploaded_at || b.created_date) - new Date(a.uploaded_at || a.created_date))
   });
 
   if (userLoading) {
