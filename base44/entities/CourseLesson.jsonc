@@ -1,0 +1,50 @@
+{
+  "name": "CourseLesson",
+  "type": "object",
+  "properties": {
+    "collection_id": {
+      "type": "string",
+      "description": "ID da cole\u00e7\u00e3o \u00e0 qual pertence"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da aula"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da aula"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "URL do v\u00eddeo (YouTube, Vimeo, ou direto)"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Dura\u00e7\u00e3o em minutos"
+    },
+    "order": {
+      "type": "number",
+      "description": "Ordem dentro da cole\u00e7\u00e3o"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se est\u00e1 ativa e vis\u00edvel"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "URL da thumbnail da aula"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags da aula"
+    }
+  },
+  "required": [
+    "collection_id",
+    "title"
+  ]
+}

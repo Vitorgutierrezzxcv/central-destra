@@ -164,6 +164,24 @@ Deno.serve(async (req) => {
       return Response.json({ surveys });
     }
 
+    if (action === "get_courses") {
+      // Busca coleções ativas — globais ou específicas para a empresa do cliente
+      const allCollections = await base44.asServiceRole.entities.CourseCollection.filter({ is_active: true });
+      const collections = allCollections.filter(c => !c.company_id || c.company_id === companyId);
+      collections.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+      // Busca todas as aulas das coleções encontradas
+      const collectionIds = collections.map(c => c.id);
+      let lessons = [];
+      if (collectionIds.length > 0) {
+        const allLessons = await base44.asServiceRole.entities.CourseLesson.filter({ is_active: true });
+        lessons = allLessons.filter(l => collectionIds.includes(l.collection_id));
+        lessons.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+      }
+
+      return Response.json({ collections, lessons });
+    }
+
     return Response.json({ error: "Ação inválida." }, { status: 400 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });

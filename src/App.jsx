@@ -31,6 +31,7 @@ import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
+import ClientPortalCourses from './pages/ClientPortalCourses';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -76,6 +77,8 @@ const ClientPortalRoutes = () => (
       <Route path="/clientportaltickets" element={<ClientPortalTickets />} />
       <Route path="/ClientPortalFinancial" element={<ClientPortalFinancial />} />
       <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
+      <Route path="/ClientPortalCourses" element={<ClientPortalCourses />} />
+      <Route path="/clientportalcourses" element={<ClientPortalCourses />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>
