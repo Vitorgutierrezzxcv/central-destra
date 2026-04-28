@@ -36,7 +36,7 @@ function StarRating({ value, onChange, size = "md" }) {
 }
 
 export default function ClientPortalSatisfaction() {
-  const { userLoading, company, companyId, contactId, projects, canAccessProject } = useClientPortal();
+  const { userLoading, company, companyId, contactId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [form, setForm] = useState({ overall_score: 0, communication_score: 0, timeline_score: 0, quality_score: 0, result_score: 0, comment: "" });
   const [submitted, setSubmitted] = useState(false);
   const qc = useQueryClient();
@@ -49,9 +49,10 @@ export default function ClientPortalSatisfaction() {
 
   const { data: surveys = [] } = useQuery({
     queryKey: ["client_surveys", activeProject?.id],
-    queryFn: () => base44.entities.SatisfactionSurvey.filter({ project_id: activeProject.id }),
+    queryFn: () => callPortalData("get_satisfaction").then(d =>
+      [...(d?.surveys || [])].sort((a, b) => new Date(b.submitted_at || b.created_date) - new Date(a.submitted_at || a.created_date))
+    ),
     enabled: !!activeProject?.id,
-    select: d => [...d].sort((a, b) => new Date(b.submitted_at || b.created_date) - new Date(a.submitted_at || a.created_date))
   });
 
   const submitMutation = useMutation({
