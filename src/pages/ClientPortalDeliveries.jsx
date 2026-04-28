@@ -131,7 +131,7 @@ function FeedbackDrawer({ delivery, task, onClose, onSubmit, loading }) {
 }
 
 export default function ClientPortalDeliveries() {
-  const { userLoading, contactId, companyId, projects, canAccessProject } = useClientPortal();
+  const { userLoading, contactId, companyId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [feedbackTarget, setFeedbackTarget] = useState(null);
   const qc = useQueryClient();
 
@@ -143,14 +143,13 @@ export default function ClientPortalDeliveries() {
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ["client_tasks_deliveries", activeProject?.id],
-    queryFn: () => base44.entities.Task.filter({ project_id: activeProject.id, visible_to_client: true }),
+    queryFn: () => callPortalData("get_tasks", { project_id: activeProject.id }).then(d => (d?.tasks || []).filter(t => !t.parent_task_id)),
     enabled: !!activeProject?.id,
-    select: d => [...d].filter(t => !t.parent_task_id)
   });
 
   const { data: deliveries = [] } = useQuery({
     queryKey: ["client_deliveries_list", activeProject?.id],
-    queryFn: () => base44.entities.TaskDelivery.filter({ project_id: activeProject.id }),
+    queryFn: () => callPortalData("get_deliveries", { project_id: activeProject.id }).then(d => d?.deliveries || []),
     enabled: !!activeProject?.id
   });
 

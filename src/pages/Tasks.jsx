@@ -364,16 +364,16 @@ export default function Tasks() {
               <Plus className="w-8 h-8 md:w-12 md:h-12 text-slate-500" />
             </div>
             <h3 className="text-lg md:text-xl font-light text-slate-900 mb-2">
-              {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
+              {Object.values(filters).some(f => f !== "all") || filters.dateFrom || filters.dateTo
                 ? 'Nenhuma tarefa encontrada'
                 : 'Nenhuma tarefa ainda'}
             </h3>
             <p className="text-sm md:text-base text-slate-500 mb-4 md:mb-6 px-4 font-light">
-              {Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end
+              {Object.values(filters).some(f => f !== "all") || filters.dateFrom || filters.dateTo
                 ? 'Tente ajustar os filtros'
                 : 'Crie sua primeira tarefa para começar'}
             </p>
-            {!(Object.values(filters).some(f => f !== "all") || dateRange.start || dateRange.end) && (
+            {!(Object.values(filters).some(f => f !== "all") || filters.dateFrom || filters.dateTo) && (
               <Button 
                 onClick={() => setShowForm(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg h-11 md:h-12 font-light"

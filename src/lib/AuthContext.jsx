@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { buildLoginHref } from '@/lib/auth-routing';
 
 const AuthContext = createContext();
 
@@ -11,9 +12,18 @@ export const AuthProvider = ({ children }) => {
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
   const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
+  const [appPublicSettings, setAppPublicSettings] = useState(null);
+
+  // Rotas públicas não precisam de auth check
+  const pathLower = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
+  const isPublicPath = pathLower === '/autenticar' || pathLower.startsWith('/clientportal');
 
   useEffect(() => {
+    if (isPublicPath) {
+      setIsLoadingAuth(false);
+      setIsLoadingPublicSettings(false);
+      return;
+    }
     checkAppState();
   }, []);
 
@@ -124,8 +134,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const navigateToLogin = () => {
-    // Use the SDK's redirectToLogin method
-    base44.auth.redirectToLogin(window.location.href);
+    // Redireciona para /Autenticar com o ?next= apontando para a rota atual
+    // Assim o usuário interno também passa pelo login unificado
+    const currentPath = window.location.pathname + window.location.search + window.location.hash;
+    window.location.href = buildLoginHref(currentPath);
   };
 
   return (
