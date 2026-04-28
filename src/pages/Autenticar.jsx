@@ -38,8 +38,8 @@ export default function Autenticar() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Já logado no portal do cliente → redireciona direto
-    if (isClientTarget && isLoggedIn()) {
+    // Já logado no portal do cliente → redireciona direto (independente do next)
+    if (isLoggedIn()) {
       navigate(next || "/ClientPortalDashboard", { replace: true });
     }
   }, []);
