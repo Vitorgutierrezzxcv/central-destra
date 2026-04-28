@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { buildLoginHref } from '@/lib/auth-routing';
 
 const AuthContext = createContext();
 
@@ -133,8 +134,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const navigateToLogin = () => {
-    // Usa o login nativo do Base44 para usuários da Central Destra
-    base44.auth.redirectToLogin(window.location.href);
+    // Redireciona para /Autenticar com o ?next= apontando para a rota atual
+    // Assim o usuário interno também passa pelo login unificado
+    const currentPath = window.location.pathname + window.location.search + window.location.hash;
+    window.location.href = buildLoginHref(currentPath);
   };
 
   return (

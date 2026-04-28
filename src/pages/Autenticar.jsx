@@ -3,6 +3,7 @@ import { Mail, ArrowRight, Loader2, Lock, Eye, EyeOff, AlertCircle } from "lucid
 import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
+import { isClientPortalPath } from "@/lib/auth-routing";
 
 /**
  * Tela de login unificada — serve tanto para o Portal do Cliente quanto para
@@ -10,8 +11,8 @@ import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
  *
  * Fluxo:
  * 1. Se o destino (next) for o Portal do Cliente → autentica via clientPortalAuth (senha local)
- * 2. Se o destino for a Central Destra (ou nenhum) → redireciona para o login nativo do Base44
- *    que é a autenticação oficial dos usuários internos
+ * 2. Se o destino for a Central Destra (ou sem next) → autentica via base44.auth.loginViaEmailPassword
+ *    e redireciona para a rota pedida após login
  *
  * O parâmetro ?next= indica o destino após o login.
  */
@@ -21,7 +22,7 @@ export default function Autenticar() {
   const params = new URLSearchParams(location.search);
   const next = params.get("next") || "";
 
-  const isClientTarget = next.toLowerCase().includes("clientportal");
+  const isClientTarget = isClientPortalPath(next);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,32 +34,10 @@ export default function Autenticar() {
 
   useEffect(() => {
     // Já logado no portal do cliente → redireciona direto
-    if (isLoggedIn()) {
+    if (isClientTarget && isLoggedIn()) {
       navigate(next || "/ClientPortalDashboard", { replace: true });
-      return;
-    }
-
-    // Se o destino for a Central Destra (usuário interno), redireciona para
-    // o login nativo do Base44 imediatamente
-    if (!isClientTarget) {
-      const returnUrl = next || window.location.origin;
-      base44.auth.redirectToLogin(returnUrl);
     }
   }, []);
-
-  // Enquanto não é cliente target, mostra spinner enquanto redireciona
-  if (!isClientTarget) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
-            <span className="text-white text-xl font-light tracking-widest">D</span>
-          </div>
-          <Loader2 className="w-5 h-5 text-white/40 animate-spin" />
-        </div>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,22 +47,38 @@ export default function Autenticar() {
     const normalizedEmail = email.trim().toLowerCase();
 
     try {
-      const res = await base44.functions.invoke("clientPortalAuth", {
-        action: mode,
-        email: normalizedEmail,
-        password,
-        name,
-      });
-      const data = res?.data ?? res;
+      if (isClientTarget) {
+        // Autenticação para o Portal do Cliente (senha local via backend)
+        const res = await base44.functions.invoke("clientPortalAuth", {
+          action: mode,
+          email: normalizedEmail,
+          password,
+          name,
+        });
+        const data = res?.data ?? res;
 
-      if (data?.success) {
-        saveSession(data.token, data.profile, data.expiresAt);
-        navigate(next || "/ClientPortalDashboard", { replace: true });
+        if (data?.success) {
+          saveSession(data.token, data.profile, data.expiresAt);
+          navigate(next || "/ClientPortalDashboard", { replace: true });
+        } else {
+          setError(data?.error || "Erro desconhecido. Tente novamente.");
+        }
       } else {
-        setError(data?.error || "Erro desconhecido. Tente novamente.");
+        // Autenticação para usuários internos da Central Destra via Base44 SDK
+        await base44.auth.loginViaEmailPassword(normalizedEmail, password);
+        // Após login bem-sucedido, navega para o destino pedido ou para a home
+        const destination = next || "/";
+        window.location.href = destination;
       }
     } catch (err) {
-      setError(err?.response?.data?.error || err?.message || "Erro ao conectar. Tente novamente.");
+      const msg = err?.response?.data?.error || err?.message || "";
+      if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("incorrect") || msg.toLowerCase().includes("credential")) {
+        setError("E-mail ou senha inválidos.");
+      } else if (msg.toLowerCase().includes("disabled")) {
+        setError("Esta conta está desativada.");
+      } else {
+        setError("Não foi possível entrar agora. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -101,12 +96,10 @@ export default function Autenticar() {
             <span className="text-white/60 text-xs tracking-widest uppercase font-light">Destra</span>
           </div>
           <h2 className="text-4xl font-extralight text-white leading-tight mb-4">
-            Portal do<br />Cliente
+            {isClientTarget ? (<>Portal do<br />Cliente</>) : (<>Central<br />Destra</>)}
           </h2>
           <p className="text-slate-400 text-base font-light leading-relaxed">
-            Acompanhe seus projetos,<br />
-            aprovações e entregas<br />
-            em tempo real.
+            {isClientTarget ? (<>Acompanhe seus projetos,<br />aprovações e entregas<br />em tempo real.</>) : (<>Acesse a plataforma interna<br />da equipe Destra.</>)}
           </p>
         </div>
         <div className="space-y-1.5">
@@ -145,24 +138,26 @@ export default function Autenticar() {
                 </p>
               </div>
 
-              {/* Mode switcher */}
-              <div className="flex gap-2 mb-8 border-b border-white/10">
-                {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
-                  <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
-                    className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${mode === m.key ? "border-white text-white" : "border-transparent text-white/40 hover:text-white/60"}`}>
-                    {m.label}
-                  </button>
-                ))}
-              </div>
+              {/* Mode switcher — só exibe cadastro para portal do cliente */}
+              {isClientTarget && (
+                <div className="flex gap-2 mb-8 border-b border-white/10">
+                  {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
+                    <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
+                      className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${mode === m.key ? "border-white text-white" : "border-transparent text-white/40 hover:text-white/60"}`}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {mode === "register" && (
-                  <div>
-                    <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
-                    <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
-                      className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
-                  </div>
-                )}
+              {isClientTarget && mode === "register" && (
+                <div>
+                  <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
+                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
+                    className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
+                </div>
+              )}
 
                 <div>
                   <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">E-mail</label>
@@ -196,7 +191,7 @@ export default function Autenticar() {
                 <button type="submit" disabled={loading}
                   className="w-full h-14 bg-white text-slate-950 rounded-2xl text-lg font-semibold flex items-center justify-center gap-3 hover:bg-white/90 transition-colors disabled:opacity-50 mt-2">
                   {loading ? (<><Loader2 className="w-5 h-5 animate-spin" /><span>Aguarde...</span></>)
-                    : (<><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>)}
+                    : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>)}
                 </button>
               </form>
             </div>
@@ -213,18 +208,20 @@ export default function Autenticar() {
               </p>
             </div>
 
-            {/* Mode switcher */}
-            <div className="flex gap-4 mb-5 border-b border-slate-100">
-              {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
-                <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
-                  className={`pb-3 px-1 text-sm font-medium transition-all border-b-2 ${mode === m.key ? "border-slate-900 text-slate-900" : "border-transparent text-slate-400 hover:text-slate-600"}`}>
-                  {m.label}
-                </button>
-              ))}
-            </div>
+            {/* Mode switcher — só exibe cadastro para portal do cliente */}
+            {isClientTarget && (
+              <div className="flex gap-4 mb-5 border-b border-slate-100">
+                {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
+                  <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
+                    className={`pb-3 px-1 text-sm font-medium transition-all border-b-2 ${mode === m.key ? "border-slate-900 text-slate-900" : "border-transparent text-slate-400 hover:text-slate-600"}`}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              {mode === "register" && (
+              {isClientTarget && mode === "register" && (
                 <div>
                   <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Nome completo</label>
                   <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
@@ -264,7 +261,7 @@ export default function Autenticar() {
               <button type="submit" disabled={loading}
                 className="w-full h-11 bg-slate-900 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 mt-1">
                 {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /><span className="font-light">Aguarde...</span></>)
-                  : (<><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>)}
+                  : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>)}
               </button>
             </form>
           </div>
