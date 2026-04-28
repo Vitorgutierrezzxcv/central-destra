@@ -154,14 +154,6 @@ export default function TaskQuickViewModal({ task: initialTask, project, project
   const [confirmDelete, setConfirmDelete] = useState(false);
   const queryClient = useQueryClient();
 
-  if (!task) return null;
-
-  const priority = priorityConfig[task.priority] || priorityConfig.medium;
-  const status = statusConfig[task.status] || statusConfig.pending;
-  const now = startOfDay(new Date());
-  const endDateParsed = task.end_date ? parseISO(task.end_date) : null;
-  const isOverdue = endDateParsed && isBefore(endDateParsed, now) && task.status !== "completed";
-
   const updateMutation = useMutation({
     mutationFn: (data) => base44.entities.Task.update(task.id, data),
     onSuccess: (updated) => {
@@ -170,6 +162,14 @@ export default function TaskQuickViewModal({ task: initialTask, project, project
       onUpdate?.();
     }
   });
+
+  if (!task) return null;
+
+  const priority = priorityConfig[task.priority] || priorityConfig.medium;
+  const status = statusConfig[task.status] || statusConfig.pending;
+  const now = startOfDay(new Date());
+  const endDateParsed = task.end_date ? parseISO(task.end_date) : null;
+  const isOverdue = endDateParsed && isBefore(endDateParsed, now) && task.status !== "completed";
 
   const deleteMutation = useMutation({
     mutationFn: () => base44.entities.Task.delete(task.id),
