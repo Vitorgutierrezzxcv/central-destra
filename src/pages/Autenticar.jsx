@@ -27,9 +27,7 @@ export default function Autenticar() {
   const params = new URLSearchParams(location.search);
   const next = params.get("next") || "";
 
-  // É portal do cliente se: next aponta para /ClientPortal*, OU se não há next (login standalone = portal)
-  // Usuários internos sempre chegam com ?next=/ ou similar (via AuthContext redirect)
-  const isClientTarget = isClientPortalPath(next) || next === "";
+  const isClientTarget = isClientPortalPath(next);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,8 +38,8 @@ export default function Autenticar() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Já logado no portal do cliente → redireciona direto (independente do next)
-    if (isLoggedIn()) {
+    // Já logado no portal do cliente → redireciona direto
+    if (isClientTarget && isLoggedIn()) {
       navigate(next || "/ClientPortalDashboard", { replace: true });
     }
   }, []);
@@ -56,21 +54,12 @@ export default function Autenticar() {
     try {
       if (isClientTarget) {
         // Autenticação para o Portal do Cliente — via fetch direto (sem auth de usuário)
-        let data;
-        try {
-          data = await callClientPortalAuth({
-            action: mode,
-            email: normalizedEmail,
-            password,
-            name,
-          });
-        } catch (apiErr) {
-          // SDK lança exceção para respostas 4xx — extrair mensagem do backend
-          const errMsg = apiErr?.response?.data?.error || apiErr?.message || "Erro desconhecido. Tente novamente.";
-          setError(errMsg);
-          setLoading(false);
-          return;
-        }
+        const data = await callClientPortalAuth({
+          action: mode,
+          email: normalizedEmail,
+          password,
+          name,
+        });
 
         if (data?.success) {
           saveSession(data.token, data.profile, data.expiresAt);
@@ -86,7 +75,6 @@ export default function Autenticar() {
         window.location.href = destination;
       }
     } catch (err) {
-      // Só chega aqui para erros do auth interno (Base44)
       const msg = err?.response?.data?.error || err?.message || "";
       if (msg.toLowerCase().includes("invalid") || msg.toLowerCase().includes("incorrect") || msg.toLowerCase().includes("credential")) {
         setError("E-mail ou senha inválidos.");

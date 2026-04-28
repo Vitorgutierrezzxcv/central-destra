@@ -81,16 +81,8 @@ Deno.serve(async (req) => {
 
     // ─── LOGIN ─────────────────────────────────────────────────
     if (action === "login") {
-      if (!existing) {
-        // Verifica se existe um ClientContact com esse email (usuário válido mas sem cadastro no portal)
-        const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
-        if (contacts?.[0]) {
-          return Response.json({ error: "Você ainda não criou uma senha para o portal. Use a aba 'Cadastrar' para criar sua senha." }, { status: 404 });
-        }
-        return Response.json({ error: "Email não encontrado. Verifique o email ou entre em contato com a equipe Destra." }, { status: 404 });
-      }
-      if (!existing.portal_password_hash) {
-        return Response.json({ error: "Você ainda não criou uma senha para o portal. Use a aba 'Cadastrar' para criar sua senha." }, { status: 404 });
+      if (!existing || !existing.portal_password_hash) {
+        return Response.json({ error: "Conta não encontrada. Cadastre-se primeiro." }, { status: 404 });
       }
 
       const match = await verifyPassword(password, existing.portal_password_hash);
