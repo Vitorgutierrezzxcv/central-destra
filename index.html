@@ -3,8 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Meta tags padrão (Portal do Cliente) -->
     <title>Portal do Cliente · Destra</title>
     <meta name="description" content="Portal do Cliente Destra — acompanhe seus projetos, aprovações e entregas em tempo real." />
+
+    <!-- OG padrão (Portal do Cliente) -->
+    <meta property="og:title" content="Portal do Cliente · Destra" />
+    <meta property="og:description" content="Acompanhe projetos, aprovações e entregas em tempo real." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Destra" />
+
+    <!-- Twitter Card padrão -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Portal do Cliente · Destra" />
+    <meta name="twitter:description" content="Acompanhe projetos, aprovações e entregas em tempo real." />
+
+    <!-- Script que ajusta as meta tags conforme a rota acessada -->
+    <script>
+      (function () {
+        var path = window.location.pathname.toLowerCase();
+        var isInternal = path === '/autenticar' || path === '/';
+
+        if (isInternal) {
+          document.title = 'Central Destra · Acesso da Equipe';
+
+          function setMeta(sel, attr, val) {
+            var el = document.querySelector(sel);
+            if (el) el.setAttribute(attr, val);
+          }
+
+          setMeta('meta[name="description"]', 'content', 'Plataforma interna da equipe Destra. Gerencie projetos, clientes, finanças e muito mais.');
+          setMeta('meta[property="og:title"]', 'content', 'Central Destra · Acesso da Equipe');
+          setMeta('meta[property="og:description"]', 'content', 'Plataforma interna da equipe Destra. Gestão de projetos, CRM, finanças e relatórios.');
+          setMeta('meta[name="twitter:title"]', 'content', 'Central Destra · Acesso da Equipe');
+          setMeta('meta[name="twitter:description"]', 'content', 'Plataforma interna da equipe Destra. Gestão de projetos, CRM, finanças e relatórios.');
+        }
+      })();
+    </script>
 
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
@@ -16,11 +52,6 @@
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f172a'/><text x='50%25' y='55%25' font-size='18' fill='white' font-family='system-ui' text-anchor='middle' dominant-baseline='middle' font-weight='300' letter-spacing='1'>D</text></svg>" />
-
-    <!-- OG -->
-    <meta property="og:title" content="Portal do Cliente · Destra" />
-    <meta property="og:description" content="Acompanhe seus projetos em tempo real." />
-    <meta property="og:type" content="website" />
   </head>
   <body>
     <div id="root"></div>
