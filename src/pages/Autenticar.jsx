@@ -39,7 +39,8 @@ export default function Autenticar() {
   const params = new URLSearchParams(location.search);
   const next = params.get("next") || "";
 
-  const isClientTarget = isClientPortalPath(next);
+  const typeParam = params.get("type") || "";
+  const isClientTarget = isClientPortalPath(next) || typeParam === "client";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

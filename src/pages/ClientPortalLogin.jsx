@@ -18,8 +18,8 @@ export default function ClientPortalLogin() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    // Redireciona para o login unificado
-    navigate("/Autenticar", { replace: true });
+    // Redireciona para o login unificado com contexto do portal do cliente
+    navigate("/Autenticar?next=%2FClientPortalDashboard", { replace: true });
   }, []);
 
   const handleSubmit = async (e) => {

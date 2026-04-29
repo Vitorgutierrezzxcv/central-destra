@@ -74,7 +74,7 @@ export default function ClientPortalLayout() {
 
   const handleLogout = () => {
     clearSession();
-    navigate("/Autenticar", { replace: true });
+    navigate("/Autenticar?next=%2FClientPortalDashboard", { replace: true });
   };
 
   const visibleNav = navItems.filter(n => {
