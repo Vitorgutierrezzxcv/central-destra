@@ -32,6 +32,7 @@ import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
+import PortalClienteLogin from './pages/PortalClienteLogin';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -46,6 +47,8 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 
 const ClientPortalRoutes = () => (
   <Routes>
+    <Route path="/PortalClienteLogin" element={<PortalClienteLogin />} />
+    <Route path="/portalclienterlogin" element={<PortalClienteLogin />} />
     <Route element={<ClientPortalLayout />}>
       <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
       <Route path="/clientportallogin" element={<ClientPortalLogin />} />
@@ -157,8 +160,11 @@ function AppRouter() {
   const isPublicRoute = pathLower === '/autenticar';
   const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
 
+  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin';
+
   // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
   if (isPublicRoute) return <Autenticar />;
+  if (isPortalLoginRoute) return <PortalClienteLogin />;
   if (isClientPortalRoute) return <ClientPortalRoutes />;
 
   // Rotas internas — precisam do AuthProvider

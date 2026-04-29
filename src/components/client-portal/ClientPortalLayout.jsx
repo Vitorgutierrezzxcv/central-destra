@@ -33,13 +33,12 @@ export default function ClientPortalLayout() {
   const [fabOpen, setFabOpen] = useState(false);
   const { user, userLoading, company, projects } = useClientPortal();
 
-  const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin") || location.pathname.toLowerCase().includes("autenticar");
+  const isLoginPage = location.pathname.toLowerCase().includes("clientportallogin") || location.pathname.toLowerCase().includes("autenticar") || location.pathname.toLowerCase().includes("portalclienterlogin") || location.pathname.toLowerCase().includes("portalclienterlogin");
   const isActivatePage = location.pathname.toLowerCase().includes("clientportalactivate");
 
   useEffect(() => {
     if (!userLoading && !isLoggedIn() && !isLoginPage && !isActivatePage) {
-      const next = encodeURIComponent(location.pathname + location.search);
-      navigate(`/Autenticar?next=${next}`, { replace: true });
+      navigate("/PortalClienteLogin", { replace: true });
     }
   }, [userLoading, isLoginPage, isActivatePage]);
 
@@ -74,7 +73,7 @@ export default function ClientPortalLayout() {
 
   const handleLogout = () => {
     clearSession();
-    navigate("/Autenticar?next=%2FClientPortalDashboard", { replace: true });
+    navigate("/PortalClienteLogin", { replace: true });
   };
 
   const visibleNav = navItems.filter(n => {
