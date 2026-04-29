@@ -7,7 +7,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar, Flag, ClipboardList, File, Plus, Trash2, Edit2, CheckCircle2,
-  Clock, Upload, Loader2, Package, FolderOpen, Star, GraduationCap
+  Clock, Upload, Loader2, Package, FolderOpen, Star, GraduationCap, RefreshCw
 } from "lucide-react";
 import CoursesManager from "./CoursesManager";
 import { Badge } from "@/components/ui/badge";
@@ -135,7 +135,13 @@ function MeetingsManager({ projectId, companyId }) {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", meeting_type: "weekly", start_datetime: "", end_datetime: "", meeting_link: "", location: "", description: "", status: "scheduled", visible_to_client: true });
+    setForm({
+      title: "", meeting_type: "weekly", start_datetime: "", end_datetime: "",
+      meeting_link: "", location: "", description: "", status: "scheduled",
+      visible_to_client: true, is_recurring: false,
+      recurrence_frequency: "weekly", recurrence_weekday: "",
+      recurrence_time: "", recurrence_end_date: ""
+    });
     setOpen(true);
   };
 
@@ -153,8 +159,21 @@ function MeetingsManager({ projectId, companyId }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin_meetings", projectId] })
   });
 
-  const meetingTypeLabels = { kickoff: "Kickoff", weekly: "Semanal", review: "Revisão", presentation: "Apresentação", onboarding: "Onboarding", ad_hoc: "Avulso" };
-  const statusColors = { scheduled: "bg-blue-100 text-blue-700", completed: "bg-emerald-100 text-emerald-700", cancelled: "bg-slate-100 text-slate-500" };
+  const meetingTypeLabels = {
+    kickoff: "Kickoff", weekly: "Semanal", review: "Revisão",
+    presentation: "Apresentação", onboarding: "Onboarding",
+    mentoring: "Mentoria", ad_hoc: "Avulso"
+  };
+  const statusColors = {
+    scheduled: "bg-blue-100 text-blue-700",
+    completed: "bg-emerald-100 text-emerald-700",
+    cancelled: "bg-slate-100 text-slate-500"
+  };
+  const freqLabels = { daily: "Diária", weekly: "Semanal", biweekly: "Quinzenal", monthly: "Mensal" };
+  const weekdayLabels = { "0": "Dom", "1": "Seg", "2": "Ter", "3": "Qua", "4": "Qui", "5": "Sex", "6": "Sáb" };
+
+  const recurringMeetings = meetings.filter(m => m.is_recurring);
+  const singleMeetings = meetings.filter(m => !m.is_recurring);
 
   return (
     <div>
@@ -167,39 +186,108 @@ function MeetingsManager({ projectId, companyId }) {
 
       {isLoading ? <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-slate-400" /></div> :
         meetings.length === 0 ? <p className="text-xs text-slate-400 text-center py-6">Nenhuma reunião. Cadastre reuniões para aparecerem no calendário e timeline do cliente.</p> :
-        <div className="space-y-2">
-          {meetings.map(m => (
-            <div key={m.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
-                <p className="text-xs text-slate-400">
-                  {m.start_datetime ? format(new Date(m.start_datetime), "dd/MM/yyyy HH:mm") : "—"}
-                  {" · "}{meetingTypeLabels[m.meeting_type] || m.meeting_type}
-                  {m.meeting_link && <span className="ml-2 text-blue-500">• Com link</span>}
-                </p>
-              </div>
-              <Badge className={`text-[10px] ${statusColors[m.status] || "bg-slate-100 text-slate-500"}`}>
-                {m.status === "scheduled" ? "Agendada" : m.status === "completed" ? "Realizada" : "Cancelada"}
-              </Badge>
-              <Badge className={`text-[10px] ${m.visible_to_client ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"}`}>
-                {m.visible_to_client ? "Visível" : "Oculta"}
-              </Badge>
-              <div className="flex gap-1">
-                <Button size="sm" variant="ghost" onClick={() => openEdit(m)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
-                <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(m.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+        <div className="space-y-4">
+          {/* Recorrentes */}
+          {recurringMeetings.length > 0 && (
+            <div>
+              <p className="text-[11px] font-semibold text-blue-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <RefreshCw className="w-3 h-3" /> Recorrentes ({recurringMeetings.length})
+              </p>
+              <div className="space-y-2">
+                {recurringMeetings.map(m => (
+                  <div key={m.id} className="flex items-start gap-3 p-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
+                        <Badge className="text-[10px] bg-blue-100 text-blue-700 border-blue-200 flex items-center gap-1">
+                          <RefreshCw className="w-2.5 h-2.5" />
+                          {freqLabels[m.recurrence_frequency] || m.recurrence_frequency}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {meetingTypeLabels[m.meeting_type] || m.meeting_type}
+                        {m.recurrence_weekday !== undefined && m.recurrence_weekday !== "" && ` · ${weekdayLabels[m.recurrence_weekday]}`}
+                        {m.recurrence_time && ` · ${m.recurrence_time}`}
+                        {m.recurrence_end_date && ` · até ${format(new Date(m.recurrence_end_date), "dd/MM/yyyy")}`}
+                        {m.meeting_link && <span className="ml-1 text-blue-500">· Com link</span>}
+                      </p>
+                    </div>
+                    <Badge className={`text-[10px] flex-shrink-0 ${m.visible_to_client ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"}`}>
+                      {m.visible_to_client ? "Visível" : "Oculta"}
+                    </Badge>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(m)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(m.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+          )}
+
+          {/* Pontuais */}
+          {singleMeetings.length > 0 && (
+            <div>
+              {recurringMeetings.length > 0 && (
+                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3" /> Pontuais ({singleMeetings.length})
+                </p>
+              )}
+              <div className="space-y-2">
+                {singleMeetings.map(m => (
+                  <div key={m.id} className="flex items-center gap-3 p-3 bg-white border border-slate-100 rounded-xl">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-slate-800 truncate">{m.title}</p>
+                      <p className="text-xs text-slate-400">
+                        {m.start_datetime ? format(new Date(m.start_datetime), "dd/MM/yyyy HH:mm") : "—"}
+                        {" · "}{meetingTypeLabels[m.meeting_type] || m.meeting_type}
+                        {m.meeting_link && <span className="ml-2 text-blue-500">· Com link</span>}
+                      </p>
+                    </div>
+                    <Badge className={`text-[10px] ${statusColors[m.status] || "bg-slate-100 text-slate-500"}`}>
+                      {m.status === "scheduled" ? "Agendada" : m.status === "completed" ? "Realizada" : "Cancelada"}
+                    </Badge>
+                    <Badge className={`text-[10px] ${m.visible_to_client ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"}`}>
+                      {m.visible_to_client ? "Visível" : "Oculta"}
+                    </Badge>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(m)} className="h-7 w-7 p-0 text-slate-400 hover:text-slate-700"><Edit2 className="w-3.5 h-3.5" /></Button>
+                      <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(m.id)} className="h-7 w-7 p-0 text-rose-400 hover:text-rose-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       }
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>{editing ? "Editar Reunião" : "Nova Reunião"}</DialogTitle></DialogHeader>
-          <div className="space-y-3 py-2 max-h-[65vh] overflow-y-auto pr-1">
+          <div className="space-y-3 py-2 max-h-[70vh] overflow-y-auto pr-1">
+            {/* Tipo: pontual ou recorrente */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setForm(f => ({ ...f, is_recurring: false }))}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-all ${!form.is_recurring ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200 hover:border-blue-300"}`}
+              >
+                <Calendar className="w-4 h-4" /> Pontual
+              </button>
+              <button
+                type="button"
+                onClick={() => setForm(f => ({ ...f, is_recurring: true }))}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-sm font-medium transition-all ${form.is_recurring ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-600 border-slate-200 hover:border-blue-300"}`}
+              >
+                <RefreshCw className="w-4 h-4" /> Recorrente
+              </button>
+            </div>
+
             <div><Label className="text-xs">Título *</Label><Input value={form.title || ""} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="mt-1" /></div>
+
             <div className="grid grid-cols-2 gap-3">
-              <div><Label className="text-xs">Tipo</Label>
+              <div><Label className="text-xs">Tipo de Reunião</Label>
                 <Select value={form.meeting_type || "weekly"} onValueChange={v => setForm(f => ({ ...f, meeting_type: v }))}>
                   <SelectTrigger className="mt-1 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
@@ -218,10 +306,52 @@ function MeetingsManager({ projectId, companyId }) {
                 </Select>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><Label className="text-xs">Data/Hora Início</Label><Input type="datetime-local" value={form.start_datetime ? form.start_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, start_datetime: e.target.value }))} className="mt-1" /></div>
-              <div><Label className="text-xs">Data/Hora Fim</Label><Input type="datetime-local" value={form.end_datetime ? form.end_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, end_datetime: e.target.value }))} className="mt-1" /></div>
-            </div>
+
+            {/* Campos: Pontual */}
+            {!form.is_recurring && (
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label className="text-xs">Data/Hora Início</Label><Input type="datetime-local" value={form.start_datetime ? form.start_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, start_datetime: e.target.value }))} className="mt-1" /></div>
+                <div><Label className="text-xs">Data/Hora Fim</Label><Input type="datetime-local" value={form.end_datetime ? form.end_datetime.slice(0, 16) : ""} onChange={e => setForm(f => ({ ...f, end_datetime: e.target.value }))} className="mt-1" /></div>
+              </div>
+            )}
+
+            {/* Campos: Recorrente */}
+            {form.is_recurring && (
+              <div className="space-y-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                <p className="text-xs font-semibold text-blue-700 flex items-center gap-1.5"><RefreshCw className="w-3.5 h-3.5" /> Configuração de Recorrência</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label className="text-xs">Frequência</Label>
+                    <Select value={form.recurrence_frequency || "weekly"} onValueChange={v => setForm(f => ({ ...f, recurrence_frequency: v }))}>
+                      <SelectTrigger className="mt-1 text-xs bg-white"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="daily">Diária</SelectItem>
+                        <SelectItem value="weekly">Semanal</SelectItem>
+                        <SelectItem value="biweekly">Quinzenal</SelectItem>
+                        <SelectItem value="monthly">Mensal</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label className="text-xs">Horário</Label>
+                    <Input type="time" value={form.recurrence_time || ""} onChange={e => setForm(f => ({ ...f, recurrence_time: e.target.value }))} className="mt-1 bg-white" />
+                  </div>
+                </div>
+                {(form.recurrence_frequency === "weekly" || form.recurrence_frequency === "biweekly") && (
+                  <div>
+                    <Label className="text-xs">Dia da Semana</Label>
+                    <Select value={String(form.recurrence_weekday ?? "")} onValueChange={v => setForm(f => ({ ...f, recurrence_weekday: v }))}>
+                      <SelectTrigger className="mt-1 text-xs bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(weekdayLabels).map(([k, v]) => <SelectItem key={k} value={k}>{v}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <div><Label className="text-xs">Data de Término (opcional)</Label>
+                  <Input type="date" value={form.recurrence_end_date || ""} onChange={e => setForm(f => ({ ...f, recurrence_end_date: e.target.value }))} className="mt-1 bg-white" />
+                </div>
+              </div>
+            )}
+
             <div><Label className="text-xs">Link da Reunião (Google Meet, Zoom...)</Label><Input value={form.meeting_link || ""} onChange={e => setForm(f => ({ ...f, meeting_link: e.target.value }))} placeholder="https://meet.google.com/..." className="mt-1" /></div>
             <div><Label className="text-xs">Local / Endereço (opcional)</Label><Input value={form.location || ""} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} className="mt-1" /></div>
             <div><Label className="text-xs">Descrição</Label><Textarea value={form.description || ""} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={2} className="mt-1 resize-none" /></div>
