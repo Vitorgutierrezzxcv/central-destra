@@ -34,12 +34,12 @@ export default function UserPerformanceRanking() {
 
   return (
     <div className="bg-white border border-[#EAEAEA] rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
+      <div className="flex items-center justify-between mb-5 gap-2">
+        <div className="min-w-0">
           <h2 className="text-sm font-normal text-[#131A20]">Produtividade da Equipe</h2>
-          <p className="text-xs text-[#456C8D] font-light mt-0.5">{rankedUsers.length} membros · {rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)} concluídas</p>
+          <p className="text-xs text-[#456C8D] font-light mt-0.5 truncate">{rankedUsers.length} membros · {rankedUsers.reduce((acc, u) => acc + u.completedTasks, 0)} concluídas</p>
         </div>
-        <div className="w-8 h-8 bg-[#EAEAEA] rounded-xl flex items-center justify-center">
+        <div className="w-8 h-8 bg-[#EAEAEA] rounded-xl flex items-center justify-center flex-shrink-0">
           <Trophy className="w-4 h-4 text-[#131A20]" />
         </div>
       </div>

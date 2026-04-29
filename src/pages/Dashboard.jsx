@@ -41,13 +41,15 @@ function DashboardContent() {
 
   if (loadingUser || loadingTasks || loadingProjects) {
     return (
-      <div className="min-h-screen bg-[#F8F9FB] p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          <Skeleton className="h-10 w-56 rounded-lg" />
-          <div className="grid grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+      <div className="min-h-screen bg-white px-4 py-4 md:px-6 lg:px-8">
+        <div className="max-w-full space-y-4">
+          <Skeleton className="h-10 w-48 rounded-lg mt-8" />
+          <Skeleton className="h-12 rounded-2xl" />
+          <Skeleton className="h-16 rounded-2xl" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-12 rounded-xl" />)}
           </div>
-          <Skeleton className="h-72 rounded-xl" />
+          <Skeleton className="h-56 rounded-xl" />
         </div>
       </div>);
 
@@ -76,30 +78,31 @@ function DashboardContent() {
   const totalTasksCount = tasks.length;
 
   return (
-    <div className="min-h-screen bg-white p-4 md:p-5 lg:p-6">
-      <div className="w-full">
+    <div className="min-h-screen bg-white px-4 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6 overflow-x-hidden">
+      <div className="w-full max-w-full">
 
         {/* ── Page Header ─────────────────────────── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-7">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
           <div>
-            <p className="text-slate-500 mt-10 text-2xl font-light normal-case tracking-wider">{greeting()}</p>
-            <h1 className="text-slate-900 text-4xl font-light tracking-tight leading-tight">
+            <p className="text-slate-500 mt-8 sm:mt-10 text-xl sm:text-2xl font-light normal-case tracking-wider">{greeting()}</p>
+            <h1 className="text-slate-900 text-3xl sm:text-4xl font-light tracking-tight leading-tight">
               {displayName}
             </h1>
-            <p className="text-slate-500 mb-4 text-sm font-light capitalize">
+            <p className="text-slate-500 mb-1 text-sm font-light capitalize">
               {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pb-1">
             <Link to={createPageUrl("Projects")}>
               <Button variant="outline" size="sm" className="h-9 border-slate-200 bg-white text-slate-900 hover:bg-slate-50 font-light text-sm rounded-xl">
-                <Plus className="w-3.5 h-3.5 mr-1.5" />
-                Projeto
+                <Plus className="w-3.5 h-3.5 mr-1" />
+                <span className="hidden xs:inline">Projeto</span>
+                <span className="xs:hidden">Proj.</span>
               </Button>
             </Link>
             <Link to={createPageUrl("Tasks")}>
               <Button size="sm" className="h-9 bg-slate-900 hover:bg-slate-800 text-white font-light text-sm rounded-xl border-0 shadow-none">
-                <Plus className="w-3.5 h-3.5 mr-1.5" />
+                <Plus className="w-3.5 h-3.5 mr-1" />
                 Nova Tarefa
               </Button>
             </Link>
@@ -115,10 +118,10 @@ function DashboardContent() {
         {/* ── Executive + KPI Row ─────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-0">
           {/* Executive Insight — left half */}
-          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 lg:col-span-1 md:p-7 flex flex-col justify-between overflow-hidden">
+          <div className="bg-slate-900 p-5 sm:p-6 rounded-2xl border border-slate-800 flex flex-col justify-between overflow-hidden">
            <div>
              <p className="text-slate-400 mb-2 text-xs font-light uppercase tracking-widest">VISÃO EXECUTIVA</p>
-             <p className="text-white text-xl font-light leading-snug">
+             <p className="text-white text-lg sm:text-xl font-light leading-snug">
                {overdueTasks > 0 ?
                `${overdueTasks} tarefa${overdueTasks > 1 ? 's atrasadas' : ' atrasada'} — atenção necessária` :
                inProgressTasks > 0 ?
@@ -136,7 +139,7 @@ function DashboardContent() {
              </Link>
           </div>
           {/* KPI Cards — right half */}
-          <div className="lg:col-span-1">
+          <div>
             <StatsCards
               pendingTasks={pendingTasks}
               inProgressTasks={inProgressTasks}

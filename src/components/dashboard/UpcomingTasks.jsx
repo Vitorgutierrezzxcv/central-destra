@@ -65,8 +65,8 @@ export default function UpcomingTasks({ tasks, projects }) {
               onClick={() => setSelectedTask(task)}
               className="w-full text-left"
             >
-              <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all ${isOverdue ? 'border-red-200 bg-red-50/50 hover:bg-red-50' : isDueSoon ? 'border-amber-200 bg-amber-50/50 hover:bg-amber-50' : 'border-[#EAEAEA] hover:bg-[#F7F7F7]'}`}>
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-px" style={{ background: isOverdue ? '#C0392B' : isDueSoon ? '#D97706' : priority.color }} />
+              <div className={`flex items-start gap-3 px-3 py-3 rounded-xl border transition-all ${isOverdue ? 'border-red-200 bg-red-50/50 hover:bg-red-50' : isDueSoon ? 'border-amber-200 bg-amber-50/50 hover:bg-amber-50' : 'border-[#EAEAEA] hover:bg-[#F7F7F7]'}`}>
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5" style={{ background: isOverdue ? '#C0392B' : isDueSoon ? '#D97706' : priority.color }} />
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-normal truncate ${isOverdue ? 'text-[#C0392B]' : 'text-[#131A20]'}`}>
                     {task.title}
@@ -74,24 +74,24 @@ export default function UpcomingTasks({ tasks, projects }) {
                   {project && (
                     <p className="text-xs text-[#456C8D] font-light truncate mt-0.5">{project.name}</p>
                   )}
-                </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {isOverdue && (
-                    <span className="text-[10px] font-light text-[#C0392B] bg-red-50 border border-red-100 px-2 py-0.5 rounded-full">
-                      Atrasada
+                  <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+                    {isOverdue && (
+                      <span className="text-[10px] font-light text-[#C0392B] bg-red-50 border border-red-100 px-1.5 py-0.5 rounded-full">
+                        Atrasada
+                      </span>
+                    )}
+                    {isDueSoon && (
+                      <span className="text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full">
+                        ⚠ Prazo próximo
+                      </span>
+                    )}
+                    <span
+                      className="text-[10px] font-light px-1.5 py-0.5 rounded-full"
+                      style={{ background: priority.bg, color: priority.color }}
+                    >
+                      {priority.label}
                     </span>
-                  )}
-                  {isDueSoon && (
-                    <span className="text-[10px] font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                      ⚠ Prazo próximo
-                    </span>
-                  )}
-                  <span
-                    className="text-[10px] font-light px-2 py-0.5 rounded-full"
-                    style={{ background: priority.bg, color: priority.color }}
-                  >
-                    {priority.label}
-                  </span>
+                  </div>
                 </div>
               </div>
             </button>

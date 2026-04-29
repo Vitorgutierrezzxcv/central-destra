@@ -53,9 +53,9 @@ export default function PomodoroTimer({ dark = false, compact = false }) {
     return (
       <div className="bg-slate-900 mb-5 px-4 py-3 rounded-2xl">
         {/* Row 1: label + timer + controls */}
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-white font-light uppercase tracking-widest text-xs shrink-0">POMODORO</span>
-          <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-white font-light uppercase tracking-widest text-[10px] sm:text-xs shrink-0">POMODORO</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={reset}
               className="w-8 h-8 rounded-xl flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all">
@@ -67,18 +67,18 @@ export default function PomodoroTimer({ dark = false, compact = false }) {
               style={{ background: MODES[mode].color }}>
               {running ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 ml-0.5" />}
             </button>
-            <span className="text-white text-xl font-light tabular-nums tracking-tight min-w-[52px] text-right">
+            <span className="text-white text-lg sm:text-xl font-light tabular-nums tracking-tight min-w-[46px] text-right">
               {mins}:{secs}
             </span>
           </div>
         </div>
         {/* Row 2: mode tabs */}
-        <div className="flex gap-1 mt-2.5">
+        <div className="flex gap-1 mt-2">
           {Object.entries(MODES).map(([key, val]) =>
           <button
             key={key}
             onClick={() => switchMode(key)}
-            className={`flex-1 py-1.5 rounded-lg text-[11px] font-light transition-all ${
+            className={`flex-1 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-light transition-all ${
             mode === key ? "bg-white text-[#131A20]" : "bg-white/10 text-white/60 hover:bg-white/20"}`
             }>
               {val.label}

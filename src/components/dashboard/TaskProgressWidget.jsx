@@ -19,16 +19,19 @@ export default function TaskProgressWidget({ tasks }) {
   const barColor = percent >= 80 ? "#131A20" : percent >= 50 ? "#456C8D" : "#6FA6FF";
 
   return (
-    <div className="mb-5 bg-white border border-[#EAEAEA] rounded-2xl px-6 py-4 flex items-center gap-6">
-      <div className="flex items-baseline gap-1.5 shrink-0">
-        <span className="text-2xl font-light text-[#131A20] tabular-nums leading-none">{percent}%</span>
-        <span className="text-xs font-light text-[#456C8D]">concluído {label}</span>
+    <div className="mb-5 bg-white border border-[#EAEAEA] rounded-2xl px-4 py-3 sm:px-6 sm:py-4 flex items-center gap-3 sm:gap-6">
+      <div className="flex items-baseline gap-1 shrink-0">
+        <span className="text-xl sm:text-2xl font-light text-[#131A20] tabular-nums leading-none">{percent}%</span>
+        <span className="text-xs font-light text-[#456C8D] hidden sm:inline">concluído {label}</span>
       </div>
-      <div className="flex-1 h-1.5 bg-[#EAEAEA] rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${percent}%`, background: barColor }}
-        />
+      <div className="flex-1 min-w-0">
+        <div className="h-1.5 bg-[#EAEAEA] rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${percent}%`, background: barColor }}
+          />
+        </div>
+        <span className="text-[10px] font-light text-[#456C8D] sm:hidden">concluído {label}</span>
       </div>
       <span className="text-xs font-light text-[#456C8D] shrink-0 tabular-nums">{completed}/{total}</span>
     </div>
