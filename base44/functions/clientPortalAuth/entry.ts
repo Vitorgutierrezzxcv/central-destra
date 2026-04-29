@@ -79,67 +79,122 @@ Deno.serve(async (req) => {
     const newToken = crypto.randomUUID() + crypto.randomUUID();
     const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
+    // Resolve ClientContact pelo email
+    const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
+    const contact = contacts?.[0] || null;
+    const linked_client_contact_id = contact?.id || existing?.linked_client_contact_id || null;
+    const linked_company_id = contact?.company_id || existing?.linked_company_id || null;
+
     // ─── LOGIN ─────────────────────────────────────────────────
     if (action === "login") {
-      if (!existing || !existing.portal_password_hash) {
-        return Response.json({ error: "Conta não encontrada. Cadastre-se primeiro." }, { status: 404 });
-      }
-
-      const match = await verifyPassword(password, existing.portal_password_hash);
-      if (!match) {
-        return Response.json({ error: "Senha incorreta." }, { status: 401 });
-      }
-
-      let linked_client_contact_id = existing.linked_client_contact_id || null;
-      let linked_company_id = existing.linked_company_id || null;
-
-      const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
-      const contact = contacts?.[0];
-      if (contact) {
-        linked_client_contact_id = contact.id;
-        linked_company_id = contact.company_id || linked_company_id;
-      }
-
-      const updateData = {
-        portal_session_token: newToken,
-        portal_session_expires: expiresAt,
-      };
-      if (linked_client_contact_id) updateData.linked_client_contact_id = linked_client_contact_id;
-      if (linked_company_id) updateData.linked_company_id = linked_company_id;
-
-      await base44.asServiceRole.entities.UserProfile.update(existing.id, updateData);
-
-      return Response.json({
-        success: true,
-        token: newToken,
-        expiresAt,
-        profile: {
-          id: existing.id,
-          email: normalizedEmail,
-          name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
-          linked_company_id,
-          linked_client_contact_id,
-          portal_type: "client"
+      // Caso 1: tem perfil com senha definida → verifica senha normalmente
+      if (existing?.portal_password_hash) {
+        const match = await verifyPassword(password, existing.portal_password_hash);
+        if (!match) {
+          return Response.json({ error: "Senha incorreta." }, { status: 401 });
         }
-      });
+
+        const updateData = {
+          portal_session_token: newToken,
+          portal_session_expires: expiresAt,
+        };
+        if (linked_client_contact_id) updateData.linked_client_contact_id = linked_client_contact_id;
+        if (linked_company_id) updateData.linked_company_id = linked_company_id;
+
+        await base44.asServiceRole.entities.UserProfile.update(existing.id, updateData);
+
+        return Response.json({
+          success: true,
+          token: newToken,
+          expiresAt,
+          profile: {
+            id: existing.id,
+            email: normalizedEmail,
+            name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
+            linked_company_id,
+            linked_client_contact_id,
+            portal_type: "client"
+          }
+        });
+      }
+
+      // Caso 2: tem ClientContact cadastrado mas ainda não tem senha definida
+      // → primeiro acesso: define a senha e loga
+      if (contact) {
+        const hash = await hashPassword(password);
+
+        if (existing) {
+          // Já tem perfil, só define a senha
+          await base44.asServiceRole.entities.UserProfile.update(existing.id, {
+            portal_password_hash: hash,
+            portal_session_token: newToken,
+            portal_session_expires: expiresAt,
+            portal_type: "client",
+            linked_client_contact_id,
+            linked_company_id,
+          });
+
+          return Response.json({
+            success: true,
+            token: newToken,
+            expiresAt,
+            is_first_access: true,
+            profile: {
+              id: existing.id,
+              email: normalizedEmail,
+              name: existing.full_name || existing.display_name || normalizedEmail.split("@")[0],
+              linked_company_id,
+              linked_client_contact_id,
+              portal_type: "client"
+            }
+          });
+        } else {
+          // Cria perfil do zero com a senha
+          const newProfile = await base44.asServiceRole.entities.UserProfile.create({
+            user_email: normalizedEmail,
+            full_name: contact.name || normalizedEmail.split("@")[0],
+            display_name: contact.name || normalizedEmail.split("@")[0],
+            portal_type: "client",
+            portal_password_hash: hash,
+            portal_session_token: newToken,
+            portal_session_expires: expiresAt,
+            linked_client_contact_id,
+            linked_company_id,
+          });
+
+          return Response.json({
+            success: true,
+            token: newToken,
+            expiresAt,
+            is_first_access: true,
+            profile: {
+              id: newProfile.id,
+              email: normalizedEmail,
+              name: contact.name || normalizedEmail.split("@")[0],
+              linked_company_id,
+              linked_client_contact_id,
+              portal_type: "client"
+            }
+          });
+        }
+      }
+
+      // Caso 3: não tem nem perfil nem ClientContact → conta não existe
+      return Response.json({ error: "Conta não encontrada. Verifique seu e-mail ou entre em contato com a equipe." }, { status: 404 });
     }
 
     // ─── REGISTER ──────────────────────────────────────────────
     if (action === "register") {
-      if (existing && existing.portal_password_hash) {
+      if (existing?.portal_password_hash) {
         return Response.json({ error: "Este email já está cadastrado. Faça login." }, { status: 409 });
       }
 
-      const hash = await hashPassword(password);
-
-      let linked_client_contact_id = null;
-      let linked_company_id = null;
-      const contacts = await base44.asServiceRole.entities.ClientContact.filter({ email: normalizedEmail });
-      const contact = contacts?.[0];
-      if (contact) {
-        linked_client_contact_id = contact.id;
-        linked_company_id = contact.company_id || null;
+      // Só permite cadastro se já existe um ClientContact vinculado a este email
+      if (!contact) {
+        return Response.json({ error: "Seu e-mail não está cadastrado no sistema. Entre em contato com a equipe Destra para receber seu convite." }, { status: 403 });
       }
+
+      const hash = await hashPassword(password);
 
       let profile;
       if (existing) {
@@ -147,23 +202,23 @@ Deno.serve(async (req) => {
           portal_password_hash: hash,
           portal_session_token: newToken,
           portal_session_expires: expiresAt,
-          full_name: name || existing.full_name,
+          full_name: name || existing.full_name || contact.name,
           portal_type: "client",
-          ...(linked_client_contact_id ? { linked_client_contact_id } : {}),
-          ...(linked_company_id ? { linked_company_id } : {}),
+          linked_client_contact_id,
+          linked_company_id,
         });
         profile = existing;
       } else {
         profile = await base44.asServiceRole.entities.UserProfile.create({
           user_email: normalizedEmail,
-          full_name: name || normalizedEmail.split("@")[0],
-          display_name: name || normalizedEmail.split("@")[0],
+          full_name: name || contact.name || normalizedEmail.split("@")[0],
+          display_name: name || contact.name || normalizedEmail.split("@")[0],
           portal_type: "client",
           portal_password_hash: hash,
           portal_session_token: newToken,
           portal_session_expires: expiresAt,
-          ...(linked_client_contact_id ? { linked_client_contact_id } : {}),
-          ...(linked_company_id ? { linked_company_id } : {}),
+          linked_client_contact_id,
+          linked_company_id,
         });
       }
 
@@ -175,8 +230,8 @@ Deno.serve(async (req) => {
           id: profile.id,
           email: normalizedEmail,
           name: name || profile.full_name || normalizedEmail.split("@")[0],
-          linked_company_id: linked_company_id || profile.linked_company_id || null,
-          linked_client_contact_id: linked_client_contact_id || profile.linked_client_contact_id || null,
+          linked_company_id,
+          linked_client_contact_id,
           portal_type: "client"
         }
       });

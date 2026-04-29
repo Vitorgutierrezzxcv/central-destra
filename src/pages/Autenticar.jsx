@@ -75,8 +75,10 @@ export default function Autenticar() {
         if (data?.success) {
           saveSession(data.token, data.profile, data.expiresAt);
           navigate(next || "/ClientPortalDashboard", { replace: true });
+        } else if (data?.error) {
+          setError(data.error);
         } else {
-          setError(data?.error || "Erro desconhecido. Tente novamente.");
+          setError("Erro desconhecido. Tente novamente.");
         }
       } else {
         await base44.auth.loginViaEmailPassword(normalizedEmail, password);
@@ -151,7 +153,9 @@ export default function Autenticar() {
                   {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
                 </h1>
                 <p className="text-white/60 text-lg font-light leading-relaxed">
-                  {mode === "login" ? "Acesse seu portal com suas credenciais." : "Registre-se para acessar seu portal."}
+                {mode === "login"
+                 ? "Se é seu primeiro acesso, use seu e-mail e defina uma senha de sua escolha."
+                 : "Registre-se para acessar seu portal."}
                 </p>
               </div>
 
@@ -237,7 +241,9 @@ export default function Autenticar() {
                 {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
               </h1>
               <p className="text-sm text-slate-400 font-light">
-                {mode === "login" ? "Acesse seu portal com suas credenciais." : "Registre-se para acessar seu portal."}
+                {mode === "login"
+                  ? "Primeiro acesso? Use seu e-mail cadastrado e defina uma senha."
+                  : "Registre-se para acessar seu portal."}
               </p>
             </div>
 
