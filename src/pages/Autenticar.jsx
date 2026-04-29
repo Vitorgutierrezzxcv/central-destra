@@ -4,10 +4,22 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
 import { isClientPortalPath } from "@/lib/auth-routing";
-// Chama clientPortalAuth via SDK — requiresAuth: false está configurado no base44Client
+
 async function callClientPortalAuth(payload) {
   const res = await base44.functions.invoke("clientPortalAuth", payload);
   return res?.data ?? res;
+}
+
+// SVG do Google para o botão
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+      <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5836-5.036-3.7104H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+      <path d="M3.964 10.71c-.18-.54-.2827-1.1168-.2827-1.71s.1027-1.17.2827-1.71V4.9582H.9574C.3477 6.173 0 7.5482 0 9s.3477 2.827.9574 4.0418L3.964 10.71z" fill="#FBBC05"/>
+      <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9574 4.9582L3.964 7.29C4.6718 5.1632 6.656 3.5795 9 3.5795z" fill="#EA4335"/>
+    </svg>
+  );
 }
 
 /**
@@ -53,7 +65,6 @@ export default function Autenticar() {
 
     try {
       if (isClientTarget) {
-        // Autenticação para o Portal do Cliente — via fetch direto (sem auth de usuário)
         const data = await callClientPortalAuth({
           action: mode,
           email: normalizedEmail,
@@ -68,9 +79,7 @@ export default function Autenticar() {
           setError(data?.error || "Erro desconhecido. Tente novamente.");
         }
       } else {
-        // Autenticação para usuários internos da Central Destra via Base44 SDK
         await base44.auth.loginViaEmailPassword(normalizedEmail, password);
-        // Após login bem-sucedido, navega para o destino pedido ou para a home
         const destination = next || "/";
         window.location.href = destination;
       }
@@ -86,6 +95,10 @@ export default function Autenticar() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleLogin = () => {
+    base44.auth.redirectToLogin(next || "/");
   };
 
   return (
@@ -198,6 +211,22 @@ export default function Autenticar() {
                     : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>)}
                 </button>
               </form>
+
+              {/* Google login — só para Central Destra */}
+              {!isClientTarget && (
+                <div className="mt-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex-1 h-px bg-white/20" />
+                    <span className="text-white/40 text-sm">ou</span>
+                    <div className="flex-1 h-px bg-white/20" />
+                  </div>
+                  <button type="button" onClick={handleGoogleLogin}
+                    className="w-full h-14 bg-white/10 border border-white/20 rounded-2xl text-base font-medium text-white flex items-center justify-center gap-3 hover:bg-white/20 transition-colors">
+                    <GoogleIcon />
+                    Entrar com Google
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -268,6 +297,22 @@ export default function Autenticar() {
                   : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>)}
               </button>
             </form>
+
+            {/* Google login — só para Central Destra */}
+            {!isClientTarget && (
+              <div className="mt-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-px bg-slate-200" />
+                  <span className="text-slate-400 text-xs">ou</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+                <button type="button" onClick={handleGoogleLogin}
+                  className="w-full h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 flex items-center justify-center gap-2.5 hover:bg-slate-50 transition-colors">
+                  <GoogleIcon />
+                  Entrar com Google
+                </button>
+              </div>
+            )}
           </div>
 
         </div>
