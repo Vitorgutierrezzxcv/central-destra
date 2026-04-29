@@ -51,9 +51,9 @@ export default function PortalClienteLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-emerald-950 flex flex-col lg:flex-row">
       {/* Left panel — desktop */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0D1221] border-r border-white/5 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-emerald-900/40 border-r border-white/5 flex-col justify-between p-12">
         <div>
           <div className="flex items-center gap-3 mb-14">
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">

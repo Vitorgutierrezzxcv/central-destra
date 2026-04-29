@@ -100,10 +100,18 @@ export default function Autenticar() {
     base44.auth.redirectToLogin(next || "/");
   };
 
+  // Central Destra: azul-marinho escuro | Portal do Cliente: esmeralda escuro
+  const bgLeft = isClientTarget ? "bg-emerald-950" : "bg-[#0B1628]";
+  const bgMobile = isClientTarget ? "bg-emerald-900" : "bg-[#0B1628]";
+  const accentDot = isClientTarget ? "bg-emerald-400/40" : "bg-blue-400/40";
+  const tagline = isClientTarget
+    ? ["Visibilidade total do projeto", "Aprovação de entregas", "Canal direto com a equipe Destra"]
+    : ["Gestão de projetos e clientes", "Acompanhamento de tarefas em tempo real", "CRM, finanças e relatórios integrados"];
+
   return (
-    <div className="min-h-screen bg-blue-600 lg:bg-white flex flex-col lg:flex-row">
+    <div className={`min-h-screen ${bgMobile} lg:bg-white flex flex-col lg:flex-row`}>
       {/* ── Left panel (desktop only) ── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-8">
+      <div className={`hidden lg:flex lg:w-1/2 ${bgLeft} flex-col justify-between p-8`}>
         <div>
           <div className="flex items-center gap-2.5 mb-10">
             <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
@@ -115,13 +123,15 @@ export default function Autenticar() {
             {isClientTarget ? (<>Portal do<br />Cliente</>) : (<>Central<br />Destra</>)}
           </h2>
           <p className="text-slate-400 text-base font-light leading-relaxed">
-            {isClientTarget ? (<>Acompanhe seus projetos,<br />aprovações e entregas<br />em tempo real.</>) : (<>Acesse a plataforma interna<br />da equipe Destra.</>)}
+            {isClientTarget
+              ? (<>Acompanhe seus projetos,<br />aprovações e entregas<br />em tempo real.</>)
+              : (<>Plataforma interna da equipe.<br />Gerencie clientes, projetos,<br />finanças e muito mais.</>)}
           </p>
         </div>
         <div className="space-y-1.5">
-          {["Visibilidade completa do projeto", "Aprovação de entregas", "Comunicação direta com a equipe"].map((item, i) => (
+          {tagline.map((item, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-white/30" />
+              <div className={`w-1.5 h-1.5 rounded-full ${accentDot}`} />
               <p className="text-slate-400 text-sm font-light">{item}</p>
             </div>
           ))}
@@ -142,17 +152,19 @@ export default function Autenticar() {
                 <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
                   <span className="text-white text-lg font-light tracking-widest">D</span>
                 </div>
-                <p className="text-white/70 text-xs tracking-widest uppercase font-light">Destra</p>
+                <p className="text-white/70 text-xs tracking-widest uppercase font-light">
+                  {isClientTarget ? "Portal do Cliente" : "Central Destra"}
+                </p>
               </div>
 
               <div className="mb-10">
                 <h1 className="text-5xl font-extralight text-white tracking-tight leading-tight mb-4">
-                  {isClientTarget ? (mode === "login" ? "Bem-vindo de volta" : "Criar conta") : "Central Destra"}
+                  {isClientTarget ? (mode === "login" ? "Bem-vindo de volta" : "Criar conta") : "Olá, equipe!"}
                 </h1>
                 <p className="text-white/60 text-lg font-light leading-relaxed">
                   {isClientTarget
-                    ? (mode === "login" ? "Se é seu primeiro acesso, use seu e-mail e defina uma senha de sua escolha." : "Registre-se para acessar seu portal.")
-                    : "Acesse a plataforma interna da equipe Destra."}
+                    ? (mode === "login" ? "Acesse o portal para acompanhar seus projetos e entregas." : "Registre-se para acessar o portal.")
+                    : "Acesse a plataforma interna da Destra com sua conta Google."}
                 </p>
               </div>
 
