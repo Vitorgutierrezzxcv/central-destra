@@ -799,7 +799,7 @@ function SurveysViewer({ projectId }) {
 }
 
 // ─── Main export ─────────────────────────────────────────────────────────────
-export default function PortalContentManager({ contact, projects, companies }) {
+export default function PortalContentManager({ contact, projects, companies, defaultProjectId }) {
   const { data: accessList = [] } = useQuery({
     queryKey: ["pcm_access", contact?.id],
     queryFn: () => base44.entities.ProjectClientAccess.filter({ client_contact_id: contact.id }),
@@ -807,9 +807,12 @@ export default function PortalContentManager({ contact, projects, companies }) {
   });
 
   const accessedProjectIds = accessList.map(a => a.project_id);
-  const accessedProjects = projects.filter(p => accessedProjectIds.includes(p.id));
+  // When called with a single project (from ClientProjectSettings), use it directly without filtering by access
+  const accessedProjects = defaultProjectId
+    ? projects.filter(p => p.id === defaultProjectId)
+    : projects.filter(p => accessedProjectIds.includes(p.id));
 
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [selectedProjectId, setSelectedProjectId] = useState(defaultProjectId || null);
   const activeProjectId = selectedProjectId || accessedProjects[0]?.id;
   const activeProject = accessedProjects.find(p => p.id === activeProjectId);
   const activeCompanyId = activeProject?.company_id;
