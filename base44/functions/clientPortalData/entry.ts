@@ -1,18 +1,14 @@
 /**
  * Dados do Portal do Cliente.
- * Usa createClient com appId diretamente (sem asServiceRole, sem auth de usuário Base44).
+ * Usa asServiceRole para ter acesso completo às entidades.
  */
-import { createClient } from 'npm:@base44/sdk@0.8.25';
-
-const APP_ID = Deno.env.get("BASE44_APP_ID");
-
-function getDb() {
-  return createClient({ appId: APP_ID, requiresAuth: false });
-}
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
-    const db = getDb();
+    const base44 = createClientFromRequest(req);
+    const db = base44.asServiceRole;
+
     const body = await req.json();
     const { action, token, params = {} } = body;
 
