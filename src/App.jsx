@@ -49,6 +49,7 @@ const ClientPortalRoutes = () => (
   <Routes>
     <Route path="/PortalClienteLogin" element={<PortalClienteLogin />} />
     <Route path="/portalclienterlogin" element={<PortalClienteLogin />} />
+    <Route path="/portalcliente" element={<PortalClienteLogin />} />
     <Route element={<ClientPortalLayout />}>
       <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
       <Route path="/clientportallogin" element={<ClientPortalLogin />} />
@@ -160,7 +161,7 @@ function AppRouter() {
   const isPublicRoute = pathLower === '/autenticar';
   const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
 
-  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin';
+  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin' || pathLower === '/portalcliente';
 
   // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
   if (isPublicRoute) return <Autenticar />;
