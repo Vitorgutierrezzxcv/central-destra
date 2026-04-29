@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Mail, ArrowRight, Loader2, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+// Nota: para Central Destra, usa apenas Google Login (redirectToLogin)
 import { useNavigate, useLocation } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
@@ -65,26 +66,21 @@ export default function Autenticar() {
     const normalizedEmail = email.trim().toLowerCase();
 
     try {
-      if (isClientTarget) {
-        const data = await callClientPortalAuth({
-          action: mode,
-          email: normalizedEmail,
-          password,
-          name,
-        });
+      // Apenas para portal do cliente (senha local)
+      const data = await callClientPortalAuth({
+        action: mode,
+        email: normalizedEmail,
+        password,
+        name,
+      });
 
-        if (data?.success) {
-          saveSession(data.token, data.profile, data.expiresAt);
-          navigate(next || "/ClientPortalDashboard", { replace: true });
-        } else if (data?.error) {
-          setError(data.error);
-        } else {
-          setError("Erro desconhecido. Tente novamente.");
-        }
+      if (data?.success) {
+        saveSession(data.token, data.profile, data.expiresAt);
+        navigate(next || "/ClientPortalDashboard", { replace: true });
+      } else if (data?.error) {
+        setError(data.error);
       } else {
-        await base44.auth.loginViaEmailPassword(normalizedEmail, password);
-        const destination = next || "/";
-        window.location.href = destination;
+        setError("Erro desconhecido. Tente novamente.");
       }
     } catch (err) {
       const msg = err?.response?.data?.error || err?.message || "";
@@ -151,174 +147,155 @@ export default function Autenticar() {
 
               <div className="mb-10">
                 <h1 className="text-5xl font-extralight text-white tracking-tight leading-tight mb-4">
-                  {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
+                  {isClientTarget ? (mode === "login" ? "Bem-vindo de volta" : "Criar conta") : "Central Destra"}
                 </h1>
                 <p className="text-white/60 text-lg font-light leading-relaxed">
-                {mode === "login"
-                 ? "Se é seu primeiro acesso, use seu e-mail e defina uma senha de sua escolha."
-                 : "Registre-se para acessar seu portal."}
+                  {isClientTarget
+                    ? (mode === "login" ? "Se é seu primeiro acesso, use seu e-mail e defina uma senha de sua escolha." : "Registre-se para acessar seu portal.")
+                    : "Acesse a plataforma interna da equipe Destra."}
                 </p>
               </div>
 
-              {/* Mode switcher — só exibe cadastro para portal do cliente */}
-              {isClientTarget && (
-                <div className="flex gap-2 mb-8 border-b border-white/10">
-                  {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
-                    <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
-                      className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${mode === m.key ? "border-white text-white" : "border-transparent text-white/40 hover:text-white/60"}`}>
-                      {m.label}
+              {/* Portal do cliente: formulário de login/cadastro */}
+              {isClientTarget ? (
+                <>
+                  <div className="flex gap-2 mb-8 border-b border-white/10">
+                    {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
+                      <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
+                        className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${mode === m.key ? "border-white text-white" : "border-transparent text-white/40 hover:text-white/60"}`}>
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {mode === "register" && (
+                      <div>
+                        <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
+                        <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
+                          className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
+                      </div>
+                    )}
+                    <div>
+                      <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">E-mail</label>
+                      <div className="relative">
+                        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required
+                          className="w-full h-14 pl-14 pr-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Senha</label>
+                      <div className="relative">
+                        <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                        <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                          placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
+                          className="w-full h-14 pl-14 pr-14 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
+                        <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
+                          {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+                    {error && (
+                      <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/15 border border-red-500/30">
+                        <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-red-300 leading-relaxed">{error}</p>
+                      </div>
+                    )}
+                    <button type="submit" disabled={loading}
+                      className="w-full h-14 bg-white text-slate-950 rounded-2xl text-lg font-semibold flex items-center justify-center gap-3 hover:bg-white/90 transition-colors disabled:opacity-50 mt-2">
+                      {loading ? (<><Loader2 className="w-5 h-5 animate-spin" /><span>Aguarde...</span></>)
+                        : (<><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>)}
                     </button>
-                  ))}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-              {isClientTarget && mode === "register" && (
-                <div>
-                  <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
-                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
-                    className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
-                </div>
-              )}
-
-                <div>
-                  <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">E-mail</label>
-                  <div className="relative">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required
-                      className="w-full h-14 pl-14 pr-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Senha</label>
-                  <div className="relative">
-                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                    <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
-                      placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
-                      className="w-full h-14 pl-14 pr-14 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all" />
-                    <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                      {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
-
-                {error && (
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/15 border border-red-500/30">
-                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-red-300 leading-relaxed">{error}</p>
-                  </div>
-                )}
-
-                <button type="submit" disabled={loading}
-                  className="w-full h-14 bg-white text-slate-950 rounded-2xl text-lg font-semibold flex items-center justify-center gap-3 hover:bg-white/90 transition-colors disabled:opacity-50 mt-2">
-                  {loading ? (<><Loader2 className="w-5 h-5 animate-spin" /><span>Aguarde...</span></>)
-                    : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>)}
+                  </form>
+                </>
+              ) : (
+                /* Central Destra: apenas Google */
+                <button type="button" onClick={handleGoogleLogin}
+                  className="w-full h-14 bg-white/10 border border-white/20 rounded-2xl text-base font-medium text-white flex items-center justify-center gap-3 hover:bg-white/20 transition-colors">
+                  <GoogleIcon />
+                  Entrar com Google
                 </button>
-              </form>
-
-              {/* Google login — só para Central Destra */}
-              {!isClientTarget && (
-                <div className="mt-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="flex-1 h-px bg-white/20" />
-                    <span className="text-white/40 text-sm">ou</span>
-                    <div className="flex-1 h-px bg-white/20" />
-                  </div>
-                  <button type="button" onClick={handleGoogleLogin}
-                    className="w-full h-14 bg-white/10 border border-white/20 rounded-2xl text-base font-medium text-white flex items-center justify-center gap-3 hover:bg-white/20 transition-colors">
-                    <GoogleIcon />
-                    Entrar com Google
-                  </button>
-                </div>
               )}
             </div>
           </div>
 
           {/* ── Desktop ── */}
           <div className="hidden lg:block">
-            <div className="mb-6">
-              <h1 className="text-2xl font-light text-slate-900 mb-1">
-                {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
-              </h1>
-              <p className="text-sm text-slate-400 font-light">
-                {mode === "login"
-                  ? "Primeiro acesso? Use seu e-mail cadastrado e defina uma senha."
-                  : "Registre-se para acessar seu portal."}
-              </p>
-            </div>
+            {isClientTarget ? (
+              <>
+                <div className="mb-6">
+                  <h1 className="text-2xl font-light text-slate-900 mb-1">
+                    {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
+                  </h1>
+                  <p className="text-sm text-slate-400 font-light">
+                    {mode === "login" ? "Primeiro acesso? Use seu e-mail e defina uma senha." : "Registre-se para acessar seu portal."}
+                  </p>
+                </div>
 
-            {/* Mode switcher — só exibe cadastro para portal do cliente */}
-            {isClientTarget && (
-              <div className="flex gap-4 mb-5 border-b border-slate-100">
-                {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
-                  <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
-                    className={`pb-3 px-1 text-sm font-medium transition-all border-b-2 ${mode === m.key ? "border-slate-900 text-slate-900" : "border-transparent text-slate-400 hover:text-slate-600"}`}>
-                    {m.label}
+                <div className="flex gap-4 mb-5 border-b border-slate-100">
+                  {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
+                    <button key={m.key} type="button" onClick={() => { setMode(m.key); setError(""); }}
+                      className={`pb-3 px-1 text-sm font-medium transition-all border-b-2 ${mode === m.key ? "border-slate-900 text-slate-900" : "border-transparent text-slate-400 hover:text-slate-600"}`}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {mode === "register" && (
+                    <div>
+                      <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Nome completo</label>
+                      <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
+                        className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
+                    </div>
+                  )}
+                  <div>
+                    <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">E-mail</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required
+                        className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Senha</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                      <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                        placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
+                        className="w-full h-12 pl-11 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
+                      <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
+                        {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  {error && (
+                    <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-100">
+                      <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-red-600 leading-relaxed">{error}</p>
+                    </div>
+                  )}
+                  <button type="submit" disabled={loading}
+                    className="w-full h-11 bg-slate-900 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 mt-1">
+                    {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /><span className="font-light">Aguarde...</span></>)
+                      : (<><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>)}
                   </button>
-                ))}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {isClientTarget && mode === "register" && (
-                <div>
-                  <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Nome completo</label>
-                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Seu nome" required
-                    className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
-                </div>
-              )}
-
-              <div>
-                <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">E-mail</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="seu@email.com" required
-                    className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-500 font-medium block mb-1.5 tracking-wide">Senha</label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                  <input type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
-                    placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
-                    className="w-full h-12 pl-11 pr-12 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm placeholder:text-slate-300 focus:outline-none focus:border-slate-400 focus:bg-white transition-all" />
-                  <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
-                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-100">
-                  <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-red-600 leading-relaxed">{error}</p>
-                </div>
-              )}
-
-              <button type="submit" disabled={loading}
-                className="w-full h-11 bg-slate-900 text-white rounded-xl text-sm font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors disabled:opacity-50 mt-1">
-                {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /><span className="font-light">Aguarde...</span></>)
-                  : (<><span>{isClientTarget && mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>)}
-              </button>
-            </form>
-
-            {/* Google login — só para Central Destra */}
-            {!isClientTarget && (
-              <div className="mt-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-slate-400 text-xs">ou</span>
-                  <div className="flex-1 h-px bg-slate-200" />
+                </form>
+              </>
+            ) : (
+              /* Central Destra: apenas Google */
+              <>
+                <div className="mb-8">
+                  <h1 className="text-2xl font-light text-slate-900 mb-1">Central Destra</h1>
+                  <p className="text-sm text-slate-400 font-light">Acesse a plataforma interna da equipe Destra.</p>
                 </div>
                 <button type="button" onClick={handleGoogleLogin}
                   className="w-full h-11 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 flex items-center justify-center gap-2.5 hover:bg-slate-50 transition-colors">
                   <GoogleIcon />
                   Entrar com Google
                 </button>
-              </div>
+              </>
             )}
           </div>
 
