@@ -120,12 +120,12 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg w-[95vw]">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Editar Contato" : "Novo Contato Cliente"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto pr-1">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-xs">Nome *</Label>
               <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nome completo" className="mt-1" />
@@ -355,20 +355,22 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
   return (
     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white">
       {/* Header row */}
-      <div className="flex items-center gap-4 p-4 cursor-pointer hover:bg-slate-50 transition-colors" onClick={() => setExpanded(!expanded)}>
+      <div className="flex items-center gap-3 p-4 cursor-pointer hover:bg-slate-50 transition-colors" onClick={() => setExpanded(!expanded)}>
         <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-sm flex-shrink-0">
           {contact.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-slate-900">{contact.name}</p>
-          <p className="text-xs text-slate-500">{contact.email}</p>
-          {company && <p className="text-xs text-slate-400">{company.name}</p>}
+          <p className="text-sm font-semibold text-slate-900 truncate">{contact.name}</p>
+          <p className="text-xs text-slate-500 truncate">{contact.email}</p>
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
+            {company && <p className="text-xs text-slate-400">{company.name}</p>}
+            <Badge className={`${sc.color} flex items-center gap-1 text-[10px] px-1.5 py-0.5`}>
+              <StatusIcon className="w-2.5 h-2.5" />
+              {sc.label}
+            </Badge>
+          </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <Badge className={`${sc.color} flex items-center gap-1 text-xs`}>
-            <StatusIcon className="w-3 h-3" />
-            {sc.label}
-          </Badge>
+        <div className="flex items-center gap-1 flex-shrink-0">
           <Button size="sm" variant="ghost" onClick={e => { e.stopPropagation(); setEditOpen(true); }} className="text-slate-400 hover:text-slate-700 h-8 w-8 p-0">
             <Edit2 className="w-3.5 h-3.5" />
           </Button>
@@ -379,7 +381,6 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
           </Button>
           <Button size="sm" variant="ghost" onClick={e => { e.stopPropagation(); setConfirmDelete(true); }}
             className="text-rose-400 hover:text-rose-600 hover:bg-rose-50 h-8 w-8 p-0"
-            title="Apagar contato"
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
@@ -404,12 +405,12 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
             {inviteLink ? (
               <div className="space-y-2">
                 <p className="text-xs text-emerald-600 font-medium">✓ Convite enviado com sucesso!</p>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 truncate font-mono">
                     {inviteLink}
                   </div>
                   <Button size="sm" onClick={handleCopyLink} className={`flex-shrink-0 text-xs gap-1 ${copied ? "bg-emerald-600 hover:bg-emerald-700" : "bg-slate-700 hover:bg-slate-800"} text-white`}>
-                    {copied ? <><CheckCheck className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar</>}
+                    {copied ? <><CheckCheck className="w-3.5 h-3.5" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar Link</>}
                   </Button>
                 </div>
               </div>
@@ -510,16 +511,16 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
                 {contactAccess.map(acc => {
                   const proj = projects.find(p => p.id === acc.project_id);
                   return (
-                    <div key={acc.id} className="flex items-center justify-between p-3 bg-white border border-slate-100 rounded-xl">
-                      <div>
-                        <p className="text-sm font-medium text-slate-800">{proj?.name || acc.project_id}</p>
-                        <div className="flex gap-1 mt-1">
+                    <div key={acc.id} className="flex items-center justify-between gap-2 p-3 bg-white border border-slate-100 rounded-xl">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-800 truncate">{proj?.name || acc.project_id}</p>
+                        <div className="flex gap-1 mt-1 flex-wrap">
                           {acc.can_comment && <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px]">Comentar</Badge>}
                           {acc.can_approve && <Badge className="bg-purple-50 text-purple-700 border-purple-200 text-[10px]">Aprovar</Badge>}
                           {acc.can_rate && <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px]">Avaliar</Badge>}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Switch checked={!!acc.is_active} onCheckedChange={v => base44.entities.ProjectClientAccess.update(acc.id, { is_active: v }).then(() => qc.invalidateQueries({ queryKey: ["admin_project_access"] }))} className="scale-75" />
                         <Button size="sm" variant="ghost" onClick={() => removeAccessMutation.mutate(acc.id)} className="text-rose-400 hover:text-rose-600 h-7 w-7 p-0">
                           <Trash2 className="w-3.5 h-3.5" />
@@ -606,13 +607,13 @@ export default function ClientAccessManager({ companies, projects }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div>
+      <div className="flex items-center justify-between mb-4 gap-3">
+        <div className="min-w-0">
           <h2 className="font-semibold text-slate-900">Acessos dos Clientes</h2>
           <p className="text-xs text-slate-500 mt-0.5">{contacts.length} contato(s) cadastrado(s)</p>
         </div>
-        <Button onClick={() => setShowCreate(true)} className="bg-blue-600 hover:bg-blue-700 text-white gap-2 text-sm">
-          <Plus className="w-4 h-4" /> Novo Contato
+        <Button onClick={() => setShowCreate(true)} className="bg-blue-600 hover:bg-blue-700 text-white gap-2 text-sm flex-shrink-0">
+          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Novo Contato</span><span className="sm:hidden">Novo</span>
         </Button>
       </div>
 
