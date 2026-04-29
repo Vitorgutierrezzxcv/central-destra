@@ -1,0 +1,90 @@
+{
+  "name": "ClientTask",
+  "type": "object",
+  "properties": {
+    "project_id": {
+      "type": "string",
+      "description": "ID do projeto"
+    },
+    "company_id": {
+      "type": "string",
+      "description": "ID da empresa cliente"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da tarefa"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do que o cliente precisa fazer"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Prazo para conclus\u00e3o"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Prioridade"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed"
+      ],
+      "default": "pending",
+      "description": "Status atual da tarefa"
+    },
+    "requires_attachment": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se requer envio de arquivo pelo cliente"
+    },
+    "attachment_instructions": {
+      "type": "string",
+      "description": "Instru\u00e7\u00f5es sobre o que o cliente deve enviar"
+    },
+    "client_attachment_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs dos arquivos enviados pelo cliente"
+    },
+    "client_attachment_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes dos arquivos enviados pelo cliente"
+    },
+    "client_notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es do cliente ao concluir"
+    },
+    "completed_at": {
+      "type": "string",
+      "description": "Data/hora que o cliente marcou como conclu\u00edda (ISO)"
+    },
+    "completed_by": {
+      "type": "string",
+      "description": "Email do cliente que concluiu"
+    },
+    "order": {
+      "type": "number",
+      "description": "Ordem de exibi\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "project_id",
+    "title"
+  ]
+}
