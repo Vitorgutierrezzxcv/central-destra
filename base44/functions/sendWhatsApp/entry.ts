@@ -16,7 +16,6 @@ function detectProvider(url) {
 }
 
 async function sendViaTwilio(to, message) {
-  // Twilio usa form-encoded e autenticação Basic (AccountSID:AuthToken em base64)
   const toFormatted = to.startsWith("whatsapp:") ? to : `whatsapp:${to}`;
   const fromFormatted = FROM.startsWith("whatsapp:") ? FROM : `whatsapp:${FROM}`;
 
@@ -26,11 +25,16 @@ async function sendViaTwilio(to, message) {
     Body: message,
   });
 
+  // API_TOKEN pode ser "SID:Secret" (API Key) ou já em Base64
+  const basicAuth = API_TOKEN.includes(":") 
+    ? btoa(API_TOKEN) 
+    : API_TOKEN;
+
   const resp = await fetch(API_URL, {
     method:  "POST",
     headers: {
       "Content-Type":  "application/x-www-form-urlencoded",
-      "Authorization": `Basic ${API_TOKEN}`,
+      "Authorization": `Basic ${basicAuth}`,
     },
     body: body.toString(),
   });
