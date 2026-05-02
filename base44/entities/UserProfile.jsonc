@@ -22,6 +22,10 @@
       "type": "string",
       "description": "Biografia"
     },
+    "phone": {
+      "type": "string",
+      "description": "Telefone para notifica\u00e7\u00f5es WhatsApp (ex: +5511999999999)"
+    },
     "portal_type": {
       "type": "string",
       "enum": [

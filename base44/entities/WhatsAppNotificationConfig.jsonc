@@ -1,0 +1,48 @@
+{
+  "name": "WhatsAppNotificationConfig",
+  "type": "object",
+  "properties": {
+    "config_key": {
+      "type": "string",
+      "description": "Chave \u00fanica da configura\u00e7\u00e3o (ex: 'global')"
+    },
+    "internal_task_due_2days": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar respons\u00e1vel 2 dias antes do prazo da tarefa"
+    },
+    "internal_task_due_1day": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar respons\u00e1vel 1 dia antes do prazo da tarefa"
+    },
+    "internal_task_due_today": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar respons\u00e1vel no dia do prazo da tarefa"
+    },
+    "internal_task_overdue": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar respons\u00e1vel quando tarefa estiver atrasada"
+    },
+    "client_project_due_1day": {
+      "type": "boolean",
+      "default": false,
+      "description": "Avisar cliente 1 dia antes do prazo do projeto"
+    },
+    "client_project_due_today": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar cliente no dia do prazo do projeto"
+    },
+    "client_project_overdue": {
+      "type": "boolean",
+      "default": true,
+      "description": "Avisar cliente quando projeto estiver atrasado"
+    }
+  },
+  "required": [
+    "config_key"
+  ]
+}

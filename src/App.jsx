@@ -29,6 +29,7 @@ import ClientPortalFiles from './pages/ClientPortalFiles';
 import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
+import WhatsAppNotifications from './pages/WhatsAppNotifications';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
@@ -127,6 +128,8 @@ const AuthenticatedApp = () => {
         <Route path="/PerformanceReports" element={<PerformanceReports />} />
         <Route path="/ClientPortalAdmin" element={<ClientPortalAdmin />} />
         <Route path="/clientportaladmin" element={<ClientPortalAdmin />} />
+        <Route path="/WhatsAppNotifications" element={<WhatsAppNotifications />} />
+        <Route path="/whatsappnotifications" element={<WhatsAppNotifications />} />
       </Route>
 
       <Route path="*" element={<PageNotFound />} />

@@ -1,0 +1,95 @@
+{
+  "name": "WhatsAppNotificationLog",
+  "type": "object",
+  "properties": {
+    "recipient_type": {
+      "type": "string",
+      "enum": [
+        "internal",
+        "client"
+      ],
+      "description": "Tipo de destinat\u00e1rio"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Email do destinat\u00e1rio"
+    },
+    "recipient_phone": {
+      "type": "string",
+      "description": "N\u00famero de telefone do destinat\u00e1rio"
+    },
+    "recipient_name": {
+      "type": "string",
+      "description": "Nome do destinat\u00e1rio"
+    },
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "task_due_2days",
+        "task_due_1day",
+        "task_due_today",
+        "task_overdue",
+        "project_due_1day",
+        "project_due_today",
+        "project_overdue"
+      ],
+      "description": "Tipo de alerta enviado"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "task",
+        "project"
+      ],
+      "description": "Tipo de entidade que originou a notifica\u00e7\u00e3o"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID da tarefa ou projeto"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Nome da tarefa ou projeto"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "ID do projeto relacionado"
+    },
+    "project_name": {
+      "type": "string",
+      "description": "Nome do projeto relacionado"
+    },
+    "message_sent": {
+      "type": "string",
+      "description": "Mensagem enviada"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "failed",
+        "skipped"
+      ],
+      "default": "sent",
+      "description": "Status do envio"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Mensagem de erro se falhou"
+    },
+    "sent_at": {
+      "type": "string",
+      "description": "Data/hora do envio (ISO)"
+    },
+    "reference_date": {
+      "type": "string",
+      "description": "Data de refer\u00eancia do alerta (YYYY-MM-DD)"
+    }
+  },
+  "required": [
+    "recipient_type",
+    "alert_type",
+    "entity_type",
+    "entity_id"
+  ]
+}
