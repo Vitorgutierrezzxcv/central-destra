@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -379,6 +380,7 @@ function ClientTaskDrawer({ task, onClose, onCompleted }) {
 }
 
 export default function ClientPortalTasks() {
+  useThemeColor("#ffffff");
   const { user, userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
   const [selectedTask, setSelectedTask] = useState(null);
   const [selectedClientTask, setSelectedClientTask] = useState(null);

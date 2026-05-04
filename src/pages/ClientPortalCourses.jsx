@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import {
   PlayCircle, BookOpen, Clock, ChevronLeft, X,
   Loader2, Search, GraduationCap
@@ -137,6 +138,7 @@ function LessonCard({ lesson, onClick }) {
 }
 
 export default function ClientPortalCourses() {
+  useThemeColor("#ffffff");
   const { callPortalData, userLoading } = useClientPortal();
   const [activeCollection, setActiveCollection] = useState(null);
   const [playingLesson, setPlayingLesson] = useState(null);

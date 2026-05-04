@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { CheckCircle2, Clock, AlertCircle, Circle, Flag, Target, Zap, Loader2, Calendar } from "lucide-react";
 import { format, isBefore, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -25,6 +26,7 @@ const milestoneTypeConfig = {
 };
 
 export default function ClientPortalTimeline() {
+  useThemeColor("#050D1B");
   const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
 
   const urlParams = new URLSearchParams(window.location.search);

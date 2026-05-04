@@ -1,3 +1,4 @@
+import { useThemeColor } from "@/hooks/useThemeColor";
 import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -14,6 +15,7 @@ import TaskApprovalModal from "@/components/client-portal/TaskApprovalModal";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function ClientPortalDashboard() {
+  useThemeColor("#ffffff");
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();

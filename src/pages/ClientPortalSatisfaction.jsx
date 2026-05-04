@@ -7,6 +7,7 @@ import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const criteria = [
   { key: "communication_score", label: "Comunicação", desc: "Clareza e qualidade da comunicação da equipe" },
@@ -36,6 +37,7 @@ function StarRating({ value, onChange, size = "md" }) {
 }
 
 export default function ClientPortalSatisfaction() {
+  useThemeColor("#ffffff");
   const { userLoading, company, companyId, contactId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [form, setForm] = useState({ overall_score: 0, communication_score: 0, timeline_score: 0, quality_score: 0, result_score: 0, comment: "" });
   const [submitted, setSubmitted] = useState(false);

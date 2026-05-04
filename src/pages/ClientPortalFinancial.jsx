@@ -9,6 +9,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const INVOICE_STATUS = {
   pending:   { label: "Pendente",   color: "text-white",  bg: "bg-slate-700",   border: "border-slate-600", icon: Clock },
@@ -45,6 +46,7 @@ function CopyButton({ text }) {
 }
 
 export default function ClientPortalFinancial() {
+  useThemeColor("#ffffff");
   const { userLoading, company, companyId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [tab, setTab] = useState("invoices");
   const [expandedInvoice, setExpandedInvoice] = useState(null);

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
 import { clearSession } from "@/lib/clientPortalSession";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigate } from "react-router-dom";
 
 function InfoRow({ icon: Icon, label, value }) {
@@ -24,6 +25,7 @@ function InfoRow({ icon: Icon, label, value }) {
 }
 
 export default function ClientPortalAccount() {
+  useThemeColor("#ffffff");
   const navigate = useNavigate();
   const { user, userLoading, company, contactId, callPortalData } = useClientPortal();
   const qc = useQueryClient();

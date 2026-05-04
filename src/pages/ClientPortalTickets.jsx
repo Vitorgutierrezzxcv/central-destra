@@ -10,6 +10,7 @@ import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import TicketChat from "@/components/client-portal/TicketChat";
 import NewTicketForm from "@/components/client-portal/NewTicketForm";
 
@@ -37,6 +38,7 @@ const priorityConfig = {
 };
 
 export default function ClientPortalTickets() {
+  useThemeColor("#ffffff");
   const { userLoading, user, projects, companyId, contactId, canAccessProject, callPortalData } = useClientPortal();
   const qc = useQueryClient();
   const [showNew, setShowNew] = useState(false);

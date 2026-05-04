@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import ClientFileUploadModal from "@/components/client-portal/ClientFileUploadModal";
 
 const categoryLabels = {
@@ -34,6 +35,7 @@ function getFileIcon(fileType) {
 }
 
 export default function ClientPortalFiles() {
+  useThemeColor("#ffffff");
   const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");

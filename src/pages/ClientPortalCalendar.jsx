@@ -6,6 +6,7 @@ import { format, isAfter, isBefore, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const meetingTypeLabels = {
   kickoff: "Kickoff", weekly: "Weekly", review: "Revisão",
@@ -18,6 +19,7 @@ const milestoneTypeLabels = {
 };
 
 export default function ClientPortalCalendar() {
+  useThemeColor("#ffffff");
   const { userLoading, projects, canAccessProject, callPortalData } = useClientPortal();
   const [filter, setFilter] = useState("all");
 

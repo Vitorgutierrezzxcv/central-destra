@@ -10,6 +10,7 @@ import { ptBR } from "date-fns/locale";
 import { Textarea } from "@/components/ui/textarea";
 import { useClientPortal } from "@/components/client-portal/useClientPortal";
 import { motion, AnimatePresence } from "framer-motion";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const deliveryStatusConfig = {
   pending_delivery:  { label: "Aguardando Entrega",     badge: "bg-slate-50 text-slate-500 border-slate-200",     icon: Clock },
@@ -131,6 +132,7 @@ function FeedbackDrawer({ delivery, task, onClose, onSubmit, loading }) {
 }
 
 export default function ClientPortalDeliveries() {
+  useThemeColor("#050D1B");
   const { userLoading, contactId, companyId, projects, canAccessProject, callPortalData } = useClientPortal();
   const [feedbackTarget, setFeedbackTarget] = useState(null);
   const qc = useQueryClient();
