@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { CheckCircle2, Circle, ChevronDown, ChevronUp, Search, TrendingUp, ShoppingCart, DollarSign, RefreshCw, Zap, ChevronLeft } from "lucide-react";
 
 const ALAVANCAS = {
@@ -130,6 +130,7 @@ function getStored() {
 }
 
 export default function ClientPortalEcommerceChecklist() {
+  // v2 - design Destra
   const [checked, setChecked] = useState(() => getStored());
   const [search, setSearch] = useState("");
   const [filterAlavanca, setFilterAlavanca] = useState("all");
