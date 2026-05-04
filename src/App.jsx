@@ -37,6 +37,7 @@ import ClientPortalCalculadoras from './pages/ClientPortalCalculadoras';
 import ClientPortalKPIs from './pages/ClientPortalKPIs';
 import ClientPortalPlanejadorTrafego from './pages/ClientPortalPlanejadorTrafego';
 import ClientPortalUTMBuilder from './pages/ClientPortalUTMBuilder';
+import ClientPortalCalendarioVarejo from './pages/ClientPortalCalendarioVarejo';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
@@ -105,6 +106,8 @@ const ClientPortalRoutes = () => (
       <Route path="/clientportalplanejadortrafego" element={<ClientPortalPlanejadorTrafego />} />
       <Route path="/ClientPortalUTMBuilder" element={<ClientPortalUTMBuilder />} />
       <Route path="/clientportalutmbuilder" element={<ClientPortalUTMBuilder />} />
+      <Route path="/ClientPortalCalendarioVarejo" element={<ClientPortalCalendarioVarejo />} />
+      <Route path="/clientportalcalendariovarejo" element={<ClientPortalCalendarioVarejo />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>

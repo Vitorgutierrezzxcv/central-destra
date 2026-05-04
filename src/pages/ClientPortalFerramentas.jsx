@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import {
   CheckSquare, Stethoscope, Calculator, BarChart3,
   ChevronRight, TrendingUp, ShoppingCart, DollarSign, RefreshCw,
-  Link2, Filter, Zap, FileSpreadsheet, Lock
+  Link2, Filter, Zap, FileSpreadsheet, Lock, CalendarDays
 } from "lucide-react";
 
 const SECTIONS = [
@@ -22,6 +22,14 @@ const SECTIONS = [
     sub: "Gere links rastreados com parâmetros",
     icon: Link2,
     page: "ClientPortalUTMBuilder",
+    free: true,
+  },
+  {
+    id: "calendario",
+    label: "Calendário do Varejo",
+    sub: "Feriados, datas sazonais e oportunidades",
+    icon: CalendarDays,
+    page: "ClientPortalCalendarioVarejo",
     free: true,
   },
   {
