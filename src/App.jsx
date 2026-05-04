@@ -91,21 +91,21 @@ const ClientPortalRoutes = () => (
       <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
       <Route path="/ClientPortalCourses" element={<ClientPortalCourses />} />
       <Route path="/clientportalcourses" element={<ClientPortalCourses />} />
+      <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
+      <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
+      <Route path="/ClientPortalFerramentas" element={<ClientPortalFerramentas />} />
+      <Route path="/clientportalferramentas" element={<ClientPortalFerramentas />} />
+      <Route path="/ClientPortalDiagnostico" element={<ClientPortalDiagnostico />} />
+      <Route path="/clientportaldiagnostico" element={<ClientPortalDiagnostico />} />
+      <Route path="/ClientPortalCalculadoras" element={<ClientPortalCalculadoras />} />
+      <Route path="/clientportalcalculadoras" element={<ClientPortalCalculadoras />} />
+      <Route path="/ClientPortalKPIs" element={<ClientPortalKPIs />} />
+      <Route path="/clientportalkpis" element={<ClientPortalKPIs />} />
+      <Route path="/ClientPortalPlanejadorTrafego" element={<ClientPortalPlanejadorTrafego />} />
+      <Route path="/clientportalplanejadortrafego" element={<ClientPortalPlanejadorTrafego />} />
+      <Route path="/ClientPortalUTMBuilder" element={<ClientPortalUTMBuilder />} />
+      <Route path="/clientportalutmbuilder" element={<ClientPortalUTMBuilder />} />
     </Route>
-    <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
-    <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
-    <Route path="/ClientPortalFerramentas" element={<ClientPortalFerramentas />} />
-    <Route path="/clientportalferramentas" element={<ClientPortalFerramentas />} />
-    <Route path="/ClientPortalDiagnostico" element={<ClientPortalDiagnostico />} />
-    <Route path="/clientportaldiagnostico" element={<ClientPortalDiagnostico />} />
-    <Route path="/ClientPortalCalculadoras" element={<ClientPortalCalculadoras />} />
-    <Route path="/clientportalcalculadoras" element={<ClientPortalCalculadoras />} />
-    <Route path="/ClientPortalKPIs" element={<ClientPortalKPIs />} />
-    <Route path="/clientportalkpis" element={<ClientPortalKPIs />} />
-    <Route path="/ClientPortalPlanejadorTrafego" element={<ClientPortalPlanejadorTrafego />} />
-    <Route path="/clientportalplanejadortrafego" element={<ClientPortalPlanejadorTrafego />} />
-    <Route path="/ClientPortalUTMBuilder" element={<ClientPortalUTMBuilder />} />
-    <Route path="/clientportalutmbuilder" element={<ClientPortalUTMBuilder />} />
     <Route path="*" element={<PageNotFound />} />
   </Routes>
 );
