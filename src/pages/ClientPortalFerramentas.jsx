@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import {
   CheckSquare, Stethoscope, Calculator, BarChart3,
   ChevronRight, TrendingUp, ShoppingCart, DollarSign, RefreshCw,
-  Link2, Filter, Zap, FileSpreadsheet
+  Link2, Filter, Zap, FileSpreadsheet, Lock
 } from "lucide-react";
 
 const SECTIONS = [
@@ -14,7 +14,15 @@ const SECTIONS = [
     sub: "105 ações para escalar sua loja",
     icon: CheckSquare,
     page: "ClientPortalEcommerceChecklist",
-    external: true,
+    free: true,
+  },
+  {
+    id: "utm",
+    label: "Construtor de UTM",
+    sub: "Gere links rastreados com parâmetros",
+    icon: Link2,
+    page: "ClientPortalUTMBuilder",
+    free: true,
   },
   {
     id: "diagnostico",
@@ -22,7 +30,7 @@ const SECTIONS = [
     sub: "Descubra suas prioridades",
     icon: Stethoscope,
     page: "ClientPortalDiagnostico",
-    external: true,
+    free: false,
   },
   {
     id: "calculadoras",
@@ -30,7 +38,15 @@ const SECTIONS = [
     sub: "ROI, CAC, LTV, Precificação e mais",
     icon: Calculator,
     page: "ClientPortalCalculadoras",
-    external: true,
+    free: false,
+  },
+  {
+    id: "trafego",
+    label: "Planejador de Tráfego Pago",
+    sub: "Simule budget por canal e projete vendas",
+    icon: Zap,
+    page: "ClientPortalPlanejadorTrafego",
+    free: false,
   },
   {
     id: "kpis",
@@ -38,7 +54,7 @@ const SECTIONS = [
     sub: "Painel de métricas do seu negócio",
     icon: BarChart3,
     page: "ClientPortalKPIs",
-    external: true,
+    free: false,
   },
 ];
 
@@ -74,14 +90,15 @@ export default function ClientPortalFerramentas() {
         </p>
       </div>
 
-      {/* Main nav cards */}
-      <div className="px-5 md:px-8 pb-6">
+      {/* Free tools */}
+      <div className="px-5 md:px-8 pb-2">
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-3">Disponível no plano básico</p>
         <div className="space-y-3">
-          {SECTIONS.map((s) => (
+          {SECTIONS.filter(s => s.free).map((s) => (
             <Link
               key={s.id}
               to={createPageUrl(s.page)}
-              className="flex items-center gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-5 hover:border-slate-200 hover:shadow-sm transition-all group"
+              className="flex items-center gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-4 hover:border-slate-200 hover:shadow-sm transition-all group"
             >
               <div className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center flex-shrink-0">
                 <s.icon className="w-5 h-5 text-white" />
@@ -91,6 +108,29 @@ export default function ClientPortalFerramentas() {
                 <p className="text-xs text-slate-400 font-light mt-0.5">{s.sub}</p>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors flex-shrink-0" />
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Premium tools */}
+      <div className="px-5 md:px-8 pb-6">
+        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-medium mb-3 mt-4">Plano avançado</p>
+        <div className="space-y-3">
+          {SECTIONS.filter(s => !s.free).map((s) => (
+            <Link
+              key={s.id}
+              to={createPageUrl(s.page)}
+              className="flex items-center gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-4 hover:border-slate-200 hover:shadow-sm transition-all group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5 text-slate-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-base font-medium text-slate-900">{s.label}</p>
+                <p className="text-xs text-slate-400 font-light mt-0.5">{s.sub}</p>
+              </div>
+              <Lock className="w-3.5 h-3.5 text-slate-300 flex-shrink-0" />
             </Link>
           ))}
         </div>
