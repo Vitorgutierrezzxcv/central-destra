@@ -56,9 +56,7 @@ export default function PortalClienteLogin() {
       <div className="hidden lg:flex lg:w-1/2 bg-emerald-900/40 border-r border-white/5 flex-col justify-between p-12">
         <div>
           <div className="flex items-center gap-3 mb-14">
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-              <span className="text-white text-sm font-light tracking-widest">D</span>
-            </div>
+            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-9 h-9 brightness-0 invert opacity-80" />
             <span className="text-white/50 text-xs tracking-widest uppercase font-light">Destra</span>
           </div>
           <h2 className="text-4xl font-extralight text-white leading-tight mb-4">
@@ -87,9 +85,7 @@ export default function PortalClienteLogin() {
 
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
-              <span className="text-white text-sm font-light tracking-widest">D</span>
-            </div>
+            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-9 h-9 brightness-0 invert opacity-80" />
             <span className="text-white/50 text-xs tracking-widest uppercase font-light">Portal do Cliente</span>
           </div>
 

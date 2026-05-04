@@ -69,9 +69,7 @@ export default function ClientPortalLayout() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-5">
-          <div className="w-12 h-12 rounded-2xl bg-slate-900 flex items-center justify-center">
-            <span className="text-white text-lg font-light tracking-widest">D</span>
-          </div>
+          <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-12 h-12" />
           <div className="flex items-center gap-2">
             <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
             <p className="text-sm text-slate-400 font-light tracking-wide">Carregando</p>

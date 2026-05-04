@@ -60,9 +60,7 @@ export default function ClientPortalLogin() {
       <div className="hidden lg:flex lg:w-1/2 bg-slate-900 flex-col justify-between p-6 xl:p-8">
         <div>
           <div className="flex items-center gap-2.5 mb-10">
-            <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center">
-              <span className="text-white text-sm font-light tracking-widest">D</span>
-            </div>
+            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-8 h-8 brightness-0 invert opacity-80" />
             <span className="text-white/60 text-xs tracking-widest uppercase font-light">Destra</span>
           </div>
           <h2 className="text-4xl font-extralight text-white leading-tight mb-2">
@@ -99,9 +97,7 @@ export default function ClientPortalLogin() {
             <div>
               {/* Mobile logo */}
               <div className="flex items-center gap-3 mb-12">
-                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
-                  <span className="text-white text-lg font-light tracking-widest">D</span>
-                </div>
+                <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-10 h-10 brightness-0 invert opacity-80" />
                 <div>
                   <p className="text-white/70 text-xs tracking-widest uppercase font-light">Destra</p>
                 </div>
