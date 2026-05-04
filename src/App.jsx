@@ -31,6 +31,10 @@ import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import WhatsAppNotifications from './pages/WhatsAppNotifications';
 import ClientPortalEcommerceChecklist from './pages/ClientPortalEcommerceChecklist';
+import ClientPortalFerramentas from './pages/ClientPortalFerramentas';
+import ClientPortalDiagnostico from './pages/ClientPortalDiagnostico';
+import ClientPortalCalculadoras from './pages/ClientPortalCalculadoras';
+import ClientPortalKPIs from './pages/ClientPortalKPIs';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
@@ -88,6 +92,14 @@ const ClientPortalRoutes = () => (
     </Route>
     <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
     <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
+    <Route path="/ClientPortalFerramentas" element={<ClientPortalFerramentas />} />
+    <Route path="/clientportalferramentas" element={<ClientPortalFerramentas />} />
+    <Route path="/ClientPortalDiagnostico" element={<ClientPortalDiagnostico />} />
+    <Route path="/clientportaldiagnostico" element={<ClientPortalDiagnostico />} />
+    <Route path="/ClientPortalCalculadoras" element={<ClientPortalCalculadoras />} />
+    <Route path="/clientportalcalculadoras" element={<ClientPortalCalculadoras />} />
+    <Route path="/ClientPortalKPIs" element={<ClientPortalKPIs />} />
+    <Route path="/clientportalkpis" element={<ClientPortalKPIs />} />
     <Route path="*" element={<PageNotFound />} />
   </Routes>
 );

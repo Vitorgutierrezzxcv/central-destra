@@ -24,7 +24,7 @@ const navItems = [
   { label: "Financeiro",  page: "ClientPortalFinancial",  icon: Receipt,         desc: "Faturas e contratos" },
   { label: "Chamados",    page: "ClientPortalTickets",    icon: MessageSquare,   desc: "Suporte e dúvidas" },
   { label: "Aprenda",     page: "ClientPortalCourses",   icon: GraduationCap,   desc: "Cursos e mentorias" },
-  { label: "Checklist E-commerce", page: "ClientPortalEcommerceChecklist", icon: ShoppingBag, desc: "105 ações para escalar sua loja" },
+  { label: "Ferramentas",          page: "ClientPortalFerramentas",      icon: ShoppingBag, desc: "Checklist, calculadoras e KPIs" },
   { label: "Minha Conta", page: "ClientPortalAccount",   icon: User,            desc: "Configurações da conta" },
 ];
 

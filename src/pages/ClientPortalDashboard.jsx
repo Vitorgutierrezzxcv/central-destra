@@ -436,7 +436,7 @@ export default function ClientPortalDashboard() {
               { label: "Arquivos",   sub: "Documentos do projeto",     page: "ClientPortalFiles",      icon: Star         },
               { label: "Financeiro", sub: "Faturas e contratos",        page: "ClientPortalFinancial",  icon: Receipt      },
             { label: "Suporte",    sub: "Abrir ou ver chamados",     page: "ClientPortalTickets",    icon: MessageSquare},
-            { label: "Checklist E-commerce", sub: "105 ações para escalar sua loja", page: "ClientPortalEcommerceChecklist", icon: ShoppingBag },
+            { label: "Ferramentas",          sub: "Checklist, calculadoras e KPIs",  page: "ClientPortalFerramentas",      icon: ShoppingBag },
             ].map((link, i, arr) => (
               <Link key={i} to={createPageUrl(link.page)}
                 className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 active:bg-slate-50 transition-colors ${i < arr.length - 1 ? "border-b border-slate-100" : ""}`}>
