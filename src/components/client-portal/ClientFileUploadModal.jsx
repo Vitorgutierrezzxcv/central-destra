@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getSession } from "@/lib/clientPortalSession";
 import { base44 } from "@/api/base44Client";
 import { Upload, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -54,7 +55,7 @@ export default function ClientFileUploadModal({ projectId, isOpen, onClose, onUp
         file_url: fileUrl.file_url,
         file_type: file.type,
         file_size: file.size,
-        uploaded_by: (await base44.auth.me()).full_name,
+        uploaded_by: getSession()?.profile?.full_name || getSession()?.profile?.email || "Cliente",
         visible_to_client: true,
       });
 
