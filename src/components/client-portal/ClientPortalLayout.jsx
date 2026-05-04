@@ -140,7 +140,7 @@ export default function ClientPortalLayout() {
       {/* ══════════════════════════════════════
           FAB button (bottom-right) — todas as telas
       ══════════════════════════════════════ */}
-      <div className="fixed bottom-20 md:bottom-6 right-6 z-50">
+      <div className="hidden md:block fixed bottom-6 right-6 z-50">
         <motion.button
           onClick={() => setFabOpen(v => !v)}
           whileTap={{ scale: 0.94 }}
@@ -183,7 +183,7 @@ export default function ClientPortalLayout() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed bottom-36 md:bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50"
+              className="fixed bottom-20 md:bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50"
             >
               {/* Header */}
               <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/80 flex items-center justify-between">
