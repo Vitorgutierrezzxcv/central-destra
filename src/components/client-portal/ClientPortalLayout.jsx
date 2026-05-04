@@ -4,7 +4,7 @@ import { createPageUrl } from "@/utils";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
   GitBranch, ListChecks, LogOut, X, FolderKanban, User, MessageSquare,
-  Star, Grid3X3, ChevronRight, Loader2, Receipt, GraduationCap
+  Star, Grid3X3, ChevronRight, Loader2, Receipt, GraduationCap, ShoppingBag
 } from "lucide-react";
 import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
@@ -24,6 +24,7 @@ const navItems = [
   { label: "Financeiro",  page: "ClientPortalFinancial",  icon: Receipt,         desc: "Faturas e contratos" },
   { label: "Chamados",    page: "ClientPortalTickets",    icon: MessageSquare,   desc: "Suporte e dúvidas" },
   { label: "Aprenda",     page: "ClientPortalCourses",   icon: GraduationCap,   desc: "Cursos e mentorias" },
+  { label: "Checklist E-commerce", page: "ClientPortalEcommerceChecklist", icon: ShoppingBag, desc: "105 ações para escalar sua loja" },
   { label: "Minha Conta", page: "ClientPortalAccount",   icon: User,            desc: "Configurações da conta" },
 ];
 

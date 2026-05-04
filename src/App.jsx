@@ -30,6 +30,7 @@ import ClientPortalSatisfaction from './pages/ClientPortalSatisfaction';
 import ClientPortalActivate from './pages/ClientPortalActivate';
 import ClientPortalAdmin from './pages/ClientPortalAdmin';
 import WhatsAppNotifications from './pages/WhatsAppNotifications';
+import ClientPortalEcommerceChecklist from './pages/ClientPortalEcommerceChecklist';
 import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
@@ -84,6 +85,8 @@ const ClientPortalRoutes = () => (
       <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
       <Route path="/ClientPortalCourses" element={<ClientPortalCourses />} />
       <Route path="/clientportalcourses" element={<ClientPortalCourses />} />
+      <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
+      <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
     </Route>
     <Route path="*" element={<PageNotFound />} />
   </Routes>
