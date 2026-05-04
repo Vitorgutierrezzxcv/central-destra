@@ -216,9 +216,12 @@ export default function ClientPortalDeliveries() {
     <div className="min-h-screen" style={{ background: "linear-gradient(135deg, #050D1B 0%, #020408 100%)" }}>
       <div className="max-w-full w-full px-5 md:px-4 pt-10 md:pt-12 pb-4">
          <div className="flex items-end justify-between gap-4 mb-4">
-           <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">
-             Entregas
-           </h1>
+           <div>
+             <p className="text-[10px] tracking-[0.2em] uppercase text-blue-200/50 font-medium mb-1">Projeto</p>
+             <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-white tracking-tight">
+               Entregas
+             </h1>
+           </div>
              {pendingCount > 0 && (
              <div className="text-right">
                <span className="text-3xl font-extralight text-white">{pendingCount}</span>

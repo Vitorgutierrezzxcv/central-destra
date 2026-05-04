@@ -89,8 +89,8 @@ export default function ClientPortalSatisfaction() {
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
           Avaliação
         </p>
-        <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight mb-3">
-          Sua<br /><span className="text-[5.5rem]">Opinião</span>
+        <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-slate-900 tracking-tight mb-1">
+          Sua<br /><span className="text-8xl md:text-7xl font-extralight">Opinião</span>
         </h1>
         <p className="text-[0.9rem] text-slate-400 font-light leading-relaxed">
           Avalie a qualidade do nosso trabalho.

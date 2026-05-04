@@ -72,10 +72,11 @@ export default function ClientPortalTimeline() {
       <div className="max-w-full w-full px-5 md:px-4 pt-10 md:pt-12 pb-4">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">
+            <p className="text-[10px] tracking-[0.2em] uppercase text-blue-200/50 font-medium mb-1">Projeto</p>
+            <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-white tracking-tight">
               Timeline
             </h1>
-            </div>
+          </div>
             {activeProject && (
             <div className="text-right mb-2">
               <span className="text-3xl font-extralight text-white">{projectProgress}</span>

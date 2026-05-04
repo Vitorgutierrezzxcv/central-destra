@@ -215,9 +215,12 @@ export default function ClientPortalCourses() {
               </div>
             ) : (
               <div>
-                <h1 className="text-7xl md:text-6xl font-extralight text-slate-900 tracking-tight leading-[1.1]">
-                  Aprenda
-                </h1>
+                <div>
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">Cursos</p>
+                  <h1 className="text-7xl md:text-6xl font-extralight text-slate-900 tracking-tight leading-[0.95]">
+                    Aprenda
+                  </h1>
+                </div>
                 <p className="text-slate-400 font-light text-sm mt-2">
                   Tutoriais, mentorias e treinamentos
                 </p>

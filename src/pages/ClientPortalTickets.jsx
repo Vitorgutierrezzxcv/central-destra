@@ -116,7 +116,7 @@ export default function ClientPortalTickets() {
            <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
              Chamados
            </p>
-           <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight">Suporte</h1>
+           <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-slate-900 tracking-tight">Suporte</h1>
          </div>
         <div className="flex-1 w-full mx-auto px-5 md:px-12 py-4 flex flex-col">
            <div className="flex-1 border border-slate-100 rounded-2xl overflow-hidden flex flex-col" style={{ minHeight: 400 }}>
@@ -139,7 +139,7 @@ export default function ClientPortalTickets() {
              <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
                Chamados
              </p>
-             <h1 className="text-[4.5rem] leading-[0.95] font-extralight text-slate-900 tracking-tight">
+             <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-slate-900 tracking-tight">
                Suporte
              </h1>
            </div>
