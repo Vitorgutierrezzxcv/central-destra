@@ -94,53 +94,14 @@ export default function ClientPortalLayout() {
   return (
     <div className="min-h-screen bg-[#f8f8f6]">
       {/* ── Main Content — pb-24 on mobile for bottom nav, pb-8 on desktop ── */}
-      <main className="min-h-screen pb-24 md:pb-10">
+      <main className="min-h-screen pb-10">
         <Outlet />
       </main>
 
       {/* ══════════════════════════════════════
-          MOBILE: Bottom Tab Bar
+          FAB button (bottom-right) — mobile e desktop
       ══════════════════════════════════════ */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-100"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
-        <div className="flex items-stretch h-16">
-          {bottomTabs.map(tab => {
-            const isActive = location.pathname.toLowerCase().includes(tab.page.toLowerCase());
-            return (
-              <Link
-                key={tab.page}
-                to={createPageUrl(tab.page)}
-                className="flex-1 flex flex-col items-center justify-center gap-1 transition-colors active:bg-slate-50"
-              >
-                <tab.icon className={`w-5 h-5 transition-colors ${isActive ? "text-slate-900" : "text-slate-400"}`} />
-                <span className={`text-[9px] font-medium tracking-wide transition-colors ${isActive ? "text-slate-900" : "text-slate-400"}`}>
-                  {tab.label}
-                </span>
-                {isActive && (
-                  <span className="absolute top-0 w-6 h-[2px] bg-slate-900 rounded-full" />
-                )}
-              </Link>
-            );
-          })}
-
-          {/* "Mais" abre o FAB */}
-          <button
-            onClick={() => setFabOpen(v => !v)}
-            className="flex-1 flex flex-col items-center justify-center gap-1 transition-colors active:bg-slate-50"
-          >
-            <MoreHorizontal className={`w-5 h-5 transition-colors ${fabOpen ? "text-slate-900" : "text-slate-400"}`} />
-            <span className={`text-[9px] font-medium tracking-wide ${fabOpen ? "text-slate-900" : "text-slate-400"}`}>
-              Mais
-            </span>
-          </button>
-        </div>
-      </nav>
-
-      {/* ══════════════════════════════════════
-          FAB button (bottom-right) — todas as telas
-      ══════════════════════════════════════ */}
-      <div className="hidden md:block fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <motion.button
           onClick={() => setFabOpen(v => !v)}
           whileTap={{ scale: 0.94 }}
@@ -183,7 +144,7 @@ export default function ClientPortalLayout() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed bottom-20 md:bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50"
+              className="fixed bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50"
             >
               {/* Header */}
               <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/80 flex items-center justify-between">
