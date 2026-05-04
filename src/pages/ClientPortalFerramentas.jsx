@@ -88,7 +88,7 @@ export default function ClientPortalFerramentas() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <div className="w-full px-5 md:px-8 pt-28 md:pt-12 pb-8">
+      <div className="w-full px-5 md:px-8 pt-10 md:pt-12 pb-8">
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-3">Central do Cliente</p>
         <h1 className="text-7xl md:text-6xl font-extralight text-slate-900 tracking-tight leading-[1.1] mb-2">
           Ferramentas

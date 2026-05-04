@@ -85,7 +85,7 @@ export default function ClientPortalSatisfaction() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-20">
+      <div className="mx-auto px-5 md:px-12 pt-10 md:pt-12 pb-10">
         <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
           Avaliação
         </p>

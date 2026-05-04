@@ -71,7 +71,7 @@ export default function ClientPortalAccount() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-40 pb-20">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-10 md:pt-12 pb-6">
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
            Minha Conta
          </p>

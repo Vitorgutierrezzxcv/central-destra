@@ -193,7 +193,7 @@ export default function ClientPortalCourses() {
     <>
       <div className="min-h-screen bg-white flex flex-col">
         {/* Header */}
-        <div className="w-full px-5 md:px-8 pt-28 md:pt-12 pb-4">
+        <div className="w-full px-5 md:px-8 pt-10 md:pt-12 pb-4">
           <div className="flex items-end justify-between gap-4 mb-6">
             {activeCollection ? (
               <div className="flex-1">
