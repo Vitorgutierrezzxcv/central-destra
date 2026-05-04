@@ -164,7 +164,8 @@ export default function ClientPortalDeliveries() {
       const newStatus = form.approval_status === "approved" ? "approved"
         : form.approval_status === "rejected" ? "rejected"
         : "changes_requested";
-      await base44.entities.DeliveryFeedback.create({
+
+      const created = await base44.entities.DeliveryFeedback.create({
         delivery_id: delivery?.id || null,
         task_id: task.id,
         project_id: activeProject.id,
@@ -175,9 +176,16 @@ export default function ClientPortalDeliveries() {
         comment: form.comment,
         submitted_at: new Date().toISOString(),
       });
+
       if (delivery?.id) {
         await base44.entities.TaskDelivery.update(delivery.id, { status: newStatus });
       }
+
+      // Aciona notificações internas e atualiza status da tarefa
+      await base44.functions.invoke("onDeliveryFeedback", {
+        event: { type: "create" },
+        data: { ...delivery, id: delivery?.id, task_id: task.id, project_id: activeProject.id }
+      });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["client_deliveries_list"] });
