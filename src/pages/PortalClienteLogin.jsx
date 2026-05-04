@@ -51,66 +51,66 @@ export default function PortalClienteLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-emerald-950 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#0B1628] flex flex-col lg:flex-row">
       {/* Left panel — desktop */}
-      <div className="hidden lg:flex lg:w-1/2 bg-emerald-900/40 border-r border-white/5 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0D1E38]/60 border-r border-white/5 flex-col justify-between p-12">
         <div>
-          <div className="flex items-center gap-3 mb-14">
-            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-9 h-9 brightness-0 invert opacity-80" />
-            <span className="text-white/50 text-xs tracking-widest uppercase font-light">Destra</span>
+          <div className="flex items-center gap-2.5 mb-14">
+            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-8 h-8 brightness-0 invert opacity-80" />
+            <span className="text-white/60 text-xs tracking-widest uppercase font-light">Destra</span>
           </div>
           <h2 className="text-4xl font-extralight text-white leading-tight mb-4">
             Portal do<br />Cliente
           </h2>
-          <p className="text-slate-500 text-base font-light leading-relaxed">
+          <p className="text-slate-400 text-base font-light leading-relaxed">
             Acompanhe seus projetos,<br />
             aprovações e entregas<br />
             em tempo real.
           </p>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           {["Visibilidade completa do projeto", "Aprovação de entregas", "Comunicação direta com a equipe"].map((item, i) => (
             <div key={i} className="flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-              <p className="text-slate-600 text-sm font-light">{item}</p>
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-400/40" />
+              <p className="text-slate-400 text-sm font-light">{item}</p>
             </div>
           ))}
-          <p className="text-slate-700 text-xs mt-6 font-light">© {new Date().getFullYear()} Destra · Acesso seguro</p>
+          <p className="text-slate-600 text-xs mt-6 font-light tracking-wide">© {new Date().getFullYear()} Destra · Acesso seguro</p>
         </div>
       </div>
 
       {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+      <div className="flex-1 flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-sm">
 
           {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-9 h-9 brightness-0 invert opacity-80" />
-            <span className="text-white/50 text-xs tracking-widest uppercase font-light">Portal do Cliente</span>
+          <div className="lg:hidden flex items-center gap-3 mb-12">
+            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-10 h-10 brightness-0 invert opacity-80" />
+            <p className="text-white/70 text-xs tracking-widest uppercase font-light">Portal do Cliente</p>
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-2xl font-light text-white mb-2">
+          <div className="mb-10">
+            <h1 className="text-5xl font-extralight text-white tracking-tight leading-tight mb-4">
               {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
             </h1>
-            <p className="text-slate-500 text-sm font-light">
+            <p className="text-white/60 text-lg font-light leading-relaxed">
               {mode === "login"
-                ? "Primeiro acesso? Use seu e-mail e defina uma senha."
+                ? "Acesse o portal para acompanhar seus projetos e entregas."
                 : "Registre-se para acessar o portal."}
             </p>
           </div>
 
           {/* Mode tabs */}
-          <div className="flex gap-1 mb-7 bg-white/5 rounded-xl p-1">
+          <div className="flex gap-2 mb-8 border-b border-white/10">
             {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
               <button
                 key={m.key}
                 type="button"
                 onClick={() => { setMode(m.key); setError(""); }}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${
                   mode === m.key
-                    ? "bg-white text-slate-900"
-                    : "text-slate-500 hover:text-slate-300"
+                    ? "border-white text-white"
+                    : "border-transparent text-white/40 hover:text-white/60"
                 }`}
               >
                 {m.label}
@@ -121,55 +121,55 @@ export default function PortalClienteLogin() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === "register" && (
               <div>
-                <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide uppercase">Nome completo</label>
+                <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
                 <input
                   value={name} onChange={e => setName(e.target.value)}
                   placeholder="Seu nome completo" required
-                  className="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-white/25 focus:bg-white/8 transition-all"
+                  className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
                 />
               </div>
             )}
 
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide uppercase">E-mail</label>
+              <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">E-mail</label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                 <input
                   type="email" value={email} onChange={e => setEmail(e.target.value)}
                   placeholder="seu@email.com" required
-                  className="w-full h-12 pl-11 pr-4 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-white/25 focus:bg-white/8 transition-all"
+                  className="w-full h-14 pl-14 pr-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-slate-500 font-medium block mb-2 tracking-wide uppercase">Senha</label>
+              <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Senha</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                 <input
                   type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
                   placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
-                  className="w-full h-12 pl-11 pr-12 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-white/25 focus:bg-white/8 transition-all"
+                  className="w-full h-14 pl-14 pr-14 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                  {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
+                  {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/20">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/15 border border-red-500/30">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-red-300 leading-relaxed">{error}</p>
               </div>
             )}
 
             <button type="submit" disabled={loading}
-              className="w-full h-12 bg-white text-slate-900 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors disabled:opacity-50 mt-1">
+              className="w-full h-14 bg-white text-slate-950 rounded-2xl text-lg font-semibold flex items-center justify-center gap-3 hover:bg-white/90 transition-colors disabled:opacity-50 mt-2">
               {loading
-                ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Aguarde...</span></>
-                : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>
+                ? <><Loader2 className="w-5 h-5 animate-spin" /><span>Aguarde...</span></>
+                : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>
               }
             </button>
           </form>
