@@ -138,9 +138,9 @@ export default function ClientPortalLayout() {
       </nav>
 
       {/* ══════════════════════════════════════
-          DESKTOP: FAB button (bottom-right)
+          FAB button (bottom-right) — todas as telas
       ══════════════════════════════════════ */}
-      <div className="hidden md:block fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-20 md:bottom-6 right-6 z-50">
         <motion.button
           onClick={() => setFabOpen(v => !v)}
           whileTap={{ scale: 0.94 }}
@@ -177,72 +177,13 @@ export default function ClientPortalLayout() {
               onClick={() => setFabOpen(false)}
             />
 
-            {/* Menu Panel — bottom sheet on mobile, popup on desktop */}
-            <motion.div
-              initial={{ opacity: 0, y: "100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: "100%" }}
-              transition={{ type: "spring", stiffness: 400, damping: 35 }}
-              className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl md:hidden"
-              style={{ paddingBottom: "env(safe-area-inset-bottom, 16px)" }}
-            >
-              {/* Handle */}
-              <div className="flex justify-center pt-3 pb-2">
-                <div className="w-10 h-1 bg-slate-200 rounded-full" />
-              </div>
-
-              {/* User header */}
-              <div className="px-5 py-3 flex items-center gap-3 border-b border-slate-50">
-                <div className="w-9 h-9 rounded-full bg-slate-900 flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
-                  {(user?.full_name || user?.name || "C").charAt(0).toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">{user?.full_name || user?.name || "Cliente"}</p>
-                  {company && <p className="text-[10px] text-slate-400 truncate">{company.name}</p>}
-                </div>
-              </div>
-
-              {/* Nav grid */}
-              <div className="px-4 py-4 grid grid-cols-3 gap-2 max-h-[55vh] overflow-y-auto">
-                {visibleNav.map(item => {
-                  const isActive = location.pathname.toLowerCase().includes(item.page.toLowerCase());
-                  return (
-                    <Link
-                      key={item.page}
-                      to={createPageUrl(item.page)}
-                      onClick={() => setFabOpen(false)}
-                      className={`flex flex-col items-center gap-2 p-3 rounded-2xl transition-all active:scale-95 ${
-                        isActive ? "bg-slate-900" : "bg-slate-50 active:bg-slate-100"
-                      }`}
-                    >
-                      <item.icon className={`w-5 h-5 ${isActive ? "text-white" : "text-slate-500"}`} />
-                      <span className={`text-[10px] font-medium text-center leading-tight ${isActive ? "text-white" : "text-slate-600"}`}>
-                        {item.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Logout */}
-              <div className="px-5 pb-4 pt-2 border-t border-slate-50">
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 py-3 text-slate-400 hover:text-rose-500 transition-colors text-sm rounded-xl"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="font-light">Sair da conta</span>
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Desktop popup (same as before, shown only md+) */}
+            {/* Menu popup — mobile e desktop */}
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50 hidden md:block"
+              className="fixed bottom-36 md:bottom-24 right-6 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-900/15 border border-slate-100 overflow-hidden z-50"
             >
               {/* Header */}
               <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/80 flex items-center justify-between">
