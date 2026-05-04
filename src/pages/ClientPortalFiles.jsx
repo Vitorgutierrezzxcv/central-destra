@@ -84,7 +84,7 @@ export default function ClientPortalFiles() {
          </p>
          </div>
 
-         <div className="max-w-lg mx-auto px-5 -mt-16 space-y-4 pb-20">
+         <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
         {/* Search & Filters */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-3">
