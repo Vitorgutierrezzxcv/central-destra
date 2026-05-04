@@ -90,7 +90,7 @@ export default function ClientPortalLayout() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8f8f6]">
+    <div className="min-h-screen bg-white" style={{ backgroundColor: '#ffffff' }}>
       {/* ── Main Content — pb-24 on mobile for bottom nav, pb-8 on desktop ── */}
       <main className="min-h-screen pb-10">
         <Outlet />
