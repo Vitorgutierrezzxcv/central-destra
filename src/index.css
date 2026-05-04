@@ -156,3 +156,11 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+/* Force white background on safe areas (iPhone notch/home indicator) */
+html {
+  background-color: #ffffff !important;
+}
+body {
+  background-color: #ffffff !important;
+}
