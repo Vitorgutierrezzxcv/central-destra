@@ -69,7 +69,7 @@ export default function ClientPortalTimeline() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "linear-gradient(135deg, #050D1B 0%, #020408 100%)" }}>
-      <div className="max-w-full w-full px-5 md:px-4 pt-28 md:pt-12 pb-4">
+      <div className="max-w-full w-full px-5 md:px-4 pt-10 md:pt-12 pb-4">
         <div className="flex items-end justify-between gap-4">
           <div>
             <h1 className="text-7xl md:text-6xl leading-[1.1] font-extralight text-white tracking-tight">

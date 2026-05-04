@@ -112,7 +112,7 @@ export default function ClientPortalTickets() {
     const refreshedTicket = tickets.find(t => t.id === activeTicket.id) || activeTicket;
     return (
       <div className="min-h-screen bg-white flex flex-col">
-        <div className="mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-6 w-full">
+        <div className="mx-auto px-5 md:px-12 pt-10 md:pt-12 pb-6 w-full">
            <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
              Chamados
            </p>
@@ -133,7 +133,7 @@ export default function ClientPortalTickets() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="mx-auto px-5 md:px-12 pt-24 md:pt-28 pb-10">
+      <div className="mx-auto px-5 md:px-12 pt-10 md:pt-12 pb-10">
          <div className="flex items-end justify-between gap-4 mb-4">
            <div>
              <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">

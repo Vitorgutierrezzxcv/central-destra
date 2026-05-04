@@ -85,7 +85,7 @@ export default function ClientPortalFinancial() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-24 md:pt-12 pb-36 space-y-4">
+      <div className="max-w-lg md:max-w-6xl mx-auto px-5 md:px-4 pt-10 md:pt-12 pb-36 space-y-4">
 
         {/* ── HERO ── */}
         <div className="pb-4">
