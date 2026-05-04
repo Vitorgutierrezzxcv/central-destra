@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   CheckCircle2, Clock, Calendar, AlertCircle,
-  ArrowRight, Star, Loader2, MessageSquare, Paperclip, ChevronRight, Receipt
+  ArrowRight, Star, Loader2, MessageSquare, Paperclip, ChevronRight, Receipt, ShoppingBag
 } from "lucide-react";
 import { format, isAfter, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -436,6 +436,7 @@ export default function ClientPortalDashboard() {
               { label: "Arquivos",   sub: "Documentos do projeto",     page: "ClientPortalFiles",      icon: Star         },
               { label: "Financeiro", sub: "Faturas e contratos",        page: "ClientPortalFinancial",  icon: Receipt      },
             { label: "Suporte",    sub: "Abrir ou ver chamados",     page: "ClientPortalTickets",    icon: MessageSquare},
+            { label: "Checklist E-commerce", sub: "105 ações para escalar sua loja", page: "ClientPortalEcommerceChecklist", icon: ShoppingBag },
             ].map((link, i, arr) => (
               <Link key={i} to={createPageUrl(link.page)}
                 className={`flex items-center gap-4 px-5 py-4 hover:bg-slate-50 active:bg-slate-50 transition-colors ${i < arr.length - 1 ? "border-b border-slate-100" : ""}`}>

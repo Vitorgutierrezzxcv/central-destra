@@ -85,9 +85,9 @@ const ClientPortalRoutes = () => (
       <Route path="/clientportalfinancial" element={<ClientPortalFinancial />} />
       <Route path="/ClientPortalCourses" element={<ClientPortalCourses />} />
       <Route path="/clientportalcourses" element={<ClientPortalCourses />} />
-      <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
-      <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
     </Route>
+    <Route path="/ClientPortalEcommerceChecklist" element={<ClientPortalEcommerceChecklist />} />
+    <Route path="/clientportalecommercechecklist" element={<ClientPortalEcommerceChecklist />} />
     <Route path="*" element={<PageNotFound />} />
   </Routes>
 );
