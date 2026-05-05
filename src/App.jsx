@@ -42,6 +42,7 @@ import Autenticar from './pages/Autenticar';
 import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
 import PortalClienteLogin from './pages/PortalClienteLogin';
+import PortalClienteWelcome from './pages/PortalClienteWelcome';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -56,9 +57,11 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 
 const ClientPortalRoutes = () => (
   <Routes>
+    <Route path="/PortalClienteWelcome" element={<PortalClienteWelcome />} />
+    <Route path="/portalclientewelcome" element={<PortalClienteWelcome />} />
     <Route path="/PortalClienteLogin" element={<PortalClienteLogin />} />
     <Route path="/portalclienterlogin" element={<PortalClienteLogin />} />
-    <Route path="/portalcliente" element={<PortalClienteLogin />} />
+    <Route path="/portalcliente" element={<PortalClienteWelcome />} />
     <Route element={<ClientPortalLayout />}>
       <Route path="/ClientPortalLogin" element={<ClientPortalLogin />} />
       <Route path="/clientportallogin" element={<ClientPortalLogin />} />
@@ -191,10 +194,12 @@ function AppRouter() {
   const isPublicRoute = pathLower === '/autenticar';
   const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
 
-  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin' || pathLower === '/portalcliente';
+  const isPortalWelcomeRoute = pathLower === '/portalcliente' || pathLower === '/portalclientewelcome';
+  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin';
 
   // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
   if (isPublicRoute) return <Autenticar />;
+  if (isPortalWelcomeRoute) return <PortalClienteWelcome />;
   if (isPortalLoginRoute) return <PortalClienteLogin />;
   if (isClientPortalRoute) return <ClientPortalRoutes />;
 
