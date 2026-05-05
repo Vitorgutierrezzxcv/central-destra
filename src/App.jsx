@@ -196,9 +196,9 @@ function AppRouter() {
   if (isPublicRoute) return <Autenticar />;
   if (isPortalWelcomeRoute) return <PortalClienteWelcome />;
   if (isPortalLoginRoute) return <PortalClienteLogin />;
-  if (isClientPortalRoute) return <ClientPortalRoutes />;
+  if (isClientPortalRoute && pathLower !== '/') return <ClientPortalRoutes />;
 
-  // Rotas internas — precisam do AuthProvider
+  // Rotas internas — precisam do AuthProvider (inclui "/" e tudo que não é portal)
   return (
     <AuthProvider>
       <AuthenticatedApp />

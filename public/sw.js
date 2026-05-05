@@ -1,4 +1,4 @@
-const CACHE_NAME = 'destra-client-portal-v' + Date.now();
+const CACHE_NAME = 'destra-v' + Date.now();
 const urlsToCache = [
   '/',
   '/index.html',

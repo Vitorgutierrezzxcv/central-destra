@@ -2,7 +2,7 @@
   "name": "Portal do Cliente Destra",
   "short_name": "Destra",
   "description": "Portal do Cliente Destra — acompanhe seus projetos, aprovações e entregas em tempo real.",
-  "start_url": "/portalcliente",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
