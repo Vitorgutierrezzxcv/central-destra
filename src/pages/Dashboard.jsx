@@ -8,6 +8,7 @@ import { ptBR } from "date-fns/locale";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Plus, Calendar, ArrowRight } from "lucide-react";
+import { FullPageLoader } from "@/components/ui/LoadingOverlay";
 
 import GoogleCalendarWidget from "../components/dashboard/GoogleCalendarWidget";
 import NotesBlock from "../components/dashboard/NotesBlock";
@@ -40,19 +41,7 @@ function DashboardContent() {
   });
 
   if (loadingUser || loadingTasks || loadingProjects) {
-    return (
-      <div className="min-h-screen bg-white px-4 py-4 md:px-6 lg:px-8">
-        <div className="max-w-full space-y-4">
-          <Skeleton className="h-10 w-48 rounded-lg mt-8" />
-          <Skeleton className="h-12 rounded-2xl" />
-          <Skeleton className="h-16 rounded-2xl" />
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-12 rounded-xl" />)}
-          </div>
-          <Skeleton className="h-56 rounded-xl" />
-        </div>
-      </div>);
-
+    return <FullPageLoader theme="light" />;
   }
 
   const now = new Date();
