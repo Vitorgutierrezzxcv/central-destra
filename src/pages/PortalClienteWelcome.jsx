@@ -47,8 +47,7 @@ export default function PortalClienteWelcome() {
 
   const doExit = () => {
     setLeaving(true);
-    // Navigate after the Apple-style zoom-in animation completes
-    setTimeout(() => navigate("/PortalClienteLogin"), 600);
+    setTimeout(() => navigate("/PortalClienteLogin"), 700);
   };
 
   const handleDragEnd = (_, info) => {
@@ -63,30 +62,31 @@ export default function PortalClienteWelcome() {
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: BG }}>
 
-      {/* ── Apple-style: black overlay fades in on top while content zooms in ── */}
+      {/* ── Overlay escurece dramaticamente ── */}
       <AnimatePresence>
         {leaving && (
           <motion.div
             key="overlay"
             className="fixed inset-0 z-[100]"
-            style={{ background: "#000000" }}
+            style={{ background: BG }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.65, ease: [0.4, 0, 0.15, 1] }}
           />
         )}
       </AnimatePresence>
 
-      {/* ── PAGE CONTENT — Apple zoom-in push when leaving ── */}
+      {/* ── PAGE CONTENT — zoom out + blur + fade ao sair ── */}
       <motion.div
         className="fixed inset-0 flex flex-col overflow-hidden"
+        initial={{ scale: 1.06, opacity: 0, filter: "blur(18px)" }}
         animate={leaving
-          ? { scale: 1.08, opacity: 0, filter: "blur(12px)" }
+          ? { scale: 0.94, opacity: 0, filter: "blur(20px)" }
           : { scale: 1, opacity: 1, filter: "blur(0px)" }
         }
         transition={leaving
-          ? { duration: 0.55, ease: [0.4, 0, 0.1, 1] }
-          : { duration: 0 }
+          ? { duration: 0.6, ease: [0.4, 0, 0.1, 1] }
+          : { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
         }
       >
         {/* Glow — estende para cima cobrindo a safe area */}

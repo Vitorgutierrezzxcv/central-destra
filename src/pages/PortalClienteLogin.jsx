@@ -36,7 +36,8 @@ export default function PortalClienteLogin() {
       navigate("/ClientPortalDashboard", { replace: true });
       return;
     }
-    setTimeout(() => setVisible(true), 80);
+    // pequeno delay para o navigate terminar antes de animar
+    setTimeout(() => setVisible(true), 50);
 
     return () => {
       document.documentElement.classList.remove("portal-dark");
@@ -83,9 +84,12 @@ export default function PortalClienteLogin() {
 
       <motion.div
         className="relative z-10 flex flex-col w-full h-full"
-        initial={{ opacity: 0, y: 32 }}
-        animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
-        transition={{ duration: 0.5, ease: IOS }}
+        initial={{ opacity: 0, scale: 1.06, filter: "blur(18px)" }}
+        animate={visible
+          ? { opacity: 1, scale: 1, filter: "blur(0px)" }
+          : { opacity: 0, scale: 1.06, filter: "blur(18px)" }
+        }
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* ── LOGO ── */}
         <div
