@@ -30,9 +30,11 @@ const SLIDES = [
   },
 ];
 
-const TRACK_WIDTH = 280;
-const THUMB_SIZE = 56;
-const MAX_DRAG = TRACK_WIDTH - THUMB_SIZE - 8; // 8px margin
+const TRACK_W = 260;
+const THUMB_H = 48;
+const THUMB_W = 48;
+const MARGIN = 4;
+const MAX_DRAG = TRACK_W - THUMB_W - MARGIN * 2;
 
 export default function PortalClienteWelcome() {
   const navigate = useNavigate();
@@ -40,25 +42,21 @@ export default function PortalClienteWelcome() {
   const [exiting, setExiting] = useState(false);
 
   const dragX = useMotionValue(0);
-
-  // Track fill grows as thumb slides right
-  const fillWidth = useTransform(dragX, [0, MAX_DRAG], [THUMB_SIZE, TRACK_WIDTH]);
-  // Label fades out as thumb moves
-  const labelOpacity = useTransform(dragX, [0, MAX_DRAG * 0.5], [1, 0]);
-  // Arrow icon fades/rotates on drag
-  const arrowOpacity = useTransform(dragX, [MAX_DRAG * 0.6, MAX_DRAG], [1, 0]);
+  const fillWidth = useTransform(dragX, [0, MAX_DRAG], [THUMB_W + MARGIN * 2, TRACK_W]);
+  const labelOpacity = useTransform(dragX, [0, MAX_DRAG * 0.45], [1, 0]);
+  const arrowOpacity = useTransform(dragX, [MAX_DRAG * 0.55, MAX_DRAG], [1, 0]);
 
   const triggerExit = () => {
     setExiting(true);
-    setTimeout(() => navigate("/PortalClienteLogin"), 500);
+    setTimeout(() => navigate("/PortalClienteLogin"), 480);
   };
 
   const handleDragEnd = (_, info) => {
-    if (info.offset.x >= MAX_DRAG * 0.75 || info.velocity.x > 500) {
-      animate(dragX, MAX_DRAG, { duration: 0.15 });
-      setTimeout(triggerExit, 150);
+    if (info.offset.x >= MAX_DRAG * 0.72 || info.velocity.x > 500) {
+      animate(dragX, MAX_DRAG, { duration: 0.12 });
+      setTimeout(triggerExit, 120);
     } else {
-      animate(dragX, 0, { type: "spring", stiffness: 400, damping: 35 });
+      animate(dragX, 0, { type: "spring", stiffness: 420, damping: 36 });
     }
   };
 
@@ -67,38 +65,32 @@ export default function PortalClienteWelcome() {
       {!exiting ? (
         <motion.div
           key="welcome"
-          initial={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.06, filter: "blur(8px)" }}
-          transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-          className="min-h-screen bg-[#050D1B] flex flex-col overflow-hidden relative select-none"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, scale: 1.04, filter: "blur(10px)" }}
+          transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
+          className="min-h-screen flex flex-col overflow-hidden relative select-none"
+          style={{ background: "#0B1628" }}
         >
-          {/* Gradient blob — top */}
-          <div className="absolute top-0 left-0 right-0 h-[58vh] overflow-hidden pointer-events-none">
+          {/* Subtle top glow — same style as login left panel */}
+          <div className="absolute top-0 left-0 right-0 h-[50vh] pointer-events-none overflow-hidden">
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse 90% 80% at 50% 5%, #4A8AFF 0%, #1A4FC4 40%, #0A1E5C 70%, transparent 100%)",
-              }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "radial-gradient(ellipse 55% 45% at 38% 18%, rgba(200,220,255,0.28) 0%, transparent 60%)",
+                  "radial-gradient(ellipse 80% 70% at 50% -5%, rgba(59,130,246,0.28) 0%, rgba(30,64,175,0.15) 45%, transparent 75%)",
               }}
             />
           </div>
 
-          {/* Logo */}
+          {/* Logo — same as login */}
           <div className="relative z-10 flex items-center gap-2.5 px-6 pt-14">
             <img
               src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg"
               alt="Destra"
-              className="w-7 h-7 brightness-0 invert"
+              className="w-8 h-8 brightness-0 invert opacity-80"
             />
-            <span className="text-white text-sm font-light tracking-widest uppercase opacity-80">
-              Destra
+            <span className="text-white/60 text-xs tracking-widest uppercase font-light">
+              Portal do Cliente
             </span>
           </div>
 
@@ -110,113 +102,113 @@ export default function PortalClienteWelcome() {
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -14 }}
-                transition={{ duration: 0.38 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.36 }}
               >
-                <p className="text-white/50 text-sm font-light mb-3 tracking-wide">
+                <p className="text-blue-400/70 text-sm font-light mb-3 tracking-wide">
                   {SLIDES[slide].tag}
                 </p>
-                <h1 className="text-white text-[2.6rem] font-extralight leading-tight tracking-tight">
+                <h1 className="text-white text-[2.5rem] font-extralight leading-tight tracking-tight">
                   {SLIDES[slide].title}{" "}
                   <span className="font-bold">{SLIDES[slide].highlight}</span>{" "}
-                  <span className="font-extralight">{SLIDES[slide].tail}</span>
+                  <span className="font-extralight opacity-70">{SLIDES[slide].tail}</span>
                 </h1>
               </motion.div>
             </AnimatePresence>
           </div>
 
+          {/* Feature bullets — same as login left panel */}
+          <div className="relative z-10 px-6 mt-6 mb-2 space-y-2">
+            {["Visibilidade completa do projeto", "Aprovação de entregas", "Comunicação direta com a equipe"].map((item, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-400/40 flex-shrink-0" />
+                <p className="text-slate-400 text-sm font-light">{item}</p>
+              </div>
+            ))}
+          </div>
+
           {/* Dots */}
-          <div className="relative z-10 flex items-center gap-1.5 px-6 mt-5 mb-7">
+          <div className="relative z-10 flex items-center gap-1.5 px-6 mt-6 mb-6">
             {SLIDES.map((_, i) => (
               <button
                 key={i}
                 onClick={() => setSlide(i)}
                 className={`rounded-full transition-all duration-300 ${
-                  i === slide ? "w-5 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/30"
+                  i === slide ? "w-5 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/20"
                 }`}
               />
             ))}
           </div>
 
           {/* Bottom bar */}
-          <div
-            className="relative z-10 flex items-center justify-between px-5 pb-10 pt-2"
-            style={{ gap: 16 }}
-          >
-            {/* Prev / Next arrows */}
+          <div className="relative z-10 flex items-center justify-between px-5 pb-10 pt-2 gap-4">
+
+            {/* Prev / Next */}
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={() => setSlide((s) => Math.max(0, s - 1))}
-                className="w-11 h-11 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all"
+                className="w-11 h-11 rounded-2xl border border-white/10 flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/25 transition-all"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M10 12L6 8L10 4"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
               <button
-                onClick={() => {
-                  if (slide < SLIDES.length - 1) setSlide((s) => s + 1);
-                }}
-                className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-slate-900 shadow-lg hover:bg-white/90 transition-all"
+                onClick={() => { if (slide < SLIDES.length - 1) setSlide((s) => s + 1); }}
+                className="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white hover:bg-white/15 transition-all"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M6 4L10 8L6 12"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
 
             {/* Slide-to-enter track */}
             <div
-              className="relative flex items-center rounded-full overflow-hidden flex-shrink-0"
+              className="relative flex items-center rounded-2xl overflow-hidden flex-shrink-0"
               style={{
-                width: TRACK_WIDTH,
-                height: THUMB_SIZE,
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.12)",
+                width: TRACK_W,
+                height: THUMB_H + MARGIN * 2,
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.10)",
               }}
             >
-              {/* Fill bar */}
+              {/* Fill */}
               <motion.div
-                className="absolute left-0 top-0 bottom-0 rounded-full"
+                className="absolute left-0 top-0 bottom-0 rounded-2xl"
                 style={{
                   width: fillWidth,
-                  background:
-                    "linear-gradient(90deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%)",
+                  background: "rgba(59,130,246,0.18)",
                 }}
               />
 
               {/* Label */}
               <motion.span
                 style={{ opacity: labelOpacity }}
-                className="absolute inset-0 flex items-center justify-center text-white/50 text-sm font-light pointer-events-none tracking-wide"
+                className="absolute inset-0 flex items-center justify-center text-white/40 text-sm font-light pointer-events-none tracking-wide"
               >
                 Deslize para entrar &nbsp;›
               </motion.span>
 
-              {/* Draggable thumb */}
+              {/* Thumb */}
               <motion.div
                 drag="x"
                 dragConstraints={{ left: 0, right: MAX_DRAG }}
-                dragElastic={0.05}
+                dragElastic={0.04}
                 dragMomentum={false}
-                style={{ x: dragX, width: THUMB_SIZE, height: THUMB_SIZE - 8, top: 4, left: 4, position: "absolute" }}
                 onDragEnd={handleDragEnd}
-                className="rounded-full bg-white shadow-xl cursor-grab active:cursor-grabbing flex items-center justify-center text-slate-900 z-10"
-                whileTap={{ scale: 0.93 }}
+                style={{
+                  x: dragX,
+                  position: "absolute",
+                  left: MARGIN,
+                  top: MARGIN,
+                  width: THUMB_W,
+                  height: THUMB_H,
+                }}
+                className="rounded-xl bg-white shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center text-slate-900 z-10"
+                whileTap={{ scale: 0.92 }}
               >
                 <motion.div style={{ opacity: arrowOpacity }}>
                   <ArrowRight className="w-5 h-5" strokeWidth={2} />
@@ -224,15 +216,20 @@ export default function PortalClienteWelcome() {
               </motion.div>
             </div>
           </div>
+
+          {/* Footer */}
+          <p className="relative z-10 text-center text-slate-600 text-xs font-light tracking-wide pb-6">
+            © {new Date().getFullYear()} Destra · Acesso seguro
+          </p>
         </motion.div>
       ) : (
-        // Placeholder mantém a tela preta durante o exit
         <motion.div
           key="exit-bg"
-          className="min-h-screen bg-[#050D1B]"
+          className="min-h-screen"
+          style={{ background: "#0B1628" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.1 }}
+          transition={{ duration: 0.08 }}
         />
       )}
     </AnimatePresence>
