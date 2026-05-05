@@ -1,4 +1,4 @@
-const CACHE_NAME = 'destra-client-portal-v1';
+const CACHE_NAME = 'destra-client-portal-v' + Date.now();
 const urlsToCache = [
   '/',
   '/index.html',
@@ -11,7 +11,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache).catch(() => {
-        // If some files fail to cache, continue anyway
         return Promise.resolve();
       });
     })
@@ -19,17 +18,26 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and notify clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          if (!cacheName.includes('destra-client-portal-v') || cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      // Notify all clients that a new version is ready
+      return self.clients.matchAll();
+    }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({
+          type: 'SW_UPDATE_AVAILABLE'
+        });
+      });
     })
   );
   self.clients.claim();
