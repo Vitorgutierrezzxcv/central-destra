@@ -27,12 +27,22 @@ export default function PortalClienteLogin() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Set dark safe areas
+    document.documentElement.classList.add("portal-dark");
+    document.documentElement.style.backgroundColor = BG;
+    document.body.style.backgroundColor = BG;
+
     if (isLoggedIn()) {
       navigate("/ClientPortalDashboard", { replace: true });
       return;
     }
-    // Slight delay so the white-flash from Welcome can clear
     setTimeout(() => setVisible(true), 80);
+
+    return () => {
+      document.documentElement.classList.remove("portal-dark");
+      document.documentElement.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
+    };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -60,55 +70,57 @@ export default function PortalClienteLogin() {
   };
 
   return (
-    // White base that clears the flash bg from Welcome
-    <div className="fixed inset-0 overflow-hidden" style={{ background: BG }}>
-      <motion.div
-        className="fixed inset-0 flex flex-col overflow-hidden"
-        initial={{ opacity: 0, y: 40 }}
-        animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-        transition={{ duration: 0.55, ease: IOS }}
-      >
-        {/* Glow */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 85% 55% at 50% -5%, rgba(59,130,246,0.22) 0%, transparent 65%)"
-        }} />
+    <div
+      className="fixed inset-0 overflow-hidden flex flex-col"
+      style={{ background: BG }}
+    >
+      {/* Glow */}
+      <div className="absolute inset-0 pointer-events-none" style={{
+        background: "radial-gradient(ellipse 85% 50% at 50% -5%, rgba(59,130,246,0.22) 0%, transparent 65%)"
+      }} />
 
-        {/* Logo */}
+      <motion.div
+        className="relative z-10 flex flex-col w-full h-full"
+        initial={{ opacity: 0, y: 32 }}
+        animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
+        transition={{ duration: 0.5, ease: IOS }}
+      >
+        {/* ── LOGO ── */}
         <div
-          className="relative z-10 flex items-center gap-2.5 px-6 flex-shrink-0"
-          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 48px)" }}
+          className="flex items-center gap-2.5 px-6 flex-shrink-0"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 20px)", paddingBottom: "8px" }}
         >
           <img
             src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg"
             alt="Destra"
-            className="w-7 h-7 brightness-0 invert opacity-60"
+            className="w-6 h-6 brightness-0 invert opacity-60"
           />
           <span className="text-white/35 text-[10px] tracking-[0.22em] uppercase font-medium">
             Portal do Cliente
           </span>
         </div>
 
-        {/* Spacer */}
-        <div className="flex-1 min-h-0" />
-
-        {/* Content area */}
-        <div className="relative z-10 px-6 flex-shrink-0">
+        {/* ── MAIN CONTENT — fills remaining space, no scroll ── */}
+        <div className="flex-1 flex flex-col justify-end px-6 min-h-0"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 24px)" }}
+        >
           {/* Title */}
           <AnimatePresence mode="wait">
             <motion.div
               key={mode}
-              initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
+              initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
-              transition={{ duration: 0.3, ease: IOS }}
+              exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+              transition={{ duration: 0.28, ease: IOS }}
+              className="mb-5"
             >
-              <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
+              <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-3">
                 {mode === "login" ? "Acesso seguro" : "Criar conta"}
               </p>
-              <h1 className="text-5xl font-extralight text-white tracking-tight leading-[1.1] mb-2">
+              <h1 className="text-[42px] font-extralight text-white tracking-tight leading-[1.08] mb-1.5">
                 {mode === "login" ? "Bem-vindo\nde volta" : "Criar\nconta"}
               </h1>
-              <p className="text-base font-light text-white/30 leading-relaxed mb-6">
+              <p className="text-[13px] font-light text-white/30 leading-relaxed">
                 {mode === "login"
                   ? "Acesse para acompanhar seus projetos."
                   : "Registre-se para acessar o portal."}
@@ -117,16 +129,16 @@ export default function PortalClienteLogin() {
           </AnimatePresence>
 
           {/* Tabs */}
-          <div className="flex gap-0 mb-6 border-b border-white/[0.08]">
+          <div className="flex gap-0 mb-5 border-b border-white/[0.08]">
             {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
               <button
                 key={m.key}
                 type="button"
                 onClick={() => { setMode(m.key); setError(""); }}
-                className={`pb-3 px-1 mr-6 text-sm font-medium transition-all border-b-2 -mb-px ${
+                className={`pb-2.5 px-1 mr-6 text-sm font-medium transition-all border-b-2 -mb-px ${
                   mode === m.key
                     ? "border-white text-white"
-                    : "border-transparent text-white/30 hover:text-white/50"
+                    : "border-transparent text-white/30"
                 }`}
               >
                 {m.label}
@@ -135,20 +147,20 @@ export default function PortalClienteLogin() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-2.5">
             <AnimatePresence>
               {mode === "register" && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.28, ease: IOS }}
+                  transition={{ duration: 0.25, ease: IOS }}
                   className="overflow-hidden"
                 >
                   <input
                     value={name} onChange={e => setName(e.target.value)}
                     placeholder="Nome completo" required
-                    className="w-full h-[52px] px-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                    className="w-full h-[50px] px-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
                   />
                 </motion.div>
               )}
@@ -159,7 +171,7 @@ export default function PortalClienteLogin() {
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="seu@email.com" required
-                className="w-full h-[52px] pl-11 pr-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                className="w-full h-[50px] pl-11 pr-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
               />
             </div>
 
@@ -168,7 +180,7 @@ export default function PortalClienteLogin() {
               <input
                 type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
                 placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Senha"} required minLength={6}
-                className="w-full h-[52px] pl-11 pr-12 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                className="w-full h-[50px] pl-11 pr-12 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
               />
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors">
@@ -182,10 +194,10 @@ export default function PortalClienteLogin() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.22 }}
+                  transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20">
+                  <div className="flex items-start gap-3 p-3 rounded-2xl bg-red-500/10 border border-red-500/20">
                     <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-red-300 leading-relaxed">{error}</p>
                   </div>
@@ -193,25 +205,22 @@ export default function PortalClienteLogin() {
               )}
             </AnimatePresence>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-[52px] bg-white text-slate-900 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2.5 hover:bg-white/92 active:scale-[0.98] transition-all disabled:opacity-40 mt-1"
-            >
-              {loading
-                ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Aguarde...</span></>
-                : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>
-              }
-            </button>
+            <div className="pt-1">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full h-[52px] bg-white text-slate-900 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2.5 active:scale-[0.98] transition-all disabled:opacity-40"
+              >
+                {loading
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Aguarde...</span></>
+                  : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>
+                }
+              </button>
+            </div>
           </form>
-        </div>
 
-        {/* Footer */}
-        <div
-          className="relative z-10 flex-shrink-0 text-center"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 28px)", paddingTop: "20px" }}
-        >
-          <p className="text-white/[0.18] text-[10px] tracking-wide font-light">
+          {/* Footer */}
+          <p className="text-center text-white/[0.18] text-[10px] tracking-wide font-light mt-5">
             © {new Date().getFullYear()} Destra · Acesso seguro
           </p>
         </div>
