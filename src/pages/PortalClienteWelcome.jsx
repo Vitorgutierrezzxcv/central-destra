@@ -10,21 +10,23 @@ const SLIDES = [
   {
     tag: "Bem-vindo ao portal",
     line1: "Acompanhe seus",
-    line2: "projetos.",
-    line2Bold: true,
+    line2Bold: "projetos",
+    line2Rest: " em tempo",
+    line3: "real.",
   },
   {
     tag: "Entregas e aprovações",
     line1: "Revise e aprove",
-    line2: "cada entrega.",
-    line2Bold: true,
+    line2Bold: "cada entrega",
+    line2Rest: " da sua",
+    line3: "equipe.",
   },
   {
     tag: "Comunicação direta",
-    line1: "Fale sem",
-    line2: "intermediários",
+    line1: "Fale com a equipe",
+    line2Bold: "sem",
+    line2Rest: " intermediários",
     line3: "pelo portal.",
-    line2Bold: true,
   },
 ];
 
@@ -102,19 +104,14 @@ export default function PortalClienteWelcome() {
                   {SLIDES[slide].tag}
                 </p>
 
-                {/* Headline — linha 1 menor (extralight), linha 2 maior (bold) */}
-                <h1 className="tracking-tight text-white">
-                  <span className="block text-[2.1rem] leading-[1.15] font-extralight opacity-70">
-                    {SLIDES[slide].line1}
-                  </span>
-                  <span className="block text-[3rem] leading-[1.1] font-bold">
-                    {SLIDES[slide].line2}
-                  </span>
-                  {SLIDES[slide].line3 && (
-                    <span className="block text-[3rem] leading-[1.1] font-bold">
-                      {SLIDES[slide].line3}
-                    </span>
-                  )}
+                {/* Headline — mix extralight + bold, igual à inspiração */}
+                <h1 className="text-[2.7rem] leading-[1.12] tracking-tight text-white font-extralight">
+                  {SLIDES[slide].line1}
+                  <br />
+                  <span className="font-bold">{SLIDES[slide].line2Bold}</span>
+                  <span className="font-extralight">{SLIDES[slide].line2Rest}</span>
+                  <br />
+                  <span className="font-extralight">{SLIDES[slide].line3}</span>
                 </h1>
               </motion.div>
             </AnimatePresence>
@@ -133,40 +130,34 @@ export default function PortalClienteWelcome() {
             ))}
           </div>
 
-          {/* ── BOTTOM BAR ── */}
+          {/* ── BOTTOM BAR — exatamente como na inspiração ── */}
           <div
             className="relative z-10 flex items-center gap-3 px-5 pt-5 flex-shrink-0"
             style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 28px)" }}
           >
-            {/* Back — círculo ghost */}
+            {/* Back — círculo branco/ghost */}
             <button
               onClick={goPrev}
-              className="w-14 h-14 rounded-full border border-white/15 flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/30 active:scale-95 transition-all flex-shrink-0"
+              className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all flex-shrink-0"
             >
-              <ArrowLeft className="w-[18px] h-[18px]" strokeWidth={1.6} />
+              <ArrowLeft className="w-5 h-5" strokeWidth={1.8} />
             </button>
 
             {/* Next — círculo branco sólido */}
             <button
               onClick={goNext}
-              className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-slate-900 shadow-lg flex-shrink-0 active:scale-95 transition-transform"
+              className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-slate-900 flex-shrink-0 active:scale-95 transition-transform"
             >
-              <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} />
+              <ArrowRight className="w-5 h-5" strokeWidth={2} />
             </button>
 
-            {/* Entrar — pill com label + seta dupla */}
+            {/* Start — pill */}
             <button
               onClick={handleStart}
-              className="flex-1 h-14 rounded-full flex items-center justify-between px-5 active:scale-[0.97] transition-transform"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                border: "1px solid rgba(255,255,255,0.12)",
-              }}
+              className="flex-1 h-14 rounded-full bg-white/10 border border-white/15 flex items-center justify-center gap-2 text-white text-base font-light hover:bg-white/15 active:scale-[0.98] transition-all"
             >
-              <span className="text-white text-[15px] font-light tracking-wide">Entrar</span>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/10">
-                <ArrowRight className="w-4 h-4 text-white/70" strokeWidth={1.8} />
-              </div>
+              <span>Entrar</span>
+              <span className="text-white/40 text-lg leading-none">&rsaquo;&rsaquo;</span>
             </button>
           </div>
         </motion.div>
