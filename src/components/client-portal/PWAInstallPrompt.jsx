@@ -111,57 +111,40 @@ export default function PWAInstallPrompt() {
   if (isInstalled || !showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-slate-900 rounded-xl shadow-lg border border-slate-700 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-        {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-slate-700">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-              <Smartphone className="w-5 h-5 text-blue-400" />
-            </div>
-            <div>
-              <h2 className="text-sm font-medium text-white">Instalar aplicativo</h2>
-              <p className="text-xs text-slate-400">Acesso direto da tela inicial</p>
-            </div>
-          </div>
-          <button
-            onClick={handleDismiss}
-            className="text-slate-500 hover:text-slate-300 p-1 rounded transition-colors flex-shrink-0"
-            type="button"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
+    <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+      <div className="w-full max-w-sm bg-gradient-to-b from-slate-950 to-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 border border-white/10">
         {/* Conteúdo */}
-        <div className="p-5">
-          {/* Benefícios minimalistas */}
-          <div className="space-y-2 mb-6">
-            {[
-              { text: "Acesso instantâneo na tela inicial" },
-              { text: "Funciona sem internet" },
-              { text: "Sem necessidade de atualizar" }
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-start gap-2.5 text-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
-                <span className="text-slate-200">{item.text}</span>
-              </div>
-            ))}
+        <div className="p-7">
+          {/* Icon + Título */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0 backdrop-blur-md">
+              <Smartphone className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-extralight text-white tracking-tight">Instalar app</h2>
+            </div>
+            <button
+              onClick={handleDismiss}
+              className="text-white/40 hover:text-white/70 p-1 transition-colors flex-shrink-0"
+              type="button"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Mensagem de feedback */}
           {message && (
-            <div className="mb-4 p-3 bg-blue-600/20 border border-blue-500/30 rounded-lg">
-              <p className="text-xs text-blue-200 leading-relaxed">{message}</p>
+            <div className="mb-5 p-3 bg-white/5 rounded-xl">
+              <p className="text-xs text-white/70 leading-relaxed font-light">{message}</p>
             </div>
           )}
 
           {/* Botões */}
-          <div className="flex gap-2.5">
+          <div className="flex gap-3">
             <button
               onClick={handleDismiss}
               disabled={installing}
-              className="flex-1 px-3 py-2.5 border border-slate-600 rounded-lg text-xs font-medium text-slate-200 hover:bg-slate-800 active:bg-slate-700 transition-colors duration-200 disabled:opacity-50"
+              className="flex-1 px-4 py-3 bg-white/10 text-white rounded-2xl text-sm font-light hover:bg-white/20 active:bg-white/15 transition-all duration-200 disabled:opacity-50 backdrop-blur-sm"
               type="button"
             >
               Depois
@@ -169,13 +152,13 @@ export default function PWAInstallPrompt() {
             <button
               onClick={handleInstall}
               disabled={installing}
-              className="flex-1 px-3 py-2.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors duration-200 flex items-center justify-center gap-1.5 disabled:opacity-60"
+              className="flex-1 px-4 py-3 bg-white text-slate-950 rounded-2xl text-sm font-light hover:bg-blue-50 active:bg-blue-100 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
               type="button"
             >
               {installing ? (
-                <span className="inline-block animate-spin">↻</span>
+                <span className="inline-block animate-spin text-sm">↻</span>
               ) : (
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-4 h-4" />
               )}
               {installing ? "Instalando..." : "Instalar"}
             </button>
