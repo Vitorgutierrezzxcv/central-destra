@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -19,6 +19,17 @@ const MAX = TW - TH - M * 2;
 export default function PortalClienteWelcome() {
   useThemeColor(BG);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.documentElement.classList.add("portal-dark");
+    document.documentElement.style.backgroundColor = BG;
+    document.body.style.backgroundColor = BG;
+    return () => {
+      document.documentElement.classList.remove("portal-dark");
+      document.documentElement.style.backgroundColor = "";
+      document.body.style.backgroundColor = "";
+    };
+  }, []);
   const [slide, setSlide] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const thumbRef = useRef(null);

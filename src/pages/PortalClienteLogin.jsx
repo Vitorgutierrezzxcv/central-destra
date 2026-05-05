@@ -160,7 +160,8 @@ export default function PortalClienteLogin() {
                   <input
                     value={name} onChange={e => setName(e.target.value)}
                     placeholder="Nome completo" required
-                    className="w-full h-[50px] px-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                    className="w-full h-[50px] px-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-base placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                    style={{ fontSize: "16px" }}
                   />
                 </motion.div>
               )}
@@ -171,7 +172,8 @@ export default function PortalClienteLogin() {
               <input
                 type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="seu@email.com" required
-                className="w-full h-[50px] pl-11 pr-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                className="w-full h-[50px] pl-11 pr-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-base placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                style={{ fontSize: "16px" }}
               />
             </div>
 
@@ -180,7 +182,8 @@ export default function PortalClienteLogin() {
               <input
                 type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
                 placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Senha"} required minLength={6}
-                className="w-full h-[50px] pl-11 pr-12 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                className="w-full h-[50px] pl-11 pr-12 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-base placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                style={{ fontSize: "16px" }}
               />
               <button type="button" onClick={() => setShowPass(!showPass)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors">
