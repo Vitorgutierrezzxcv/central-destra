@@ -48,43 +48,5 @@ export default function RouteLoadingOverlay() {
 
   if (phase === "hidden") return null;
 
-  return (
-    <>
-      <style>{CSS}</style>
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 99999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          overflow: "hidden",
-          animation: phase === "in"
-            ? "loaderFadeIn 0.15s ease forwards"
-            : "loaderFadeOut 0.3s ease forwards",
-        }}
-      >
-        {/* Background bonito com gradiente — independe de blur */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "radial-gradient(ellipse 80% 60% at 50% 0%, #dce9ff 0%, #f5f7ff 55%, #ffffff 100%)",
-        }} />
-        <img
-          src={LOGO}
-          alt="Destra"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            width: 80,
-            height: 80,
-            animation: "destraFlip 1.4s ease-in-out infinite",
-            willChange: "transform",
-            display: "block",
-          }}
-        />
-      </div>
-    </>
-  );
+  return null;
 }

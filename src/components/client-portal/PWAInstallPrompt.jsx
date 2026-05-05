@@ -13,12 +13,6 @@ export default function PWAInstallPrompt() {
       return;
     }
 
-    // Verifica se já viu o prompt
-    const dismissed = localStorage.getItem("pwa-prompt-dismissed");
-    if (dismissed) {
-      return;
-    }
-
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -29,7 +23,7 @@ export default function PWAInstallPrompt() {
 
     // Se não houver beforeinstallprompt, mostra mesmo assim
     const timer = setTimeout(() => {
-      if (!showPrompt && !isInstalled && !dismissed) {
+      if (!showPrompt && !isInstalled) {
         setShowPrompt(true);
       }
     }, 2000);
@@ -54,7 +48,6 @@ export default function PWAInstallPrompt() {
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === "accepted") {
           setIsInstalled(true);
-          localStorage.setItem("pwa-prompt-dismissed", "true");
         }
         setShowPrompt(false);
         setDeferredPrompt(null);
@@ -69,7 +62,6 @@ export default function PWAInstallPrompt() {
   };
 
   const handleDismiss = () => {
-    localStorage.setItem("pwa-prompt-dismissed", "true");
     setShowPrompt(false);
   };
 
