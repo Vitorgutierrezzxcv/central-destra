@@ -55,13 +55,13 @@ export default function PortalClienteWelcome() {
       <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-top, 0px)", background: BG }} />
       <div className="fixed left-0 right-0 bottom-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-bottom, 0px)", background: BG }} />
 
-      {/* ── WHITE FLASH that covers screen then reveals login ── */}
+      {/* ── DARK FADE that covers screen then reveals login ── */}
       <AnimatePresence>
         {leaving && (
           <motion.div
             key="flash"
             className="fixed inset-0 z-[100]"
-            style={{ background: "#ffffff" }}
+            style={{ background: BG }}
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 1] }}
             transition={{ duration: 0.45, times: [0, 0.4, 1], ease: "easeInOut" }}
@@ -120,10 +120,10 @@ export default function PortalClienteWelcome() {
                 {SLIDES[slide].tag}
               </p>
               <h1 className="font-extralight text-white tracking-tight leading-[1.05] mb-3">
-                {SLIDES[slide].headline.split("\n").map((line, i, arr) => (
+                {SLIDES[slide].headline.split("\n").map((line, i) => (
                   <span
                     key={i}
-                    style={{ fontSize: slide === 0 && i === 1 ? "3.6rem" : "2.8rem", display: "block" }}
+                    style={{ fontSize: slide === 0 ? (i === 0 ? "3rem" : "4.5rem") : "3rem", display: "block" }}
                   >
                     {line}
                   </span>
