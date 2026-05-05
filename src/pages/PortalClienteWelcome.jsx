@@ -47,7 +47,7 @@ export default function PortalClienteWelcome() {
 
   const doExit = () => {
     setLeaving(true);
-    setTimeout(() => navigate("/PortalClienteLogin"), 700);
+    setTimeout(() => navigate("/PortalClienteLogin"), 300);
   };
 
   const handleDragEnd = (_, info) => {
@@ -85,7 +85,7 @@ export default function PortalClienteWelcome() {
           : { scale: 1, opacity: 1, filter: "blur(0px)" }
         }
         transition={leaving
-          ? { duration: 0.6, ease: [0.4, 0, 0.1, 1] }
+          ? { duration: 0.25, ease: [0.4, 0, 0.1, 1] }
           : { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
         }
       >

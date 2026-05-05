@@ -33,11 +33,11 @@ export default function PortalClienteLogin() {
     document.body.style.backgroundColor = BG;
 
     if (isLoggedIn()) {
-      navigate("/ClientPortalDashboard", { replace: true });
-      return;
+    navigate("/ClientPortalDashboard", { replace: true });
+    return;
     }
-    // pequeno delay para o navigate terminar antes de animar
-    setTimeout(() => setVisible(true), 50);
+    // pequeno delay para o animate depois da página montar
+    setTimeout(() => setVisible(true), 0);
 
     return () => {
       document.documentElement.classList.remove("portal-dark");
