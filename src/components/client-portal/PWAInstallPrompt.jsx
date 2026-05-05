@@ -40,15 +40,25 @@ export default function PWAInstallPrompt() {
 
     setupListeners();
 
+    // Fallback: mostra popup se não receber beforeinstallprompt
+    const fallbackTimer = setTimeout(() => {
+      if (!promptShownRef.current && !isInstalled) {
+        setShowPrompt(true);
+        promptShownRef.current = true;
+      }
+    }, 1500);
+
     return () => {
+      clearTimeout(fallbackTimer);
       if (handler) window.removeEventListener("beforeinstallprompt", handler);
       if (appInstalledHandler) window.removeEventListener("appinstalled", appInstalledHandler);
     };
-  }, []);
+  }, [isInstalled]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) {
-      console.warn("Prompt não está disponível");
+      console.log("Prompt não disponível - PWA pode não estar instalável neste navegador");
+      setShowPrompt(false);
       return;
     }
 
@@ -56,10 +66,7 @@ export default function PWAInstallPrompt() {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       
-      console.log("Instalação resultado:", outcome);
-      
       if (outcome === "accepted") {
-        console.log("Usuário aceitou a instalação");
         setIsInstalled(true);
       }
       
@@ -75,7 +82,7 @@ export default function PWAInstallPrompt() {
   };
 
   // Não renderiza se instalado ou prompt não deve ser mostrado
-  if (isInstalled || !showPrompt || !deferredPrompt) return null;
+  if (isInstalled || !showPrompt) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
