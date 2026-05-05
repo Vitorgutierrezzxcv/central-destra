@@ -213,10 +213,9 @@ export default function PortalClienteWelcome() {
                 dragConstraints={{ left: 0, right: MAX_DRAG }}
                 dragElastic={0.05}
                 dragMomentum={false}
-                style={{ x: dragX }}
+                style={{ x: dragX, width: THUMB_SIZE, height: THUMB_SIZE - 8, top: 4, left: 4, position: "absolute" }}
                 onDragEnd={handleDragEnd}
-                className="absolute left-1 top-1 rounded-full bg-white shadow-xl cursor-grab active:cursor-grabbing flex items-center justify-center text-slate-900 z-10"
-                style={{ x: dragX, width: THUMB_SIZE, height: THUMB_SIZE - 8, top: 4, left: 4 }}
+                className="rounded-full bg-white shadow-xl cursor-grab active:cursor-grabbing flex items-center justify-center text-slate-900 z-10"
                 whileTap={{ scale: 0.93 }}
               >
                 <motion.div style={{ opacity: arrowOpacity }}>
