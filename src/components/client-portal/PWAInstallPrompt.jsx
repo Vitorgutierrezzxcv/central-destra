@@ -5,6 +5,7 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [promptShownThisSession, setPromptShownThisSession] = useState(false);
 
   useEffect(() => {
     // Detecta se já está instalado
@@ -13,20 +14,19 @@ export default function PWAInstallPrompt() {
       return;
     }
 
+    // Verifica se já mostrou o prompt nesta sessão (aba aberta)
+    if (promptShownThisSession) {
+      return;
+    }
+
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
       setShowPrompt(true);
+      setPromptShownThisSession(true);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
-
-    // Se não houver beforeinstallprompt, mostra mesmo assim
-    const timer = setTimeout(() => {
-      if (!showPrompt && !isInstalled) {
-        setShowPrompt(true);
-      }
-    }, 2000);
 
     // Detecta instalação bem-sucedida
     window.addEventListener("appinstalled", () => {
@@ -37,32 +37,25 @@ export default function PWAInstallPrompt() {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
-      clearTimeout(timer);
     };
-  }, [showPrompt, isInstalled]);
+  }, [promptShownThisSession]);
 
   const handleInstall = async () => {
     try {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === "accepted") {
-          setIsInstalled(true);
-        }
         setShowPrompt(false);
         setDeferredPrompt(null);
-      } else {
-        // Se não houver beforeinstallprompt (desktop/teste), apenas fecha
-        handleDismiss();
       }
     } catch (error) {
       console.error("Erro ao instalar:", error);
-      handleDismiss();
     }
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
+    setPromptShownThisSession(true);
   };
 
   if (isInstalled || !showPrompt) return null;
