@@ -62,8 +62,12 @@ export default function PortalClienteWelcome() {
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: BG }}>
-      {/* Safe area fills */}
-      <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-top, 0px)", background: BG }} />
+      {/* Safe area fills — top matches the glow gradient, bottom is solid */}
+      <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{
+        height: "env(safe-area-inset-top, 0px)",
+        background: "linear-gradient(to bottom, rgba(30,58,120,0.85) 0%, rgba(11,22,40,0.0) 100%)",
+        backdropFilter: "none",
+      }} />
       <div className="fixed left-0 right-0 bottom-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-bottom, 0px)", background: BG }} />
 
       {/* ── Apple-style: black overlay fades in on top while content zooms in ── */}
