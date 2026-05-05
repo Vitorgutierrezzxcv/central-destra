@@ -43,6 +43,8 @@ import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
 import PortalClienteLogin from './pages/PortalClienteLogin';
 import PortalClienteWelcome from './pages/PortalClienteWelcome';
+import StaffPortalWelcome from './pages/StaffPortalWelcome';
+import StaffPortalLogin from './pages/StaffPortalLogin';
 import { FullPageLoader } from '@/components/ui/LoadingOverlay';
 
 
@@ -192,10 +194,15 @@ function AppRouter() {
   const isPortalWelcomeRoute = pathLower === '/portalcliente' || pathLower === '/portalclientewelcome';
   const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin';
 
+  const isStaffWelcomeRoute = pathLower === '/staffportal' || pathLower === '/staffportalwelcome';
+  const isStaffLoginRoute = pathLower === '/staffportallogin';
+
   // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
   if (isPublicRoute) return <Autenticar />;
   if (isPortalWelcomeRoute) return <PortalClienteWelcome />;
   if (isPortalLoginRoute) return <PortalClienteLogin />;
+  if (isStaffWelcomeRoute) return <StaffPortalWelcome />;
+  if (isStaffLoginRoute) return <StaffPortalLogin />;
   if (isClientPortalRoute) return <ClientPortalRoutes />;
 
   // Rotas internas — precisam do AuthProvider

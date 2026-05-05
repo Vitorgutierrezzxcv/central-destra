@@ -43,7 +43,15 @@
     </script>
 
     <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
+    <script>
+      // Escolhe manifest baseado na URL
+      const path = window.location.pathname.toLowerCase();
+      const manifestHref = path.startsWith('/staffportal') ? '/manifest-staff.json' : '/manifest-cliente.json';
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestHref;
+      document.head.appendChild(link);
+    </script>
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
