@@ -8,6 +8,9 @@ import {
   animate,
 } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import { useThemeColor } from "@/hooks/useThemeColor";
+
+const BG = "#0B1628";
 
 const SLIDES = [
   {
@@ -30,31 +33,32 @@ const SLIDES = [
   },
 ];
 
-const TRACK_W = 260;
-const THUMB_H = 48;
-const THUMB_W = 48;
-const MARGIN = 4;
-const MAX_DRAG = TRACK_W - THUMB_W - MARGIN * 2;
+const TRACK_W = 240;
+const THUMB = 48;
+const M = 4;
+const MAX_DRAG = TRACK_W - THUMB - M * 2;
 
 export default function PortalClienteWelcome() {
+  useThemeColor(BG);
+
   const navigate = useNavigate();
   const [slide, setSlide] = useState(0);
   const [exiting, setExiting] = useState(false);
 
   const dragX = useMotionValue(0);
-  const fillWidth = useTransform(dragX, [0, MAX_DRAG], [THUMB_W + MARGIN * 2, TRACK_W]);
+  const fillWidth = useTransform(dragX, [0, MAX_DRAG], [THUMB + M * 2, TRACK_W]);
   const labelOpacity = useTransform(dragX, [0, MAX_DRAG * 0.45], [1, 0]);
   const arrowOpacity = useTransform(dragX, [MAX_DRAG * 0.55, MAX_DRAG], [1, 0]);
 
   const triggerExit = () => {
     setExiting(true);
-    setTimeout(() => navigate("/PortalClienteLogin"), 480);
+    setTimeout(() => navigate("/PortalClienteLogin"), 460);
   };
 
   const handleDragEnd = (_, info) => {
     if (info.offset.x >= MAX_DRAG * 0.72 || info.velocity.x > 500) {
       animate(dragX, MAX_DRAG, { duration: 0.12 });
-      setTimeout(triggerExit, 120);
+      setTimeout(triggerExit, 100);
     } else {
       animate(dragX, 0, { type: "spring", stiffness: 420, damping: 36 });
     }
@@ -68,22 +72,25 @@ export default function PortalClienteWelcome() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.04, filter: "blur(10px)" }}
           transition={{ duration: 0.42, ease: [0.4, 0, 0.2, 1] }}
-          className="min-h-screen flex flex-col overflow-hidden relative select-none"
-          style={{ background: "#0B1628" }}
+          className="fixed inset-0 flex flex-col select-none overflow-hidden"
+          style={{ background: BG }}
         >
-          {/* Subtle top glow — same style as login left panel */}
-          <div className="absolute top-0 left-0 right-0 h-[50vh] pointer-events-none overflow-hidden">
+          {/* Top glow */}
+          <div className="absolute top-0 left-0 right-0 h-1/2 pointer-events-none">
             <div
               className="absolute inset-0"
               style={{
                 background:
-                  "radial-gradient(ellipse 80% 70% at 50% -5%, rgba(59,130,246,0.28) 0%, rgba(30,64,175,0.15) 45%, transparent 75%)",
+                  "radial-gradient(ellipse 85% 75% at 50% -5%, rgba(59,130,246,0.30) 0%, rgba(30,64,175,0.14) 50%, transparent 78%)",
               }}
             />
           </div>
 
-          {/* Logo — same as login */}
-          <div className="relative z-10 flex items-center gap-2.5 px-6 pt-14">
+          {/* Logo */}
+          <div
+            className="relative z-10 flex items-center gap-2.5 px-6 flex-shrink-0"
+            style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 48px)" }}
+          >
             <img
               src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg"
               alt="Destra"
@@ -95,22 +102,22 @@ export default function PortalClienteWelcome() {
           </div>
 
           {/* Spacer */}
-          <div className="flex-1" />
+          <div className="flex-1 min-h-0" />
 
           {/* Text content */}
-          <div className="relative z-10 px-6 pb-4">
+          <div className="relative z-10 px-6 flex-shrink-0">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide}
-                initial={{ opacity: 0, y: 18 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.36 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.34 }}
               >
-                <p className="text-blue-400/70 text-sm font-light mb-3 tracking-wide">
+                <p className="text-blue-400/70 text-sm font-light mb-2.5 tracking-wide">
                   {SLIDES[slide].tag}
                 </p>
-                <h1 className="text-white text-[2.5rem] font-extralight leading-tight tracking-tight">
+                <h1 className="text-white text-[2.2rem] font-extralight leading-tight tracking-tight">
                   {SLIDES[slide].title}{" "}
                   <span className="font-bold">{SLIDES[slide].highlight}</span>{" "}
                   <span className="font-extralight opacity-70">{SLIDES[slide].tail}</span>
@@ -119,9 +126,13 @@ export default function PortalClienteWelcome() {
             </AnimatePresence>
           </div>
 
-          {/* Feature bullets — same as login left panel */}
-          <div className="relative z-10 px-6 mt-6 mb-2 space-y-2">
-            {["Visibilidade completa do projeto", "Aprovação de entregas", "Comunicação direta com a equipe"].map((item, i) => (
+          {/* Feature bullets */}
+          <div className="relative z-10 px-6 mt-5 flex-shrink-0 space-y-2">
+            {[
+              "Visibilidade completa do projeto",
+              "Aprovação de entregas",
+              "Comunicação direta com a equipe",
+            ].map((item, i) => (
               <div key={i} className="flex items-center gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-400/40 flex-shrink-0" />
                 <p className="text-slate-400 text-sm font-light">{item}</p>
@@ -130,7 +141,7 @@ export default function PortalClienteWelcome() {
           </div>
 
           {/* Dots */}
-          <div className="relative z-10 flex items-center gap-1.5 px-6 mt-6 mb-6">
+          <div className="relative z-10 flex items-center gap-1.5 px-6 mt-5 flex-shrink-0">
             {SLIDES.map((_, i) => (
               <button
                 key={i}
@@ -143,8 +154,10 @@ export default function PortalClienteWelcome() {
           </div>
 
           {/* Bottom bar */}
-          <div className="relative z-10 flex items-center justify-between px-5 pb-10 pt-2 gap-4">
-
+          <div
+            className="relative z-10 flex items-center justify-between px-5 pt-4 flex-shrink-0 gap-4"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 28px)" }}
+          >
             {/* Prev / Next */}
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
@@ -152,25 +165,25 @@ export default function PortalClienteWelcome() {
                 className="w-11 h-11 rounded-2xl border border-white/10 flex items-center justify-center text-white/40 hover:text-white/70 hover:border-white/25 transition-all"
               >
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
               <button
                 onClick={() => { if (slide < SLIDES.length - 1) setSlide((s) => s + 1); }}
-                className="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white hover:bg-white/15 transition-all"
+                className="w-11 h-11 rounded-2xl bg-white/10 border border-white/[0.15] flex items-center justify-center text-white hover:bg-white/15 transition-all"
               >
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             </div>
 
             {/* Slide-to-enter track */}
             <div
-              className="relative flex items-center rounded-2xl overflow-hidden flex-shrink-0"
+              className="relative flex items-center rounded-2xl overflow-hidden flex-1"
               style={{
-                width: TRACK_W,
-                height: THUMB_H + MARGIN * 2,
+                height: THUMB + M * 2,
+                maxWidth: TRACK_W,
                 background: "rgba(255,255,255,0.05)",
                 border: "1px solid rgba(255,255,255,0.10)",
               }}
@@ -180,7 +193,7 @@ export default function PortalClienteWelcome() {
                 className="absolute left-0 top-0 bottom-0 rounded-2xl"
                 style={{
                   width: fillWidth,
-                  background: "rgba(59,130,246,0.18)",
+                  background: "rgba(59,130,246,0.20)",
                 }}
               />
 
@@ -202,10 +215,10 @@ export default function PortalClienteWelcome() {
                 style={{
                   x: dragX,
                   position: "absolute",
-                  left: MARGIN,
-                  top: MARGIN,
-                  width: THUMB_W,
-                  height: THUMB_H,
+                  left: M,
+                  top: M,
+                  width: THUMB,
+                  height: THUMB,
                 }}
                 className="rounded-xl bg-white shadow-lg cursor-grab active:cursor-grabbing flex items-center justify-center text-slate-900 z-10"
                 whileTap={{ scale: 0.92 }}
@@ -216,17 +229,12 @@ export default function PortalClienteWelcome() {
               </motion.div>
             </div>
           </div>
-
-          {/* Footer */}
-          <p className="relative z-10 text-center text-slate-600 text-xs font-light tracking-wide pb-6">
-            © {new Date().getFullYear()} Destra · Acesso seguro
-          </p>
         </motion.div>
       ) : (
         <motion.div
           key="exit-bg"
-          className="min-h-screen"
-          style={{ background: "#0B1628" }}
+          className="fixed inset-0"
+          style={{ background: BG }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.08 }}
