@@ -11,6 +11,7 @@ import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
 import { motion, AnimatePresence } from "framer-motion";
 import { FullPageLoader } from "@/components/ui/LoadingOverlay";
+import PWAInstallPrompt from "./PWAInstallPrompt";
 
 // Bottom tab bar: 4 items mais importantes
 const bottomTabs = [
@@ -82,6 +83,7 @@ export default function ClientPortalLayout() {
 
   return (
     <div className="min-h-screen bg-white" style={{ backgroundColor: '#ffffff' }}>
+      <PWAInstallPrompt />
       {/* ── Main Content — pb-24 on mobile for bottom nav, pb-8 on desktop ── */}
       <main className="min-h-screen pb-10">
         <Outlet />
