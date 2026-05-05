@@ -74,19 +74,11 @@ export default function PortalClienteLogin() {
       className="fixed inset-0 overflow-hidden flex flex-col"
       style={{ background: BG }}
     >
-      {/* Safe area fills — top matches the glow, bottom solid */}
-      <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{
-        height: "env(safe-area-inset-top, 0px)",
-        background: "linear-gradient(to bottom, rgba(30,58,120,0.85) 0%, rgba(11,22,40,0.0) 100%)",
-      }} />
-      <div className="fixed left-0 right-0 bottom-0 z-50 pointer-events-none" style={{
-        height: "env(safe-area-inset-bottom, 0px)",
-        background: BG,
-      }} />
-
-      {/* Glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: "radial-gradient(ellipse 85% 50% at 50% -5%, rgba(59,130,246,0.22) 0%, transparent 65%)"
+      {/* Glow — estende para cima cobrindo a safe area */}
+      <div className="absolute pointer-events-none" style={{
+        top: "calc(-1 * env(safe-area-inset-top, 0px))",
+        left: 0, right: 0, bottom: 0,
+        background: "radial-gradient(ellipse 85% 50% at 50% 0%, rgba(59,130,246,0.26) 0%, transparent 65%)"
       }} />
 
       <motion.div
