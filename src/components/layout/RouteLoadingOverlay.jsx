@@ -3,16 +3,6 @@ import { useLocation } from "react-router-dom";
 
 const LOGO = "https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/89686ac9e_destra_logo_color_131A201.svg";
 
-const CSS = `
-@keyframes destraFlip {
-  0%   { transform: perspective(600px) rotateY(0deg); }
-  50%  { transform: perspective(600px) rotateY(180deg); }
-  100% { transform: perspective(600px) rotateY(360deg); }
-}
-@keyframes loaderFadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes loaderFadeOut { from { opacity: 1; } to { opacity: 0; } }
-`;
-
 export default function RouteLoadingOverlay() {
   const location = useLocation();
   const [phase, setPhase] = useState("hidden"); // hidden | in | out
