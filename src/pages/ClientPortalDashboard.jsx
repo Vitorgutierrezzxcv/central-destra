@@ -79,25 +79,25 @@ export default function ClientPortalDashboard() {
   const { data: tasks = [] } = useQuery({
     queryKey: ["client_tasks", activeProject?.id],
     queryFn: () => callPortalData("get_tasks", { project_id: activeProject.id }).then(d => d?.tasks || []),
-    enabled: !!activeProject?.id
+    enabled: !!activeProject?.id && !userLoading
   });
 
   const { data: deliveries = [] } = useQuery({
     queryKey: ["client_deliveries", activeProject?.id],
     queryFn: () => callPortalData("get_deliveries", { project_id: activeProject.id }).then(d => d?.deliveries || []),
-    enabled: !!activeProject?.id
+    enabled: !!activeProject?.id && !userLoading
   });
 
   const { data: meetings = [] } = useQuery({
     queryKey: ["client_meetings", activeProject?.id],
     queryFn: () => callPortalData("get_meetings", { project_id: activeProject.id }).then(d => d?.meetings || []),
-    enabled: !!activeProject?.id
+    enabled: !!activeProject?.id && !userLoading
   });
 
   const { data: onboarding = [] } = useQuery({
     queryKey: ["client_onboarding", activeProject?.id],
     queryFn: () => callPortalData("get_onboarding", { project_id: activeProject.id }).then(d => d?.items || []),
-    enabled: !!activeProject?.id
+    enabled: !!activeProject?.id && !userLoading
   });
 
   const { data: files = [] } = useQuery({
@@ -105,7 +105,7 @@ export default function ClientPortalDashboard() {
     queryFn: () => callPortalData("get_files", { project_id: activeProject.id }).then(d =>
       [...(d?.files || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 3)
     ),
-    enabled: !!activeProject?.id,
+    enabled: !!activeProject?.id && !userLoading,
   });
 
   const { data: milestones = [] } = useQuery({
@@ -113,7 +113,7 @@ export default function ClientPortalDashboard() {
     queryFn: () => callPortalData("get_milestones", { project_id: activeProject.id }).then(d =>
       [...(d?.milestones || [])].sort((a, b) => new Date(b.updated_date) - new Date(a.updated_date)).slice(0, 4)
     ),
-    enabled: !!activeProject?.id,
+    enabled: !!activeProject?.id && !userLoading,
   });
 
   const { data: timelineEvents = [] } = useQuery({
@@ -121,7 +121,7 @@ export default function ClientPortalDashboard() {
     queryFn: () => callPortalData("get_timeline", { project_id: activeProject.id }).then(d =>
       [...(d?.events || [])].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 5)
     ),
-    enabled: !!activeProject?.id,
+    enabled: !!activeProject?.id && !userLoading,
   });
 
   const completedTasks      = tasks.filter(t => t.status === "completed").length;

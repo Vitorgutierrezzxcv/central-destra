@@ -9,6 +9,9 @@ import { getClientProfile, isLoggedIn, saveSession, getClientToken, clearSession
  */
 async function callPortalData(action, params = {}) {
   const token = getClientToken();
+  if (!token) {
+    throw new Error('No session token available');
+  }
   const res = await base44.functions.invoke("clientPortalData", { action, token, params });
   return res?.data ?? res;
 }
@@ -85,7 +88,7 @@ export function useClientPortal() {
   const { data: projectsData } = useQuery({
     queryKey: ["cp_projects", contactId, companyId],
     queryFn: () => callPortalData("get_projects"),
-    enabled: !!user && (!!contactId || !!companyId),
+    enabled: !!user && (!!contactId || !!companyId) && !!getClientToken(),
   });
 
   const projects = projectsData?.projects || [];
