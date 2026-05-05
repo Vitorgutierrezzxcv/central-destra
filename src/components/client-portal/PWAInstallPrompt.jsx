@@ -5,6 +5,8 @@ export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [installing, setInstalling] = useState(false);
+  const [message, setMessage] = useState("");
   const promptShownRef = useRef(false);
 
   useEffect(() => {
@@ -56,9 +58,12 @@ export default function PWAInstallPrompt() {
   }, [isInstalled]);
 
   const handleInstall = async () => {
+    setInstalling(true);
+    setMessage("");
+
     if (!deferredPrompt) {
-      console.log("Prompt não disponível - PWA pode não estar instalável neste navegador");
-      setShowPrompt(false);
+      setMessage("Para instalar: toque no menu do navegador (⋮) → 'Instalar app' ou 'Adicionar à tela inicial'");
+      setInstalling(false);
       return;
     }
 
@@ -67,14 +72,24 @@ export default function PWAInstallPrompt() {
       const { outcome } = await deferredPrompt.userChoice;
       
       if (outcome === "accepted") {
-        setIsInstalled(true);
+        setMessage("App instalado com sucesso!");
+        setTimeout(() => {
+          setIsInstalled(true);
+          setShowPrompt(false);
+        }, 1500);
+      } else {
+        setMessage("Instalação cancelada");
+        setTimeout(() => setMessage(""), 2000);
       }
       
-      setShowPrompt(false);
       setDeferredPrompt(null);
     } catch (error) {
       console.error("Erro ao instalar:", error);
+      setMessage("Erro ao instalar. Tente novamente.");
+      setTimeout(() => setMessage(""), 2000);
     }
+    
+    setInstalling(false);
   };
 
   const handleDismiss = () => {
@@ -123,22 +138,35 @@ export default function PWAInstallPrompt() {
               ))}
             </div>
 
+            {/* Mensagem de feedback */}
+            {message && (
+              <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs text-blue-800">{message}</p>
+              </div>
+            )}
+
             {/* Botões */}
             <div className="flex gap-3 w-full">
               <button
                 onClick={handleDismiss}
-                className="flex-1 px-4 py-3 border-2 border-[#EAEAEA] rounded-xl text-[#131A20] font-semibold hover:bg-[#F8F9FB] active:bg-[#EAEAEA] transition-colors duration-200 cursor-pointer"
+                disabled={installing}
+                className="flex-1 px-4 py-3 border-2 border-[#EAEAEA] rounded-xl text-[#131A20] font-semibold hover:bg-[#F8F9FB] active:bg-[#EAEAEA] transition-colors duration-200 cursor-pointer disabled:opacity-50"
                 type="button"
               >
                 Depois
               </button>
               <button
                 onClick={handleInstall}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#001A3D] to-[#456C8D] text-white rounded-xl font-semibold hover:shadow-lg active:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                disabled={installing}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#001A3D] to-[#456C8D] text-white rounded-xl font-semibold hover:shadow-lg active:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                 type="button"
               >
-                <Download className="w-4 h-4" />
-                Instalar
+                {installing ? (
+                  <span className="inline-block animate-spin">⟳</span>
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
+                {installing ? "Processando..." : "Instalar"}
               </button>
             </div>
           </div>
