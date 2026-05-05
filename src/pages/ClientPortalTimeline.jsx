@@ -88,7 +88,7 @@ export default function ClientPortalTimeline() {
         </div>
       </div>
 
-      <div className="max-w-full w-full px-5 md:px-4 space-y-10 pb-20">
+      <div className="w-full px-5 md:px-4 space-y-10 pb-20 overflow-x-hidden">
         {!activeProject ? (
           <div className="flex flex-col items-center py-20">
             <Target className="w-10 h-10 text-slate-200 mb-4" />
@@ -98,7 +98,7 @@ export default function ClientPortalTimeline() {
           <>
             {/* Progress bar */}
             <div className="w-full bg-slate-700 rounded-full h-2">
-              <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${projectProgress}%`, background: "linear-gradient(90deg, #6FA6FF 0%, #00D4FF 100%)" }} />
+              <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${projectProgress}%`, backgroundColor: "#64748b" }} />
             </div>
 
             {/* Summary */}
@@ -109,18 +109,18 @@ export default function ClientPortalTimeline() {
              </div>
 
             {/* Visual Progress Phases */}
-             <div className="w-full px-1 md:px-0">
-               <div className="flex flex-row items-center justify-between w-full relative mb-6">
-                 {/* Background line - white */}
-                 <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white -translate-y-1/2 z-0 rounded-full" />
+             <div className="w-full overflow-x-hidden">
+               <div className="flex flex-row items-center justify-between w-full relative mb-6 px-2">
+                 {/* Background line - slate */}
+                 <div className="absolute top-1/2 left-0 right-0 h-px bg-slate-600 -translate-y-1/2 z-0 rounded-full" />
 
-                 {/* Segmented colored lines */}
+                 {/* Segmented lines */}
                  {[
-                   { label: "Kickoff", desc: "Alinhamento inicial", color: "#6FA6FF" },
-                   { label: "Planejamento", desc: "Estratégia e roadmap", color: "#00D4FF" },
-                   { label: "Desenvolvimento", desc: "Execução do projeto", color: "#00E5CC" },
-                   { label: "Testes", desc: "QA e validação", color: "#0FC8B8" },
-                   { label: "Entrega", desc: "Finalização", color: "#06B6A4" }
+                   { label: "Kickoff", desc: "Alinhamento inicial", color: "#64748b" },
+                   { label: "Planejamento", desc: "Estratégia e roadmap", color: "#64748b" },
+                   { label: "Desenvolvimento", desc: "Execução do projeto", color: "#64748b" },
+                   { label: "Testes", desc: "QA e validação", color: "#64748b" },
+                   { label: "Entrega", desc: "Finalização", color: "#64748b" }
                  ].map((phase, idx) => {
                    const phaseProgress = (projectProgress / 100) * 5;
                    const isCompleted = phaseProgress > idx + 1;
@@ -129,7 +129,6 @@ export default function ClientPortalTimeline() {
                    const totalPositions = 5;
                    const segmentWidth = 100 / (totalPositions - 1);
                    const currentPos = (idx / (totalPositions - 1)) * 100;
-                   const nextPos = ((idx + 1) / (totalPositions - 1)) * 100;
 
                    const fillWidth = isCompleted ? 100 : isActive ? ((phaseProgress - idx) * 100) : 0;
 
@@ -138,7 +137,7 @@ export default function ClientPortalTimeline() {
                        position: 'absolute',
                        left: `${currentPos}%`,
                        width: `${segmentWidth}%`,
-                       height: '2px',
+                       height: '1px',
                        top: '50%',
                        transform: 'translateY(-50%)',
                        zIndex: 1
@@ -146,7 +145,7 @@ export default function ClientPortalTimeline() {
                        <div style={{
                          width: `${fillWidth}%`,
                          height: '100%',
-                         backgroundColor: phase.color,
+                         backgroundColor: "#475569",
                          transition: 'width 0.7s ease'
                        }} />
                      </div>
@@ -154,29 +153,29 @@ export default function ClientPortalTimeline() {
                  })}
 
                  {[
-                   { label: "Kickoff", desc: "Alinhamento inicial", color: "#6FA6FF" },
-                   { label: "Planejamento", desc: "Estratégia e roadmap", color: "#00D4FF" },
-                   { label: "Desenvolvimento", desc: "Execução do projeto", color: "#00E5CC" },
-                   { label: "Testes", desc: "QA e validação", color: "#0FC8B8" },
-                   { label: "Entrega", desc: "Finalização", color: "#06B6A4" }
+                   { label: "Kickoff", desc: "Alinhamento inicial" },
+                   { label: "Planejamento", desc: "Estratégia e roadmap" },
+                   { label: "Desenvolvimento", desc: "Execução do projeto" },
+                   { label: "Testes", desc: "QA e validação" },
+                   { label: "Entrega", desc: "Finalização" }
                  ].map((phase, idx) => {
                    const phaseProgress = (projectProgress / 100) * 5;
                    const isCompleted = phaseProgress > idx;
                    const isActive = Math.floor(phaseProgress) === idx;
 
                    return (
-                     <div key={idx} className="flex flex-col items-center relative z-10">
-                       <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xs md:text-xs font-semibold border-2 transition-all flex-shrink-0"
+                     <div key={idx} className="flex flex-col items-center relative z-10 flex-shrink-0">
+                       <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs font-medium border border-slate-500 transition-all"
                        style={{
-                         backgroundColor: isActive || isCompleted ? phase.color : "white",
-                         borderColor: isActive || isCompleted ? phase.color : "white",
-                         color: isActive || isCompleted ? "white" : "#B0B0B0"
+                         backgroundColor: isActive || isCompleted ? "#64748b" : "#1e293b",
+                         borderColor: isActive || isCompleted ? "#64748b" : "#475569",
+                         color: isActive || isCompleted ? "white" : "#94a3b8"
                        }}>
                          {isCompleted ? "✓" : idx + 1}
                        </div>
                        <div className="mt-2 text-center">
-                         <p className="text-[10px] md:text-xs font-semibold text-white">{phase.label}</p>
-                         <p className="text-[8px] md:text-[10px] font-light mt-0.5 hidden md:block text-blue-200">{phase.desc}</p>
+                         <p className="text-[10px] md:text-xs font-medium text-slate-300">{phase.label}</p>
+                         <p className="text-[8px] font-light mt-0.5 hidden md:block text-slate-400">{phase.desc}</p>
                        </div>
                      </div>
                      );
@@ -191,46 +190,41 @@ export default function ClientPortalTimeline() {
                      { 
                      label: "Kickoff", 
                      desc: "Alinhamento inicial",
-                     explanation: "Reunião de abertura do projeto onde alinhamos objetivos, escopo, equipe responsável e cronograma geral com todas as partes interessadas.",
-                     color: "#6FA6FF"
+                     explanation: "Reunião de abertura do projeto onde alinhamos objetivos, escopo, equipe responsável e cronograma geral com todas as partes interessadas."
                      },
                      { 
                      label: "Planejamento", 
                      desc: "Estratégia e roadmap",
-                     explanation: "Detalhamento completo da estratégia, criação do roadmap visual, definição de milestones, tarefas e alocação de recursos.",
-                     color: "#00D4FF"
+                     explanation: "Detalhamento completo da estratégia, criação do roadmap visual, definição de milestones, tarefas e alocação de recursos."
                      },
                      { 
                      label: "Desenvolvimento", 
                      desc: "Execução do projeto",
-                     explanation: "Fase principal onde ocorrem as atividades conforme o planejado. Acompanhamento do progresso com atualizações semanais.",
-                     color: "#00E5CC"
+                     explanation: "Fase principal onde ocorrem as atividades conforme o planejado. Acompanhamento do progresso com atualizações semanais."
                      },
                      { 
                      label: "Testes", 
                      desc: "QA e validação",
-                     explanation: "Testes de qualidade, validação de funcionalidades, correção de eventuais problemas encontrados antes da entrega final.",
-                     color: "#0FC8B8"
+                     explanation: "Testes de qualidade, validação de funcionalidades, correção de eventuais problemas encontrados antes da entrega final."
                      },
                      { 
                      label: "Entrega", 
                      desc: "Finalização",
-                     explanation: "Entrega dos entregáveis finais, documentação completa, treinamento (se aplicável) e suporte inicial pós-launch.",
-                     color: "#06B6A4"
+                     explanation: "Entrega dos entregáveis finais, documentação completa, treinamento (se aplicável) e suporte inicial pós-launch."
                      }
                      ].map((phase, idx) => (
                      <div 
                      key={idx}
-                     className="p-4 rounded-lg border border-slate-700 bg-slate-900/30 hover:bg-slate-900/50 transition-colors"
+                     className="p-4 rounded-lg border border-slate-700 bg-slate-900/20 hover:bg-slate-900/40 transition-colors"
                      >
                      <div className="flex items-center gap-2 mb-2">
                      <div 
-                       className="w-3 h-3 rounded-full flex-shrink-0"
-                       style={{ backgroundColor: phase.color }}
+                       className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                       style={{ backgroundColor: "#64748b" }}
                      />
-                     <h3 className="text-sm font-semibold text-white">{phase.label}</h3>
+                     <h3 className="text-sm font-medium text-slate-200">{phase.label}</h3>
                      </div>
-                     <p className="text-xs text-slate-300 font-light">{phase.explanation}</p>
+                     <p className="text-xs text-slate-400 font-light">{phase.explanation}</p>
                      </div>
                      ))}
                      </div>
