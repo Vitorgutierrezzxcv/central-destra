@@ -8,7 +8,7 @@ const BG = "#0B1628";
 const IOS = [0.22, 1, 0.36, 1];
 
 const SLIDES = [
-  { tag: "Bem-vindo ao portal", headline: "Acompanhe seus projetos", sub: "em tempo real." },
+  { tag: "Bem-vindo ao portal", headline: "Acompanhe\nseus projetos", sub: "em tempo real." },
   { tag: "Entregas e aprovações", headline: "Revise e aprove\ncada entrega", sub: "da sua equipe." },
   { tag: "Comunicação direta", headline: "Fale com a equipe\nsem intermediários", sub: "pelo portal." },
 ];
@@ -51,6 +51,9 @@ export default function PortalClienteWelcome() {
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: BG }}>
+      {/* Safe area fills — same bg so no color break at notch/home indicator */}
+      <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-top, 0px)", background: BG }} />
+      <div className="fixed left-0 right-0 bottom-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-bottom, 0px)", background: BG }} />
 
       {/* ── WHITE FLASH that covers screen then reveals login ── */}
       <AnimatePresence>
@@ -116,9 +119,14 @@ export default function PortalClienteWelcome() {
               <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
                 {SLIDES[slide].tag}
               </p>
-              <h1 className="text-5xl font-extralight text-white tracking-tight leading-[1.08] mb-3">
+              <h1 className="font-extralight text-white tracking-tight leading-[1.05] mb-3">
                 {SLIDES[slide].headline.split("\n").map((line, i, arr) => (
-                  <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+                  <span
+                    key={i}
+                    style={{ fontSize: slide === 0 && i === 1 ? "3.6rem" : "2.8rem", display: "block" }}
+                  >
+                    {line}
+                  </span>
                 ))}
               </h1>
               <p className="text-xl font-light text-white/25 leading-relaxed">
@@ -192,8 +200,8 @@ export default function PortalClienteWelcome() {
               style={{ width: fillW, background: "rgba(59,130,246,0.22)" }}
             />
             <motion.span
-              style={{ opacity: labelOp, paddingLeft: TH + M * 2 + 8 }}
-              className="absolute inset-0 flex items-center text-white text-[13px] font-light pointer-events-none tracking-wide z-0"
+              style={{ opacity: labelOp, paddingLeft: TH + M * 2 + 4 }}
+              className="absolute inset-0 flex items-center justify-center text-white text-[13px] font-light pointer-events-none tracking-wide z-0"
             >
               Deslize para entrar →
             </motion.span>
