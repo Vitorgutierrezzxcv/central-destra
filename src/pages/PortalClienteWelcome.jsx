@@ -116,7 +116,7 @@ export default function PortalClienteWelcome() {
               <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
                 {SLIDES[slide].tag}
               </p>
-              <h1 className="text-6xl font-extralight text-white tracking-tight leading-[1.08] mb-3">
+              <h1 className="text-5xl font-extralight text-white tracking-tight leading-[1.08] mb-3">
                 {SLIDES[slide].headline.split("\n").map((line, i, arr) => (
                   <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
                 ))}
@@ -192,8 +192,8 @@ export default function PortalClienteWelcome() {
               style={{ width: fillW, background: "rgba(59,130,246,0.22)" }}
             />
             <motion.span
-              style={{ opacity: labelOp }}
-              className="absolute inset-0 flex items-center justify-center text-white/60 text-[13px] font-light pointer-events-none tracking-wide"
+              style={{ opacity: labelOp, paddingLeft: TH + M * 2 + 8 }}
+              className="absolute inset-0 flex items-center text-white text-[13px] font-light pointer-events-none tracking-wide z-0"
             >
               Deslize para entrar →
             </motion.span>
