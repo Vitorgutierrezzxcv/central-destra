@@ -1,38 +1,42 @@
-const CACHE_NAME = "destra-client-v1";
+const CACHE_NAME = 'destra-client-portal-v1';
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/manifest.json",
+  '/',
+  '/index.html',
+  '/portalcliente',
+  '/portalclientewelcome'
 ];
 
-// Install event - cache initial resources
-self.addEventListener("install", (event) => {
+// Install event - cache essential files
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache).catch(() => {
-        // Silently ignore errors during install
+        // If some files fail to cache, continue anyway
+        return Promise.resolve();
       });
     })
   );
   self.skipWaiting();
 });
 
-// Activate event - clean old caches and take control
-self.addEventListener("activate", (event) => {
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames
-          .filter((cacheName) => cacheName !== CACHE_NAME)
-          .map((cacheName) => caches.delete(cacheName))
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
       );
     })
   );
   self.clients.claim();
 });
 
-// Fetch event - Network first, then cache
-self.addEventListener("fetch", (event) => {
+// Fetch event - network-first strategy for dynamic content, cache-first for static
+self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
@@ -41,28 +45,19 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Skip non-GET requests
-  if (request.method !== "GET") {
-    return;
-  }
-
-  // API calls - network first
-  if (url.pathname.includes("/api/") || url.pathname.includes("/functions/")) {
+  // API requests - network first, fallback to cache
+  if (url.pathname.includes('/api/') || url.pathname.includes('/functions/')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response.ok) {
-            const clonedResponse = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, clonedResponse);
-            });
+            const cache = caches.open(CACHE_NAME);
+            cache.then((c) => c.put(request, response.clone()));
           }
           return response;
         })
         .catch(() => {
-          return caches.match(request).then((cached) => {
-            return cached || new Response("Offline - cached data not available", { status: 503 });
-          });
+          return caches.match(request);
         })
     );
     return;
@@ -70,78 +65,54 @@ self.addEventListener("fetch", (event) => {
 
   // Static assets - cache first, fallback to network
   if (
-    url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|gif|webp|woff|woff2)$/i) ||
-    url.pathname.includes("/assets/")
+    request.method === 'GET' &&
+    (url.pathname.match(/\.(js|css|png|jpg|jpeg|svg|gif|webp)$/i) ||
+      url.pathname.includes('/static/'))
   ) {
     event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) {
-          // Background update - fetch new version without blocking
-          fetch(request)
-            .then((response) => {
-              if (response.ok) {
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(request, response.clone());
-                });
-              }
-            })
-            .catch(() => {});
-          return cached;
+      caches.match(request).then((response) => {
+        if (response) {
+          return response;
         }
-        return fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(request, response.clone());
-              });
-            }
+        return fetch(request).then((response) => {
+          if (!response || response.status !== 200 || response.type === 'error') {
             return response;
-          })
-          .catch(() => {
-            return new Response("Offline", { status: 503 });
+          }
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
           });
+          return response;
+        });
       })
     );
     return;
   }
 
-  // HTML pages - network first
-  if (
-    url.pathname === "/" ||
-    url.pathname.endsWith(".html") ||
-    request.headers.get("accept")?.includes("text/html")
-  ) {
+  // HTML documents - network first
+  if (request.method === 'GET' && (request.mode === 'navigate' || url.pathname.endsWith('.html'))) {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response.ok) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, response.clone());
-            });
+            const cache = caches.open(CACHE_NAME);
+            cache.then((c) => c.put(request, response.clone()));
           }
           return response;
         })
         .catch(() => {
-          return caches.match(request).then((cached) => {
-            return cached || new Response("Offline", { status: 503 });
+          return caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Return a fallback page if available
+            return caches.match('/');
           });
         })
     );
     return;
   }
 
-  // Default - network first
-  event.respondWith(
-    fetch(request)
-      .catch(() => {
-        return caches.match(request);
-      })
-  );
-});
-
-// Listen for messages from clients to skip waiting during update
-self.addEventListener("message", (event) => {
-  if (event.data?.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+  // Everything else - just fetch
+  event.respondWith(fetch(request));
 });
