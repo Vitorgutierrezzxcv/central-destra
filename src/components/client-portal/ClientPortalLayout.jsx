@@ -10,7 +10,6 @@ import {
 import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
 import { motion, AnimatePresence } from "framer-motion";
-import { FullPageLoader } from "@/components/ui/LoadingOverlay";
 import PWAInstallPrompt from "./PWAInstallPrompt";
 
 // Bottom tab bar: 4 items mais importantes
@@ -68,7 +67,7 @@ export default function ClientPortalLayout() {
   }
 
   if (userLoading || !isLoggedIn()) {
-    return <FullPageLoader theme="light" />;
+    return null;
   }
 
   const handleLogout = () => {

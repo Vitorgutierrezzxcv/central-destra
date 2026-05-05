@@ -9,48 +9,39 @@ export default function PWAInstallPrompt() {
 
   useEffect(() => {
     // Detecta se já está instalado
-    const checkInstalled = () => {
-      if (window.matchMedia("(display-mode: standalone)").matches) {
-        setIsInstalled(true);
-        return true;
-      }
-      return false;
-    };
-
-    if (checkInstalled()) {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setIsInstalled(true);
       return;
     }
 
-    // Aguarda um pouco antes de tentar mostrar o prompt
-    const timer = setTimeout(() => {
-      const handler = (e) => {
-        console.log("beforeinstallprompt disparado");
+    let handler, appInstalledHandler;
+
+    const setupListeners = () => {
+      handler = (e) => {
+        console.log("beforeinstallprompt event received");
         e.preventDefault();
         setDeferredPrompt(e);
-        if (!promptShownRef.current) {
-          setShowPrompt(true);
-          promptShownRef.current = true;
-        }
+        setShowPrompt(true);
+        promptShownRef.current = true;
       };
 
-      window.addEventListener("beforeinstallprompt", handler);
-
-      const appInstalledHandler = () => {
-        console.log("App instalado com sucesso");
+      appInstalledHandler = () => {
+        console.log("App instalado");
         setIsInstalled(true);
         setShowPrompt(false);
         setDeferredPrompt(null);
       };
 
+      window.addEventListener("beforeinstallprompt", handler);
       window.addEventListener("appinstalled", appInstalledHandler);
+    };
 
-      return () => {
-        window.removeEventListener("beforeinstallprompt", handler);
-        window.removeEventListener("appinstalled", appInstalledHandler);
-      };
-    }, 500);
+    setupListeners();
 
-    return () => clearTimeout(timer);
+    return () => {
+      if (handler) window.removeEventListener("beforeinstallprompt", handler);
+      if (appInstalledHandler) window.removeEventListener("appinstalled", appInstalledHandler);
+    };
   }, []);
 
   const handleInstall = async () => {
