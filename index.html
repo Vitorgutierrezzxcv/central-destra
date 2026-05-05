@@ -59,19 +59,23 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(reg => {
-            // Check for updates every 5 minutes
-            setInterval(() => {
+          navigator.serviceWorker.register('/sw.js?t=' + Date.now()).then(reg => {
+            // Check for updates every minute
+            const checkInterval = setInterval(() => {
               reg.update();
-            }, 5 * 60 * 1000);
+            }, 60 * 1000);
 
             // Listen for update notifications
             navigator.serviceWorker.addEventListener('message', (event) => {
               if (event.data.type === 'SW_UPDATE_AVAILABLE') {
+                clearInterval(checkInterval);
                 // Auto-reload to get the latest version
                 window.location.reload();
               }
             });
+
+            // Immediate check on load
+            reg.update();
           }).catch(() => {});
         });
       }
