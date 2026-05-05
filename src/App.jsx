@@ -44,6 +44,7 @@ import ClientPortalCourses from './pages/ClientPortalCourses';
 import PortalClienteLogin from './pages/PortalClienteLogin';
 import PortalClienteWelcome from './pages/PortalClienteWelcome';
 import { FullPageLoader } from '@/components/ui/LoadingOverlay';
+import RouteLoadingOverlay from '@/components/layout/RouteLoadingOverlay';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -174,6 +175,7 @@ function App() {
     <QueryClientProvider client={queryClientInstance}>
       <Router>
         <NavigationTracker />
+        <RouteLoadingOverlay theme="light" />
         <AppRouter />
       </Router>
       <Toaster />
