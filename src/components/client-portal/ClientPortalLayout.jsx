@@ -67,7 +67,11 @@ export default function ClientPortalLayout() {
   }
 
   if (userLoading || !isLoggedIn()) {
-    return null;
+    return (
+      <div className="min-h-screen bg-white">
+        <PWAInstallPrompt />
+      </div>
+    );
   }
 
   const handleLogout = () => {
