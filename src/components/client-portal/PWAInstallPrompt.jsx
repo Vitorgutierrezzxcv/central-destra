@@ -21,8 +21,10 @@ export default function PWAInstallPrompt() {
         console.log("beforeinstallprompt event received");
         e.preventDefault();
         setDeferredPrompt(e);
-        setShowPrompt(true);
-        promptShownRef.current = true;
+        if (!promptShownRef.current) {
+          setShowPrompt(true);
+          promptShownRef.current = true;
+        }
       };
 
       appInstalledHandler = () => {
@@ -38,11 +40,21 @@ export default function PWAInstallPrompt() {
 
     setupListeners();
 
+    // Se não receber beforeinstallprompt em 2 segundos, mostra mesmo assim
+    const fallbackTimer = setTimeout(() => {
+      if (!promptShownRef.current && !isInstalled) {
+        console.log("Mostrando popup sem beforeinstallprompt");
+        setShowPrompt(true);
+        promptShownRef.current = true;
+      }
+    }, 2000);
+
     return () => {
+      clearTimeout(fallbackTimer);
       if (handler) window.removeEventListener("beforeinstallprompt", handler);
       if (appInstalledHandler) window.removeEventListener("appinstalled", appInstalledHandler);
     };
-  }, []);
+  }, [isInstalled]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) {
@@ -73,7 +85,7 @@ export default function PWAInstallPrompt() {
   };
 
   // Não renderiza se instalado ou prompt não deve ser mostrado
-  if (isInstalled || !showPrompt || !deferredPrompt) return null;
+  if (isInstalled || !showPrompt) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
