@@ -13,6 +13,12 @@ export default function PWAInstallPrompt() {
       return;
     }
 
+    // Verifica se já viu o prompt
+    const dismissed = localStorage.getItem("pwa-prompt-dismissed");
+    if (dismissed) {
+      return;
+    }
+
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -20,6 +26,13 @@ export default function PWAInstallPrompt() {
     };
 
     window.addEventListener("beforeinstallprompt", handler);
+
+    // Se não houver beforeinstallprompt, mostra mesmo assim
+    const timer = setTimeout(() => {
+      if (!showPrompt && !isInstalled && !dismissed) {
+        setShowPrompt(true);
+      }
+    }, 2000);
 
     // Detecta instalação bem-sucedida
     window.addEventListener("appinstalled", () => {
@@ -30,21 +43,24 @@ export default function PWAInstallPrompt() {
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
+      clearTimeout(timer);
     };
-  }, []);
+  }, [showPrompt, isInstalled]);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      setIsInstalled(true);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstalled(true);
+      }
+      setShowPrompt(false);
+      setDeferredPrompt(null);
     }
-    setShowPrompt(false);
-    setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
+    localStorage.setItem("pwa-prompt-dismissed", "true");
     setShowPrompt(false);
   };
 
