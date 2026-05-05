@@ -1,5 +1,4 @@
-const CACHE_VERSION = 'v' + Math.random().toString(36).substr(2, 9);
-const CACHE_NAME = 'destra-' + CACHE_VERSION;
+const CACHE_NAME = 'destra-client-portal-v' + Date.now();
 const urlsToCache = [
   '/',
   '/index.html',
@@ -25,8 +24,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+          if (!cacheName.includes('destra-client-portal-v') || cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
         })

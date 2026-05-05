@@ -188,17 +188,17 @@ function AppRouter() {
   const pathLower = location.pathname.toLowerCase();
   const isPublicRoute = pathLower === '/autenticar';
   const isClientPortalRoute = pathLower.startsWith('/clientportal') && pathLower !== '/clientportaladmin';
-  const isPortalRoute = pathLower === '/portalcliente' || pathLower === '/portalclientewelcome' || pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin' || pathLower === '/portalcliente/';
+
+  const isPortalWelcomeRoute = pathLower === '/portalcliente' || pathLower === '/portalclientewelcome';
+  const isPortalLoginRoute = pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin';
 
   // Rotas completamente públicas — sem AuthProvider, sem verificação de auth
   if (isPublicRoute) return <Autenticar />;
-  if (isPortalRoute) {
-    if (pathLower === '/portalcliente' || pathLower === '/portalclientewelcome' || pathLower === '/portalcliente/') return <PortalClienteWelcome />;
-    if (pathLower === '/portalclienterlogin' || pathLower === '/portalclientelogin') return <PortalClienteLogin />;
-  }
+  if (isPortalWelcomeRoute) return <PortalClienteWelcome />;
+  if (isPortalLoginRoute) return <PortalClienteLogin />;
   if (isClientPortalRoute) return <ClientPortalRoutes />;
 
-  // Rotas internas — precisam do AuthProvider (inclui "/" e tudo que não é portal)
+  // Rotas internas — precisam do AuthProvider
   return (
     <AuthProvider>
       <AuthenticatedApp />

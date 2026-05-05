@@ -168,14 +168,7 @@ html, body {
 
 /* Sticky/fixed headers - pad for notch */
 .mobile-header {
-  padding-top: max(20px, calc(var(--safe-top) + 8px));
-}
-
-/* Main content padding for mobile - adds spacing from safe area */
-@media (max-width: 768px) {
-  main, .page-content, [role="main"] {
-    padding-top: max(16px, calc(var(--safe-top) + 4px));
-  }
+  padding-top: max(12px, var(--safe-top));
 }
 
 /* Bottom tab bar - pad for home indicator */

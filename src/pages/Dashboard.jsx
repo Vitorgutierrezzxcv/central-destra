@@ -16,6 +16,7 @@ import StatsCards from "../components/dashboard/StatsCards";
 import ProjectProgress from "../components/dashboard/ProjectProgress";
 import UpcomingTasks from "../components/dashboard/UpcomingTasks";
 import UserPerformanceRanking from "../components/dashboard/UserPerformanceRanking";
+import AccessGuard from "../components/layout/AccessGuard";
 import PomodoroTimer from "../components/dashboard/PomodoroTimer";
 import TaskProgressWidget from "../components/dashboard/TaskProgressWidget";
 import PersonalTasksBlock from "../components/dashboard/PersonalTasksBlock";
@@ -184,6 +185,9 @@ function DashboardContent() {
             {/* Team Ranking */}
             <UserPerformanceRanking />
 
+            {/* Google Calendar */}
+            <GoogleCalendarWidget />
+
             <NotesBlock userEmail={user?.email} />
           </div>
 
@@ -194,5 +198,9 @@ function DashboardContent() {
 }
 
 export default function Dashboard() {
-  return <DashboardContent />;
+  return (
+    <AccessGuard requiredModule="taskflow">
+      <DashboardContent />
+    </AccessGuard>);
+
 }

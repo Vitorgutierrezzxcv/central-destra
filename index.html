@@ -60,27 +60,16 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').then(reg => {
-            // Check for updates every 30 minutes (less aggressive)
+            // Check for updates every 5 minutes
             setInterval(() => {
               reg.update();
-            }, 30 * 60 * 1000);
+            }, 5 * 60 * 1000);
 
-            // Listen for update notifications but only reload when user is idle
+            // Listen for update notifications
             navigator.serviceWorker.addEventListener('message', (event) => {
               if (event.data.type === 'SW_UPDATE_AVAILABLE') {
-                // Show notification instead of auto-reload
-                console.log('Update available - will reload on next refresh');
-                // Only reload if user hasn't interacted for 5 minutes
-                let lastInteraction = Date.now();
-                window.addEventListener('click', () => { lastInteraction = Date.now(); }, true);
-                window.addEventListener('keydown', () => { lastInteraction = Date.now(); }, true);
-                
-                const checkIdle = setInterval(() => {
-                  if (Date.now() - lastInteraction > 5 * 60 * 1000) {
-                    clearInterval(checkIdle);
-                    window.location.reload();
-                  }
-                }, 60 * 1000);
+                // Auto-reload to get the latest version
+                window.location.reload();
               }
             });
           }).catch(() => {});

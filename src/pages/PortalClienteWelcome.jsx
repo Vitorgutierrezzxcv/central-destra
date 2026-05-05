@@ -38,10 +38,16 @@ export default function PortalClienteWelcome() {
   const fillW = useTransform(dragX, [0, MAX], [TH + M * 2, TW]);
   const labelOp = useTransform(dragX, [0, MAX * 0.4], [1, 0]);
   const arrowOp = useTransform(dragX, [MAX * 0.5, MAX], [1, 0]);
+  const thumbScale = useTransform(dragX, [0, MAX], [1, 1.08]);
+  const thumbShadow = useTransform(
+    dragX,
+    [0, MAX],
+    ["0 2px 8px rgba(0,0,0,0.2)", "0 0 32px rgba(99,179,237,0.7), 0 2px 8px rgba(0,0,0,0.2)"]
+  );
 
   const doExit = () => {
     setLeaving(true);
-    setTimeout(() => navigate("/PortalClienteLogin"), 200);
+    setTimeout(() => navigate("/PortalClienteLogin"), 300);
   };
 
   const handleDragEnd = (_, info) => {
@@ -55,8 +61,35 @@ export default function PortalClienteWelcome() {
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: BG }}>
-      <div className="fixed inset-0 flex flex-col overflow-hidden" style={{ opacity: leaving ? 0 : 1, transition: 'opacity 0.15s' }}>
-        {/* Glow */}
+
+      {/* ── Overlay escurece dramaticamente ── */}
+      <AnimatePresence>
+        {leaving && (
+          <motion.div
+            key="overlay"
+            className="fixed inset-0 z-[100]"
+            style={{ background: BG }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.65, ease: [0.4, 0, 0.15, 1] }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── PAGE CONTENT — zoom out + blur + fade ao sair ── */}
+      <motion.div
+        className="fixed inset-0 flex flex-col overflow-hidden"
+        initial={{ scale: 1.06, opacity: 0, filter: "blur(18px)" }}
+        animate={leaving
+          ? { scale: 0.94, opacity: 0, filter: "blur(20px)" }
+          : { scale: 1, opacity: 1, filter: "blur(0px)" }
+        }
+        transition={leaving
+          ? { duration: 0.25, ease: [0.4, 0, 0.1, 1] }
+          : { duration: 0.7, ease: [0.22, 1, 0.36, 1] }
+        }
+      >
+        {/* Glow — estende para cima cobrindo a safe area */}
         <div className="absolute pointer-events-none" style={{
           top: "calc(-1 * env(safe-area-inset-top, 0px))",
           left: 0, right: 0, bottom: 0,
@@ -64,61 +97,128 @@ export default function PortalClienteWelcome() {
         }} />
 
         {/* Logo */}
-        <div className="relative z-10 flex items-center gap-2.5 px-6 flex-shrink-0" style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 48px)" }}>
-          <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-7 h-7 brightness-0 invert opacity-60" />
-          <span className="text-white/35 text-[10px] tracking-[0.22em] uppercase font-medium">Portal do Cliente</span>
-        </div>
+        <motion.div
+          className="relative z-10 flex items-center gap-2.5 px-6 flex-shrink-0"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 48px)" }}
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: IOS, delay: 0.05 }}
+        >
+          <img
+            src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg"
+            alt="Destra"
+            className="w-7 h-7 brightness-0 invert opacity-60"
+          />
+          <span className="text-white/35 text-[10px] tracking-[0.22em] uppercase font-medium">
+            Portal do Cliente
+          </span>
+        </motion.div>
 
         <div className="flex-1 min-h-0" />
 
         {/* Text */}
         <div className="relative z-10 px-6 flex-shrink-0">
           <AnimatePresence mode="wait">
-            <motion.div key={slide} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25, ease: IOS }}>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">{SLIDES[slide].tag}</p>
+            <motion.div
+              key={slide}
+              initial={{ opacity: 0, y: 20, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -12, filter: "blur(6px)" }}
+              transition={{ duration: 0.35, ease: IOS }}
+            >
+              <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
+                {SLIDES[slide].tag}
+              </p>
               <h1 className="font-extralight text-white tracking-tight leading-[1.0] mb-3">
                 {SLIDES[slide].headline.split("\n").map((line, i) => (
-                  <span key={i} style={{ fontSize: slide === 0 ? (i === 0 ? "3.2rem" : "4.2rem") : "3.2rem", display: "block", lineHeight: 1.05 }}>{line}</span>
+                  <span
+                    key={i}
+                    style={{
+                      fontSize: slide === 0 ? (i === 0 ? "3.2rem" : "4.2rem") : "3.2rem",
+                      display: "block",
+                      lineHeight: 1.05,
+                    }}
+                  >
+                    {line}
+                  </span>
                 ))}
               </h1>
-              <p className="text-xl font-light text-white/25 leading-relaxed mt-3">{SLIDES[slide].sub}</p>
+              <p className="text-xl font-light text-white/25 leading-relaxed mt-3">
+                {SLIDES[slide].sub}
+              </p>
             </motion.div>
           </AnimatePresence>
         </div>
 
         {/* Dots */}
-        <div className="relative z-10 flex items-center gap-2 px-6 mt-7 flex-shrink-0">
+        <motion.div
+          className="relative z-10 flex items-center gap-2 px-6 mt-7 flex-shrink-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+        >
           {SLIDES.map((_, i) => (
-            <button key={i} onClick={() => setSlide(i)} style={{
-              width: i === slide ? 22 : 6,
-              height: 3,
-              backgroundColor: i === slide ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.18)",
-              transition: 'all 0.2s',
-              borderRadius: '999px',
-              border: 'none',
-              cursor: 'pointer'
-            }} />
+            <motion.button
+              key={i}
+              onClick={() => setSlide(i)}
+              animate={{
+                width: i === slide ? 22 : 6,
+                height: 3,
+                backgroundColor: i === slide ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.18)",
+              }}
+              transition={{ duration: 0.28, ease: IOS }}
+              className="rounded-full flex-shrink-0 origin-left"
+            />
           ))}
-        </div>
+        </motion.div>
 
         {/* Bottom */}
-        <div className="relative z-10 flex items-center gap-3 px-5 pt-6 flex-shrink-0" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 36px)" }}>
-          <button onClick={() => setSlide((s) => Math.max(0, s - 1))} className="w-[52px] h-[62px] rounded-2xl border border-white/[0.09] flex items-center justify-center text-white/25 active:opacity-60 flex-shrink-0 transition-opacity">
+        <motion.div
+          className="relative z-10 flex items-center gap-3 px-5 pt-6 flex-shrink-0"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 36px)" }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: IOS, delay: 0.15 }}
+        >
+          {/* Prev */}
+          <button
+            onClick={() => setSlide((s) => Math.max(0, s - 1))}
+            className="w-[52px] h-[62px] rounded-2xl border border-white/[0.09] flex items-center justify-center text-white/25 active:opacity-60 flex-shrink-0 transition-opacity"
+          >
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
               <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
 
-          <button onClick={() => { if (slide < SLIDES.length - 1) setSlide((s) => s + 1); }} className="w-[52px] h-[62px] rounded-2xl bg-white/[0.07] border border-white/[0.09] flex items-center justify-center text-white/50 active:opacity-60 flex-shrink-0 transition-opacity">
+          {/* Next */}
+          <button
+            onClick={() => { if (slide < SLIDES.length - 1) setSlide((s) => s + 1); }}
+            className="w-[52px] h-[62px] rounded-2xl bg-white/[0.07] border border-white/[0.09] flex items-center justify-center text-white/50 active:opacity-60 flex-shrink-0 transition-opacity"
+          >
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
               <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
 
           {/* Slide to enter */}
-          <div style={{ height: TH + M * 2, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", position: "relative", borderRadius: '1rem', overflow: 'hidden', flex: 1 }}>
-            <motion.div className="absolute left-0 top-0 bottom-0 rounded-2xl" style={{ width: fillW, background: "rgba(59,130,246,0.22)" }} />
-            <motion.span style={{ opacity: labelOp, paddingLeft: TH + M * 2 + 4 }} className="absolute inset-0 flex items-center justify-center text-white text-[13px] font-light pointer-events-none tracking-wide z-0">Deslize para entrar →</motion.span>
+          <div
+            className="relative flex items-center rounded-2xl overflow-hidden flex-1"
+            style={{
+              height: TH + M * 2,
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <motion.div
+              className="absolute left-0 top-0 bottom-0 rounded-2xl"
+              style={{ width: fillW, background: "rgba(59,130,246,0.22)" }}
+            />
+            <motion.span
+              style={{ opacity: labelOp, paddingLeft: TH + M * 2 + 4 }}
+              className="absolute inset-0 flex items-center justify-center text-white text-[13px] font-light pointer-events-none tracking-wide z-0"
+            >
+              Deslize para entrar →
+            </motion.span>
             <motion.div
               ref={thumbRef}
               drag="x"
@@ -128,6 +228,8 @@ export default function PortalClienteWelcome() {
               onDragEnd={handleDragEnd}
               style={{
                 x: dragX,
+                scale: thumbScale,
+                boxShadow: thumbShadow,
                 position: "absolute",
                 left: M,
                 top: M,
@@ -135,12 +237,15 @@ export default function PortalClienteWelcome() {
                 height: TH,
               }}
               className="rounded-xl bg-white cursor-grab active:cursor-grabbing flex items-center justify-center z-10"
+              whileTap={{ scale: 0.87 }}
             >
-              <ArrowRight className="w-[18px] h-[18px] text-slate-800" strokeWidth={2.5} />
+              <motion.div style={{ opacity: arrowOp }}>
+                <ArrowRight className="w-[18px] h-[18px] text-slate-800" strokeWidth={2.5} />
+              </motion.div>
             </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
