@@ -124,9 +124,9 @@ export default function PortalClienteWelcome() {
                   <span
                     key={i}
                     style={{
-                      fontSize: slide === 0 ? (i === 0 ? "3.8rem" : "5.5rem") : "4rem",
+                      fontSize: slide === 0 ? (i === 0 ? "3.2rem" : "4.2rem") : "3.2rem",
                       display: "block",
-                      lineHeight: 1.0,
+                      lineHeight: 1.05,
                     }}
                   >
                     {line}
