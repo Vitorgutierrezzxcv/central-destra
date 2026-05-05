@@ -1,57 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { X, Download, Smartphone } from "lucide-react";
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
-  const [promptShownThisSession, setPromptShownThisSession] = useState(false);
+  const promptShownRef = useRef(false);
 
   useEffect(() => {
     // Detecta se já está instalado
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstalled(true);
+    const checkInstalled = () => {
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        setIsInstalled(true);
+        return true;
+      }
+      return false;
+    };
+
+    if (checkInstalled()) {
       return;
     }
 
-    // Verifica se já mostrou o prompt nesta sessão (aba aberta)
-    if (promptShownThisSession) {
-      return;
-    }
-
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowPrompt(true);
-      setPromptShownThisSession(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler);
-
-    // Detecta instalação bem-sucedida
-    window.addEventListener("appinstalled", () => {
-      setIsInstalled(true);
-      setShowPrompt(false);
-      setDeferredPrompt(null);
-    });
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler);
-    };
-  }, [promptShownThisSession]);
-
-  const handleInstall = async () => {
-    try {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === "accepted") {
-          setIsInstalled(true);
-          localStorage.setItem("pwa-installed", "true");
+    // Aguarda um pouco antes de tentar mostrar o prompt
+    const timer = setTimeout(() => {
+      const handler = (e) => {
+        console.log("beforeinstallprompt disparado");
+        e.preventDefault();
+        setDeferredPrompt(e);
+        if (!promptShownRef.current) {
+          setShowPrompt(true);
+          promptShownRef.current = true;
         }
+      };
+
+      window.addEventListener("beforeinstallprompt", handler);
+
+      const appInstalledHandler = () => {
+        console.log("App instalado com sucesso");
+        setIsInstalled(true);
         setShowPrompt(false);
         setDeferredPrompt(null);
+      };
+
+      window.addEventListener("appinstalled", appInstalledHandler);
+
+      return () => {
+        window.removeEventListener("beforeinstallprompt", handler);
+        window.removeEventListener("appinstalled", appInstalledHandler);
+      };
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) {
+      console.warn("Prompt não está disponível");
+      return;
+    }
+
+    try {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      console.log("Instalação resultado:", outcome);
+      
+      if (outcome === "accepted") {
+        console.log("Usuário aceitou a instalação");
+        setIsInstalled(true);
       }
+      
+      setShowPrompt(false);
+      setDeferredPrompt(null);
     } catch (error) {
       console.error("Erro ao instalar:", error);
     }
@@ -59,71 +79,70 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    setPromptShownThisSession(true);
   };
 
-  if (isInstalled || !showPrompt) return null;
+  // Não renderiza se instalado ou prompt não deve ser mostrado
+  if (isInstalled || !showPrompt || !deferredPrompt) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-        {/* Header Gradient */}
-        <div className="h-24 bg-gradient-to-r from-[#001A3D] to-[#456C8D] flex items-end p-6">
-          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-            <Smartphone className="w-7 h-7 text-[#001A3D]" />
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          <h3 className="text-xl font-semibold text-[#001A3D] mb-2">Instale nosso app</h3>
-          <p className="text-sm text-[#456C8D] mb-6">Acesso rápido e atualizações automáticas garantidas</p>
-
-          <div className="space-y-3 mb-8">
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 bg-[#6FA6FF]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs text-[#6FA6FF] font-bold">✓</span>
-              </div>
-              <span className="text-[#131A20]">Abre direto na tela inicial do seu telefone</span>
+    <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="relative">
+          {/* Header com gradiente */}
+          <div className="h-32 bg-gradient-to-br from-[#001A3D] via-[#456C8D] to-[#6FA6FF] flex items-end justify-between p-6">
+            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -translate-y-2">
+              <Smartphone className="w-8 h-8 text-[#001A3D]" />
             </div>
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 bg-[#6FA6FF]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs text-[#6FA6FF] font-bold">✓</span>
-              </div>
-              <span className="text-[#131A20]">Funciona offline com dados já carregados</span>
-            </div>
-            <div className="flex items-start gap-3 text-sm">
-              <div className="w-5 h-5 bg-[#6FA6FF]/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs text-[#6FA6FF] font-bold">✓</span>
-              </div>
-              <span className="text-[#131A20]">Atualiza automaticamente sem precisar reinstalar</span>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
             <button
               onClick={handleDismiss}
-              className="flex-1 px-4 py-3 border-2 border-[#EAEAEA] rounded-xl text-[#131A20] font-semibold hover:bg-[#F8F9FB] transition-all duration-200"
+              className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
+              type="button"
             >
-              Agora não
-            </button>
-            <button
-              onClick={handleInstall}
-              className="flex-1 px-4 py-3 bg-gradient-to-r from-[#001A3D] to-[#456C8D] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <Download className="w-4 h-4" />
-              Instalar
+              <X className="w-5 h-5" />
             </button>
           </div>
-        </div>
 
-        {/* Close button */}
-        <button
-          onClick={handleDismiss}
-          className="absolute top-4 right-4 text-[#456C8D] hover:text-[#001A3D] transition-colors p-1"
-        >
-          <X className="w-5 h-5" />
-        </button>
+          {/* Conteúdo */}
+          <div className="p-6">
+            <h2 className="text-2xl font-bold text-[#001A3D] mb-1">Instale nosso app</h2>
+            <p className="text-sm text-[#456C8D] mb-6">Acesso rápido, offline e atualizações automáticas</p>
+
+            {/* Benefícios */}
+            <div className="space-y-3 mb-8">
+              {[
+                "Abre direto na tela inicial do seu celular",
+                "Funciona offline com seus dados",
+                "Atualiza automaticamente"
+              ].map((benefit, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="w-5 h-5 bg-[#6FA6FF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-xs text-white font-bold">✓</span>
+                  </div>
+                  <span className="text-sm text-[#131A20]">{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Botões */}
+            <div className="flex gap-3 w-full">
+              <button
+                onClick={handleDismiss}
+                className="flex-1 px-4 py-3 border-2 border-[#EAEAEA] rounded-xl text-[#131A20] font-semibold hover:bg-[#F8F9FB] active:bg-[#EAEAEA] transition-colors duration-200 cursor-pointer"
+                type="button"
+              >
+                Depois
+              </button>
+              <button
+                onClick={handleInstall}
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#001A3D] to-[#456C8D] text-white rounded-xl font-semibold hover:shadow-lg active:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+                type="button"
+              >
+                <Download className="w-4 h-4" />
+                Instalar
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
