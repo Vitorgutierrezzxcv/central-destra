@@ -53,9 +53,9 @@ export default function PortalClienteLogin() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      initial={{ opacity: 0, y: 56, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
       className="min-h-screen bg-[#0B1628] flex flex-col lg:flex-row"
     >
       {/* Left panel — desktop */}
