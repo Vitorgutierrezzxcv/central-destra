@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   // Rotas públicas não precisam de auth check
   const pathLower = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
-  const isPublicPath = pathLower === '/autenticar' || pathLower.startsWith('/clientportal');
+  const isPublicPath = pathLower === '/autenticar' || pathLower.startsWith('/clientportal') || pathLower === '/portalcliente' || pathLower.startsWith('/portalclient');
 
   useEffect(() => {
     if (isPublicPath) {
