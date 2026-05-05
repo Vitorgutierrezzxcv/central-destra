@@ -165,8 +165,11 @@ body {
   background-color: #ffffff !important;
 }
 
-/* Portal do cliente — safe areas dark */
-html.portal-dark,
-html.portal-dark body {
+/* Portal do cliente — safe areas com gradiente */
+html.portal-dark {
+  background: radial-gradient(ellipse 100% 50% at 50% 0%, #1a3a6b 0%, #0B1628 45%) !important;
   background-color: #0B1628 !important;
+}
+html.portal-dark body {
+  background: transparent !important;
 }
