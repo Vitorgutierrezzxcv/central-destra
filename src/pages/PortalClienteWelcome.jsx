@@ -8,7 +8,7 @@ const BG = "#0B1628";
 const IOS = [0.22, 1, 0.36, 1];
 
 const SLIDES = [
-  { tag: "Bem-vindo ao portal", headline: "Acompanhe seus\nprojetos", sub: "em tempo real." },
+  { tag: "Bem-vindo ao portal", headline: "Acompanhe seus projetos", sub: "em tempo real." },
   { tag: "Entregas e aprovações", headline: "Revise e aprove\ncada entrega", sub: "da sua equipe." },
   { tag: "Comunicação direta", headline: "Fale com a equipe\nsem intermediários", sub: "pelo portal." },
 ];
@@ -193,7 +193,7 @@ export default function PortalClienteWelcome() {
             />
             <motion.span
               style={{ opacity: labelOp }}
-              className="absolute inset-0 flex items-center justify-center text-white/28 text-[13px] font-light pointer-events-none tracking-wide"
+              className="absolute inset-0 flex items-center justify-center text-white/60 text-[13px] font-light pointer-events-none tracking-wide"
             >
               Deslize para entrar →
             </motion.span>
