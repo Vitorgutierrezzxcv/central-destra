@@ -78,8 +78,8 @@ export default function ClientPortalFiles() {
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
             Arquivos
           </p>
-         <h1 className="text-7xl md:text-6xl leading-[0.95] font-extralight text-slate-900 tracking-tight mb-1">
-           Documentos<br /><span className="text-8xl md:text-7xl font-extralight">Compartilhados</span>
+         <h1 className="text-4xl leading-tight font-extralight text-slate-900 tracking-tight mb-1">
+           Documentos<br /><span className="text-5xl font-extralight">Compartilhados</span>
          </h1>
          <p className="text-xl md:text-[0.9rem] text-slate-400 font-light leading-relaxed mb-0">
            Todos os arquivos do seu projeto.
