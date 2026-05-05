@@ -36,8 +36,8 @@ export default function PortalClienteWelcome() {
 
   const doExit = () => {
     setLeaving(true);
-    // Navigate after the white flash covers everything
-    setTimeout(() => navigate("/PortalClienteLogin"), 520);
+    // Navigate after the Apple-style zoom-in animation completes
+    setTimeout(() => navigate("/PortalClienteLogin"), 600);
   };
 
   const handleDragEnd = (_, info) => {
@@ -51,33 +51,33 @@ export default function PortalClienteWelcome() {
 
   return (
     <div className="fixed inset-0 overflow-hidden select-none" style={{ background: BG }}>
-      {/* Safe area fills — same bg so no color break at notch/home indicator */}
+      {/* Safe area fills */}
       <div className="fixed left-0 right-0 top-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-top, 0px)", background: BG }} />
       <div className="fixed left-0 right-0 bottom-0 z-50 pointer-events-none" style={{ height: "env(safe-area-inset-bottom, 0px)", background: BG }} />
 
-      {/* ── DARK FADE that covers screen then reveals login ── */}
+      {/* ── Apple-style: black overlay fades in on top while content zooms in ── */}
       <AnimatePresence>
         {leaving && (
           <motion.div
-            key="flash"
+            key="overlay"
             className="fixed inset-0 z-[100]"
-            style={{ background: BG }}
+            style={{ background: "#000000" }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 1, 1] }}
-            transition={{ duration: 0.45, times: [0, 0.4, 1], ease: "easeInOut" }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
           />
         )}
       </AnimatePresence>
 
-      {/* ── PAGE CONTENT — scales down when leaving ── */}
+      {/* ── PAGE CONTENT — Apple zoom-in push when leaving ── */}
       <motion.div
         className="fixed inset-0 flex flex-col overflow-hidden"
         animate={leaving
-          ? { scale: 0.92, opacity: 0, filter: "blur(6px)" }
+          ? { scale: 1.08, opacity: 0, filter: "blur(12px)" }
           : { scale: 1, opacity: 1, filter: "blur(0px)" }
         }
         transition={leaving
-          ? { duration: 0.38, ease: IOS }
+          ? { duration: 0.55, ease: [0.4, 0, 0.1, 1] }
           : { duration: 0 }
         }
       >
@@ -119,17 +119,21 @@ export default function PortalClienteWelcome() {
               <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
                 {SLIDES[slide].tag}
               </p>
-              <h1 className="font-extralight text-white tracking-tight leading-[1.05] mb-3">
+              <h1 className="font-extralight text-white tracking-tight leading-[1.0] mb-3">
                 {SLIDES[slide].headline.split("\n").map((line, i) => (
                   <span
                     key={i}
-                    style={{ fontSize: slide === 0 ? (i === 0 ? "3rem" : "4.5rem") : "3rem", display: "block" }}
+                    style={{
+                      fontSize: slide === 0 ? (i === 0 ? "3.8rem" : "5.5rem") : "4rem",
+                      display: "block",
+                      lineHeight: 1.0,
+                    }}
                   >
                     {line}
                   </span>
                 ))}
               </h1>
-              <p className="text-xl font-light text-white/25 leading-relaxed">
+              <p className="text-xl font-light text-white/25 leading-relaxed mt-3">
                 {SLIDES[slide].sub}
               </p>
             </motion.div>
