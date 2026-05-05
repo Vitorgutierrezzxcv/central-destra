@@ -10,10 +10,23 @@ import { getClientProfile, isLoggedIn, saveSession, getClientToken, clearSession
 async function callPortalData(action, params = {}) {
   const token = getClientToken();
   if (!token) {
-    throw new Error('No session token available');
+    return { error: 'No session token available' };
   }
-  const res = await base44.functions.invoke("clientPortalData", { action, token, params });
-  return res?.data ?? res;
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    
+    const res = await Promise.race([
+      base44.functions.invoke("clientPortalData", { action, token, params }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+    ]);
+    
+    clearTimeout(timeoutId);
+    return res?.data ?? res;
+  } catch (error) {
+    return { error: error.message };
+  }
 }
 
 /**
@@ -69,13 +82,15 @@ export function useClientPortal() {
           });
           setContactId(data.contactId || freshProfile.linked_client_contact_id || null);
           setCompanyId(data.companyId || freshProfile.linked_company_id || null);
-        } else if (data?.error) {
+        } else if (data?.error || !data?.profile) {
           // Sessão inválida — limpa
           clearSession();
           setUser(null);
         }
       } catch (e) {
-        // Silencia erros — usa dados locais
+        // Erro na chamada — limpa session e sai
+        clearSession();
+        setUser(null);
       }
 
       setUserLoading(false);
@@ -89,6 +104,7 @@ export function useClientPortal() {
     queryKey: ["cp_projects", contactId, companyId],
     queryFn: () => callPortalData("get_projects"),
     enabled: !!user && (!!contactId || !!companyId) && !!getClientToken(),
+    retry: 0, // Não faz retry automático
   });
 
   const projects = projectsData?.projects || [];
