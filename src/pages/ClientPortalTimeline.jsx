@@ -234,15 +234,17 @@ export default function ClientPortalTimeline() {
                      </div>
 
                      {milestones.length === 0 && tasks.length === 0 && meetings.length === 0 && (
-              <div className="flex flex-col items-center py-20">
-                <Target className="w-10 h-10 text-slate-600 mb-4" />
-                <p className="text-slate-400 font-light">Nenhum dado de timeline ainda.</p>
-                <p className="text-xs text-slate-500 font-light mt-2 text-center">A equipe Destra atualizará em breve.</p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
+                     <div className="flex flex-col items-center py-20">
+                     <Target className="w-10 h-10 text-slate-600 mb-4" />
+                     <p className="text-slate-400 font-light">Nenhum dado de timeline ainda.</p>
+                     <p className="text-xs text-slate-500 font-light mt-2 text-center">A equipe Destra atualizará em breve.</p>
+                     </div>
+                     )}
+                     </>
+                     )}
+                     </div>
+                     {/* Fundo fixo para evitar branco */}
+                     <div className="w-full h-20" style={{ background: "linear-gradient(135deg, #050D1B 0%, #020408 100%)" }} />
+                     </div>
+                     );
+                     }

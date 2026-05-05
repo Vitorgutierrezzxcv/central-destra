@@ -112,16 +112,16 @@ export default function PWAInstallPrompt() {
 
   return (
     <div className="fixed inset-0 bg-black/30 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-        {/* Header limpo */}
-        <div className="flex items-start justify-between p-5 border-b border-slate-100">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        {/* Header */}
+        <div className="flex items-start justify-between p-5 border-b border-blue-50 bg-gradient-to-r from-blue-50 to-blue-25">
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-              <Smartphone className="w-5 h-5 text-slate-900" />
+            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <Smartphone className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-900">Instalar app</h2>
-              <p className="text-xs text-slate-500">Acesso rápido e offline</p>
+              <h2 className="text-sm font-medium text-slate-900">Instalar aplicativo</h2>
+              <p className="text-xs text-slate-500">Acesso direto da tela inicial</p>
             </div>
           </div>
           <button
@@ -136,23 +136,23 @@ export default function PWAInstallPrompt() {
         {/* Conteúdo */}
         <div className="p-5">
           {/* Benefícios minimalistas */}
-          <div className="space-y-2 mb-6">
-            {[
-              { icon: "⚡", text: "Acesso instantâneo na tela inicial" },
-              { icon: "📱", text: "Funciona sem internet" },
-              { icon: "✨", text: "Sem necessidade de atualizar" }
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2.5 text-xs">
-                <span className="text-sm">{item.icon}</span>
-                <span className="text-slate-700">{item.text}</span>
-              </div>
-            ))}
-          </div>
+           <div className="space-y-2 mb-6">
+             {[
+               { text: "Acesso instantâneo na tela inicial" },
+               { text: "Funciona sem internet" },
+               { text: "Sem necessidade de atualizar" }
+             ].map((item, idx) => (
+               <div key={idx} className="flex items-start gap-2.5 text-xs">
+                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
+                 <span className="text-slate-700">{item.text}</span>
+               </div>
+             ))}
+           </div>
 
           {/* Mensagem de feedback */}
           {message && (
-            <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
-              <p className="text-xs text-slate-700 leading-relaxed">{message}</p>
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+              <p className="text-xs text-blue-700 leading-relaxed">{message}</p>
             </div>
           )}
 
@@ -169,11 +169,11 @@ export default function PWAInstallPrompt() {
             <button
               onClick={handleInstall}
               disabled={installing}
-              className="flex-1 px-3 py-2.5 bg-slate-900 text-white rounded-lg text-xs font-medium hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 flex items-center justify-center gap-1.5 disabled:opacity-60"
+              className="flex-1 px-3 py-2.5 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors duration-200 flex items-center justify-center gap-1.5 disabled:opacity-60"
               type="button"
             >
               {installing ? (
-                <span className="inline-block animate-spin text-xs">⟳</span>
+                <span className="inline-block animate-spin">↻</span>
               ) : (
                 <Download className="w-3.5 h-3.5" />
               )}
