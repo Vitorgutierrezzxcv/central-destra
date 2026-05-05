@@ -184,9 +184,6 @@ function DashboardContent() {
             {/* Team Ranking */}
             <UserPerformanceRanking />
 
-            {/* Google Calendar */}
-            <GoogleCalendarWidget />
-
             <NotesBlock userEmail={user?.email} />
           </div>
 
