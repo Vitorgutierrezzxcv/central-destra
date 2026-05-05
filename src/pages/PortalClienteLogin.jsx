@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Mail, ArrowRight, Loader2, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
+import { useThemeColor } from "@/hooks/useThemeColor";
+
+const BG = "#0B1628";
+const IOS = [0.22, 1, 0.36, 1];
 
 async function callAuth(payload) {
   const res = await base44.functions.invoke("clientPortalAuth", payload);
@@ -11,6 +15,7 @@ async function callAuth(payload) {
 }
 
 export default function PortalClienteLogin() {
+  useThemeColor(BG);
   const navigate = useNavigate();
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
@@ -19,11 +24,15 @@ export default function PortalClienteLogin() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn()) {
       navigate("/ClientPortalDashboard", { replace: true });
+      return;
     }
+    // Slight delay so the white-flash from Welcome can clear
+    setTimeout(() => setVisible(true), 80);
   }, []);
 
   const handleSubmit = async (e) => {
@@ -37,7 +46,6 @@ export default function PortalClienteLogin() {
         password,
         name,
       });
-
       if (data?.success) {
         saveSession(data.token, data.profile, data.expiresAt);
         navigate("/ClientPortalDashboard", { replace: true });
@@ -45,78 +53,80 @@ export default function PortalClienteLogin() {
         setError(data?.error || "Erro desconhecido. Tente novamente.");
       }
     } catch (err) {
-      setError(err?.response?.data?.error || err?.message || "Erro ao conectar. Tente novamente.");
+      setError(err?.response?.data?.error || err?.message || "Erro ao conectar.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 56, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.62, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen bg-[#0B1628] flex flex-col lg:flex-row"
-    >
-      {/* Left panel — desktop */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0D1E38]/60 border-r border-white/5 flex-col justify-between p-12">
-        <div>
-          <div className="flex items-center gap-2.5 mb-14">
-            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-8 h-8 brightness-0 invert opacity-80" />
-            <span className="text-white/60 text-xs tracking-widest uppercase font-light">Destra</span>
-          </div>
-          <h2 className="text-4xl font-extralight text-white leading-tight mb-4">
-            Portal do<br />Cliente
-          </h2>
-          <p className="text-slate-400 text-base font-light leading-relaxed">
-            Acompanhe seus projetos,<br />
-            aprovações e entregas<br />
-            em tempo real.
-          </p>
+    // White base that clears the flash bg from Welcome
+    <div className="fixed inset-0 overflow-hidden" style={{ background: BG }}>
+      <motion.div
+        className="fixed inset-0 flex flex-col overflow-hidden"
+        initial={{ opacity: 0, y: 40 }}
+        animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+        transition={{ duration: 0.55, ease: IOS }}
+      >
+        {/* Glow */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: "radial-gradient(ellipse 85% 55% at 50% -5%, rgba(59,130,246,0.22) 0%, transparent 65%)"
+        }} />
+
+        {/* Logo */}
+        <div
+          className="relative z-10 flex items-center gap-2.5 px-6 flex-shrink-0"
+          style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 48px)" }}
+        >
+          <img
+            src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg"
+            alt="Destra"
+            className="w-7 h-7 brightness-0 invert opacity-60"
+          />
+          <span className="text-white/35 text-[10px] tracking-[0.22em] uppercase font-medium">
+            Portal do Cliente
+          </span>
         </div>
-        <div className="space-y-1.5">
-          {["Visibilidade completa do projeto", "Aprovação de entregas", "Comunicação direta com a equipe"].map((item, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400/40" />
-              <p className="text-slate-400 text-sm font-light">{item}</p>
-            </div>
-          ))}
-          <p className="text-slate-600 text-xs mt-6 font-light tracking-wide">© {new Date().getFullYear()} Destra · Acesso seguro</p>
-        </div>
-      </div>
 
-      {/* Right panel — form */}
-      <div className="flex-1 flex items-center justify-center p-8 lg:p-12">
-        <div className="w-full max-w-sm">
+        {/* Spacer */}
+        <div className="flex-1 min-h-0" />
 
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-12">
-            <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-10 h-10 brightness-0 invert opacity-80" />
-            <p className="text-white/70 text-xs tracking-widest uppercase font-light">Portal do Cliente</p>
-          </div>
+        {/* Content area */}
+        <div className="relative z-10 px-6 flex-shrink-0">
+          {/* Title */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+              transition={{ duration: 0.3, ease: IOS }}
+            >
+              <p className="text-[10px] tracking-[0.22em] uppercase text-white/25 font-medium mb-4">
+                {mode === "login" ? "Acesso seguro" : "Criar conta"}
+              </p>
+              <h1 className="text-5xl font-extralight text-white tracking-tight leading-[1.1] mb-2">
+                {mode === "login" ? "Bem-vindo\nde volta" : "Criar\nconta"}
+              </h1>
+              <p className="text-base font-light text-white/30 leading-relaxed mb-6">
+                {mode === "login"
+                  ? "Acesse para acompanhar seus projetos."
+                  : "Registre-se para acessar o portal."}
+              </p>
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="mb-10">
-            <h1 className="text-5xl font-extralight text-white tracking-tight leading-tight mb-4">
-              {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
-            </h1>
-            <p className="text-white/60 text-lg font-light leading-relaxed">
-              {mode === "login"
-                ? "Acesse o portal para acompanhar seus projetos e entregas."
-                : "Registre-se para acessar o portal."}
-            </p>
-          </div>
-
-          {/* Mode tabs */}
-          <div className="flex gap-2 mb-8 border-b border-white/10">
+          {/* Tabs */}
+          <div className="flex gap-0 mb-6 border-b border-white/[0.08]">
             {[{ key: "login", label: "Entrar" }, { key: "register", label: "Cadastrar" }].map(m => (
               <button
                 key={m.key}
                 type="button"
                 onClick={() => { setMode(m.key); setError(""); }}
-                className={`pb-4 px-2 text-base font-medium transition-all border-b-2 ${
+                className={`pb-3 px-1 mr-6 text-sm font-medium transition-all border-b-2 -mb-px ${
                   mode === m.key
                     ? "border-white text-white"
-                    : "border-transparent text-white/40 hover:text-white/60"
+                    : "border-transparent text-white/30 hover:text-white/50"
                 }`}
               >
                 {m.label}
@@ -124,63 +134,88 @@ export default function PortalClienteLogin() {
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "register" && (
-              <div>
-                <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Nome completo</label>
-                <input
-                  value={name} onChange={e => setName(e.target.value)}
-                  placeholder="Seu nome completo" required
-                  className="w-full h-14 px-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
-                />
-              </div>
-            )}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <AnimatePresence>
+              {mode === "register" && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.28, ease: IOS }}
+                  className="overflow-hidden"
+                >
+                  <input
+                    value={name} onChange={e => setName(e.target.value)}
+                    placeholder="Nome completo" required
+                    className="w-full h-[52px] px-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <div>
-              <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">E-mail</label>
-              <div className="relative">
-                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                <input
-                  type="email" value={email} onChange={e => setEmail(e.target.value)}
-                  placeholder="seu@email.com" required
-                  className="w-full h-14 pl-14 pr-5 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
-                />
-              </div>
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+              <input
+                type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="seu@email.com" required
+                className="w-full h-[52px] pl-11 pr-4 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+              />
             </div>
 
-            <div>
-              <label className="text-sm text-white/70 font-medium block mb-2 tracking-wide">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                <input
-                  type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
-                  placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Sua senha"} required minLength={6}
-                  className="w-full h-14 pl-14 pr-14 rounded-2xl border border-white/20 bg-white/5 text-white text-base placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition-all"
-                />
-                <button type="button" onClick={() => setShowPass(!showPass)}
-                  className="absolute right-5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                  {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/25 pointer-events-none" />
+              <input
+                type={showPass ? "text" : "password"} value={password} onChange={e => setPassword(e.target.value)}
+                placeholder={mode === "register" ? "Mínimo 6 caracteres" : "Senha"} required minLength={6}
+                className="w-full h-[52px] pl-11 pr-12 rounded-2xl border border-white/[0.12] bg-white/[0.06] text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/[0.09] transition-all"
+              />
+              <button type="button" onClick={() => setShowPass(!showPass)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors">
+                {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
-            {error && (
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/15 border border-red-500/30">
-                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-300 leading-relaxed">{error}</p>
-              </div>
-            )}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.22 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20">
+                    <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-red-300 leading-relaxed">{error}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <button type="submit" disabled={loading}
-              className="w-full h-14 bg-white text-slate-950 rounded-2xl text-lg font-semibold flex items-center justify-center gap-3 hover:bg-white/90 transition-colors disabled:opacity-50 mt-2">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-[52px] bg-white text-slate-900 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2.5 hover:bg-white/92 active:scale-[0.98] transition-all disabled:opacity-40 mt-1"
+            >
               {loading
-                ? <><Loader2 className="w-5 h-5 animate-spin" /><span>Aguarde...</span></>
-                : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-5 h-5" /></>
+                ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Aguarde...</span></>
+                : <><span>{mode === "register" ? "Criar conta" : "Entrar"}</span><ArrowRight className="w-4 h-4" /></>
               }
             </button>
           </form>
         </div>
-      </div>
-    </motion.div>
+
+        {/* Footer */}
+        <div
+          className="relative z-10 flex-shrink-0 text-center"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 28px)", paddingTop: "20px" }}
+        >
+          <p className="text-white/[0.18] text-[10px] tracking-wide font-light">
+            © {new Date().getFullYear()} Destra · Acesso seguro
+          </p>
+        </div>
+      </motion.div>
+    </div>
   );
 }
