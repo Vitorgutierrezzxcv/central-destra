@@ -112,21 +112,21 @@ export default function PWAInstallPrompt() {
 
   return (
     <div className="fixed inset-0 bg-black/30 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+      <div className="w-full max-w-sm bg-slate-900 rounded-xl shadow-lg border border-slate-700 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-blue-50 bg-gradient-to-r from-blue-50 to-blue-25">
+        <div className="flex items-start justify-between p-5 border-b border-slate-700">
           <div className="flex items-center gap-3 flex-1">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <Smartphone className="w-5 h-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+              <Smartphone className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-sm font-medium text-slate-900">Instalar aplicativo</h2>
-              <p className="text-xs text-slate-500">Acesso direto da tela inicial</p>
+              <h2 className="text-sm font-medium text-white">Instalar aplicativo</h2>
+              <p className="text-xs text-slate-400">Acesso direto da tela inicial</p>
             </div>
           </div>
           <button
             onClick={handleDismiss}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded transition-colors flex-shrink-0"
+            className="text-slate-500 hover:text-slate-300 p-1 rounded transition-colors flex-shrink-0"
             type="button"
           >
             <X className="w-4 h-4" />
@@ -136,23 +136,23 @@ export default function PWAInstallPrompt() {
         {/* Conteúdo */}
         <div className="p-5">
           {/* Benefícios minimalistas */}
-           <div className="space-y-2 mb-6">
-             {[
-               { text: "Acesso instantâneo na tela inicial" },
-               { text: "Funciona sem internet" },
-               { text: "Sem necessidade de atualizar" }
-             ].map((item, idx) => (
-               <div key={idx} className="flex items-start gap-2.5 text-xs">
-                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                 <span className="text-slate-700">{item.text}</span>
-               </div>
-             ))}
-           </div>
+          <div className="space-y-2 mb-6">
+            {[
+              { text: "Acesso instantâneo na tela inicial" },
+              { text: "Funciona sem internet" },
+              { text: "Sem necessidade de atualizar" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-start gap-2.5 text-xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0" />
+                <span className="text-slate-200">{item.text}</span>
+              </div>
+            ))}
+          </div>
 
           {/* Mensagem de feedback */}
           {message && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
-              <p className="text-xs text-blue-700 leading-relaxed">{message}</p>
+            <div className="mb-4 p-3 bg-blue-600/20 border border-blue-500/30 rounded-lg">
+              <p className="text-xs text-blue-200 leading-relaxed">{message}</p>
             </div>
           )}
 
@@ -161,7 +161,7 @@ export default function PWAInstallPrompt() {
             <button
               onClick={handleDismiss}
               disabled={installing}
-              className="flex-1 px-3 py-2.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors duration-200 disabled:opacity-50"
+              className="flex-1 px-3 py-2.5 border border-slate-600 rounded-lg text-xs font-medium text-slate-200 hover:bg-slate-800 active:bg-slate-700 transition-colors duration-200 disabled:opacity-50"
               type="button"
             >
               Depois
