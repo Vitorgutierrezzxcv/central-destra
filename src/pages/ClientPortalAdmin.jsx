@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ClientAccessManager from "@/components/client-portal/ClientAccessManager";
 import ClientProjectSettings from "@/components/client-portal/ClientProjectSettings";
+import AccessGuidePanel from "@/components/client-portal/AccessGuidePanel";
 
 export default function ClientPortalAdmin() {
   const qc = useQueryClient();
@@ -289,7 +290,11 @@ export default function ClientPortalAdmin() {
           </TabsContent>
 
           {/* Tab: Contatos & Acessos */}
-          <TabsContent value="access">
+          <TabsContent value="access" className="space-y-4">
+            {/* GUIA INTERATIVO - Orientação completa para o funcionário */}
+            <AccessGuidePanel />
+            
+            {/* GERENCIADOR DE ACESSOS */}
             <div className="bg-white border border-slate-200 rounded-2xl p-6">
               <ClientAccessManager companies={companies} projects={projects} />
             </div>

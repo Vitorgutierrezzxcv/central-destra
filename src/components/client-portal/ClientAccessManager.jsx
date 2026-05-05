@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import PortalContentManager from "./PortalContentManager";
+import { ValidationMessage, getFormValidationFeedback, FormValidationDisplay } from "./ValidationFeedback";
 
 const callFn = (name, payload) => base44.functions.invoke(name, payload);
 import {
   Plus, Trash2, UserCheck, UserX, Shield, RefreshCw,
   ChevronDown, ChevronUp, Edit2, Send, Copy, CheckCheck,
-  Clock, CheckCircle2, AlertTriangle, XCircle, Ban, Settings
+  Clock, CheckCircle2, AlertTriangle, XCircle, Ban, Settings, HelpCircle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,12 @@ const statusConfig = {
   pending_invite: { label: "Pendente", color: "bg-amber-100 text-amber-700 border-amber-200", icon: Clock }
 };
 
-// ---- Formulário de criação/edição ----
+/**
+ * DIÁLOGO DE CRIAÇÃO/EDIÇÃO DE CONTATO
+ * 
+ * Este formulário orienta o funcionário passo-a-passo
+ * com validações educativas que ensinam o que está certo ou errado.
+ */
 function ContactFormDialog({ open, onClose, contact, companies, projects, allAccess = [] }) {
   const qc = useQueryClient();
   const isEdit = !!contact?.id;
@@ -39,6 +45,9 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
     return allAccess.filter(a => a.client_contact_id === contact.id).map(a => a.project_id);
   });
   const [error, setError] = useState("");
+  
+  // VALIDAÇÃO EDUCATIVA - mostra feedback em tempo real
+  const validation = getFormValidationFeedback(form, selectedProjects, allAccess);
 
   // Sync when dialog opens with fresh data
   React.useEffect(() => {
@@ -123,58 +132,138 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
       <DialogContent className="max-w-lg w-[95vw]">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Editar Contato" : "Novo Contato Cliente"}</DialogTitle>
+          <p className="text-xs text-slate-500 mt-1">
+            {isEdit 
+              ? "Modifique os dados do contato conforme necessário"
+              : "Siga os passos abaixo para criar um novo acesso ao portal do cliente"}
+          </p>
         </DialogHeader>
+        
+        {/* FEEDBACK DE VALIDAÇÃO - educativo e em tempo real */}
+        {validation.issues.length > 0 && (
+          <FormValidationDisplay validation={validation} />
+        )}
+        
         <div className="space-y-4 py-2 max-h-[70vh] overflow-y-auto pr-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* NOME - com dica */}
             <div>
-              <Label className="text-xs">Nome *</Label>
-              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Nome completo" className="mt-1" />
+              <div className="flex items-center gap-1.5">
+                <Label className="text-xs font-medium">Nome *</Label>
+                <div className="group relative">
+                  <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 p-2 bg-slate-900 text-white text-xs rounded hidden group-hover:block z-10">
+                    Nome completo da pessoa que acessará o portal. Ex: João Silva
+                  </div>
+                </div>
+              </div>
+              <Input 
+                value={form.name} 
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))} 
+                placeholder="João Silva" 
+                className="mt-1" 
+              />
             </div>
+            
+            {/* EMAIL - com dica */}
             <div>
-              <Label className="text-xs">Email *</Label>
-              <Input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="email@empresa.com" className="mt-1" />
+              <div className="flex items-center gap-1.5">
+                <Label className="text-xs font-medium">Email *</Label>
+                <div className="group relative">
+                  <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-40 p-2 bg-slate-900 text-white text-xs rounded hidden group-hover:block z-10">
+                    Email onde o cliente receberá o convite de ativação
+                  </div>
+                </div>
+              </div>
+              <Input 
+                value={form.email} 
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))} 
+                placeholder="joao@empresa.com" 
+                className="mt-1" 
+              />
             </div>
+            
+            {/* CARGO - opcional */}
             <div>
-              <Label className="text-xs">Cargo</Label>
-              <Input value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))} placeholder="Diretor, Gerente..." className="mt-1" />
+              <Label className="text-xs text-slate-500">(opcional) Cargo</Label>
+              <Input 
+                value={form.role} 
+                onChange={e => setForm(f => ({ ...f, role: e.target.value }))} 
+                placeholder="Diretor, Gerente..." 
+                className="mt-1 text-slate-400" 
+              />
             </div>
+            
+            {/* TELEFONE - opcional */}
             <div>
-              <Label className="text-xs">Telefone</Label>
-              <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="(11) 99999-9999" className="mt-1" />
+              <Label className="text-xs text-slate-500">(opcional) Telefone</Label>
+              <Input 
+                value={form.phone} 
+                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} 
+                placeholder="(11) 99999-9999" 
+                className="mt-1 text-slate-400" 
+              />
             </div>
           </div>
 
           <div>
-            <Label className="text-xs">Empresa *</Label>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Label className="text-xs font-medium">Empresa *</Label>
+              <div className="group relative">
+                <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 text-white text-xs rounded hidden group-hover:block z-10">
+                  Selecione a empresa cliente. Os projetos disponíveis mudarão baseado nesta escolha.
+                </div>
+              </div>
+            </div>
             <Select value={form.company_id} onValueChange={v => {
               setForm(f => ({ ...f, company_id: v }));
               setSelectedProjects([]);
             }}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
+              <SelectTrigger className="mt-1"><SelectValue placeholder="Clique para selecionar a empresa" /></SelectTrigger>
               <SelectContent>
-                {companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {companies.length === 0 ? (
+                  <div className="p-2 text-xs text-slate-500">Nenhuma empresa cadastrada</div>
+                ) : (
+                  companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)
+                )}
               </SelectContent>
             </Select>
+            {form.company_id && (
+              <p className="text-[10px] text-emerald-600 mt-1.5">✓ Empresa selecionada. Agora escolha os projetos abaixo.</p>
+            )}
           </div>
 
           {/* PROJETOS LIBERADOS — sempre visível quando empresa selecionada */}
           <div>
-            <Label className="text-xs font-semibold">
-              Projetos Liberados *
-              {selectedProjects.length > 0 && (
-                <span className="ml-2 text-blue-600">({selectedProjects.length} selecionado{selectedProjects.length > 1 ? "s" : ""})</span>
-              )}
-            </Label>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Label className="text-xs font-semibold">
+                Projetos Liberados *
+                {selectedProjects.length > 0 && (
+                  <span className="ml-2 text-blue-600 font-normal">({selectedProjects.length} selecionado{selectedProjects.length > 1 ? "s" : ""})</span>
+                )}
+              </Label>
+              <div className="group relative">
+                <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-900 text-white text-xs rounded hidden group-hover:block z-10">
+                  Escolha quais projetos este contato pode acessar no portal. Pode selecionar múltiplos.
+                </div>
+              </div>
+            </div>
+            
             {!form.company_id ? (
-              <p className="text-xs text-slate-400 mt-2 py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
-                Selecione uma empresa para carregar os projetos.
-              </p>
+              <ValidationMessage 
+                type="warning"
+                description="Selecione uma empresa primeiro para carregar os projetos."
+              />
             ) : companyProjects.length === 0 ? (
-              <p className="text-xs text-slate-400 mt-2 py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
-                Nenhum projeto encontrado para esta empresa.
-              </p>
+              <ValidationMessage 
+                type="warning"
+                description="Nenhum projeto encontrado para esta empresa."
+              />
             ) : (
-              <div className="mt-2 space-y-2">
+              <div className="mt-2 space-y-2 max-h-40 overflow-y-auto">
                 {companyProjects.map(p => {
                   const checked = selectedProjects.includes(p.id);
                   return (
@@ -191,12 +280,14 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
                         className="rounded accent-blue-600"
                       />
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-slate-700">{p.name}</span>
+                        <span className={`text-sm font-medium ${checked ? "text-blue-900" : "text-slate-700"}`}>
+                          {p.name}
+                        </span>
                         {p.status && (
                           <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{p.status}</span>
                         )}
                         {p.current_phase && (
-                          <p className="text-xs text-slate-400 truncate">{p.current_phase}</p>
+                          <p className="text-xs text-slate-400 truncate">Fase: {p.current_phase}</p>
                         )}
                       </div>
                     </label>
@@ -207,14 +298,38 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
           </div>
 
           <div>
-            <Label className="text-xs">Nível de Acesso</Label>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Label className="text-xs font-medium">Nível de Acesso</Label>
+              <div className="group relative">
+                <HelpCircle className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-3 bg-slate-900 text-white text-xs rounded hidden group-hover:block z-10 space-y-2">
+                  <p><strong>👁️ Visualizador:</strong> Ver projetos, tarefas, arquivos e comentar</p>
+                  <p><strong>✅ Aprovador:</strong> Tudo do visualizador + aprovar entregas e fazer avaliações</p>
+                </div>
+              </div>
+            </div>
             <Select value={form.access_level} onValueChange={v => setForm(f => ({ ...f, access_level: v }))}>
               <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="client_user">Visualizador — pode ver e comentar</SelectItem>
-                <SelectItem value="client_approver">Aprovador — pode aprovar e avaliar</SelectItem>
+                <SelectItem value="client_user">
+                  <div className="flex items-center gap-2">
+                    <span>👁️</span>
+                    <span>Visualizador — ver e comentar</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="client_approver">
+                  <div className="flex items-center gap-2">
+                    <span>✅</span>
+                    <span>Aprovador — aprovar e avaliar</span>
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-[10px] text-slate-500 mt-1.5">
+              {form.access_level === "client_approver" 
+                ? "⚠️ Este contato poderá aprovar entregas e fazer avaliações"
+                : "✓ Este contato terá acesso apenas para visualizar e comentar"}
+            </p>
           </div>
 
           {error && (
@@ -228,10 +343,25 @@ function ContactFormDialog({ open, onClose, contact, companies, projects, allAcc
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           <Button
             onClick={() => saveMutation.mutate(form)}
-            disabled={!form.name || !form.email || !form.company_id || saveMutation.isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={!validation.isValid || saveMutation.isPending}
+            className={`text-white gap-2 ${
+              !validation.isValid 
+                ? "bg-slate-400 cursor-not-allowed" 
+                : "bg-emerald-600 hover:bg-emerald-700"
+            }`}
+            title={!validation.isValid ? "Corrija os erros acima para continuar" : ""}
           >
-            {saveMutation.isPending ? "Salvando..." : isEdit ? "Salvar Alterações" : "Criar Contato"}
+            {saveMutation.isPending ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                Salvando...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 className="w-4 h-4" />
+                {isEdit ? "Salvar Alterações" : "Criar Contato"}
+              </>
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -417,10 +547,12 @@ function ContactCard({ contact, companies, projects, allAccess, allProjects, inv
             ) : null}
 
             {contactAccess.length === 0 && (
-              <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                Vincule pelo menos um projeto a este contato antes de enviar o convite.
-              </div>
+              <ValidationMessage 
+                type="error"
+                title="Nenhum projeto vinculado"
+                description="Este contato não tem acesso a nenhum projeto."
+                suggestion="Clique em 'Adicionar' abaixo ou edite o contato para vincular projetos."
+              />
             )}
 
             <div className="flex gap-2 flex-wrap">
