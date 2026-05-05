@@ -73,8 +73,8 @@ export default function ClientPortalFiles() {
   });
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
-      <div className="max-w-lg mx-auto px-5 pt-10 pb-6">
+    <div className="min-h-screen bg-white overflow-x-hidden">
+      <div className="w-full px-5 pt-10 pb-6">
          <p className="text-[10px] tracking-[0.2em] uppercase text-slate-400 font-medium mb-1">
             Arquivos
           </p>
@@ -86,7 +86,7 @@ export default function ClientPortalFiles() {
          </p>
          </div>
 
-         <div className="max-w-lg mx-auto px-5 space-y-4 pb-20">
+         <div className="w-full px-5 space-y-4 pb-20">
         {/* Search & Filters */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-3">
@@ -101,7 +101,7 @@ export default function ClientPortalFiles() {
             </div>
             <Button
               onClick={() => setUploadModalOpen(true)}
-              className="bg-[#001A3D] hover:bg-[#001a3d]/90 text-white gap-2 flex-shrink-0"
+              className="bg-slate-900 hover:bg-slate-800 text-white gap-2 flex-shrink-0"
             >
               <Plus className="w-4 h-4" />
               Enviar
@@ -110,13 +110,13 @@ export default function ClientPortalFiles() {
           <div className="flex gap-2 flex-wrap">
             {categories.map(cat => (
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-2 rounded-xl text-xs font-medium transition-all border ${
-                  selectedCategory === cat ? "bg-[#001A3D] border-[#001A3D] text-white" : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"}`}
-              >
-                {cat === "all" ? "Todos" : categoryLabels[cat] || cat}
-              </button>
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-3 py-2 rounded-lg text-xs font-medium transition-all border ${
+                      selectedCategory === cat ? "bg-slate-900 border-slate-900 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"}`}
+                  >
+                    {cat === "all" ? "Todos" : categoryLabels[cat] || cat}
+                  </button>
             ))}
           </div>
         </div>
@@ -135,21 +135,21 @@ export default function ClientPortalFiles() {
             {filtered.map(file => {
               const FileIcon = getFileIcon(file.file_type);
               return (
-                <div key={file.id} className="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-sm transition-all flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">
-                    <FileIcon className="w-6 h-6 text-blue-600" />
+                <div key={file.id} className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-sm transition-all flex items-center gap-3 overflow-hidden">
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <FileIcon className="w-5 h-5 text-slate-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h3 className="text-sm font-semibold text-slate-900 truncate">{file.title}</h3>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <h3 className="text-sm font-medium text-slate-900 truncate">{file.title}</h3>
                       {file.category && (
-                        <Badge className={`text-xs ${categoryColors[file.category] || categoryColors.other}`}>
+                        <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200 border">
                           {categoryLabels[file.category] || file.category}
                         </Badge>
                       )}
                     </div>
                     <p className="text-xs text-slate-400">
-                      {file.uploaded_by && `Enviado por ${file.uploaded_by}`}
+                      {file.uploaded_by && `Por ${file.uploaded_by}`}
                       {file.uploaded_at && ` • ${format(new Date(file.uploaded_at), "dd/MM/yyyy", { locale: ptBR })}`}
                     </p>
                   </div>
@@ -157,10 +157,10 @@ export default function ClientPortalFiles() {
                     href={file.file_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-xl text-xs text-white hover:bg-blue-700 transition-colors flex-shrink-0"
+                    className="flex items-center justify-center w-9 h-9 bg-slate-900 rounded-lg text-white hover:bg-slate-800 transition-colors flex-shrink-0"
+                    title="Baixar arquivo"
                   >
-                    <Download className="w-3.5 h-3.5" />
-                    Baixar
+                    <Download className="w-4 h-4" />
                   </a>
                 </div>
               );
