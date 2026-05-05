@@ -112,7 +112,7 @@ export default function PWAInstallPrompt() {
 
   return (
     <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-gradient-to-b from-slate-950 to-slate-900 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 border border-white/10">
+      <div className="w-full max-w-sm bg-gradient-to-b from-blue-950 to-blue-950 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 border border-white/10" style={{ background: "linear-gradient(135deg, #0B1628 0%, #050D1B 100%)" }}>
         {/* Conteúdo */}
         <div className="p-7">
           {/* Icon + Título */}
