@@ -61,35 +61,46 @@ export default function PWAInstallPrompt() {
     setInstalling(true);
     setMessage("");
 
-    if (!deferredPrompt) {
-      setMessage("Para instalar: toque no menu do navegador (⋮) → 'Instalar app' ou 'Adicionar à tela inicial'");
-      setInstalling(false);
-      return;
-    }
-
-    try {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === "accepted") {
-        setMessage("App instalado com sucesso!");
-        setTimeout(() => {
-          setIsInstalled(true);
-          setShowPrompt(false);
-        }, 1500);
-      } else {
-        setMessage("Instalação cancelada");
-        setTimeout(() => setMessage(""), 2000);
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        if (outcome === "accepted") {
+          setMessage("App instalado com sucesso!");
+          setTimeout(() => {
+            setIsInstalled(true);
+            setShowPrompt(false);
+          }, 1500);
+        } else {
+          setMessage("Instalação cancelada");
+          setTimeout(() => setMessage(""), 2000);
+        }
+        
+        setDeferredPrompt(null);
+      } catch (error) {
+        console.error("Erro ao instalar:", error);
+        showManualInstructions();
       }
-      
-      setDeferredPrompt(null);
-    } catch (error) {
-      console.error("Erro ao instalar:", error);
-      setMessage("Erro ao instalar. Tente novamente.");
-      setTimeout(() => setMessage(""), 2000);
+    } else {
+      showManualInstructions();
     }
     
     setInstalling(false);
+  };
+
+  const showManualInstructions = () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    if (isIOS) {
+      setMessage("1. Toque em Compartilhar (caixa com seta) 2. Toque em 'Adicionar à Tela Inicial' 3. Toque em 'Adicionar'");
+    } else if (isAndroid) {
+      setMessage("1. Toque em ⋮ (três pontos) 2. Toque em 'Instalar app' 3. Toque em 'Instalar'");
+    } else {
+      setMessage("Seu navegador não suporta instalação de apps. Tente com Chrome, Edge ou Safari no celular.");
+    }
+    setTimeout(() => setMessage(""), 5000);
   };
 
   const handleDismiss = () => {
