@@ -43,6 +43,7 @@ import ClientPortalFinancial from './pages/ClientPortalFinancial';
 import ClientPortalCourses from './pages/ClientPortalCourses';
 import PortalClienteLogin from './pages/PortalClienteLogin';
 import PortalClienteWelcome from './pages/PortalClienteWelcome';
+import { FullPageLoader } from '@/components/ui/LoadingOverlay';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -121,14 +122,7 @@ const AuthenticatedApp = () => {
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-10 h-10" style={{ filter: "brightness(0)" }} />
-          <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
-        </div>
-      </div>
-    );
+    return <FullPageLoader theme="light" />;
   }
 
   // Handle authentication errors

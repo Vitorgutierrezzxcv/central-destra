@@ -4,12 +4,13 @@ import { createPageUrl } from "@/utils";
 import {
   LayoutDashboard, Building2, CheckSquare, Calendar, FolderOpen,
   GitBranch, ListChecks, LogOut, X, FolderKanban, User, MessageSquare,
-  Star, Grid3X3, ChevronRight, Loader2, Receipt, GraduationCap, ShoppingBag,
+  Star, Grid3X3, ChevronRight, Receipt, GraduationCap, ShoppingBag,
   MoreHorizontal, CheckCircle2, Wrench
 } from "lucide-react";
 import { useClientPortal } from "./useClientPortal";
 import { clearSession, isLoggedIn } from "@/lib/clientPortalSession";
 import { motion, AnimatePresence } from "framer-motion";
+import { FullPageLoader } from "@/components/ui/LoadingOverlay";
 
 // Bottom tab bar: 4 items mais importantes
 const bottomTabs = [
@@ -66,17 +67,7 @@ export default function ClientPortalLayout() {
   }
 
   if (userLoading || !isLoggedIn()) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="flex flex-col items-center gap-5">
-          <img src="https://media.base44.com/images/public/68f8158f5a9adbc29cfb7e53/236087060_Simboloazulclaro13.svg" alt="Destra" className="w-12 h-12" />
-          <div className="flex items-center gap-2">
-            <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
-            <p className="text-sm text-slate-400 font-light tracking-wide">Carregando</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <FullPageLoader theme="light" />;
   }
 
   const handleLogout = () => {
