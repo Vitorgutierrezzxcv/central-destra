@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Mail, ArrowRight, Loader2, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { saveSession, isLoggedIn } from "@/lib/clientPortalSession";
 
@@ -51,7 +52,12 @@ export default function PortalClienteLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B1628] flex flex-col lg:flex-row">
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className="min-h-screen bg-[#0B1628] flex flex-col lg:flex-row"
+    >
       {/* Left panel — desktop */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0D1E38]/60 border-r border-white/5 flex-col justify-between p-12">
         <div>
@@ -175,6 +181,6 @@ export default function PortalClienteLogin() {
           </form>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
