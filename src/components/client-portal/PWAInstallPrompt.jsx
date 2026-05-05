@@ -111,75 +111,74 @@ export default function PWAInstallPrompt() {
   if (isInstalled || !showPrompt) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-        <div className="relative">
-          {/* Header com gradiente */}
-          <div className="h-32 bg-gradient-to-br from-[#001A3D] via-[#456C8D] to-[#6FA6FF] flex items-end justify-between p-6">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg transform -translate-y-2">
-              <Smartphone className="w-8 h-8 text-[#001A3D]" />
+    <div className="fixed inset-0 bg-black/30 z-[9999] flex items-end sm:items-center justify-center p-4 backdrop-blur-sm">
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        {/* Header limpo */}
+        <div className="flex items-start justify-between p-5 border-b border-slate-100">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+              <Smartphone className="w-5 h-5 text-slate-900" />
             </div>
-            <button
-              onClick={handleDismiss}
-              className="text-white hover:bg-white/20 p-2 rounded-full transition-colors"
-              type="button"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div>
+              <h2 className="text-sm font-semibold text-slate-900">Instalar app</h2>
+              <p className="text-xs text-slate-500">Acesso rápido e offline</p>
+            </div>
+          </div>
+          <button
+            onClick={handleDismiss}
+            className="text-slate-400 hover:text-slate-600 p-1 rounded transition-colors flex-shrink-0"
+            type="button"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Conteúdo */}
+        <div className="p-5">
+          {/* Benefícios minimalistas */}
+          <div className="space-y-2 mb-6">
+            {[
+              { icon: "⚡", text: "Acesso instantâneo na tela inicial" },
+              { icon: "📱", text: "Funciona sem internet" },
+              { icon: "✨", text: "Sem necessidade de atualizar" }
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2.5 text-xs">
+                <span className="text-sm">{item.icon}</span>
+                <span className="text-slate-700">{item.text}</span>
+              </div>
+            ))}
           </div>
 
-          {/* Conteúdo */}
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-[#001A3D] mb-1">Instale nosso app</h2>
-            <p className="text-sm text-[#456C8D] mb-6">Acesso rápido, offline e atualizações automáticas</p>
-
-            {/* Benefícios */}
-            <div className="space-y-3 mb-8">
-              {[
-                "Abre direto na tela inicial do seu celular",
-                "Funciona offline com seus dados",
-                "Atualiza automaticamente"
-              ].map((benefit, idx) => (
-                <div key={idx} className="flex items-start gap-3">
-                  <div className="w-5 h-5 bg-[#6FA6FF] rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs text-white font-bold">✓</span>
-                  </div>
-                  <span className="text-sm text-[#131A20]">{benefit}</span>
-                </div>
-              ))}
+          {/* Mensagem de feedback */}
+          {message && (
+            <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className="text-xs text-slate-700 leading-relaxed">{message}</p>
             </div>
+          )}
 
-            {/* Mensagem de feedback */}
-            {message && (
-              <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-xs text-blue-800">{message}</p>
-              </div>
-            )}
-
-            {/* Botões */}
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={handleDismiss}
-                disabled={installing}
-                className="flex-1 px-4 py-3 border-2 border-[#EAEAEA] rounded-xl text-[#131A20] font-semibold hover:bg-[#F8F9FB] active:bg-[#EAEAEA] transition-colors duration-200 cursor-pointer disabled:opacity-50"
-                type="button"
-              >
-                Depois
-              </button>
-              <button
-                onClick={handleInstall}
-                disabled={installing}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#001A3D] to-[#456C8D] text-white rounded-xl font-semibold hover:shadow-lg active:opacity-90 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
-                type="button"
-              >
-                {installing ? (
-                  <span className="inline-block animate-spin">⟳</span>
-                ) : (
-                  <Download className="w-4 h-4" />
-                )}
-                {installing ? "Processando..." : "Instalar"}
-              </button>
-            </div>
+          {/* Botões */}
+          <div className="flex gap-2.5">
+            <button
+              onClick={handleDismiss}
+              disabled={installing}
+              className="flex-1 px-3 py-2.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 active:bg-slate-100 transition-colors duration-200 disabled:opacity-50"
+              type="button"
+            >
+              Depois
+            </button>
+            <button
+              onClick={handleInstall}
+              disabled={installing}
+              className="flex-1 px-3 py-2.5 bg-slate-900 text-white rounded-lg text-xs font-medium hover:bg-slate-800 active:bg-slate-950 transition-colors duration-200 flex items-center justify-center gap-1.5 disabled:opacity-60"
+              type="button"
+            >
+              {installing ? (
+                <span className="inline-block animate-spin text-xs">⟳</span>
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              {installing ? "Instalando..." : "Instalar"}
+            </button>
           </div>
         </div>
       </div>
